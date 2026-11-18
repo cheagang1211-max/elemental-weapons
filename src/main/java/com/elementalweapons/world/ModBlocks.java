@@ -84,6 +84,9 @@ public final class ModBlocks {
 				.title(Component.translatable("itemGroup.elementalweapons.world"))
 				.displayItems((params, output) -> {
 					for (Item it : ITEMS.values()) output.accept(it);
+					output.accept(com.elementalweapons.mob.ModMobs.ELEMENTAL_MEAT);
+					output.accept(com.elementalweapons.mob.ModMobs.COOKED_ELEMENTAL_MEAT);
+					output.accept(com.elementalweapons.mob.ModMobs.FLUFF);
 				})
 				.build();
 		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, TAB_KEY, tab);

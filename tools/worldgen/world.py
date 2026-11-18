@@ -290,14 +290,21 @@ for t in THEMES:
 # 4) 바이옴
 MONSTERS = [{"type": "minecraft:zombie", "count": 4, "weight": 100}, {"type": "minecraft:skeleton", "count": 4, "weight": 100},
             {"type": "minecraft:spider", "count": 4, "weight": 100}, {"type": "minecraft:creeper", "count": 4, "weight": 80}]
-def biome(bid, temp, rain, water, sky, ore_feats, veg_feats, monsters=MONSTERS):
+MOB_OF = {"thunder_plateau": "spark_wisp", "volcanic_plains": "magma_brute", "azure_forest": "tide_spirit", "blossom_forest": "thorn_beast",
+          "gale_highlands": "gale_hawk", "shadow_woods": "shadow_stalker", "radiant_plains": "light_sentinel", "elemental_ocean": "tide_spirit"}
+CREATURES = [{"type": f"{NS}:fluffle", "count": {"type": "minecraft:uniform", "max_inclusive": 4, "min_inclusive": 2}, "weight": 10},
+             {"type": f"{NS}:horned_deer", "count": {"type": "minecraft:uniform", "max_inclusive": 3, "min_inclusive": 1}, "weight": 8},
+             {"type": f"{NS}:elemental_merchant", "count": 1, "weight": 1}]
+def biome(bid, temp, rain, water, sky, ore_feats, veg_feats, monsters=None):
+    monsters = [{"type": f"{NS}:{MOB_OF[bid]}", "count": {"type": "minecraft:uniform", "max_inclusive": 3, "min_inclusive": 1}, "weight": 100}]
+    creatures = [] if bid == "elemental_ocean" else CREATURES
     feats = [[] for _ in range(11)]
     feats[1] = ["minecraft:lake_lava_underground"]
     feats[6] = ["elementalweapons:ore_aether", "elementalweapons:ore_orichalcum"] + ore_feats
     feats[9] = veg_feats
     feats[10] = ["minecraft:freeze_top_layer"]
     w(f"{WG}/biome/{bid}.json", {
-        "attributes": {"minecraft:gameplay/natural_mob_spawns": {"argument": {"spawn_costs": {}, "spawns_by_category": {"monster": monsters}}, "modifier": "overlay"},
+        "attributes": {"minecraft:gameplay/natural_mob_spawns": {"argument": {"spawn_costs": {}, "spawns_by_category": {"monster": monsters, "creature": creatures}}, "modifier": "overlay"},
                        "minecraft:visual/sky_color": sky, "minecraft:visual/water_fog_color": water},
         "carvers": ["minecraft:cave", "minecraft:cave_extra_underground", "minecraft:canyon"],
         "downfall": 0.8 if rain else 0.0, "effects": {"water_color": water}, "features": feats,

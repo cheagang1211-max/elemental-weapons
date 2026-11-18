@@ -369,7 +369,7 @@ public final class GeneratedBossModels {{
 	private static void register(String id, ModelLayerLocation layer, Function<ModelPart, GenericBossModel> factory) {{
 		BossDef def = BossDefs.ALL.get(id);
 		EntityRenderers.register(ModEntities.BOSSES.get(id),
-				ctx -> new GenericBossRenderer(ctx, layer, factory, id, def.renderScale, def.shadow));
+				ctx -> new GenericBossRenderer<>(ctx, layer, factory, id, def.renderScale, def.shadow));
 	}}
 }}
 """)

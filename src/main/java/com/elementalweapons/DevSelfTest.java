@@ -55,6 +55,7 @@ public final class DevSelfTest {
 				for (int cx = -4; cx <= 4; cx++) for (int cz = -4; cz <= 4; cz++) level.setChunkForced(cx, cz, true);
 			}
 			if (tick == 15) checkWorld(level);
+			if (tick == 16) checkMobs(level);
 			int idx = (tick - 20) / PER_BOSS;
 			int k = (tick - 20) % PER_BOSS;
 			if (tick >= 20 && idx >= TYPES.size()) {
@@ -87,6 +88,31 @@ public final class DevSelfTest {
 		boolean ok = counts.getOrDefault("aether_stone", 0) > 100000 && counts.keySet().stream().anyMatch(k -> k.endsWith("_ore"));
 		if (!ok) failures++;
 		ElementalWeaponsMod.LOGGER.info("[SELFTEST] {} WORLD 스폰 바이옴={} 블록={}", ok ? "OK  " : "FAIL", biome, counts);
+	}
+
+	/** 일반 몹/동물/상인: 소환 → 몇 틱 진행 → 상인 거래 목록 확인 */
+	private static void checkMobs(ServerLevel level) {
+		int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING, 20, 20);
+		List<EntityType<? extends net.minecraft.world.entity.Mob>> types = new ArrayList<>(com.elementalweapons.mob.ModMobs.MOBS.values());
+		types.add(com.elementalweapons.mob.ModMobs.FLUFFLE);
+		types.add(com.elementalweapons.mob.ModMobs.HORNED_DEER);
+		int ok = 0;
+		for (EntityType<? extends net.minecraft.world.entity.Mob> t : types) {
+			net.minecraft.world.entity.Mob m = t.create(level, EntitySpawnReason.COMMAND);
+			m.snapTo(20.5, y + 1, 20.5);
+			level.addFreshEntity(m);
+			for (int i = 0; i < 40; i++) m.tick();
+			m.kill(level);
+			ok++;
+		}
+		com.elementalweapons.mob.ElementalMerchant merchant = com.elementalweapons.mob.ModMobs.MERCHANT.create(level, EntitySpawnReason.COMMAND);
+		merchant.snapTo(22.5, y + 1, 22.5);
+		level.addFreshEntity(merchant);
+		int offers = merchant.getOffers().size();
+		merchant.discard();
+		boolean pass = ok == types.size() && offers >= 10;
+		if (!pass) failures++;
+		ElementalWeaponsMod.LOGGER.info("[SELFTEST] {} MOBS 몹 {}종 소환/진행/처치, 상인 거래 {}개", pass ? "OK  " : "FAIL", ok, offers);
 	}
 
 	private static void step(ServerLevel level, EntityType<? extends ElementalBoss> type, int k) {

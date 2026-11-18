@@ -13,10 +13,12 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 
 import com.elementalweapons.ElementalWeaponsMod;
-import com.elementalweapons.boss.ConfiguredBoss;
+import net.minecraft.world.entity.Mob;
 
-/** 설정형 보스 공통 렌더러 (텍스처 + 발광 레이어 + 크기 배율) */
-public class GenericBossRenderer extends MobRenderer<ConfiguredBoss, BossRenderState, GenericBossModel> {
+import com.elementalweapons.boss.PosedEntity;
+
+/** 보스/몹/상인 공통 렌더러 (텍스처 + 발광 레이어 + 크기 배율) */
+public class GenericBossRenderer<T extends Mob & PosedEntity> extends MobRenderer<T, BossRenderState, GenericBossModel> {
 	private final Identifier texture;
 	private final Identifier glow;
 	private final float scale;
@@ -42,7 +44,7 @@ public class GenericBossRenderer extends MobRenderer<ConfiguredBoss, BossRenderS
 	}
 
 	@Override
-	public void extractRenderState(ConfiguredBoss entity, BossRenderState state, float partialTick) {
+	public void extractRenderState(T entity, BossRenderState state, float partialTick) {
 		super.extractRenderState(entity, state, partialTick);
 		state.attackPose = entity.getAttackPose();
 		state.floating = entity.isFloatingBoss();

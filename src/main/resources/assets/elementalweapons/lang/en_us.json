@@ -138,5 +138,18 @@
 	"biome.elementalweapons.radiant_plains": "Radiant Plains",
 	"biome.elementalweapons.elemental_ocean": "Elemental Ocean",
 	"generator.elementalweapons.elemental_world": "Elemental World",
-	"itemGroup.elementalweapons.world": "Elemental World"
+	"itemGroup.elementalweapons.world": "Elemental World",
+	"entity.elementalweapons.spark_wisp": "Spark Wisp",
+	"entity.elementalweapons.magma_brute": "Magma Brute",
+	"entity.elementalweapons.tide_spirit": "Tide Spirit",
+	"entity.elementalweapons.thorn_beast": "Thorn Beast",
+	"entity.elementalweapons.gale_hawk": "Gale Hawk",
+	"entity.elementalweapons.shadow_stalker": "Shadow Stalker",
+	"entity.elementalweapons.light_sentinel": "Light Sentinel",
+	"entity.elementalweapons.fluffle": "Fluffle",
+	"entity.elementalweapons.horned_deer": "Horned Deer",
+	"entity.elementalweapons.elemental_merchant": "Elemental Merchant",
+	"item.elementalweapons.elemental_meat": "Elemental Meat",
+	"item.elementalweapons.cooked_elemental_meat": "Cooked Elemental Meat",
+	"item.elementalweapons.fluff": "Fluff"
 }

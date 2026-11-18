@@ -35,7 +35,7 @@ import com.elementalweapons.spell.Fx;
  * 설정(BossDef)으로 동작하는 범용 보스. 패턴 12종(PatternType)을 구현합니다.
  * 각 보스는 BossDefs 에서 이름/속성/체력/패턴/보상을 정합니다.
  */
-public class ConfiguredBoss extends ElementalBoss {
+public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 	private static final Element[] SHIFT_ORDER = {
 			Element.ELECTRIC, Element.FIRE, Element.WATER, Element.GRASS, Element.WIND, Element.DARK, Element.LIGHT};
 

@@ -138,5 +138,18 @@
 	"biome.elementalweapons.radiant_plains": "빛의 평원",
 	"biome.elementalweapons.elemental_ocean": "원소의 바다",
 	"generator.elementalweapons.elemental_world": "원소 세계",
-	"itemGroup.elementalweapons.world": "원소 세계"
+	"itemGroup.elementalweapons.world": "원소 세계",
+	"entity.elementalweapons.spark_wisp": "스파크 정령",
+	"entity.elementalweapons.magma_brute": "용암 거한",
+	"entity.elementalweapons.tide_spirit": "물의 정령",
+	"entity.elementalweapons.thorn_beast": "가시 덩굴괴물",
+	"entity.elementalweapons.gale_hawk": "질풍 매",
+	"entity.elementalweapons.shadow_stalker": "그림자 추적자",
+	"entity.elementalweapons.light_sentinel": "빛의 파수꾼",
+	"entity.elementalweapons.fluffle": "솜뭉치",
+	"entity.elementalweapons.horned_deer": "뿔사슴",
+	"entity.elementalweapons.elemental_merchant": "원소족 상인",
+	"item.elementalweapons.elemental_meat": "원소 고기",
+	"item.elementalweapons.cooked_elemental_meat": "구운 원소 고기",
+	"item.elementalweapons.fluff": "솜털"
 }
