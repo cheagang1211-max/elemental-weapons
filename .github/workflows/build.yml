@@ -56,7 +56,7 @@ jobs:
             sleep 3
           done
           echo "@@@SERVER_LOG_BEGIN"
-          grep -iE "elementalweapons|SELFTEST|error|exception|parse|Done \(" server.log | grep -v "Gradle" | head -150
+          grep -vE "^\s*at |Gradle|Daemon|> Task|BUILD|deprecat" server.log | grep -E "^\[|SELFTEST" | head -200
           echo "@@@SERVER_LOG_END"
           pkill -f runServer || true
           pkill -f "net.fabricmc" || true
