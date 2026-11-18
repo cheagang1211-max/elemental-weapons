@@ -1,1 +1,11 @@
 hash-format = "sha256"
+
+[[files]]
+file = "mods/elementalweapons.pw.toml"
+hash = "f761cceb5e6997626fb7ddf8bfc2143705696d94ed6fc97d591803f7e2d007a0"
+metafile = true
+
+[[files]]
+file = "mods/fabric-api.pw.toml"
+hash = "fb72a70cb53c63f1da4520c25c8a7d806cc1c733e827016615623b65d751852d"
+metafile = true
