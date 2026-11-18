@@ -44,7 +44,7 @@ public final class DevSelfTest {
 				level.addFreshEntity(boss);
 				dummy = EntityTypes.HUSK.create(level, EntitySpawnReason.COMMAND);
 				dummy.snapTo(8.5, y, 0.5);
-				dummy.setInvulnerable(true);
+				dummy.setPermanentlyInvulnerable(true);
 				level.addFreshEntity(dummy);
 				boss.setTarget(dummy);
 				ElementalWeaponsMod.LOGGER.info("[SELFTEST] 보스 소환: 체력 {}", boss.getBigHealth());
