@@ -293,7 +293,7 @@ public class VoltraBoss extends ElementalBoss {
 		RandomSource r = this.getRandom();
 		this.spawnAtLocation(level, new ItemStack(ModItems.VOLTRA_CORE, 1 + r.nextInt(2)));
 		this.spawnAtLocation(level, new ItemStack(Items.DIAMOND_BLOCK, 2 + r.nextInt(3)));
-		this.spawnAtLocation(level, new ItemStack(Items.LIGHTNING_ROD, 4 + r.nextInt(5)));
+		this.spawnAtLocation(level, new ItemStack(Items.EMERALD, 8 + r.nextInt(8)));
 		Fx.burst(level, ParticleTypes.ELECTRIC_SPARK, this.position().add(0, 2, 0), 300, 4.0, 0.8);
 		ElectricStormSpell.drawBolt(level, this.position());
 	}
