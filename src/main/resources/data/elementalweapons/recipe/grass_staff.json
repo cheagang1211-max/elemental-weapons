@@ -2,14 +2,14 @@
 	"type": "minecraft:crafting_shaped",
 	"category": "equipment",
 	"pattern": [
-		"DED",
+		"XCX",
 		" S ",
 		" S "
 	],
 	"key": {
-		"D": "minecraft:diamond",
-		"E": "elementalweapons:silva_core",
-		"S": "minecraft:stick"
+		"C": "elementalweapons:silva_core",
+		"S": "minecraft:stick",
+		"X": "elementalweapons:bloom_crystal"
 	},
 	"result": {
 		"id": "elementalweapons:grass_staff",

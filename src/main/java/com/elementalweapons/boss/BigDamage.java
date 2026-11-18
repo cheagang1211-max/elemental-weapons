@@ -40,7 +40,7 @@ public final class BigDamage {
 		if (attacker instanceof Player p) {
 			ItemStack held = p.getMainHandItem();
 			if (held.getItem() instanceof ElementalWeaponItem w) {
-				mult = ELEMENTAL_WEAPON;
+				mult = ELEMENTAL_WEAPON * com.elementalweapons.item.Enhancement.multiplier(held);
 				el = w.element();
 				aff = affinity(el, boss.element());
 				Element second = boss.secondaryElement();

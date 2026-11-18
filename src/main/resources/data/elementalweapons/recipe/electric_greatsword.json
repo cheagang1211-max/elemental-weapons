@@ -2,14 +2,15 @@
 	"type": "minecraft:crafting_shaped",
 	"category": "equipment",
 	"pattern": [
-		" B ",
-		" B ",
-		"ESE"
+		" O ",
+		"XOX",
+		"CSC"
 	],
 	"key": {
-		"B": "minecraft:diamond_block",
-		"E": "elementalweapons:voltra_core",
-		"S": "minecraft:stick"
+		"C": "elementalweapons:voltra_core",
+		"O": "elementalweapons:orichalcum_ingot",
+		"S": "minecraft:stick",
+		"X": "elementalweapons:storm_crystal"
 	},
 	"result": {
 		"id": "elementalweapons:electric_greatsword",

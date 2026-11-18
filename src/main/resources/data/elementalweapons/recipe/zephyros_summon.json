@@ -3,12 +3,12 @@
 	"category": "misc",
 	"pattern": [
 		" X ",
-		"XBX",
+		"XOX",
 		" X "
 	],
 	"key": {
-		"X": "minecraft:breeze_rod",
-		"B": "minecraft:diamond_block"
+		"X": "elementalweapons:gale_crystal",
+		"O": "elementalweapons:orichalcum_ingot"
 	},
 	"result": {
 		"id": "elementalweapons:zephyros_summon",

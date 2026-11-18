@@ -1,0 +1,16 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "equipment",
+	"pattern": [
+		"XXX",
+		"X X",
+		"X X"
+	],
+	"key": {
+		"X": "elementalweapons:aether_ingot"
+	},
+	"result": {
+		"id": "elementalweapons:aether_leggings",
+		"count": 1
+	}
+}

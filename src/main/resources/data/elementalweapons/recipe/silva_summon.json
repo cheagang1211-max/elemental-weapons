@@ -3,12 +3,12 @@
 	"category": "misc",
 	"pattern": [
 		" X ",
-		"XBX",
+		"XOX",
 		" X "
 	],
 	"key": {
-		"X": "minecraft:moss_block",
-		"B": "minecraft:diamond_block"
+		"X": "elementalweapons:bloom_crystal",
+		"O": "elementalweapons:orichalcum_ingot"
 	},
 	"result": {
 		"id": "elementalweapons:silva_summon",

@@ -5,7 +5,7 @@
 		"elementalweapons:lumiel_core",
 		"elementalweapons:nox_core",
 		"elementalweapons:crystal_golem_core",
-		"minecraft:diamond_block"
+		"elementalweapons:orichalcum_ingot"
 	],
 	"result": {
 		"id": "elementalweapons:twilight_twins_summon",

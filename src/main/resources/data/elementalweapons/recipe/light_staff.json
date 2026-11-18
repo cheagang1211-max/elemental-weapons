@@ -2,14 +2,14 @@
 	"type": "minecraft:crafting_shaped",
 	"category": "equipment",
 	"pattern": [
-		"DED",
+		"XCX",
 		" S ",
 		" S "
 	],
 	"key": {
-		"D": "minecraft:diamond",
-		"E": "elementalweapons:lumiel_core",
-		"S": "minecraft:stick"
+		"C": "elementalweapons:lumiel_core",
+		"S": "minecraft:stick",
+		"X": "elementalweapons:radiant_crystal"
 	},
 	"result": {
 		"id": "elementalweapons:light_staff",

@@ -2,14 +2,14 @@
 	"type": "minecraft:crafting_shaped",
 	"category": "equipment",
 	"pattern": [
-		"DED",
+		"XCX",
 		" S ",
 		" S "
 	],
 	"key": {
-		"D": "minecraft:diamond",
-		"E": "elementalweapons:voltra_core",
-		"S": "minecraft:stick"
+		"C": "elementalweapons:voltra_core",
+		"S": "minecraft:stick",
+		"X": "elementalweapons:storm_crystal"
 	},
 	"result": {
 		"id": "elementalweapons:electric_staff",

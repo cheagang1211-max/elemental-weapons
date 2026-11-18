@@ -47,7 +47,7 @@ public final class BossDefs {
 				.pattern(DASH, "화염 돌진", FIRE, 1, 2, 9, 1, 3.5)
 				.pattern(METEOR, "용암 운석", FIRE, 2, 3, 15, 0, 6.0)
 				.pattern(BEAM, "용의 숨결", FIRE, 3, 3, 8, 1, 18)
-				.drop(() -> Items.BLAZE_ROD, 4, 8).drop(() -> Items.DIAMOND_BLOCK, 2, 4));
+				.drop(() -> com.elementalweapons.world.ModBlocks.item("ember_crystal"), 8, 16).drop(() -> com.elementalweapons.world.ModBlocks.item("orichalcum_ingot"), 2, 4));
 
 		add(BossDef.of("marina", "심해의 여왕 마리나", "Marina, Queen of the Deep").element(WATER, null).health(1_200_000_000L)
 				.look("≋", AQUA, BossEvent.BossBarColor.BLUE).size(2.4F, 5.0F, 4.0F, 2.0F, 1.5F).hover(3.0, 8.0, 0.28, true)
@@ -57,7 +57,7 @@ public final class BossDefs {
 				.pattern(ORBIT, "물방울 궤도", WATER, 1, 2, 5, 6, 1.4)
 				.pattern(SUMMON, "심해의 하수인", WATER, 1, 1, 0, 2, 0)
 				.pattern(NOVA, "파도 고리", WATER, 2, 3, 9, 0, 8.0)
-				.drop(() -> Items.PRISMARINE_CRYSTALS, 8, 16).drop(() -> Items.DIAMOND_BLOCK, 2, 4));
+				.drop(() -> com.elementalweapons.world.ModBlocks.item("tide_crystal"), 8, 16).drop(() -> com.elementalweapons.world.ModBlocks.item("orichalcum_ingot"), 2, 4));
 
 		add(BossDef.of("silva", "고대수 실바", "Silva, the Ancient Tree").element(GRASS, null).health(1_300_000_000L)
 				.look("❀", GREEN, BossEvent.BossBarColor.GREEN).size(3.6F, 6.0F, 5.0F, 2.4F, 2.2F).hover(0.5, 6.0, 0.22, false)
@@ -67,7 +67,7 @@ public final class BossDefs {
 				.pattern(SUMMON, "숲의 수호자", GRASS, 1, 1, 0, 2, 0)
 				.pattern(NOVA, "꽃가루 폭발", GRASS, 2, 2, 8, 0, 8.0)
 				.pattern(MARK, "생명 흡수의 표식", GRASS, 3, 3, 13, 0, 3.8)
-				.drop(() -> Items.OAK_LOG, 16, 32).drop(() -> Items.DIAMOND_BLOCK, 2, 4));
+				.drop(() -> com.elementalweapons.world.ModBlocks.item("bloom_crystal"), 8, 16).drop(() -> com.elementalweapons.world.ModBlocks.item("orichalcum_ingot"), 2, 4));
 
 		add(BossDef.of("zephyros", "폭풍새 제피로스", "Zephyros, the Storm Bird").element(WIND, null).health(1_200_000_000L)
 				.look("☁", WHITE, BossEvent.BossBarColor.WHITE).size(4.0F, 3.0F, 2.2F, 2.2F, 2.0F).hover(7.0, 10.0, 0.38, true)
@@ -77,7 +77,7 @@ public final class BossDefs {
 				.pattern(BARRAGE, "깃털 탄막", WIND, 1, 2, 5, 4, 2.0)
 				.pattern(VORTEX, "폭풍의 눈", WIND, 2, 2, 9, 0, 6.0)
 				.pattern(BEAM, "진공 칼날", WIND, 3, 3, 8, 3, 16)
-				.drop(() -> Items.BREEZE_ROD, 6, 12).drop(() -> Items.DIAMOND_BLOCK, 2, 4));
+				.drop(() -> com.elementalweapons.world.ModBlocks.item("gale_crystal"), 8, 16).drop(() -> com.elementalweapons.world.ModBlocks.item("orichalcum_ingot"), 2, 4));
 
 		add(BossDef.of("nox", "그림자 군주 녹스", "Nox, Lord of Shadows").element(DARK, null).health(1_400_000_000L)
 				.look("☾", DARK_PURPLE, BossEvent.BossBarColor.PURPLE).size(2.4F, 5.0F, 4.2F, 2.0F, 1.5F).hover(2.5, 6.0, 0.30, true)
@@ -87,7 +87,7 @@ public final class BossDefs {
 				.pattern(SUMMON, "망령 소환", DARK, 1, 1, 0, 2, 0)
 				.pattern(ORBIT, "공허 구체", DARK, 1, 2, 6, 6, 1.4)
 				.pattern(VORTEX, "심연의 손", DARK, 2, 3, 10, 0, 6.0)
-				.drop(() -> Items.ECHO_SHARD, 4, 8).drop(() -> Items.DIAMOND_BLOCK, 2, 4));
+				.drop(() -> com.elementalweapons.world.ModBlocks.item("umbral_crystal"), 8, 16).drop(() -> com.elementalweapons.world.ModBlocks.item("orichalcum_ingot"), 2, 4));
 
 		add(BossDef.of("lumiel", "성기사 루미엘", "Lumiel, the Holy Paladin").element(LIGHT, null).health(1_400_000_000L)
 				.look("✦", YELLOW, BossEvent.BossBarColor.YELLOW).size(2.4F, 5.2F, 4.4F, 2.0F, 1.5F).hover(3.0, 7.0, 0.30, true)
@@ -97,7 +97,7 @@ public final class BossDefs {
 				.pattern(DASH, "성검 돌격", LIGHT, 1, 2, 10, 1, 3.5)
 				.pattern(METEOR, "심판의 빛", LIGHT, 2, 3, 15, 0, 6.0)
 				.pattern(NOVA, "신성 결계", LIGHT, 3, 2, 10, 0, 9.0)
-				.drop(() -> Items.GLOWSTONE, 16, 32).drop(() -> Items.DIAMOND_BLOCK, 2, 4));
+				.drop(() -> com.elementalweapons.world.ModBlocks.item("radiant_crystal"), 8, 16).drop(() -> com.elementalweapons.world.ModBlocks.item("orichalcum_ingot"), 2, 4));
 
 		// ======================= 지역 지배자 =======================
 		add(BossDef.of("crystal_golem", "수정 골렘", "Crystal Golem").element(LIGHT, null).health(1_500_000_000L)
@@ -107,7 +107,7 @@ public final class BossDefs {
 				.pattern(BARRAGE, "수정 파편", LIGHT, 1, 2, 6, 5, 2.0)
 				.pattern(NOVA, "공명", LIGHT, 1, 2, 9, 0, 7.0)
 				.pattern(METEOR, "수정 낙하", LIGHT, 2, 3, 14, 0, 5.0)
-				.drop(() -> Items.AMETHYST_SHARD, 16, 32).drop(() -> Items.DIAMOND, 8, 16));
+				.drop(() -> com.elementalweapons.world.ModBlocks.item("radiant_crystal"), 12, 20).drop(() -> com.elementalweapons.world.ModBlocks.item("aether_ingot"), 8, 16));
 
 		add(BossDef.of("lava_queen", "용암 거미 여왕", "Lava Spider Queen").element(FIRE, null).health(1_500_000_000L)
 				.look("✹", RED, BossEvent.BossBarColor.RED).size(4.4F, 2.4F, 1.6F, 2.2F, 2.4F).hover(0.5, 6.0, 0.34, false)
@@ -117,7 +117,7 @@ public final class BossDefs {
 				.pattern(SUMMON, "새끼 거미", FIRE, 1, 1, 0, 3, 0)
 				.pattern(VORTEX, "거미줄 끌어당기기", FIRE, 2, 2, 9, 0, 5.0)
 				.pattern(ORBIT, "용암 알", FIRE, 3, 2, 6, 6, 1.4)
-				.drop(() -> Items.MAGMA_CREAM, 8, 16).drop(() -> Items.DIAMOND, 8, 16));
+				.drop(() -> com.elementalweapons.world.ModBlocks.item("ember_crystal"), 12, 20).drop(() -> com.elementalweapons.world.ModBlocks.item("aether_ingot"), 8, 16));
 
 		add(BossDef.of("frost_giant", "얼음 거인", "Frost Giant").element(WATER, null).health(1_500_000_000L)
 				.look("❄", AQUA, BossEvent.BossBarColor.WHITE).size(3.6F, 6.4F, 5.6F, 2.6F, 2.4F).hover(0.5, 6.0, 0.20, false)
@@ -126,7 +126,7 @@ public final class BossDefs {
 				.pattern(METEOR, "빙산 투척", WATER, 1, 2, 14, 0, 5.0)
 				.pattern(BARRAGE, "고드름", WATER, 1, 2, 6, 4, 2.0)
 				.pattern(NOVA, "한파", WATER, 2, 3, 9, 0, 8.0)
-				.drop(() -> Items.BLUE_ICE, 16, 32).drop(() -> Items.DIAMOND, 8, 16));
+				.drop(() -> com.elementalweapons.world.ModBlocks.item("tide_crystal"), 12, 20).drop(() -> com.elementalweapons.world.ModBlocks.item("aether_ingot"), 8, 16));
 
 		add(BossDef.of("sphinx", "사막 스핑크스", "Desert Sphinx").element(WIND, null).health(1_500_000_000L)
 				.look("☀", GOLD, BossEvent.BossBarColor.YELLOW).size(3.6F, 4.0F, 3.4F, 2.2F, 2.2F).hover(2.0, 7.0, 0.26, true)
@@ -136,7 +136,7 @@ public final class BossDefs {
 				.pattern(MARK, "수수께끼의 저주", WIND, 1, 2, 12, 0, 3.8)
 				.pattern(BLINK, "신기루", WIND, 2, 2, 9, 0, 4.5)
 				.pattern(VORTEX, "유사 지옥", WIND, 3, 3, 10, 0, 6.0)
-				.drop(() -> Items.GOLD_BLOCK, 4, 8).drop(() -> Items.DIAMOND, 8, 16));
+				.drop(() -> com.elementalweapons.world.ModBlocks.item("gale_crystal"), 12, 20).drop(() -> com.elementalweapons.world.ModBlocks.item("aether_ingot"), 8, 16));
 
 		// ======================= 혼합 속성 =======================
 		add(BossDef.of("steam_colossus", "증기 거신", "Steam Colossus").element(FIRE, WATER).health(2_500_000_000L)
@@ -148,7 +148,7 @@ public final class BossDefs {
 				.pattern(RAIN, "끓는 비", WATER, 1, 2, 8, 2, 2.5)
 				.pattern(BEAM, "증기 분사", FIRE, 2, 3, 9, 2, 18)
 				.pattern(METEOR, "보일러 폭발", FIRE, 3, 3, 16, 0, 6.0)
-				.drop(() -> ModItems.ELEMENT_ESSENCE, 2, 3).drop(() -> Items.NETHERITE_SCRAP, 2, 4));
+				.drop(() -> ModItems.ELEMENT_ESSENCE, 2, 3).drop(() -> com.elementalweapons.world.ModBlocks.item("orichalcum_ingot"), 4, 6));
 
 		add(BossDef.of("storm_wyvern", "뇌운 와이번", "Storm Wyvern").element(ELECTRIC, WIND).health(2_500_000_000L)
 				.look("⚡", AQUA, BossEvent.BossBarColor.BLUE).size(4.4F, 3.4F, 2.6F, 2.4F, 2.4F).hover(7.0, 10.0, 0.40, true)
@@ -159,7 +159,7 @@ public final class BossDefs {
 				.pattern(VORTEX, "태풍의 눈", WIND, 1, 2, 10, 0, 6.0)
 				.pattern(BEAM, "뇌전 브레스", ELECTRIC, 2, 3, 9, 1, 20)
 				.pattern(MARK, "천둥의 낙인", ELECTRIC, 3, 3, 14, 0, 3.8)
-				.drop(() -> ModItems.ELEMENT_ESSENCE, 2, 3).drop(() -> Items.NETHERITE_SCRAP, 2, 4));
+				.drop(() -> ModItems.ELEMENT_ESSENCE, 2, 3).drop(() -> com.elementalweapons.world.ModBlocks.item("orichalcum_ingot"), 4, 6));
 
 		add(BossDef.of("twilight_twins", "황혼의 쌍둥이", "Twilight Twins").element(LIGHT, DARK).health(3_000_000_000L)
 				.look("☯", LIGHT_PURPLE, BossEvent.BossBarColor.PURPLE).size(3.6F, 5.0F, 4.2F, 2.0F, 2.0F).hover(3.0, 7.0, 0.30, true)
@@ -170,7 +170,7 @@ public final class BossDefs {
 				.pattern(ORBIT, "쌍성 궤도", DARK, 1, 2, 7, 6, 1.4)
 				.pattern(MARK, "일식", LIGHT, 2, 3, 15, 0, 4.0)
 				.pattern(METEOR, "월광 낙하", LIGHT, 3, 3, 16, 0, 6.0)
-				.drop(() -> ModItems.ELEMENT_ESSENCE, 3, 4).drop(() -> Items.NETHERITE_SCRAP, 3, 5));
+				.drop(() -> ModItems.ELEMENT_ESSENCE, 3, 4).drop(() -> com.elementalweapons.world.ModBlocks.item("orichalcum_ingot"), 5, 8));
 
 		add(BossDef.of("hydra", "독꽃 히드라", "Venom Bloom Hydra").element(GRASS, DARK).health(3_000_000_000L)
 				.look("❀", DARK_GREEN, BossEvent.BossBarColor.GREEN).size(4.4F, 5.0F, 4.2F, 2.4F, 2.6F).hover(0.5, 7.0, 0.22, false)
@@ -181,7 +181,7 @@ public final class BossDefs {
 				.pattern(SUMMON, "독꽃 하수인", GRASS, 1, 1, 0, 3, 0)
 				.pattern(BEAM, "삼두 브레스", DARK, 2, 3, 9, 3, 16)
 				.pattern(NOVA, "부패 폭발", DARK, 3, 2, 12, 0, 9.0)
-				.drop(() -> ModItems.ELEMENT_ESSENCE, 3, 4).drop(() -> Items.NETHERITE_SCRAP, 3, 5));
+				.drop(() -> ModItems.ELEMENT_ESSENCE, 3, 4).drop(() -> com.elementalweapons.world.ModBlocks.item("orichalcum_ingot"), 5, 8));
 
 		// ======================= 최종 보스 =======================
 		add(BossDef.of("prima", "원소의 근원 프리마", "Prima, Origin of Elements").shifting().element(ELECTRIC, null).health(5_000_000_000L)
@@ -197,6 +197,6 @@ public final class BossDefs {
 				.pattern(METEOR, "원소 운석", null, 2, 3, 17, 0, 6.5)
 				.pattern(MARK, "근원의 낙인", null, 2, 2, 16, 0, 4.0)
 				.pattern(BLINK, "차원 도약", null, 3, 2, 12, 0, 5.0)
-				.drop(() -> ModItems.ELEMENT_ESSENCE, 8, 12).drop(() -> Items.NETHER_STAR, 3, 5).drop(() -> Items.NETHERITE_INGOT, 4, 8));
+				.drop(() -> ModItems.ELEMENT_ESSENCE, 8, 12).drop(() -> com.elementalweapons.world.ModBlocks.item("orichalcum_ingot"), 8, 12).drop(() -> com.elementalweapons.world.ModBlocks.item("aether_ingot"), 16, 32));
 	}
 }

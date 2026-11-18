@@ -2,12 +2,12 @@
 	"type": "minecraft:crafting_shaped",
 	"category": "equipment",
 	"pattern": [
-		" D",
-		"E "
+		" O",
+		"C "
 	],
 	"key": {
-		"D": "minecraft:diamond",
-		"E": "elementalweapons:lumiel_core"
+		"O": "elementalweapons:orichalcum_ingot",
+		"C": "elementalweapons:lumiel_core"
 	},
 	"result": {
 		"id": "elementalweapons:light_dagger",

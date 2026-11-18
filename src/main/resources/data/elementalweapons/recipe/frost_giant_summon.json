@@ -8,7 +8,7 @@
 	],
 	"key": {
 		"C": "elementalweapons:marina_core",
-		"D": "minecraft:diamond"
+		"D": "elementalweapons:aether_ingot"
 	},
 	"result": {
 		"id": "elementalweapons:frost_giant_summon",

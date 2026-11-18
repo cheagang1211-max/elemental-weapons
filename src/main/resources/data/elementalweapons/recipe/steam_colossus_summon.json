@@ -6,7 +6,7 @@
 		"elementalweapons:marina_core",
 		"elementalweapons:lava_queen_core",
 		"elementalweapons:frost_giant_core",
-		"minecraft:diamond_block"
+		"elementalweapons:orichalcum_ingot"
 	],
 	"result": {
 		"id": "elementalweapons:steam_colossus_summon",

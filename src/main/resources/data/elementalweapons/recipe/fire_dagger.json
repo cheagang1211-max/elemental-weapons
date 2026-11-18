@@ -2,12 +2,12 @@
 	"type": "minecraft:crafting_shaped",
 	"category": "equipment",
 	"pattern": [
-		" D",
-		"E "
+		" O",
+		"C "
 	],
 	"key": {
-		"D": "minecraft:diamond",
-		"E": "elementalweapons:ignis_core"
+		"O": "elementalweapons:orichalcum_ingot",
+		"C": "elementalweapons:ignis_core"
 	},
 	"result": {
 		"id": "elementalweapons:fire_dagger",

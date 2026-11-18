@@ -2,13 +2,13 @@
 	"type": "minecraft:crafting_shaped",
 	"category": "misc",
 	"pattern": [
-		" R ",
-		"RBR",
-		" R "
+		" X ",
+		"XOX",
+		" X "
 	],
 	"key": {
-		"R": "minecraft:lightning_rod",
-		"B": "minecraft:diamond_block"
+		"X": "elementalweapons:storm_crystal",
+		"O": "elementalweapons:orichalcum_ingot"
 	},
 	"result": {
 		"id": "elementalweapons:voltra_summon",

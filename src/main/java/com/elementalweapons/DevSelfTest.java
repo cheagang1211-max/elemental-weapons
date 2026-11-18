@@ -56,6 +56,7 @@ public final class DevSelfTest {
 			}
 			if (tick == 15) checkWorld(level);
 			if (tick == 16) checkMobs(level);
+			if (tick == 17) checkGear();
 			int idx = (tick - 20) / PER_BOSS;
 			int k = (tick - 20) % PER_BOSS;
 			if (tick >= 20 && idx >= TYPES.size()) {
@@ -91,6 +92,17 @@ public final class DevSelfTest {
 	}
 
 	/** 일반 몹/동물/상인: 소환 → 몇 틱 진행 → 상인 거래 목록 확인 */
+	private static void checkGear() {
+		net.minecraft.world.item.ItemStack w = new net.minecraft.world.item.ItemStack(com.elementalweapons.item.ModItems.WEAPONS.get(com.elementalweapons.item.Element.FIRE).get(com.elementalweapons.item.WeaponType.SWORD));
+		double before = com.elementalweapons.item.Enhancement.multiplier(w);
+		com.elementalweapons.item.Enhancement.apply(w, 3);
+		double after = com.elementalweapons.item.Enhancement.multiplier(w);
+		int gear = com.elementalweapons.item.ModGear.ITEMS.size();
+		boolean ok = before == 1.0 && after == 2.5 && gear == 18;
+		if (!ok) failures++;
+		ElementalWeaponsMod.LOGGER.info("[SELFTEST] {} GEAR 장비 {}종, 강화 배율 {} -> {}", ok ? "OK  " : "FAIL", gear, before, after);
+	}
+
 	private static void checkMobs(ServerLevel level) {
 		int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING, 20, 20);
 		List<EntityType<? extends net.minecraft.world.entity.Mob>> types = new ArrayList<>(com.elementalweapons.mob.ModMobs.MOBS.values());

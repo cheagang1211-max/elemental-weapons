@@ -3,12 +3,12 @@
 	"category": "misc",
 	"pattern": [
 		" X ",
-		"XBX",
+		"XOX",
 		" X "
 	],
 	"key": {
-		"X": "minecraft:prismarine_shard",
-		"B": "minecraft:diamond_block"
+		"X": "elementalweapons:tide_crystal",
+		"O": "elementalweapons:orichalcum_ingot"
 	},
 	"result": {
 		"id": "elementalweapons:marina_summon",

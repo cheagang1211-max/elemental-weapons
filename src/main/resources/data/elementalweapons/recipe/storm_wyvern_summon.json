@@ -5,7 +5,7 @@
 		"elementalweapons:voltra_core",
 		"elementalweapons:zephyros_core",
 		"elementalweapons:sphinx_core",
-		"minecraft:diamond_block"
+		"elementalweapons:orichalcum_ingot"
 	],
 	"result": {
 		"id": "elementalweapons:storm_wyvern_summon",

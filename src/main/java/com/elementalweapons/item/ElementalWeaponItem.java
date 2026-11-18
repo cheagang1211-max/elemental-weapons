@@ -54,6 +54,13 @@ public class ElementalWeaponItem extends Item {
 
 	@Override
 	public InteractionResult use(Level level, Player user, InteractionHand hand) {
+		// 강화: 웅크리고 우클릭 + 왼손에 원소 정수
+		if (hand == InteractionHand.MAIN_HAND && user.isShiftKeyDown() && user.getOffhandItem().is(ModItems.ELEMENT_ESSENCE)) {
+			if (level instanceof ServerLevel server) {
+				Enhancement.tryUpgrade(server, user, user.getItemInHand(hand), user.getOffhandItem());
+			}
+			return InteractionResult.SUCCESS;
+		}
 		if (type == WeaponType.DAGGER) {
 			// 플레이어 이동은 클라이언트가 처리하므로 양쪽에서 실행
 			Vec3 look = user.getLookAngle();

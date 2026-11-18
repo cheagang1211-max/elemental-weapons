@@ -5,7 +5,7 @@
 		"elementalweapons:silva_core",
 		"elementalweapons:nox_core",
 		"elementalweapons:lava_queen_core",
-		"minecraft:emerald_block"
+		"elementalweapons:orichalcum_ingot"
 	],
 	"result": {
 		"id": "elementalweapons:hydra_summon",

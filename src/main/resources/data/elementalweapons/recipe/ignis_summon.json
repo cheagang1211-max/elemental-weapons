@@ -3,12 +3,12 @@
 	"category": "misc",
 	"pattern": [
 		" X ",
-		"XBX",
+		"XOX",
 		" X "
 	],
 	"key": {
-		"X": "minecraft:blaze_rod",
-		"B": "minecraft:diamond_block"
+		"X": "elementalweapons:ember_crystal",
+		"O": "elementalweapons:orichalcum_ingot"
 	},
 	"result": {
 		"id": "elementalweapons:ignis_summon",

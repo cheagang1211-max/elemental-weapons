@@ -3,12 +3,12 @@
 	"category": "misc",
 	"pattern": [
 		" X ",
-		"XBX",
+		"XOX",
 		" X "
 	],
 	"key": {
-		"X": "minecraft:glowstone",
-		"B": "minecraft:diamond_block"
+		"X": "elementalweapons:radiant_crystal",
+		"O": "elementalweapons:orichalcum_ingot"
 	},
 	"result": {
 		"id": "elementalweapons:lumiel_summon",

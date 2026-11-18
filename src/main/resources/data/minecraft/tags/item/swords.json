@@ -21,6 +21,8 @@
 		"elementalweapons:dark_greatsword",
 		"elementalweapons:light_dagger",
 		"elementalweapons:light_sword",
-		"elementalweapons:light_greatsword"
+		"elementalweapons:light_greatsword",
+		"elementalweapons:aether_sword",
+		"elementalweapons:orichalcum_sword"
 	]
 }

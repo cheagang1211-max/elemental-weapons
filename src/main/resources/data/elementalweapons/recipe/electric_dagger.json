@@ -2,12 +2,12 @@
 	"type": "minecraft:crafting_shaped",
 	"category": "equipment",
 	"pattern": [
-		" D",
-		"E "
+		" O",
+		"C "
 	],
 	"key": {
-		"D": "minecraft:diamond",
-		"E": "elementalweapons:voltra_core"
+		"O": "elementalweapons:orichalcum_ingot",
+		"C": "elementalweapons:voltra_core"
 	},
 	"result": {
 		"id": "elementalweapons:electric_dagger",

@@ -292,8 +292,8 @@ public class VoltraBoss extends ElementalBoss {
 	protected void dropRewards(ServerLevel level) {
 		RandomSource r = this.getRandom();
 		this.spawnAtLocation(level, new ItemStack(ModItems.VOLTRA_CORE, 1 + r.nextInt(2)));
-		this.spawnAtLocation(level, new ItemStack(Items.DIAMOND_BLOCK, 2 + r.nextInt(3)));
-		this.spawnAtLocation(level, new ItemStack(Items.EMERALD, 8 + r.nextInt(8)));
+		this.spawnAtLocation(level, new ItemStack(com.elementalweapons.world.ModBlocks.item("orichalcum_ingot"), 2 + r.nextInt(3)));
+		this.spawnAtLocation(level, new ItemStack(com.elementalweapons.world.ModBlocks.item("storm_crystal"), 8 + r.nextInt(9)));
 		Fx.burst(level, ParticleTypes.ELECTRIC_SPARK, this.position().add(0, 2, 0), 300, 4.0, 0.8);
 		ElectricStormSpell.drawBolt(level, this.position());
 	}

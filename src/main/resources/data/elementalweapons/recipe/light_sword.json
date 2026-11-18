@@ -2,13 +2,13 @@
 	"type": "minecraft:crafting_shaped",
 	"category": "equipment",
 	"pattern": [
-		"E",
-		"B",
+		"C",
+		"O",
 		"S"
 	],
 	"key": {
-		"E": "elementalweapons:lumiel_core",
-		"B": "minecraft:diamond_block",
+		"C": "elementalweapons:lumiel_core",
+		"O": "elementalweapons:orichalcum_ingot",
 		"S": "minecraft:stick"
 	},
 	"result": {
