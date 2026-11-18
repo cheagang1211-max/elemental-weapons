@@ -50,6 +50,12 @@ jobs:
             done
             echo "data jar: $MCJ"
             for f in $FILES; do
+              case "$f" in
+                list:*)
+                  echo "##### LIST ${f#list:}" >> out/files.txt
+                  unzip -l "$MCJ" | awk '{print $4}' | grep -E "${f#list:}" | head -400 >> out/files.txt
+                  continue;;
+              esac
               echo "##### FILE $f" >> out/files.txt
               unzip -p "$MCJ" "$f" >> out/files.txt 2>&1 || echo "MISSING $f" >> out/files.txt
               echo "" >> out/files.txt
