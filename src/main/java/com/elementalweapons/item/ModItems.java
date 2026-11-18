@@ -19,6 +19,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.ToolMaterial;
 
 import com.elementalweapons.ElementalWeaponsMod;
+import com.elementalweapons.boss.ModEntities;
 
 public class ModItems {
 
@@ -52,6 +53,15 @@ public class ModItems {
 		}
 	}
 
+	// ===== 보스 관련 아이템 =====
+	/** 뇌신의 핵: 볼트라 처치 보상. 전기 속성 무기 제작 재료 */
+	public static final Item VOLTRA_CORE = register(key("voltra_core"), Item::new,
+			new Item.Properties().rarity(Rarity.EPIC).fireResistant());
+	/** 뇌신의 소환석: 우클릭하면 볼트라 소환 */
+	public static final Item VOLTRA_SUMMON = register(key("voltra_summon"),
+			p -> new BossSummonItem(p, () -> ModEntities.VOLTRA),
+			new Item.Properties().rarity(Rarity.EPIC).stacksTo(16));
+
 	/** 무기 종류별 능력치 (공격력, 공격 속도) */
 	private static Item.Properties stats(WeaponType type, Item.Properties props) {
 		return switch (type) {
@@ -82,6 +92,8 @@ public class ModItems {
 				.icon(() -> new ItemStack(get(Element.LIGHT, WeaponType.STAFF)))
 				.title(Component.translatable("itemGroup.elementalweapons.weapons"))
 				.displayItems((params, output) -> {
+					output.accept(VOLTRA_SUMMON);
+					output.accept(VOLTRA_CORE);
 					for (Element element : Element.values()) {
 						for (WeaponType type : WeaponType.values()) {
 							output.accept(get(element, type));

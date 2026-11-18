@@ -5,6 +5,7 @@ import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.elementalweapons.boss.ModEntities;
 import com.elementalweapons.item.ModItems;
 import com.elementalweapons.spell.SpellManager;
 
@@ -14,9 +15,10 @@ public class ElementalWeaponsMod implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ModEntities.initialize();
 		ModItems.initialize();
 		SpellManager.initialize();
-		LOGGER.info("원소 무기 모드 로딩 완료! (7속성 x 4무기 = 28종)");
+		LOGGER.info("원소 무기 모드 로딩 완료! (무기 28종 + 보스)");
 	}
 
 	public static Identifier id(String path) {

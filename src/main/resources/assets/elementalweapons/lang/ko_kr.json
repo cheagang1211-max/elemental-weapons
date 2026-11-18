@@ -27,5 +27,8 @@
 	"item.elementalweapons.light_dagger": "빛의 단검",
 	"item.elementalweapons.light_sword": "빛의 검",
 	"item.elementalweapons.light_greatsword": "빛의 대검",
-	"item.elementalweapons.light_staff": "빛의 지팡이"
+	"item.elementalweapons.light_staff": "빛의 지팡이",
+	"item.elementalweapons.voltra_core": "뇌신의 핵",
+	"item.elementalweapons.voltra_summon": "뇌신의 소환석",
+	"entity.elementalweapons.voltra": "뇌신 볼트라"
 }

@@ -55,6 +55,15 @@ public class ElectricStormSpell extends Spell {
 
 	/** 하늘에서 ground 지점으로 벼락 한 줄기를 그리고 피해를 줍니다. */
 	public static void bolt(ServerLevel level, Player caster, Vec3 ground, float damage) {
+		drawBolt(level, ground);
+		for (LivingEntity e : Fx.enemies(level, ground, 2.5)) {
+			Fx.hurt(level, caster, e, damage);
+			e.addEffect(new MobEffectInstance(MobEffects.GLOWING, 60, 0));
+		}
+	}
+
+	/** 벼락 모양과 소리만 (피해 없음). 보스 패턴에서도 사용 */
+	public static void drawBolt(ServerLevel level, Vec3 ground) {
 		RandomSource r = level.getRandom();
 		Vec3 top = ground.add((r.nextDouble() - 0.5) * 6, 24, (r.nextDouble() - 0.5) * 6);
 		List<Vec3> path = zigzag(top, ground, 14, 1.4, r);
@@ -82,11 +91,6 @@ public class ElectricStormSpell extends Spell {
 
 		Fx.sound(level, ground, SoundEvents.LIGHTNING_BOLT_THUNDER, 2.5F, 0.9F + r.nextFloat() * 0.4F);
 		Fx.sound(level, ground, SoundEvents.LIGHTNING_BOLT_IMPACT, 2.0F, 1.0F);
-
-		for (LivingEntity e : Fx.enemies(level, ground, 2.5)) {
-			Fx.hurt(level, caster, e, damage);
-			e.addEffect(new MobEffectInstance(MobEffects.GLOWING, 60, 0));
-		}
 	}
 
 	/** from → to 사이를 segments 마디의 지그재그 경로로 */

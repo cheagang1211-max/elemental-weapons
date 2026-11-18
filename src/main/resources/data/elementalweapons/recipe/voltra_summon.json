@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		" R ",
+		"RBR",
+		" R "
+	],
+	"key": {
+		"R": "minecraft:lightning_rod",
+		"B": "minecraft:diamond_block"
+	},
+	"result": {
+		"id": "elementalweapons:voltra_summon",
+		"count": 1
+	}
+}

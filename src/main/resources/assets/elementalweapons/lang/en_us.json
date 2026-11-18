@@ -27,5 +27,8 @@
 	"item.elementalweapons.light_dagger": "Light Dagger",
 	"item.elementalweapons.light_sword": "Light Sword",
 	"item.elementalweapons.light_greatsword": "Light Greatsword",
-	"item.elementalweapons.light_staff": "Light Staff"
+	"item.elementalweapons.light_staff": "Light Staff",
+	"item.elementalweapons.voltra_core": "Voltra's Core",
+	"item.elementalweapons.voltra_summon": "Voltra Summoning Stone",
+	"entity.elementalweapons.voltra": "Voltra, the Thunder God"
 }

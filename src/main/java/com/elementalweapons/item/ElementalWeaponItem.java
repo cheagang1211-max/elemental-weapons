@@ -44,6 +44,14 @@ public class ElementalWeaponItem extends Item {
 		this.type = type;
 	}
 
+	public Element element() {
+		return element;
+	}
+
+	public WeaponType type() {
+		return type;
+	}
+
 	@Override
 	public InteractionResult use(Level level, Player user, InteractionHand hand) {
 		if (type == WeaponType.DAGGER) {

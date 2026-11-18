@@ -8,7 +8,7 @@
 	],
 	"key": {
 		"D": "minecraft:diamond",
-		"E": "minecraft:lightning_rod",
+		"E": "elementalweapons:voltra_core",
 		"S": "minecraft:stick"
 	},
 	"result": {
