@@ -56,6 +56,8 @@ public abstract class ElementalBoss extends Monster {
 	/** 진단용: AI가 몇 번 실행됐는지 */
 	public int debugAiSteps = 0;
 	public String debugState = "";
+	/** 테스트 전용 강제 표적 (실제 게임에서는 항상 null) */
+	public LivingEntity debugForcedTarget = null;
 
 	protected ElementalBoss(EntityType<? extends ElementalBoss> type, Level level) {
 		super(type, level);
@@ -214,7 +216,7 @@ public abstract class ElementalBoss extends Monster {
 	protected void customServerAiStep(ServerLevel level) {
 		super.customServerAiStep(level);
 		debugAiSteps++;
-		LivingEntity target = this.getTarget();
+		LivingEntity target = debugForcedTarget != null ? debugForcedTarget : this.getTarget();
 		debugState = (target == null ? "no-target" : target.isAlive() ? "target-ok" : "target-dead")
 				+ " pattern=" + (current == null ? "-" : current.name()) + " rest=" + restTicks;
 

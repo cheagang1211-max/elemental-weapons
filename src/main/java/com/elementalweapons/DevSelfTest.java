@@ -25,6 +25,7 @@ public final class DevSelfTest {
 	private static int tick = -1;
 	private static ElementalBoss boss;
 	private static LivingEntity dummy;
+	private static final java.util.Set<String> PATTERNS = new java.util.TreeSet<>();
 
 	public static void initialize() {
 		if (!"1".equals(System.getenv("EW_SELFTEST"))) return;
@@ -49,11 +50,13 @@ public final class DevSelfTest {
 				dummy.snapTo(8.5, y, 0.5);
 				dummy.setPermanentlyInvulnerable(true);
 				level.addFreshEntity(dummy);
-				boss.setTarget(dummy);
+				boss.debugForcedTarget = dummy;
 				ElementalWeaponsMod.LOGGER.info("[SELFTEST] 보스 소환: 체력 {}", boss.getBigHealth());
 			}
 			if (boss != null && tick > 20 && tick < 620 && boss.isAlive()) {
-				boss.setTarget(dummy); // 표적 고정
+				String st = boss.debugState;
+				int i = st.indexOf("pattern=");
+				if (i >= 0) { String pn = st.substring(i + 8, st.indexOf(' ', i)); if (!pn.equals("-")) PATTERNS.add(pn); }
 				if (tick % 100 == 0) {
 					ElementalWeaponsMod.LOGGER.info("[SELFTEST] t={} 체력={} 페이즈={} 자세={} 위치={} 보스틱={} AI={} 상태={} 표적={}",
 							tick, boss.getBigHealth(), boss.getPhase(), boss.getAttackPose(), boss.position(),
@@ -69,6 +72,7 @@ public final class DevSelfTest {
 			if (tick == 680) {
 				int drops = level.getEntitiesOfClass(ItemEntity.class, new AABB(-40, -64, -40, 40, 400, 40)).size();
 				ElementalWeaponsMod.LOGGER.info("[SELFTEST] 드롭 아이템 엔티티 수={}", drops);
+				ElementalWeaponsMod.LOGGER.info("[SELFTEST] 실행된 패턴: {}", PATTERNS);
 				ElementalWeaponsMod.LOGGER.info(drops > 0 ? "[SELFTEST] PASS" : "[SELFTEST] FAIL (드롭 없음)");
 				tick = -2;
 			}
