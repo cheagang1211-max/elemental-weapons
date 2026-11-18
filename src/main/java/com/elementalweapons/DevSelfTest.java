@@ -37,6 +37,9 @@ public final class DevSelfTest {
 		if (tick < 0) return;
 		ServerLevel level = server.overworld();
 		try {
+			if (tick == 5) {
+				level.setChunkForced(0, 0, true); // 플레이어 없이도 몹이 움직이도록
+			}
 			if (tick == 20) {
 				int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING, 0, 0);
 				boss = ModEntities.VOLTRA.create(level, EntitySpawnReason.COMMAND);

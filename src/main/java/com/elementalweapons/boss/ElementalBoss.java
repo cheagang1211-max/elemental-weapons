@@ -52,6 +52,7 @@ public abstract class ElementalBoss extends Monster {
 	private BossPattern last = null;
 	private int patternTick = 0;
 	private int restTicks = 60;
+	private boolean defeated = false;
 
 	protected ElementalBoss(EntityType<? extends ElementalBoss> type, Level level) {
 		super(type, level);
@@ -110,11 +111,24 @@ public abstract class ElementalBoss extends Monster {
 		updateBossBar();
 		checkPhase(level);
 
-		if (bigHealth <= 0) {
-			this.setHealth(0.0F);
-			this.die(source);
-		}
+		if (bigHealth <= 0) defeat(level, source);
 		return true;
+	}
+
+	/** 체력 0: 보상을 직접 떨어뜨리고 쓰러짐 (바닐라 전리품 경로에 의존하지 않음) */
+	private void defeat(ServerLevel level, DamageSource source) {
+		if (defeated) return;
+		defeated = true;
+		dropRewards(level);
+		Component msg = Component.literal("☆ ").withStyle(ChatFormatting.GOLD)
+				.append(bossName().copy())
+				.append(Component.literal(" 을(를) 쓰러뜨렸다!").withStyle(ChatFormatting.GOLD));
+		for (ServerPlayer p : level.players()) {
+			if (p.distanceToSqr(this) < 128 * 128) p.sendSystemMessage(msg);
+		}
+		bossBar.removeAllPlayers();
+		this.setHealth(0.0F);
+		this.die(source);
 	}
 
 	/** 개발/테스트용: 플레이어 없이 큰 숫자 피해를 직접 줌 */
@@ -122,10 +136,7 @@ public abstract class ElementalBoss extends Monster {
 		bigHealth = Math.max(0, bigHealth - amount);
 		updateBossBar();
 		checkPhase(level);
-		if (bigHealth <= 0) {
-			this.setHealth(0.0F);
-			this.die(level.damageSources().generic());
-		}
+		if (bigHealth <= 0) defeat(level, level.damageSources().generic());
 	}
 
 	private void checkPhase(ServerLevel level) {
@@ -155,19 +166,6 @@ public abstract class ElementalBoss extends Monster {
 	public void stopSeenByPlayer(ServerPlayer player) {
 		super.stopSeenByPlayer(player);
 		bossBar.removePlayer(player);
-	}
-
-	// ===== 보상 =====
-	@Override
-	protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean killedByPlayer) {
-		super.dropCustomDeathLoot(level, source, killedByPlayer);
-		dropRewards(level);
-		Component msg = Component.literal("☆ ").withStyle(ChatFormatting.GOLD)
-				.append(bossName().copy())
-				.append(Component.literal(" 을(를) 쓰러뜨렸다!").withStyle(ChatFormatting.GOLD));
-		for (ServerPlayer p : level.players()) {
-			if (p.distanceToSqr(this) < 128 * 128) p.sendSystemMessage(msg);
-		}
 	}
 
 	// ===== 저장 =====
