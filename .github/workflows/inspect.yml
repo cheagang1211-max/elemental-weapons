@@ -1,0 +1,49 @@
+# 개발용: 마인크래프트/패브릭 클래스의 실제 메서드 목록(javap)을 뽑아 Artifact로 저장
+# Actions → "Inspect API (개발용)" → Run workflow → 클래스 이름들을 공백으로 구분해 입력
+name: Inspect API (개발용)
+
+on:
+  workflow_dispatch:
+    inputs:
+      classes:
+        description: "클래스 전체 이름들 (공백 구분)"
+        required: true
+      grep:
+        description: "클래스 이름 검색어 (선택, 정규식, 예: BossEvent|RenderState)"
+        required: false
+        default: ""
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: gradle/actions/setup-gradle@v4
+      - name: 의존성 준비
+        run: |
+          chmod +x gradlew
+          ./gradlew compileJava --console=plain || true
+      - name: javap
+        env:
+          CLASSES: ${{ inputs.classes }}
+          PATTERN: ${{ inputs.grep }}
+        run: |
+          CP=$(find ~/.gradle .gradle -name "*.jar" 2>/dev/null | grep -iE "minecraft|fabric" | tr '\n' ':')
+          mkdir -p out
+          for c in $CLASSES; do
+            echo "===== $c" >> out/api.txt
+            javap -p -cp "$CP" "$c" >> out/api.txt 2>&1 || echo "NOT FOUND: $c" >> out/api.txt
+          done
+          if [ -n "$PATTERN" ]; then
+            for j in $(find ~/.gradle .gradle -name "*.jar" 2>/dev/null | grep -iE "minecraft|fabric"); do
+              unzip -l "$j" 2>/dev/null | awk '{print $4}' | grep '\.class$' | grep -E "$PATTERN" | sed "s|^|$j :: |"
+            done | sort -u > out/classes.txt
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: api
+          path: out/
