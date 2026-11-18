@@ -55,8 +55,9 @@ public final class DevSelfTest {
 			if (boss != null && tick > 20 && tick < 620 && boss.isAlive()) {
 				boss.setTarget(dummy); // 표적 고정
 				if (tick % 100 == 0) {
-					ElementalWeaponsMod.LOGGER.info("[SELFTEST] t={} 체력={} 페이즈={} 자세={} 위치={}",
-							tick, boss.getBigHealth(), boss.getPhase(), boss.getAttackPose(), boss.position());
+					ElementalWeaponsMod.LOGGER.info("[SELFTEST] t={} 체력={} 페이즈={} 자세={} 위치={} 보스틱={} AI={} 상태={} 표적={}",
+							tick, boss.getBigHealth(), boss.getPhase(), boss.getAttackPose(), boss.position(),
+							boss.tickCount, boss.debugAiSteps, boss.debugState, dummy.position());
 				}
 			}
 			if (tick == 220) boss.debugDamage(level, boss.getBigHealth() / 2);           // → 2페이즈
