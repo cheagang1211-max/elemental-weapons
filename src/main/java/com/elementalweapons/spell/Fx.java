@@ -94,8 +94,9 @@ public final class Fx {
 
 	/** 엔티티를 날려 보내기 */
 	public static void launch(Entity e, double x, double y, double z) {
-		e.setDeltaMovement(x, y, z);
-		e.hurtMarked = true; // 플레이어에게도 움직임이 전달되도록
+		// 기존 속도를 지우고 push()로 새 속도를 줌 (push가 클라이언트 동기화 표시까지 처리)
+		e.setDeltaMovement(Vec3.ZERO);
+		e.push(x, y, z);
 	}
 
 	/** 플레이어가 바라보는 지점 (막힌 곳이 없으면 range 앞 허공) */
