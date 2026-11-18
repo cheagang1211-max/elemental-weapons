@@ -62,6 +62,25 @@ public class ModItems {
 			p -> new BossSummonItem(p, () -> ModEntities.VOLTRA),
 			new Item.Properties().rarity(Rarity.EPIC).stacksTo(16));
 
+	/** 원소 정수: 혼합 속성/최종 보스 보상. 무기 강화 재료 */
+	public static final Item ELEMENT_ESSENCE = register(key("element_essence"), Item::new,
+			new Item.Properties().rarity(Rarity.EPIC).fireResistant());
+
+	/** 보스별 핵 / 소환석 (아이디 → 아이템). 볼트라는 위의 VOLTRA_CORE / VOLTRA_SUMMON */
+	public static final Map<String, Item> BOSS_CORES = new java.util.LinkedHashMap<>();
+	public static final Map<String, Item> BOSS_SUMMONS = new java.util.LinkedHashMap<>();
+
+	static {
+		for (com.elementalweapons.boss.BossDef def : com.elementalweapons.boss.BossDefs.ALL.values()) {
+			String id = def.id;
+			BOSS_CORES.put(id, register(key(id + "_core"), Item::new,
+					new Item.Properties().rarity(Rarity.EPIC).fireResistant()));
+			BOSS_SUMMONS.put(id, register(key(id + "_summon"),
+					p -> new BossSummonItem(p, () -> ModEntities.BOSSES.get(id)),
+					new Item.Properties().rarity(Rarity.EPIC).stacksTo(16)));
+		}
+	}
+
 	/** 무기 종류별 능력치 (공격력, 공격 속도) */
 	private static Item.Properties stats(WeaponType type, Item.Properties props) {
 		return switch (type) {
@@ -93,7 +112,10 @@ public class ModItems {
 				.title(Component.translatable("itemGroup.elementalweapons.weapons"))
 				.displayItems((params, output) -> {
 					output.accept(VOLTRA_SUMMON);
+					for (Item it : BOSS_SUMMONS.values()) output.accept(it);
 					output.accept(VOLTRA_CORE);
+					for (Item it : BOSS_CORES.values()) output.accept(it);
+					output.accept(ELEMENT_ESSENCE);
 					for (Element element : Element.values()) {
 						for (WeaponType type : WeaponType.values()) {
 							output.accept(get(element, type));

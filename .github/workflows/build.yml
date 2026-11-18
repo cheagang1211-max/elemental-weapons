@@ -51,7 +51,7 @@ jobs:
             sleep 5
           done
           # 자가 테스트(보스 전투 약 35초) 결과 기다리기
-          for i in $(seq 1 30); do
+          for i in $(seq 1 120); do
             if grep -qE "\[SELFTEST\] (PASS|FAIL)" server.log; then break; fi
             sleep 3
           done

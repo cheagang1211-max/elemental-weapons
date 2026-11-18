@@ -8,7 +8,7 @@
 	],
 	"key": {
 		"B": "minecraft:diamond_block",
-		"E": "minecraft:echo_shard",
+		"E": "elementalweapons:nox_core",
 		"S": "minecraft:stick"
 	},
 	"result": {

@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		" X ",
+		"XBX",
+		" X "
+	],
+	"key": {
+		"X": "minecraft:glowstone",
+		"B": "minecraft:diamond_block"
+	},
+	"result": {
+		"id": "elementalweapons:lumiel_summon",
+		"count": 1
+	}
+}

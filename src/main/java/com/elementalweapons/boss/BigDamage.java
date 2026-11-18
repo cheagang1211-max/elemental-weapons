@@ -43,6 +43,12 @@ public final class BigDamage {
 				mult = ELEMENTAL_WEAPON;
 				el = w.element();
 				aff = affinity(el, boss.element());
+				Element second = boss.secondaryElement();
+				if (second != null) {
+					double a2 = affinity(el, second);
+					// 두 속성 중 하나라도 약점이면 약점, 하나라도 같으면 저항
+					aff = (aff > 1 || a2 > 1) ? 2.0 : (aff < 1 || a2 < 1) ? 0.5 : 1.0;
+				}
 			} else {
 				mult = NORMAL_WEAPON;
 			}

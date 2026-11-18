@@ -8,7 +8,7 @@
 	],
 	"key": {
 		"B": "minecraft:diamond_block",
-		"E": "minecraft:glowstone_dust",
+		"E": "elementalweapons:lumiel_core",
 		"S": "minecraft:stick"
 	},
 	"result": {

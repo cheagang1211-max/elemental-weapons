@@ -25,6 +25,24 @@ public final class ModEntities {
 					.noLootTable(),
 			VoltraBoss.createAttributes());
 
+	/** 설정 기반 보스 15종 (아이디 → 엔티티 타입) */
+	public static final java.util.Map<String, EntityType<ConfiguredBoss>> BOSSES = new java.util.LinkedHashMap<>();
+
+	static {
+		for (BossDef def : BossDefs.ALL.values()) {
+			EntityType<ConfiguredBoss> type = register(def.id,
+					EntityType.Builder.<ConfiguredBoss>of(ConfiguredBoss::new, MobCategory.MONSTER)
+							.sized(def.width, def.height)
+							.eyeHeight(def.eyeHeight)
+							.fireImmune()
+							.clientTrackingRange(10)
+							.noLootTable(),
+					ConfiguredBoss.createAttributes());
+			BossDefs.BY_TYPE.put(type, def);
+			BOSSES.put(def.id, type);
+		}
+	}
+
 	private static <T extends LivingEntity> EntityType<T> register(String name, EntityType.Builder<T> builder,
 			AttributeSupplier.Builder attributes) {
 		ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, ElementalWeaponsMod.id(name));

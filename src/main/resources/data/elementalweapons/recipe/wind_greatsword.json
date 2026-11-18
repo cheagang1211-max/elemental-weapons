@@ -8,7 +8,7 @@
 	],
 	"key": {
 		"B": "minecraft:diamond_block",
-		"E": "minecraft:breeze_rod",
+		"E": "elementalweapons:zephyros_core",
 		"S": "minecraft:stick"
 	},
 	"result": {

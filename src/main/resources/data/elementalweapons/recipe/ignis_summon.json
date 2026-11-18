@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		" X ",
+		"XBX",
+		" X "
+	],
+	"key": {
+		"X": "minecraft:blaze_rod",
+		"B": "minecraft:diamond_block"
+	},
+	"result": {
+		"id": "elementalweapons:ignis_summon",
+		"count": 1
+	}
+}

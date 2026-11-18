@@ -1,0 +1,14 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": [
+		"elementalweapons:lumiel_core",
+		"elementalweapons:nox_core",
+		"elementalweapons:crystal_golem_core",
+		"minecraft:diamond_block"
+	],
+	"result": {
+		"id": "elementalweapons:twilight_twins_summon",
+		"count": 1
+	}
+}

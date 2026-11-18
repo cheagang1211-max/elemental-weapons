@@ -8,7 +8,7 @@
 	],
 	"key": {
 		"B": "minecraft:diamond_block",
-		"E": "minecraft:prismarine_crystals",
+		"E": "elementalweapons:marina_core",
 		"S": "minecraft:stick"
 	},
 	"result": {

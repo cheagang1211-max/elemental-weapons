@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		" D ",
+		"DCD",
+		" D "
+	],
+	"key": {
+		"C": "elementalweapons:zephyros_core",
+		"D": "minecraft:diamond"
+	},
+	"result": {
+		"id": "elementalweapons:sphinx_summon",
+		"count": 1
+	}
+}

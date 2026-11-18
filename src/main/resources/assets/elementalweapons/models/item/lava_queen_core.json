@@ -1,0 +1,6 @@
+{
+	"parent": "minecraft:item/generated",
+	"textures": {
+		"layer0": "elementalweapons:item/lava_queen_core"
+	}
+}

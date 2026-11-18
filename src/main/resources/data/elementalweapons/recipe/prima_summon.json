@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": [
+		"elementalweapons:steam_colossus_core",
+		"elementalweapons:storm_wyvern_core",
+		"elementalweapons:twilight_twins_core",
+		"elementalweapons:hydra_core",
+		"elementalweapons:element_essence",
+		"elementalweapons:element_essence",
+		"elementalweapons:element_essence",
+		"elementalweapons:element_essence",
+		"minecraft:nether_star"
+	],
+	"result": {
+		"id": "elementalweapons:prima_summon",
+		"count": 1
+	}
+}

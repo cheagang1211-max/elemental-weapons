@@ -16,5 +16,6 @@ public final class ModModelLayers {
 	public static void initialize() {
 		ModelLayerRegistry.registerModelLayer(VOLTRA, VoltraModel::createBodyLayer);
 		EntityRenderers.register(ModEntities.VOLTRA, VoltraRenderer::new);
+		GeneratedBossModels.register();
 	}
 }

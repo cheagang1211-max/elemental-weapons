@@ -7,7 +7,7 @@
 	],
 	"key": {
 		"D": "minecraft:diamond",
-		"E": "minecraft:echo_shard"
+		"E": "elementalweapons:nox_core"
 	},
 	"result": {
 		"id": "elementalweapons:dark_dagger",

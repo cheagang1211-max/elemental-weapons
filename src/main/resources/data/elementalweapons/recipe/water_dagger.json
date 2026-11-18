@@ -7,7 +7,7 @@
 	],
 	"key": {
 		"D": "minecraft:diamond",
-		"E": "minecraft:prismarine_crystals"
+		"E": "elementalweapons:marina_core"
 	},
 	"result": {
 		"id": "elementalweapons:water_dagger",

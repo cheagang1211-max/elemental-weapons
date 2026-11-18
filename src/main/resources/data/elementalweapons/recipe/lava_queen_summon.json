@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		" D ",
+		"DCD",
+		" D "
+	],
+	"key": {
+		"C": "elementalweapons:ignis_core",
+		"D": "minecraft:diamond"
+	},
+	"result": {
+		"id": "elementalweapons:lava_queen_summon",
+		"count": 1
+	}
+}

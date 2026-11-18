@@ -1,0 +1,14 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": [
+		"elementalweapons:silva_core",
+		"elementalweapons:nox_core",
+		"elementalweapons:lava_queen_core",
+		"minecraft:emerald_block"
+	],
+	"result": {
+		"id": "elementalweapons:hydra_summon",
+		"count": 1
+	}
+}

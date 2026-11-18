@@ -72,6 +72,8 @@ public abstract class ElementalBoss extends Monster {
 
 	// ===== 각 보스가 정하는 것 =====
 	public abstract Element element();
+	/** 두 번째 속성 (혼합 속성 보스). 없으면 null */
+	public Element secondaryElement() { return null; }
 	public abstract long maxBigHealth();
 	public abstract Component bossName();
 	protected abstract BossEvent.BossBarColor barColor();

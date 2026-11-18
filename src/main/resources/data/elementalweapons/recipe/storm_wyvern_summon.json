@@ -1,0 +1,14 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": [
+		"elementalweapons:voltra_core",
+		"elementalweapons:zephyros_core",
+		"elementalweapons:sphinx_core",
+		"minecraft:diamond_block"
+	],
+	"result": {
+		"id": "elementalweapons:storm_wyvern_summon",
+		"count": 1
+	}
+}
