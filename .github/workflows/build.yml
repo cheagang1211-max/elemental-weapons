@@ -43,17 +43,24 @@ jobs:
           mkdir -p run
           echo "eula=true" > run/eula.txt
           printf "online-mode=false\nlevel-type=minecraft\\\\:flat\nspawn-protection=0\n" > run/server.properties
-          ./gradlew runServer --console=plain > server.log 2>&1 &
+          EW_SELFTEST=1 ./gradlew runServer --console=plain > server.log 2>&1 &
           OK=0
           for i in $(seq 1 120); do
             if grep -q "Done (" server.log; then OK=1; break; fi
             if grep -qiE "crash report|Failed to start|Exception in thread \"main\"" server.log; then break; fi
             sleep 5
           done
-          sleep 15
+          # 자가 테스트(보스 전투 약 35초) 결과 기다리기
+          for i in $(seq 1 30); do
+            if grep -qE "\[SELFTEST\] (PASS|FAIL)" server.log; then break; fi
+            sleep 3
+          done
           echo "@@@SERVER_LOG_BEGIN"
-          grep -iE "elementalweapons|error|exception|warn|parse|Done \(" server.log | grep -v "Gradle" | head -150
+          grep -iE "elementalweapons|SELFTEST|error|exception|parse|Done \(" server.log | grep -v "Gradle" | head -150
           echo "@@@SERVER_LOG_END"
           pkill -f runServer || true
           pkill -f "net.fabricmc" || true
           if [ "$OK" != "1" ]; then tail -120 server.log; exit 1; fi
+          if ! grep -q "\[SELFTEST\] PASS" server.log; then
+            echo "보스 자가 테스트 실패"; grep -B2 -A40 -iE "SELFTEST\] FAIL|Exception" server.log | head -120; exit 1
+          fi

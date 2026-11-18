@@ -117,6 +117,17 @@ public abstract class ElementalBoss extends Monster {
 		return true;
 	}
 
+	/** 개발/테스트용: 플레이어 없이 큰 숫자 피해를 직접 줌 */
+	public void debugDamage(ServerLevel level, long amount) {
+		bigHealth = Math.max(0, bigHealth - amount);
+		updateBossBar();
+		checkPhase(level);
+		if (bigHealth <= 0) {
+			this.setHealth(0.0F);
+			this.die(level.damageSources().generic());
+		}
+	}
+
 	private void checkPhase(ServerLevel level) {
 		double ratio = (double) bigHealth / maxBigHealth();
 		int newPhase = ratio > 0.66 ? 1 : ratio > 0.33 ? 2 : 3;
