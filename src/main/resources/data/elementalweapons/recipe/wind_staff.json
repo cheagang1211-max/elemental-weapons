@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "equipment",
+	"pattern": [
+		"DED",
+		" S ",
+		" S "
+	],
+	"key": {
+		"D": "minecraft:diamond",
+		"E": "minecraft:breeze_rod",
+		"S": "minecraft:stick"
+	},
+	"result": {
+		"id": "elementalweapons:wind_staff",
+		"count": 1
+	}
+}

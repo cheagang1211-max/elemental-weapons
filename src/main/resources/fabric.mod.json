@@ -1,0 +1,33 @@
+{
+	"schemaVersion": 1,
+	"id": "elementalweapons",
+	"version": "${version}",
+	"name": "Elemental Weapons",
+	"description": "전기·불·물·풀·바람·어둠·빛 7속성의 단검, 검, 대검, 지팡이 28종과 속성별 대마법을 추가합니다.",
+	"authors": [
+		"Me"
+	],
+	"license": "MIT",
+	"icon": "assets/elementalweapons/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.elementalweapons.ElementalWeaponsMod"
+		],
+		"client": [
+			"com.elementalweapons.client.ElementalWeaponsClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	},
+	"mixins": [
+		{
+			"config": "elementalweapons.client.mixins.json",
+			"environment": "client"
+		}
+	]
+}

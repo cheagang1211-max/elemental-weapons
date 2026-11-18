@@ -1,0 +1,101 @@
+# 패치 배포: GitHub → Actions → "Release (패치 배포)" → Run workflow → 버전 입력
+# 1) 모드 빌드  2) GitHub Release 생성  3) pack/ (자동 업데이트 목록) 갱신 후 커밋
+# → 서버는 다음 start.bat 실행 때, 친구들은 다음 게임 실행 때 자동으로 새 버전을 받습니다.
+name: Release (패치 배포)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "새 버전 번호 (예: 1.0.1) - 이전보다 크게"
+        required: true
+      notes:
+        description: "패치 내용 (선택)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency: release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ inputs.version }}
+      NOTES: ${{ inputs.notes }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: 모드 빌드
+        run: |
+          chmod +x gradlew
+          ./gradlew build -Pmod_version="$VERSION"
+
+      - name: jar 준비
+        id: jar
+        run: |
+          JAR=$(ls build/libs/*.jar | grep -v -- '-sources' | head -n 1)
+          NAME="elementalweapons-$VERSION.jar"
+          cp "$JAR" "$NAME"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "sha512=$(sha512sum "$NAME" | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+
+      - name: GitHub Release 만들기
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ inputs.version }}
+          name: v${{ inputs.version }}
+          body: ${{ inputs.notes }}
+          files: ${{ steps.jar.outputs.name }}
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: packwiz 설치
+        run: go install github.com/packwiz/packwiz@latest
+
+      - name: 자동 업데이트 목록(pack) 갱신
+        working-directory: pack
+        env:
+          JAR_NAME: ${{ steps.jar.outputs.name }}
+          JAR_SHA512: ${{ steps.jar.outputs.sha512 }}
+          REPO: ${{ github.repository }}
+        run: |
+          PW="$(go env GOPATH)/bin/packwiz"
+          mkdir -p mods
+          # Fabric API: 처음 한 번만 Modrinth에서 26.3용을 추가
+          if [ ! -f mods/fabric-api.pw.toml ]; then
+            "$PW" -y modrinth add fabric-api
+          fi
+          # 원소 무기 모드: 방금 만든 릴리스 파일을 가리키도록
+          {
+            echo 'name = "Elemental Weapons"'
+            echo "filename = \"$JAR_NAME\""
+            echo 'side = "both"'
+            echo ''
+            echo '[download]'
+            echo "url = \"https://github.com/$REPO/releases/download/v$VERSION/$JAR_NAME\""
+            echo 'hash-format = "sha512"'
+            echo "hash = \"$JAR_SHA512\""
+          } > mods/elementalweapons.pw.toml
+          sed -i "s/^version = .*/version = \"$VERSION\"/" pack.toml
+          "$PW" refresh
+
+      - name: 변경 사항 커밋
+        run: |
+          sed -i "s/^mod_version=.*/mod_version=$VERSION/" gradle.properties
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pack gradle.properties
+          git commit -m "Release v$VERSION"
+          git push

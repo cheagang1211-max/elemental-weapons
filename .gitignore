@@ -1,0 +1,29 @@
+# Gradle / 빌드 결과
+.gradle/
+build/
+out/
+run/
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 서버 실행 중 생기는 파일 (server/ 폴더를 그대로 써서 서버를 돌려도 올라가지 않도록)
+server/world*/
+server/logs/
+server/libraries/
+server/versions/
+server/mods/
+server/config/
+server/backups/
+server/eula.txt
+server/*.json
+server/.fabric/
+server/packwiz.json

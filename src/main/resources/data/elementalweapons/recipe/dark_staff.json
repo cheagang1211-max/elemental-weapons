@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "equipment",
+	"pattern": [
+		"DED",
+		" S ",
+		" S "
+	],
+	"key": {
+		"D": "minecraft:diamond",
+		"E": "minecraft:echo_shard",
+		"S": "minecraft:stick"
+	},
+	"result": {
+		"id": "elementalweapons:dark_staff",
+		"count": 1
+	}
+}

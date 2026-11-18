@@ -1,0 +1,123 @@
+# 🌈 원소 무기 (Elemental Weapons) 모드
+
+Minecraft Java Edition **26.3** + **Fabric** 용 모드입니다.
+**7속성 × 4무기 = 28종**의 무기를 추가합니다. 크리에이티브 인벤토리의 **"원소 무기"** 탭에 모두 있어요.
+모든 텍스처는 32×32 고해상도 + 속성별 애니메이션(전기 스파크, 불씨, 물방울, 꽃잎, 바람, 어둠 기운, 빛 반짝임)입니다.
+
+## 속성
+
+| 속성 | 아이디 | 제작 재료 |
+|---|---|---|
+| ⚡ 전기 | electric | 피뢰침 |
+| 🔥 불 | fire | 블레이즈 가루 |
+| 💧 물 | water | 프리즈머린 수정 |
+| 🌸 풀 | grass | 분홍 꽃잎 |
+| 🌪️ 바람 | wind | 브리즈 막대 |
+| 🦇 어둠 | dark | 메아리 조각 |
+| ✨ 빛 | light | 발광석 가루 |
+
+아이템 이름은 `속성의 무기` (예: 불의 대검), 아이디는 `elementalweapons:속성_무기` (예: `elementalweapons:fire_greatsword`) 입니다.
+명령어로 받기: `/give @s elementalweapons:light_staff`
+
+## 무기 종류와 우클릭 능력
+
+| 무기 | 근접 | 우클릭 | 쿨다운 |
+|---|---|---|---|
+| 🗡️ 단검 | 약함, 매우 빠름 | 바라보는 방향으로 돌진 (속성 파티클) | 1.5초 |
+| ⚔️ 검 | 균형형 | 바라보는 곳(30블록)에 속성 공격 1회 | 2초 |
+| 🔱 대검 | 매우 강함, 느림 (손에 크게 보임) | 내 주위 6곳에 속성 공격 | 6초 |
+| 🪄 지팡이 | 근접용 아님 | **속성별 대마법** (아래) | 속성마다 다름 |
+
+검/대검의 속성 공격: 전기=직접 그린 벼락, 불=작은 화염 폭발, 물=물보라 밀치기, 풀=꽃잎 지속피해, 바람=돌풍 띄우기, 어둠=어둠 폭발+시듦, 빛=하늘의 빛기둥
+
+## 🪄 지팡이 대마법
+
+| 지팡이 | 연출 | 쿨다운 |
+|---|---|---|
+| ⚡ 전기 | 하늘에서 **직접 그린 지그재그 벼락**(가지까지 갈라짐)이 주변 적 최대 6마리에게 차례로 내리꽂힘. 적이 없으면 바라보는 곳에. 기본 번개 엔티티는 쓰지 않음 | 5초 |
+| 🔥 불 | 내 주변에 **불꽃 소용돌이**가 2.5초간 점점 커지며 적을 태우다가, 마지막에 **7연쇄 폭발** | 8초 |
+| 💧 물 | 바라보는 지점 하늘 위로 **사방에서 물줄기가 모여 거대한 물구슬**이 되고, 다 모이면 **떨어져 터지며** 큰 피해 + 밀쳐내기 + 물결 | 7초 |
+| 🌸 풀 | 멀리서 **꽃잎 무리가 날아와** 주변 적 최대 8마리를 감싸고 맴돌며 **8초간 지속 피해** (주변에 적이 없으면 발동 안 함) | 8초 |
+| 🌪️ 바람 | 나를 중심으로 **거대한 광풍 회오리**가 일어나 반경 11블록 적을 **두 번에 걸쳐 하늘로 띄움** (떨어질 때 낙하 피해) | 5초 |
+| 🦇 어둠 | **박쥐 10마리가 소환**되고 어둠의 나선이 나를 감쌈. 6초 동안 박쥐들에게서 **어둠의 화살**이 적에게 날아가 피해 + 시듦. 끝나면 박쥐는 연기로 사라짐 | 10초 |
+| ✨ 빛 | 하늘 높은 곳에서 **황금빛 천국의 문이 천천히 내려와** 빛을 터뜨리며 자리잡고 빛기둥이 쏟아짐 → 문 안에서 **날개 달린 대천사**가 내려와 6.5초간 **빛의 창**을 던져 적을 공격 → 대천사가 문으로 돌아가고 문이 닫힘 | 15초 |
+
+※ 지팡이 마법은 **적대적 몹(좀비, 스켈레톤 등)만** 노립니다. 동물, 주민, 다른 플레이어는 공격하지 않아요. (단, 불 지팡이의 폭발은 근처 모든 것에 피해를 줍니다. 시전자 본인과 블록은 안전.)
+※ 대천사와 천국의 문은 수백 개의 파티클로 그린 형체입니다.
+
+### 🎥 시전 카메라 연출
+- **모든 지팡이**: 시전하면 자동으로 **삼인칭(뒤) 시점**으로 바뀌고, 마법이 끝나면 원래 쓰던 시점으로 돌아옵니다.
+- **빛 지팡이**: 천국의 문이 내려오고 대천사가 강림할 때까지(약 3초) **시선이 문에 고정**됩니다. 이 동안은 마우스로 시점을 돌릴 수 없어요. 이동(WASD)은 됩니다.
+- 삼인칭 유지 시간과 고정 시간: `src/main/java/com/elementalweapons/client/CastCamera.java`
+
+## 제작법 (작업대) — `E` = 속성 재료
+
+```
+단검            검            대검                 지팡이
+[ ][다이아]     [ E ]         [ ][다이아블록][ ]    [다이아][ E ][다이아]
+[E][ ]          [다이아블록]  [ ][다이아블록][ ]    [ ][막대기][ ]
+                [막대기]      [E][막대기][E]        [ ][막대기][ ]
+```
+
+---
+
+## 1. 모드 빌드하기 (.jar 만들기)
+
+### 준비물
+- **JDK 25** (예: https://adoptium.net 에서 Temurin 25)
+- **IntelliJ IDEA 2025.3 이상** (무료 Community 버전 OK)
+
+### IntelliJ로 빌드
+1. `File → Open` → 이 폴더(`elemental-weapons-mod`) 선택
+2. 처음 열면 Gradle이 마인크래프트와 라이브러리를 다운로드 (몇 분)
+3. `File → Settings → Build Tools → Gradle` 에서 **Gradle JVM** 을 JDK 25로
+4. 오른쪽 Gradle 탭 → `Tasks → build → build`
+5. 결과물: `build/libs/elementalweapons-1.0.0.jar`
+
+명령어: `gradlew.bat build` (Windows) / `./gradlew build` (Mac/Linux)
+
+### 바로 테스트
+Gradle 탭 → `Tasks → fabric → runClient` → 모드가 들어간 게임이 바로 켜집니다.
+크리에이티브 모드에서 "원소 무기" 탭을 열고, 좀비 스폰알을 몇 개 뿌린 뒤 지팡이를 써 보세요.
+
+## 2. 게임에 설치하기
+1. https://fabricmc.net/use/installer/ 에서 Fabric Loader 설치 (Minecraft 26.3)
+2. https://modrinth.com/mod/fabric-api 에서 26.3용 Fabric API 다운로드
+3. 두 .jar를 `mods` 폴더에 넣기 (Windows: `%appdata%\.minecraft\mods`)
+4. 런처에서 **fabric-loader-26.3** 프로필로 실행
+
+## 3. 수정하기
+
+| 바꾸고 싶은 것 | 위치 |
+|---|---|
+| 공격력, 내구도 | `src/main/java/com/elementalweapons/item/ModItems.java` |
+| 지팡이 쿨다운 | `src/main/java/com/elementalweapons/item/Element.java` |
+| 단검/검/대검 쿨다운 | `src/main/java/com/elementalweapons/item/ElementalWeaponItem.java` |
+| 지팡이 마법 (피해량, 범위, 연출) | `src/main/java/com/elementalweapons/spell/` 의 각 파일 (맨 위 상수) |
+| 이름 | `src/main/resources/assets/elementalweapons/lang/ko_kr.json` |
+| 텍스처 | `src/main/resources/assets/elementalweapons/textures/item/` (32×32 8프레임 세로 이미지) |
+| 제작법 | `src/main/resources/data/elementalweapons/recipe/` |
+
+### 코드 구조
+```
+item/   Element(속성), WeaponType(무기 종류), ElementalWeaponItem(우클릭 처리), ModItems(등록)
+spell/  Spell(여러 틱짜리 마법 기본형), SpellManager(매 틱 실행), Fx(파티클/소리/피해 도구),
+        ElementEffects(속성 → 효과 연결), 그리고 마법 7종:
+        ElectricStormSpell, FireStormSpell, WaterOrbSpell, PetalSpell,
+        GaleSpell, DarkSwarmSpell, HeavenGateSpell
+client/ ElementalWeaponsClient(화면 쪽 초기화), CastCamera(시전 카메라 연출)
+mixin/client/ EntityTurnMixin(빛 지팡이 시점 고정 중 마우스 회전 막기)
+```
+
+## 주의
+- 이 프로젝트는 빌드 테스트 전 상태입니다. 빌드 오류가 나면 오류 메시지를 그대로 알려주세요.
+- 빛/어둠 지팡이는 파티클이 많아서, 사양이 낮은 PC에서는 설정 → 파티클을 "모두"로 해야 제대로 보여요.
+
+---
+
+## 🔄 자동 업데이트 (GitHub)
+이 저장소는 **패치하면 서버와 친구들에게 자동 적용**되도록 구성되어 있어요.
+- `.github/workflows/build.yml` : 올릴 때마다 빌드 검사
+- `.github/workflows/release.yml` : Actions에서 버전만 입력하면 빌드 → Release → `pack/` 갱신
+- `pack/` : packwiz 자동 업데이트 목록 (직접 수정할 필요 없음)
+- `server/` : 서버 실행 파일 + **서버/친구 설정 가이드** → `server/README_서버_가이드.md`

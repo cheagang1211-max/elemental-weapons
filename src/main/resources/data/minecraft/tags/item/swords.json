@@ -1,0 +1,26 @@
+{
+	"replace": false,
+	"values": [
+		"elementalweapons:electric_dagger",
+		"elementalweapons:electric_sword",
+		"elementalweapons:electric_greatsword",
+		"elementalweapons:fire_dagger",
+		"elementalweapons:fire_sword",
+		"elementalweapons:fire_greatsword",
+		"elementalweapons:water_dagger",
+		"elementalweapons:water_sword",
+		"elementalweapons:water_greatsword",
+		"elementalweapons:grass_dagger",
+		"elementalweapons:grass_sword",
+		"elementalweapons:grass_greatsword",
+		"elementalweapons:wind_dagger",
+		"elementalweapons:wind_sword",
+		"elementalweapons:wind_greatsword",
+		"elementalweapons:dark_dagger",
+		"elementalweapons:dark_sword",
+		"elementalweapons:dark_greatsword",
+		"elementalweapons:light_dagger",
+		"elementalweapons:light_sword",
+		"elementalweapons:light_greatsword"
+	]
+}

@@ -1,0 +1,16 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "equipment",
+	"pattern": [
+		" D",
+		"E "
+	],
+	"key": {
+		"D": "minecraft:diamond",
+		"E": "minecraft:blaze_powder"
+	},
+	"result": {
+		"id": "elementalweapons:fire_dagger",
+		"count": 1
+	}
+}

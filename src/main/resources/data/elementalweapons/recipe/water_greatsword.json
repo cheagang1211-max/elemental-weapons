@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "equipment",
+	"pattern": [
+		" B ",
+		" B ",
+		"ESE"
+	],
+	"key": {
+		"B": "minecraft:diamond_block",
+		"E": "minecraft:prismarine_crystals",
+		"S": "minecraft:stick"
+	},
+	"result": {
+		"id": "elementalweapons:water_greatsword",
+		"count": 1
+	}
+}
