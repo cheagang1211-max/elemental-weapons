@@ -1,0 +1,8 @@
+{
+	"parent": "minecraft:block/cube_bottom_top",
+	"textures": {
+		"top": "elementalweapons:block/storm_grass_top",
+		"side": "elementalweapons:block/storm_grass_side",
+		"bottom": "elementalweapons:block/elemental_dirt"
+	}
+}

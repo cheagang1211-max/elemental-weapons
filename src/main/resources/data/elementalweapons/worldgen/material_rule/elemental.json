@@ -1,0 +1,250 @@
+{
+	"type": "minecraft:sequence",
+	"sequence": [
+		"minecraft:bedrock_floor",
+		{
+			"type": "minecraft:condition",
+			"if_true": {
+				"type": "minecraft:above_preliminary_surface"
+			},
+			"then_run": {
+				"type": "minecraft:sequence",
+				"sequence": [
+					{
+						"type": "minecraft:condition",
+						"if_true": "minecraft:on_floor",
+						"then_run": {
+							"type": "minecraft:sequence",
+							"sequence": [
+								{
+									"type": "minecraft:condition",
+									"if_true": {
+										"type": "minecraft:biome",
+										"biome_is": "elementalweapons:thunder_plateau"
+									},
+									"then_run": {
+										"type": "minecraft:sequence",
+										"sequence": [
+											{
+												"type": "minecraft:condition",
+												"if_true": "minecraft:not_underwater",
+												"then_run": {
+													"type": "minecraft:block",
+													"result_state": "elementalweapons:storm_grass"
+												}
+											},
+											{
+												"type": "minecraft:block",
+												"result_state": "elementalweapons:elemental_sand"
+											}
+										]
+									}
+								},
+								{
+									"type": "minecraft:condition",
+									"if_true": {
+										"type": "minecraft:biome",
+										"biome_is": "elementalweapons:volcanic_plains"
+									},
+									"then_run": {
+										"type": "minecraft:sequence",
+										"sequence": [
+											{
+												"type": "minecraft:condition",
+												"if_true": "minecraft:not_underwater",
+												"then_run": {
+													"type": "minecraft:block",
+													"result_state": "elementalweapons:ember_soil"
+												}
+											},
+											{
+												"type": "minecraft:block",
+												"result_state": "elementalweapons:elemental_sand"
+											}
+										]
+									}
+								},
+								{
+									"type": "minecraft:condition",
+									"if_true": {
+										"type": "minecraft:biome",
+										"biome_is": "elementalweapons:azure_forest"
+									},
+									"then_run": {
+										"type": "minecraft:sequence",
+										"sequence": [
+											{
+												"type": "minecraft:condition",
+												"if_true": "minecraft:not_underwater",
+												"then_run": {
+													"type": "minecraft:block",
+													"result_state": "elementalweapons:azure_grass"
+												}
+											},
+											{
+												"type": "minecraft:block",
+												"result_state": "elementalweapons:elemental_sand"
+											}
+										]
+									}
+								},
+								{
+									"type": "minecraft:condition",
+									"if_true": {
+										"type": "minecraft:biome",
+										"biome_is": "elementalweapons:blossom_forest"
+									},
+									"then_run": {
+										"type": "minecraft:sequence",
+										"sequence": [
+											{
+												"type": "minecraft:condition",
+												"if_true": "minecraft:not_underwater",
+												"then_run": {
+													"type": "minecraft:block",
+													"result_state": "elementalweapons:blossom_grass"
+												}
+											},
+											{
+												"type": "minecraft:block",
+												"result_state": "elementalweapons:elemental_sand"
+											}
+										]
+									}
+								},
+								{
+									"type": "minecraft:condition",
+									"if_true": {
+										"type": "minecraft:biome",
+										"biome_is": "elementalweapons:gale_highlands"
+									},
+									"then_run": {
+										"type": "minecraft:sequence",
+										"sequence": [
+											{
+												"type": "minecraft:condition",
+												"if_true": "minecraft:not_underwater",
+												"then_run": {
+													"type": "minecraft:block",
+													"result_state": "elementalweapons:gale_grass"
+												}
+											},
+											{
+												"type": "minecraft:block",
+												"result_state": "elementalweapons:elemental_sand"
+											}
+										]
+									}
+								},
+								{
+									"type": "minecraft:condition",
+									"if_true": {
+										"type": "minecraft:biome",
+										"biome_is": "elementalweapons:shadow_woods"
+									},
+									"then_run": {
+										"type": "minecraft:sequence",
+										"sequence": [
+											{
+												"type": "minecraft:condition",
+												"if_true": "minecraft:not_underwater",
+												"then_run": {
+													"type": "minecraft:block",
+													"result_state": "elementalweapons:shadow_grass"
+												}
+											},
+											{
+												"type": "minecraft:block",
+												"result_state": "elementalweapons:elemental_sand"
+											}
+										]
+									}
+								},
+								{
+									"type": "minecraft:condition",
+									"if_true": {
+										"type": "minecraft:biome",
+										"biome_is": "elementalweapons:radiant_plains"
+									},
+									"then_run": {
+										"type": "minecraft:sequence",
+										"sequence": [
+											{
+												"type": "minecraft:condition",
+												"if_true": "minecraft:not_underwater",
+												"then_run": {
+													"type": "minecraft:block",
+													"result_state": "elementalweapons:radiant_grass"
+												}
+											},
+											{
+												"type": "minecraft:block",
+												"result_state": "elementalweapons:elemental_sand"
+											}
+										]
+									}
+								},
+								{
+									"type": "minecraft:condition",
+									"if_true": {
+										"type": "minecraft:biome",
+										"biome_is": "elementalweapons:elemental_ocean"
+									},
+									"then_run": {
+										"type": "minecraft:block",
+										"result_state": "elementalweapons:elemental_sand"
+									}
+								},
+								{
+									"type": "minecraft:block",
+									"result_state": "elementalweapons:elemental_dirt"
+								}
+							]
+						}
+					},
+					{
+						"type": "minecraft:condition",
+						"if_true": "minecraft:under_floor",
+						"then_run": {
+							"type": "minecraft:sequence",
+							"sequence": [
+								{
+									"type": "minecraft:condition",
+									"if_true": {
+										"type": "minecraft:biome",
+										"biome_is": "elementalweapons:elemental_ocean"
+									},
+									"then_run": {
+										"type": "minecraft:block",
+										"result_state": "elementalweapons:elemental_sand"
+									}
+								},
+								{
+									"type": "minecraft:block",
+									"result_state": "elementalweapons:elemental_dirt"
+								}
+							]
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "minecraft:condition",
+			"if_true": {
+				"type": "minecraft:vertical_gradient",
+				"false_at_and_above": {
+					"absolute": 8
+				},
+				"random_name": "elementalweapons:abyss",
+				"true_at_and_below": {
+					"absolute": 0
+				}
+			},
+			"then_run": {
+				"type": "minecraft:block",
+				"result_state": "elementalweapons:abyss_stone"
+			}
+		}
+	]
+}

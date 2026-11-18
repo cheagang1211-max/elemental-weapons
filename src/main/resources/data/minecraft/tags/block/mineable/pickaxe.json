@@ -1,0 +1,16 @@
+{
+	"replace": false,
+	"values": [
+		"elementalweapons:aether_stone",
+		"elementalweapons:abyss_stone",
+		"elementalweapons:storm_ore",
+		"elementalweapons:ember_ore",
+		"elementalweapons:tide_ore",
+		"elementalweapons:bloom_ore",
+		"elementalweapons:gale_ore",
+		"elementalweapons:umbral_ore",
+		"elementalweapons:radiant_ore",
+		"elementalweapons:aether_ore",
+		"elementalweapons:orichalcum_ore"
+	]
+}

@@ -1,0 +1,7 @@
+{
+	"parent": "minecraft:block/cube_column",
+	"textures": {
+		"end": "elementalweapons:block/storm_log_top",
+		"side": "elementalweapons:block/storm_log"
+	}
+}

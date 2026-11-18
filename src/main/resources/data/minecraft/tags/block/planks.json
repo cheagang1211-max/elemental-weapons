@@ -1,0 +1,12 @@
+{
+	"replace": false,
+	"values": [
+		"elementalweapons:storm_planks",
+		"elementalweapons:ember_planks",
+		"elementalweapons:azure_planks",
+		"elementalweapons:blossom_planks",
+		"elementalweapons:gale_planks",
+		"elementalweapons:shadow_planks",
+		"elementalweapons:radiant_planks"
+	]
+}

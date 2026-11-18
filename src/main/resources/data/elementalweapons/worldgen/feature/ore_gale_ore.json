@@ -1,0 +1,21 @@
+{
+	"type": "minecraft:ore",
+	"discard_chance_on_air_exposure": 0.0,
+	"size": 6,
+	"targets": [
+		{
+			"state": "elementalweapons:gale_ore",
+			"target": {
+				"predicate_type": "minecraft:block_match",
+				"block": "elementalweapons:aether_stone"
+			}
+		},
+		{
+			"state": "elementalweapons:gale_ore",
+			"target": {
+				"predicate_type": "minecraft:block_match",
+				"block": "elementalweapons:abyss_stone"
+			}
+		}
+	]
+}

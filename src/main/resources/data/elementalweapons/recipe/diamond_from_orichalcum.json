@@ -1,0 +1,11 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": [
+		"elementalweapons:orichalcum_ingot"
+	],
+	"result": {
+		"id": "minecraft:diamond",
+		"count": 1
+	}
+}

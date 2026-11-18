@@ -54,6 +54,7 @@ public final class DevSelfTest {
 			if (tick == 5) {
 				for (int cx = -4; cx <= 4; cx++) for (int cz = -4; cz <= 4; cz++) level.setChunkForced(cx, cz, true);
 			}
+			if (tick == 15) checkWorld(level);
 			int idx = (tick - 20) / PER_BOSS;
 			int k = (tick - 20) % PER_BOSS;
 			if (tick >= 20 && idx >= TYPES.size()) {
@@ -70,6 +71,22 @@ public final class DevSelfTest {
 			return;
 		}
 		tick++;
+	}
+
+	/** 지형 생성 확인: 스폰 주변 블록 중 우리 모드 블록 개수 */
+	private static void checkWorld(ServerLevel level) {
+		java.util.Map<String, Integer> counts = new java.util.TreeMap<>();
+		net.minecraft.core.BlockPos.MutableBlockPos pos = new net.minecraft.core.BlockPos.MutableBlockPos();
+		for (int x = -64; x < 64; x++) for (int z = -64; z < 64; z++) for (int y = -64; y < 200; y++) {
+			pos.set(x, y, z);
+			net.minecraft.world.level.block.Block b = level.getBlockState(pos).getBlock();
+			net.minecraft.resources.Identifier id = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(b);
+			if (id.getNamespace().equals(ElementalWeaponsMod.MOD_ID)) counts.merge(id.getPath(), 1, Integer::sum);
+		}
+		String biome = level.getBiome(new net.minecraft.core.BlockPos(0, 64, 0)).getRegisteredName();
+		boolean ok = counts.getOrDefault("aether_stone", 0) > 100000 && counts.keySet().stream().anyMatch(k -> k.endsWith("_ore"));
+		if (!ok) failures++;
+		ElementalWeaponsMod.LOGGER.info("[SELFTEST] {} WORLD 스폰 바이옴={} 블록={}", ok ? "OK  " : "FAIL", biome, counts);
 	}
 
 	private static void step(ServerLevel level, EntityType<? extends ElementalBoss> type, int k) {

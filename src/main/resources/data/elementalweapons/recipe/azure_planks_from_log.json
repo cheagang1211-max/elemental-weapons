@@ -1,0 +1,12 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "building",
+	"group": "planks",
+	"ingredients": [
+		"elementalweapons:azure_log"
+	],
+	"result": {
+		"id": "elementalweapons:azure_planks",
+		"count": 4
+	}
+}

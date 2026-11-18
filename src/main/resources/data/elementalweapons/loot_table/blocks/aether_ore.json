@@ -1,0 +1,24 @@
+{
+	"type": "minecraft:block",
+	"pools": [
+		{
+			"rolls": 1,
+			"entries": [
+				{
+					"type": "minecraft:alternatives",
+					"children": [
+						{
+							"type": "minecraft:item",
+							"condition": "minecraft:tool/can_silk_touch",
+							"name": "elementalweapons:aether_ore"
+						},
+						{
+							"type": "minecraft:item",
+							"name": "elementalweapons:raw_aether"
+						}
+					]
+				}
+			]
+		}
+	]
+}

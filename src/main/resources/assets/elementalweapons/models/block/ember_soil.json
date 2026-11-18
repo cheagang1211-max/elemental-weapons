@@ -1,0 +1,8 @@
+{
+	"parent": "minecraft:block/cube_bottom_top",
+	"textures": {
+		"top": "elementalweapons:block/ember_soil_top",
+		"side": "elementalweapons:block/ember_soil_side",
+		"bottom": "elementalweapons:block/elemental_dirt"
+	}
+}

@@ -1,0 +1,12 @@
+{
+	"replace": false,
+	"values": [
+		"elementalweapons:storm_leaves",
+		"elementalweapons:ember_leaves",
+		"elementalweapons:azure_leaves",
+		"elementalweapons:blossom_leaves",
+		"elementalweapons:gale_leaves",
+		"elementalweapons:shadow_leaves",
+		"elementalweapons:radiant_leaves"
+	]
+}

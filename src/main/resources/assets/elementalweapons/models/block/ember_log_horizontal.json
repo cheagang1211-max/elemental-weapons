@@ -1,0 +1,7 @@
+{
+	"parent": "minecraft:block/cube_column_horizontal",
+	"textures": {
+		"end": "elementalweapons:block/ember_log_top",
+		"side": "elementalweapons:block/ember_log"
+	}
+}

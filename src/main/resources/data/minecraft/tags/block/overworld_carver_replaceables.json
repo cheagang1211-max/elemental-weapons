@@ -1,0 +1,16 @@
+{
+	"replace": false,
+	"values": [
+		"elementalweapons:aether_stone",
+		"elementalweapons:abyss_stone",
+		"elementalweapons:elemental_dirt",
+		"elementalweapons:elemental_sand",
+		"elementalweapons:storm_grass",
+		"elementalweapons:ember_soil",
+		"elementalweapons:azure_grass",
+		"elementalweapons:blossom_grass",
+		"elementalweapons:gale_grass",
+		"elementalweapons:shadow_grass",
+		"elementalweapons:radiant_grass"
+	]
+}

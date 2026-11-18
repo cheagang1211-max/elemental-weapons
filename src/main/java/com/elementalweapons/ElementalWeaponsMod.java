@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.elementalweapons.boss.ModEntities;
+import com.elementalweapons.world.ModBlocks;
 import com.elementalweapons.item.ModItems;
 import com.elementalweapons.spell.SpellManager;
 
@@ -15,6 +16,7 @@ public class ElementalWeaponsMod implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ModBlocks.initialize();
 		ModEntities.initialize();
 		ModItems.initialize();
 		SpellManager.initialize();

@@ -1,0 +1,12 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "building",
+	"group": "planks",
+	"ingredients": [
+		"elementalweapons:ember_log"
+	],
+	"result": {
+		"id": "elementalweapons:ember_planks",
+		"count": 4
+	}
+}

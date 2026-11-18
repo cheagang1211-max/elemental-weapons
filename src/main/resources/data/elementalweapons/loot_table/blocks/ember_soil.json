@@ -1,0 +1,24 @@
+{
+	"type": "minecraft:block",
+	"pools": [
+		{
+			"rolls": 1,
+			"entries": [
+				{
+					"type": "minecraft:alternatives",
+					"children": [
+						{
+							"type": "minecraft:item",
+							"condition": "minecraft:tool/can_silk_touch",
+							"name": "elementalweapons:ember_soil"
+						},
+						{
+							"type": "minecraft:item",
+							"name": "elementalweapons:elemental_dirt"
+						}
+					]
+				}
+			]
+		}
+	]
+}

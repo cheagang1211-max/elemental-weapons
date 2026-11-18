@@ -1,0 +1,12 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "building",
+	"group": "planks",
+	"ingredients": [
+		"elementalweapons:gale_log"
+	],
+	"result": {
+		"id": "elementalweapons:gale_planks",
+		"count": 4
+	}
+}

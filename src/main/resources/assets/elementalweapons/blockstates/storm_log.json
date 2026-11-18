@@ -1,0 +1,16 @@
+{
+	"variants": {
+		"axis=y": {
+			"model": "elementalweapons:block/storm_log"
+		},
+		"axis=z": {
+			"model": "elementalweapons:block/storm_log_horizontal",
+			"x": 90
+		},
+		"axis=x": {
+			"model": "elementalweapons:block/storm_log_horizontal",
+			"x": 90,
+			"y": 90
+		}
+	}
+}

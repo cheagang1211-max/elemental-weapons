@@ -1,0 +1,10 @@
+{
+	"type": "minecraft:smelting",
+	"category": "misc",
+	"ingredient": "elementalweapons:orichalcum_chunk",
+	"result": {
+		"id": "elementalweapons:orichalcum_ingot"
+	},
+	"experience": 0.8,
+	"cookingtime": 200
+}

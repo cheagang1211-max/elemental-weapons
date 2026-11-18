@@ -1,0 +1,19 @@
+{
+	"replace": false,
+	"values": [
+		"elementalweapons:storm_log",
+		"elementalweapons:storm_planks",
+		"elementalweapons:ember_log",
+		"elementalweapons:ember_planks",
+		"elementalweapons:azure_log",
+		"elementalweapons:azure_planks",
+		"elementalweapons:blossom_log",
+		"elementalweapons:blossom_planks",
+		"elementalweapons:gale_log",
+		"elementalweapons:gale_planks",
+		"elementalweapons:shadow_log",
+		"elementalweapons:shadow_planks",
+		"elementalweapons:radiant_log",
+		"elementalweapons:radiant_planks"
+	]
+}

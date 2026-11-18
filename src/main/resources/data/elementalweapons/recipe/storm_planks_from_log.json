@@ -1,0 +1,12 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "building",
+	"group": "planks",
+	"ingredients": [
+		"elementalweapons:storm_log"
+	],
+	"result": {
+		"id": "elementalweapons:storm_planks",
+		"count": 4
+	}
+}

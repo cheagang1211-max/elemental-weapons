@@ -1,0 +1,12 @@
+{
+	"replace": false,
+	"values": [
+		"elementalweapons:storm_log",
+		"elementalweapons:ember_log",
+		"elementalweapons:azure_log",
+		"elementalweapons:blossom_log",
+		"elementalweapons:gale_log",
+		"elementalweapons:shadow_log",
+		"elementalweapons:radiant_log"
+	]
+}
