@@ -39,7 +39,8 @@ public final class DevSelfTest {
 		ServerLevel level = server.overworld();
 		try {
 			if (tick == 5) {
-				level.setChunkForced(0, 0, true); // 플레이어 없이도 몹이 움직이도록
+				// 플레이어 없이도 몹이 움직이도록 주변 7x7 청크 강제 로딩
+				for (int cx = -3; cx <= 3; cx++) for (int cz = -3; cz <= 3; cz++) level.setChunkForced(cx, cz, true);
 			}
 			if (tick == 20) {
 				int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING, 0, 0);
