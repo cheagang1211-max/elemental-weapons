@@ -12,6 +12,10 @@ on:
         description: "클래스 이름 검색어 (선택, 정규식, 예: BossEvent|RenderState)"
         required: false
         default: ""
+      files:
+        description: "마인크래프트 jar 안의 데이터 파일 경로들 (공백 구분, 선택)"
+        required: false
+        default: ""
 
 jobs:
   inspect:
@@ -31,6 +35,7 @@ jobs:
         env:
           CLASSES: ${{ inputs.classes }}
           PATTERN: ${{ inputs.grep }}
+          FILES: ${{ inputs.files }}
         run: |
           CP=$(find ~/.gradle .gradle -name "*.jar" 2>/dev/null | grep -iE "minecraft|fabric" | tr '\n' ':')
           mkdir -p out
@@ -38,6 +43,18 @@ jobs:
             echo "===== $c" >> out/api.txt
             javap -p -cp "$CP" "$c" >> out/api.txt 2>&1 || echo "NOT FOUND: $c" >> out/api.txt
           done
+          if [ -n "$FILES" ]; then
+            MCJ=""
+            for j in $(find ~/.gradle .gradle -name "*.jar" 2>/dev/null | grep -i minecraft); do
+              if unzip -l "$j" 2>/dev/null | grep -q "data/minecraft/worldgen/noise_settings/overworld.json"; then MCJ="$j"; break; fi
+            done
+            echo "data jar: $MCJ"
+            for f in $FILES; do
+              echo "##### FILE $f" >> out/files.txt
+              unzip -p "$MCJ" "$f" >> out/files.txt 2>&1 || echo "MISSING $f" >> out/files.txt
+              echo "" >> out/files.txt
+            done
+          fi
           if [ -n "$PATTERN" ]; then
             for j in $(find ~/.gradle .gradle -name "*.jar" 2>/dev/null | grep -iE "minecraft|fabric"); do
               unzip -l "$j" 2>/dev/null | awk '{print $4}' | grep '\.class$' | grep -E "$PATTERN" | sed "s|^|$j :: |"
@@ -46,4 +63,5 @@ jobs:
       - name: 결과 출력 (로그)
         run: |
           echo "@@@API_BEGIN"; cat out/api.txt; echo "@@@API_END"
+          if [ -f out/files.txt ]; then echo "@@@FILES_BEGIN"; cat out/files.txt; echo "@@@FILES_END"; fi
           if [ -f out/classes.txt ]; then echo "@@@CLS_BEGIN"; sed 's|.* :: ||' out/classes.txt; echo "@@@CLS_END"; fi
