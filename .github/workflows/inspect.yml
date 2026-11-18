@@ -43,7 +43,7 @@ jobs:
               unzip -l "$j" 2>/dev/null | awk '{print $4}' | grep '\.class$' | grep -E "$PATTERN" | sed "s|^|$j :: |"
             done | sort -u > out/classes.txt
           fi
-      - uses: actions/upload-artifact@v4
-        with:
-          name: api
-          path: out/
+      - name: 결과 출력 (로그)
+        run: |
+          echo "@@@API_BEGIN"; cat out/api.txt; echo "@@@API_END"
+          if [ -f out/classes.txt ]; then echo "@@@CLS_BEGIN"; sed 's|.* :: ||' out/classes.txt; echo "@@@CLS_END"; fi
