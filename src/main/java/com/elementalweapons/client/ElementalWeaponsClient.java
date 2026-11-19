@@ -13,5 +13,7 @@ public class ElementalWeaponsClient implements ClientModInitializer {
 		ElementalWeaponItem.clientCastHook = CastCamera::start;
 		ClientTickEvents.END_CLIENT_TICK.register(CastCamera::tick);
 		ModModelLayers.initialize();
+		com.elementalweapons.client.growth.GrowthClient.initialize();
+		ShotHarness.initialize();
 	}
 }

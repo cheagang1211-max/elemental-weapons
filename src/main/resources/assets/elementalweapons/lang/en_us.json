@@ -169,5 +169,6 @@
 	"item.elementalweapons.orichalcum_helmet": "Orichalcum Helmet",
 	"item.elementalweapons.orichalcum_chestplate": "Orichalcum Chestplate",
 	"item.elementalweapons.orichalcum_leggings": "Orichalcum Leggings",
-	"item.elementalweapons.orichalcum_boots": "Orichalcum Boots"
+	"item.elementalweapons.orichalcum_boots": "Orichalcum Boots",
+	"key.elementalweapons.growth": "Open Growth Screen"
 }

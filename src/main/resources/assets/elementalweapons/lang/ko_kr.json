@@ -169,5 +169,6 @@
 	"item.elementalweapons.orichalcum_helmet": "오리하르콘 투구",
 	"item.elementalweapons.orichalcum_chestplate": "오리하르콘 흉갑",
 	"item.elementalweapons.orichalcum_leggings": "오리하르콘 각반",
-	"item.elementalweapons.orichalcum_boots": "오리하르콘 부츠"
+	"item.elementalweapons.orichalcum_boots": "오리하르콘 부츠",
+	"key.elementalweapons.growth": "성장 창 열기"
 }

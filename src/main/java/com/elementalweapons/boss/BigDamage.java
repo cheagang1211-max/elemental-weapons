@@ -41,6 +41,8 @@ public final class BigDamage {
 			ItemStack held = p.getMainHandItem();
 			if (held.getItem() instanceof ElementalWeaponItem w) {
 				mult = ELEMENTAL_WEAPON * com.elementalweapons.item.Enhancement.multiplier(held);
+				com.elementalweapons.growth.Growth g = com.elementalweapons.growth.ModGrowth.get(p);
+				mult *= w.type() == com.elementalweapons.item.WeaponType.STAFF ? g.staffBossBonus() : g.meleeBossBonus();
 				el = w.element();
 				aff = affinity(el, boss.element());
 				Element second = boss.secondaryElement();

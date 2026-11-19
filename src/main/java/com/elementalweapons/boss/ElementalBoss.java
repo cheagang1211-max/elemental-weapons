@@ -127,6 +127,7 @@ public abstract class ElementalBoss extends Monster {
 		if (defeated) return;
 		defeated = true;
 		dropRewards(level);
+		com.elementalweapons.growth.ModGrowth.bossKilled(level, this);
 		Component msg = Component.literal("☆ ").withStyle(ChatFormatting.GOLD)
 				.append(bossName().copy())
 				.append(Component.literal(" 을(를) 쓰러뜨렸다!").withStyle(ChatFormatting.GOLD));

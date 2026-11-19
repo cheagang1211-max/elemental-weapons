@@ -100,7 +100,7 @@ public class ElementalWeaponItem extends Item {
 				Spell spell = ElementEffects.staffSpell(element, server, user);
 				if (spell == null) return InteractionResult.PASS;
 				SpellManager.add(spell);
-				user.getCooldowns().addCooldown(user.getItemInHand(hand), element.staffCooldown);
+				user.getCooldowns().addCooldown(user.getItemInHand(hand), (int) Math.round(element.staffCooldown * com.elementalweapons.growth.ModGrowth.get(user).staffCooldownFactor()));
 			}
 			default -> {
 				return InteractionResult.PASS;
