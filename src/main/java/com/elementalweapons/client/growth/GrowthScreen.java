@@ -12,7 +12,7 @@ import com.elementalweapons.growth.GrowthPayloads;
 
 /** K키 성장 창 */
 public class GrowthScreen extends Screen {
-	private static final int W = 300, H = 190;
+	private static final int W = 300, H = 214;
 	private static final String[] NAMES = {"⚔ 힘", "✦ 마력", "❤ 체력", "➶ 민첩"};
 	private static final String[] DESCS = {"보스 피해 +3%, 근접 공격력 +0.2", "지팡이 피해 +3%, 쿨타임 -0.6%", "최대 체력 +1 (하트 반 칸)", "이동 속도 +0.4%, 공격 속도 +0.6%"};
 	private static final int[] COLORS = {0xFFFF8A6A, 0xFFB0A2FF, 0xFFFF6A84, 0xFF6AFFBA};

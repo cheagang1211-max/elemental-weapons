@@ -113,7 +113,7 @@ public final class ShotHarness {
 					p.setItemSlot(EquipmentSlot.LEGS, new ItemStack(ModGear.ITEMS.get("orichalcum_leggings")));
 					p.setItemSlot(EquipmentSlot.FEET, new ItemStack(ModGear.ITEMS.get("orichalcum_boots")));
 				});
-				mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
+				mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
 			}
 			if (t == 470) shot(mc, "04_player_armor_staff");
 			if (t == 475) mc.options.setCameraType(CameraType.FIRST_PERSON);
