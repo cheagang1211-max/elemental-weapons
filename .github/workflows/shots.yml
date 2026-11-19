@@ -52,18 +52,18 @@ jobs:
           OPT
           sed -i 's/^ *//' run/options.txt
           export EW_SHOTS=1 LIBGL_ALWAYS_SOFTWARE=1
-          Xvfb :99 -screen 0 1280x720x24 +extension GLX +render -noreset > xvfb.log 2>&1 &
+          Xvfb :99 -screen 0 1280x720x24 +extension GLX +extension Composite +render -noreset > xvfb.log 2>&1 &
           sleep 3
           export DISPLAY=:99
           glxinfo -B 2>&1 | head -20 || true
           ./gradlew runClient --console=plain --args="--quickPlaySingleplayer ew --width 1280 --height 720" > client.log 2>&1 &
-          for i in $(seq 1 180); do
+          for i in $(seq 1 150); do
             sleep 10
             if grep -q "\[SHOTS\] DONE" client.log; then echo "DONE at $i"; break; fi
             if ! pgrep -f KnotClient > /dev/null && [ $i -gt 6 ]; then echo "client exited at $i"; break; fi
             if [ $((i % 6)) = 0 ]; then echo "--- t=$((i*10))s: $(tail -1 client.log | cut -c1-200)"; fi
-            if [ $i = 48 ] || [ $i = 90 ]; then
-              PID=$(pgrep -f KnotClient | head -1); echo "@@@JSTACK $i"; jstack $PID 2>/dev/null | grep -A25 '"Render thread"' | head -30; jstack $PID 2>/dev/null | grep -A20 '"Server thread"' | head -22
+            if [ $i = 18 ] || [ $i = 48 ]; then
+              PID=$(jps -l | grep -viE "gradle|jps" | awk '{print $1}' | head -1); jps -l; echo "@@@JSTACK $i"; jstack $PID > js.txt 2>&1; grep -A30 '"Render thread"' js.txt | head -32; grep -A20 '"Server thread"' js.txt | head -22; grep -B2 -A12 -iE 'vulkan|shaderc|Worker-Main' js.txt | head -60
             fi
           done
           sleep 5
