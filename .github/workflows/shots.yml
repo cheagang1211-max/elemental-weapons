@@ -53,7 +53,7 @@ jobs:
           maxFps:60
           OPT
           sed -i 's/^ *//' run/options.txt
-          export EW_SHOTS=1 LIBGL_ALWAYS_SOFTWARE=1
+          export EW_SHOTS=1 LIBGL_ALWAYS_SOFTWARE=1 SDL_VIDEO_FORCE_EGL=1 SDL_VIDEO_X11_FORCE_EGL=1 MESA_VK_WSI_PRESENT_MODE=immediate
           cat > dummy.conf <<'XC'
           Section "Device"
             Identifier "d"
@@ -84,7 +84,7 @@ jobs:
           xdpyinfo 2>&1 | head -5 || tail -20 /tmp/xorg.log
           glxinfo -B 2>&1 | head -20 || true
           ./gradlew runClient --console=plain --args="--quickPlaySingleplayer ew --width 1280 --height 720" > client.log 2>&1 &
-          for i in $(seq 1 150); do
+          for i in $(seq 1 100); do
             sleep 10
             if grep -q "\[SHOTS\] DONE" client.log; then echo "DONE at $i"; break; fi
             if ! pgrep -f KnotClient > /dev/null && [ $i -gt 6 ]; then echo "client exited at $i"; break; fi
