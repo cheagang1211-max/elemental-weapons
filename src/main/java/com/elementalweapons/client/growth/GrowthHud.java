@@ -13,7 +13,7 @@ public final class GrowthHud {
 
 	public static void render(GuiGraphicsExtractor g, DeltaTracker dt) {
 		Minecraft mc = Minecraft.getInstance();
-		if (mc.player == null || mc.options.hideGui) return;
+		if (mc.player == null) return;
 		Font font = mc.font;
 		Growth gr = GrowthClient.current();
 		int x = 4, y = 4, w = 132, h = 36;

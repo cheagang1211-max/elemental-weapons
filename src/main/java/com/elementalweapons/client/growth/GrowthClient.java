@@ -3,7 +3,7 @@ package com.elementalweapons.client.growth;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -29,7 +29,7 @@ public final class GrowthClient {
 	static int tick = 0;
 
 	public static void initialize() {
-		OPEN_KEY = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.elementalweapons.growth", GLFW.GLFW_KEY_K, KeyMapping.Category.GAMEPLAY));
+		OPEN_KEY = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.elementalweapons.growth", InputConstants.KEY_K, KeyMapping.Category.GAMEPLAY));
 		HudElementRegistry.addLast(Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "growth_hud"), GrowthHud::render);
 		ClientTickEvents.END_CLIENT_TICK.register(GrowthClient::tick);
 	}
