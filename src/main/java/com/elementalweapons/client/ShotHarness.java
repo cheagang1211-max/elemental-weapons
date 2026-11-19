@@ -63,8 +63,24 @@ public final class ShotHarness {
 
 	private static ServerPlayer sp(IntegratedServer s) { return s.getPlayerList().getPlayers().get(0); }
 
+	private static int idle = 0;
+
 	private static void tick(Minecraft mc) {
-		if (mc.player == null || mc.level == null || mc.getSingleplayerServer() == null) return;
+		if (mc.player == null || mc.level == null || mc.getSingleplayerServer() == null) {
+			idle++;
+			net.minecraft.client.gui.screens.Screen sc = mc.gui.screen();
+			if (idle % 200 == 0) {
+				StringBuilder sb = new StringBuilder();
+				if (sc != null) for (var c : sc.children()) if (c instanceof net.minecraft.client.gui.components.AbstractWidget w) sb.append("[").append(w.getMessage().getString()).append("] ");
+				log("대기 " + idle + " 화면=" + (sc == null ? "없음" : sc.getClass().getName()) + " 버튼=" + sb);
+			}
+			if (idle == 300 || idle == 1100) shot(mc, "00_debug_" + idle);
+			if (idle == 320 && t < 0) {
+				log("세계 직접 열기 시도");
+				mc.createWorldOpenFlows().openWorld("ew", () -> log("열기 취소됨"));
+			}
+			return;
+		}
 		IntegratedServer server = mc.getSingleplayerServer();
 		t++;
 		try {
