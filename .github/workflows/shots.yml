@@ -16,7 +16,7 @@ jobs:
           java-version: "25"
       - uses: gradle/actions/setup-gradle@v4
       - name: 가상 화면 설치
-        run: sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1 > /dev/null
+        run: sudo apt-get update -q && sudo apt-get install -y -q xvfb xserver-xorg-core xserver-xorg-video-dummy mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1 > /dev/null
       - name: 세계 생성 (서버)
         run: |
           chmod +x gradlew
@@ -53,10 +53,35 @@ jobs:
           maxFps:60
           OPT
           sed -i 's/^ *//' run/options.txt
-          export EW_SHOTS=1 LIBGL_ALWAYS_SOFTWARE=1 MESA_VK_WSI_PRESENT_MODE=immediate MESA_VK_WSI_DEBUG=sw vblank_mode=0
-          Xvfb :99 -screen 0 1280x720x24 +extension GLX +extension Composite +render -noreset > xvfb.log 2>&1 &
-          sleep 3
+          export EW_SHOTS=1 LIBGL_ALWAYS_SOFTWARE=1
+          cat > dummy.conf <<'XC'
+          Section "Device"
+            Identifier "d"
+            Driver "dummy"
+            VideoRam 256000
+          EndSection
+          Section "Monitor"
+            Identifier "m"
+            HorizSync 5.0-1000.0
+            VertRefresh 5.0-200.0
+            Modeline "1280x720" 74.25 1280 1390 1430 1650 720 725 730 750
+          EndSection
+          Section "Screen"
+            Identifier "s"
+            Device "d"
+            Monitor "m"
+            DefaultDepth 24
+            SubSection "Display"
+              Depth 24
+              Modes "1280x720"
+            EndSubSection
+          EndSection
+          XC
+          sed -i 's/^          //' dummy.conf
+          sudo Xorg :99 -noreset -nolisten tcp -config $PWD/dummy.conf -logfile /tmp/xorg.log > /dev/null 2>&1 &
+          sleep 5
           export DISPLAY=:99
+          xdpyinfo 2>&1 | head -5 || tail -20 /tmp/xorg.log
           glxinfo -B 2>&1 | head -20 || true
           ./gradlew runClient --console=plain --args="--quickPlaySingleplayer ew --width 1280 --height 720" > client.log 2>&1 &
           for i in $(seq 1 150); do
