@@ -75,9 +75,15 @@ public final class ShotHarness {
 				log("대기 " + idle + " 화면=" + (sc == null ? "없음" : sc.getClass().getName()) + " 버튼=" + sb);
 			}
 			if (idle == 300 || idle == 1100) shot(mc, "00_debug_" + idle);
-			if (idle == 320 && t < 0) {
-				log("세계 직접 열기 시도");
-				mc.createWorldOpenFlows().openWorld("ew", () -> log("열기 취소됨"));
+			if (idle % 100 == 50 && sc instanceof net.minecraft.client.gui.screens.BackupConfirmScreen) {
+				int n = 0;
+				for (var c : sc.children()) {
+					if (c instanceof net.minecraft.client.gui.components.Button b && ++n == 2) {
+						log("실험적 설정 경고 → '" + b.getMessage().getString() + "' 클릭");
+						b.onPress(new net.minecraft.client.input.KeyEvent(257, 0, 0));
+						break;
+					}
+				}
 			}
 			return;
 		}
