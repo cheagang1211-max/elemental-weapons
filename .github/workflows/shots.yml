@@ -52,7 +52,22 @@ jobs:
           OPT
           sed -i 's/^ *//' run/options.txt
           export EW_SHOTS=1 LIBGL_ALWAYS_SOFTWARE=1
-          timeout 2400 xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runClient --console=plain --args="--quickPlaySingleplayer ew --width 1280 --height 720" > client.log 2>&1 || true
+          Xvfb :99 -screen 0 1280x720x24 +extension GLX +render -noreset > xvfb.log 2>&1 &
+          sleep 3
+          export DISPLAY=:99
+          glxinfo -B 2>&1 | head -20 || true
+          ./gradlew runClient --console=plain --args="--quickPlaySingleplayer ew --width 1280 --height 720" > client.log 2>&1 &
+          for i in $(seq 1 180); do
+            sleep 10
+            if grep -q "\[SHOTS\] DONE" client.log; then echo "DONE at $i"; break; fi
+            if ! pgrep -f KnotClient > /dev/null && [ $i -gt 6 ]; then echo "client exited at $i"; break; fi
+            if [ $((i % 6)) = 0 ]; then echo "--- t=$((i*10))s: $(tail -1 client.log | cut -c1-200)"; fi
+            if [ $i = 48 ] || [ $i = 90 ]; then
+              PID=$(pgrep -f KnotClient | head -1); echo "@@@JSTACK $i"; jstack $PID 2>/dev/null | grep -A25 '"Render thread"' | head -30; jstack $PID 2>/dev/null | grep -A20 '"Server thread"' | head -22
+            fi
+          done
+          sleep 5
+          pkill -f KnotClient || true
           echo "@@@CLIENT_LOG_BEGIN"
           grep -E "SHOTS|ERROR|Exception|Caused by|OpenGL|Vulkan|Backend|GL_|renderer" client.log | grep -v "^\s*at " | head -150
           tail -40 client.log
@@ -61,7 +76,7 @@ jobs:
       - name: 스크린샷 올리기
         run: |
           mkdir -p /tmp/out && cp run/screenshots/*.png /tmp/out/ 2>/dev/null || true
-          cp client.log /tmp/out/client.log
+          cp client.log /tmp/out/client.log; cp run/logs/latest.log /tmp/out/latest.log 2>/dev/null || true
           cd /tmp/out
           git init -q -b shots && git config user.name "shots-bot" && git config user.email "bot@users.noreply.github.com"
           git add -A && git commit -qm "screenshots ${GITHUB_SHA}"
