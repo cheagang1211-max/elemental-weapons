@@ -369,7 +369,6 @@ public final class ShotHarness {
 		if (tt >= 980 && tt < 980 + SKILL_SHOTS.length * 40) skillDemo(mc, server, tt - 980);
 		if (tt == 1310) { mc.options.setCameraType(CameraType.FIRST_PERSON); armorSet(server, "orichalcum"); }
 	}
-	}
 
 	private static com.elementalweapons.boss.ElementalBoss bossRef;
 
