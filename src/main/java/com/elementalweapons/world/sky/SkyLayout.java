@@ -48,9 +48,6 @@ public final class SkyLayout {
 	private static final Map<Long, int[]> GRID = new HashMap<>();
 	private static final int CELL = 256;
 
-	static {
-		build();
-	}
 
 	public static double regionAngle(int k) { return Math.toRadians(-90 + k * 360.0 / 7); }
 
@@ -260,5 +257,9 @@ public final class SkyLayout {
 			if (d < best) { best = d; bi = k; }
 		}
 		return bi;
+	}
+
+	static {
+		build();   // 모든 정적 필드가 준비된 뒤 실행
 	}
 }
