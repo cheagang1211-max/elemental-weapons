@@ -136,11 +136,11 @@ public final class ShotHarness {
 			if (t == 543) shot(mc, "06c_firstperson_book");
 			if (t == WEAP_START) server.execute(() -> showcase(server));
 			if (t > WEAP_START && t < WEAP_START + 120) look(mc, 0, -14);
-			if (t == WEAP_START + 60) { mc.options.hideGui = true; }
+
 			if (t == WEAP_START + 80) shot(mc, "07_showcase_wall");
 			if (t == WEAP_START + 85) server.execute(() -> sp(server).teleportTo(baseX, baseY + 2, baseZ + 5.5));
 			if (t == WEAP_START + 110) shot(mc, "07b_showcase_close");
-			if (t == WEAP_START + 112) { mc.options.hideGui = false; server.execute(() -> { sp(server).teleportTo(baseX, baseY, baseZ); for (Entity e : gallery) e.discard(); gallery.clear(); }); }
+			if (t == WEAP_START + 112) { server.execute(() -> { sp(server).teleportTo(baseX, baseY, baseZ); for (Entity e : gallery) e.discard(); gallery.clear(); }); }
 			if (t >= 1020 && t < 1020 + 7 * 25) {
 				int k = (t - 1020) / 25, ph = (t - 1020) % 25;
 				Element el = Element.values()[k];
