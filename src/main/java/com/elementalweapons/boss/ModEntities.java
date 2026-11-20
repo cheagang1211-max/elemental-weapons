@@ -18,8 +18,8 @@ public final class ModEntities {
 
 	public static final EntityType<VoltraBoss> VOLTRA = register("voltra",
 			EntityType.Builder.<VoltraBoss>of(VoltraBoss::new, MobCategory.MONSTER)
-					.sized(2.4F, 5.2F)
-					.eyeHeight(4.4F)
+					.sized(3.0F, 6.4F)
+					.eyeHeight(5.4F)
 					.fireImmune()
 					.clientTrackingRange(10)
 					.noLootTable(),

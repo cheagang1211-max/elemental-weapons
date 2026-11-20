@@ -42,7 +42,7 @@ public final class BossDef {
 	public BossDef shifting() { this.shifting = true; return this; }
 	public BossDef health(long hp) { this.health = hp; return this; }
 	public BossDef look(String icon, ChatFormatting nameColor, BossEvent.BossBarColor bar) { this.icon = icon; this.nameColor = nameColor; this.barColor = bar; return this; }
-	public BossDef size(float w, float h, float eye, float renderScale, float shadow) { this.width = w; this.height = h; this.eyeHeight = eye; this.renderScale = renderScale; this.shadow = shadow; return this; }
+	public BossDef size(float w, float h, float eye, float renderScale, float shadow) { this.width = w * 1.3F; this.height = h * 1.3F; this.eyeHeight = eye * 1.3F; this.renderScale = renderScale * 1.35F; this.shadow = shadow * 1.3F; return this; }
 	public BossDef hover(double height, double distance, double speed, boolean floating) { this.hoverHeight = height; this.hoverDistance = distance; this.speed = speed; this.floating = floating; return this; }
 	public BossDef lines(String intro, String phase2, String phase3) { this.intro = intro; this.phase2 = phase2; this.phase3 = phase3; return this; }
 	public BossDef pattern(PatternType type, String name, Element e, int minPhase, int weight, float damage, int count, double radius) {

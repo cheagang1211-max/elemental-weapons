@@ -14,8 +14,6 @@ public final class ModModelLayers {
 	public static final ModelLayerLocation VOLTRA = new ModelLayerLocation(ElementalWeaponsMod.id("voltra"), "main");
 
 	public static void initialize() {
-		ModelLayerRegistry.registerModelLayer(VOLTRA, VoltraModel::createBodyLayer);
-		EntityRenderers.register(ModEntities.VOLTRA, VoltraRenderer::new);
 		GeneratedBossModels.register();
 		GeneratedMobModels.register();
 	}

@@ -1,4 +1,4 @@
-// 자동 생성 파일 (tools/bossgen/bosses.py)
+// 자동 생성 파일 (tools/bossgen/bosses2.py)
 package com.elementalweapons.client.boss;
 
 import java.util.function.Function;
@@ -27,6 +27,7 @@ import com.elementalweapons.client.boss.gen.StormWyvernModel;
 import com.elementalweapons.client.boss.gen.TwilightTwinsModel;
 import com.elementalweapons.client.boss.gen.HydraModel;
 import com.elementalweapons.client.boss.gen.PrimaModel;
+import com.elementalweapons.client.boss.gen.VoltraModel;
 
 public final class GeneratedBossModels {
 	private GeneratedBossModels() {}
@@ -78,11 +79,18 @@ public final class GeneratedBossModels {
 		layer = new ModelLayerLocation(ElementalWeaponsMod.id("prima"), "main");
 		ModelLayerRegistry.registerModelLayer(layer, PrimaModel::createBodyLayer);
 		register("prima", layer, PrimaModel::new);
+		layer = new ModelLayerLocation(ElementalWeaponsMod.id("voltra"), "main");
+		ModelLayerRegistry.registerModelLayer(layer, VoltraModel::createBodyLayer);
+		registerVoltra(layer, VoltraModel::new);
 	}
 
 	private static void register(String id, ModelLayerLocation layer, Function<ModelPart, GenericBossModel> factory) {
 		BossDef def = BossDefs.ALL.get(id);
 		EntityRenderers.register(ModEntities.BOSSES.get(id),
 				ctx -> new GenericBossRenderer<>(ctx, layer, factory, id, def.renderScale, def.shadow));
+	}
+
+	private static void registerVoltra(ModelLayerLocation layer, Function<ModelPart, GenericBossModel> factory) {
+		EntityRenderers.register(ModEntities.VOLTRA, ctx -> new GenericBossRenderer<>(ctx, layer, factory, "voltra", 2.7F, 2.0F));
 	}
 }

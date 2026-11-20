@@ -40,7 +40,10 @@ import com.elementalweapons.spell.Fx;
  *  4. 뇌신의 심판 : (3페이즈) 모든 플레이어를 표식으로 추적 → 고정 → 거대한 벼락
  * 약점: 풀 속성 (2배) / 전기 속성 공격은 절반
  */
-public class VoltraBoss extends ElementalBoss {
+public class VoltraBoss extends ElementalBoss implements PosedEntity {
+	@Override
+	public boolean isFloatingBoss() { return true; }
+
 	public static final long MAX_HEALTH = 1_000_000_000L;
 
 	private static final DustParticleOptions SPARK = Fx.dust(0x9FF3FF, 1.4F);
