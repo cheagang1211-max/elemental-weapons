@@ -47,7 +47,8 @@ public final class ShotHarness {
 	private static double baseX, baseY, baseZ;
 	private static final List<EntityType<?>> SUBJECTS = new ArrayList<>();
 	private static Entity current;
-	private static final int ENT_START = 520, ENT_STEP = 70;
+	private static final int WEAP_START = 520, ENT_START = 800, ENT_STEP = 70;
+	private static final List<Entity> gallery = new ArrayList<>();
 
 	public static void initialize() {
 		if (!"1".equals(System.getenv("EW_SHOTS"))) return;
@@ -117,6 +118,20 @@ public final class ShotHarness {
 			}
 			if (t == 470) shot(mc, "04_player_armor_staff");
 			if (t == 475) mc.options.setCameraType(CameraType.FIRST_PERSON);
+			if (t == 480) server.execute(() -> sp(server).setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(Element.FIRE).get(WeaponType.GREATSWORD))));
+			if (t == 500) shot(mc, "05_firstperson_greatsword");
+			if (t == 505) server.execute(() -> sp(server).setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(Element.LIGHT).get(WeaponType.STAFF))));
+			if (t == 515) shot(mc, "06_firstperson_light_staff");
+			if (t >= WEAP_START && t < ENT_START) {
+				int k = (t - WEAP_START) / 70, ph = (t - WEAP_START) % 70;
+				if (k < 4) {
+					WeaponType wt = WeaponType.values()[k];
+					if (ph == 0) server.execute(() -> gallery(server, wt));
+					if (ph > 0) look(mc, 0, 18);
+					if (ph == 45) shot(mc, "07_weapons_" + wt.name().toLowerCase());
+					if (ph == 55) server.execute(() -> { for (Entity e : gallery) e.discard(); gallery.clear(); });
+				}
+			}
 			if (t >= ENT_START) {
 				int idx = (t - ENT_START) / ENT_STEP, k = (t - ENT_START) % ENT_STEP;
 				if (idx >= SUBJECTS.size()) {
@@ -169,6 +184,24 @@ public final class ShotHarness {
 		ModGrowth.set(p, new Growth(23, xp, 3, 18, 10, 14, 10));
 		ModGrowth.applyStats(p);
 		log("setup at " + baseX + "," + baseY + "," + baseZ);
+	}
+
+	private static void gallery(IntegratedServer server, WeaponType wt) {
+		ServerLevel level = (ServerLevel) sp(server).level();
+		int i = 0;
+		for (Element el : Element.values()) {
+			Entity e = EntityType.HUSK.create(level, EntitySpawnReason.COMMAND);
+			if (e == null) continue;
+			e.snapTo(baseX + (i - 3) * 1.6, baseY, baseZ + 4.5);
+			e.setYRot(180);
+			if (e instanceof Mob m) {
+				m.setNoAi(true); m.setYHeadRot(180); m.setYBodyRot(180);
+				m.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(el).get(wt)));
+			}
+			level.addFreshEntity(e);
+			gallery.add(e);
+			i++;
+		}
 	}
 
 	private static void spawn(IntegratedServer server, EntityType<?> type) {
