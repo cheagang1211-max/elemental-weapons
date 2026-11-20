@@ -37,7 +37,8 @@ public final class WeaponAura {
 			if (!(held.getItem() instanceof ElementalWeaponItem w)) continue;
 			boolean self = p == mc.player;
 			int lv = Enhancement.level(held);
-			int count = (self ? 2 : 1) + lv / 4;
+			int count = 1 + lv / 5;
+			if (self && mc.options.getCameraType().isFirstPerson() && tick % 2 == 0) continue;
 			for (int i = 0; i < count; i++) spawn(level, p, w.element(), w.type(), lv, self && mc.options.getCameraType().isFirstPerson());
 		}
 	}
@@ -51,7 +52,7 @@ public final class WeaponAura {
 		Vec3 hand;
 		if (firstPerson) {
 			Vec3 look = p.getLookAngle();
-			hand = p.getEyePosition().add(look.scale(0.9)).add(right.scale(0.45)).add(0, -0.35, 0);
+			hand = p.getEyePosition().add(look.scale(1.7)).add(right.scale(0.75)).add(0, -0.75, 0);
 		} else {
 			hand = p.position().add(right.scale(0.38)).add(fwd.scale(0.25)).add(0, 0.75, 0);
 		}
@@ -62,17 +63,18 @@ public final class WeaponAura {
 				.add(right.scale(Math.cos(ang) * rad)).add(fwd.scale(Math.sin(ang) * rad));
 		double vx = (r.nextDouble() - 0.5) * 0.01, vz = (r.nextDouble() - 0.5) * 0.01;
 		// 속성색 빛 가루 (항상)
-		level.addParticle(ElementFx.dust(el, 0.45F + r.nextFloat() * 0.35F + lv * 0.03F), pos.x, pos.y, pos.z, vx, 0.01, vz);
+		float sz = firstPerson ? 0.15F + r.nextFloat() * 0.1F : 0.25F + r.nextFloat() * 0.2F + lv * 0.02F;
+		level.addParticle(ElementFx.dust(el, sz), pos.x, pos.y, pos.z, vx, 0.01, vz);
 		// 속성 고유 파티클 (가끔)
-		if (r.nextInt(3) != 0) return;
+		if (r.nextInt(firstPerson ? 6 : 3) != 0) return;
 		ParticleOptions sig = switch (el) {
 			case ELECTRIC -> ParticleTypes.ELECTRIC_SPARK;
 			case FIRE -> r.nextInt(4) == 0 ? ParticleTypes.FLAME : ParticleTypes.SMALL_FLAME;
-			case WATER -> r.nextBoolean() ? ParticleTypes.DRIPPING_WATER : ParticleTypes.SPLASH;
-			case GRASS -> r.nextBoolean() ? ParticleTypes.CHERRY_LEAVES : ParticleTypes.HAPPY_VILLAGER;
+			case WATER -> ParticleTypes.DRIPPING_WATER;
+			case GRASS -> ParticleTypes.CHERRY_LEAVES;
 			case WIND -> ParticleTypes.WHITE_ASH;
-			case DARK -> r.nextBoolean() ? ParticleTypes.PORTAL : ParticleTypes.SMOKE;
-			case LIGHT -> r.nextBoolean() ? ParticleTypes.END_ROD : ParticleTypes.WAX_ON;
+			case DARK -> ParticleTypes.PORTAL;
+			case LIGHT -> ParticleTypes.END_ROD;
 		};
 		double vy = switch (el) { case FIRE -> 0.03; case LIGHT -> 0.015; case WATER -> -0.02; case WIND -> 0.0; default -> 0.005; };
 		if (el == WIND_ELEMENT) { vx = Math.cos(ang + 1.6) * 0.05; vz = Math.sin(ang + 1.6) * 0.05; }
