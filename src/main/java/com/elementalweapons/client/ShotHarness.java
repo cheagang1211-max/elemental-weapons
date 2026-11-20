@@ -356,6 +356,7 @@ public final class ShotHarness {
 		int idx = tt / per, k = tt % per;
 		if (idx >= sc.length) { if (k == 5) { log("DONE"); mc.stop(); } return; }
 		double[] c = sc[idx];
+		if (k == 0) mc.options.setCameraType(CameraType.FIRST_PERSON);
 		if (k == 0) server.execute(() -> {
 			ServerPlayer p = sp(server);
 			p.getAbilities().flying = true; p.getAbilities().mayfly = true; p.onUpdateAbilities();
