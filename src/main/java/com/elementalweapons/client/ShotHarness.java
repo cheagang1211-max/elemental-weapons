@@ -210,27 +210,28 @@ public final class ShotHarness {
 			server.execute(() -> {
 				ServerPlayer p = sp(server);
 				p.getAbilities().flying = false; p.onUpdateAbilities();
-				p.teleportTo(0.5, 172, 34.5);
+				p.teleportTo(0.5, 172, 50.5);
 				server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set 6000");
+				server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "attribute " + p.getScoreboardName() + " minecraft:camera_distance base set 2.6");
 			});
 			armorSet(server, "aether");
 			mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
 		}
-		if (tt > 0 && tt < 45) look(mc, 180, 8);
+		if (tt > 0 && tt < 45) look(mc, 0, 8);
 		if (tt == 40) shot(mc, "60_armor_aether_front");
-		if (tt >= 45 && tt < 75) look(mc, 215, 5);
+		if (tt >= 45 && tt < 75) look(mc, 40, 5);
 		if (tt == 72) shot(mc, "61_armor_aether_side");
-		if (tt >= 75 && tt < 105) look(mc, 20, 5);
+		if (tt >= 75 && tt < 105) look(mc, 200, 5);
 		if (tt == 102) shot(mc, "61b_armor_aether_back");
 		if (tt == 105) armorSet(server, "orichalcum");
-		if (tt > 105 && tt < 135) look(mc, 155, 8);
+		if (tt > 105 && tt < 135) look(mc, -25, 8);
 		if (tt == 132) shot(mc, "62_armor_orichalcum");
 		if (tt == 135) {
 			armorSet(server, "aether");
 			server.execute(() -> sp(server).setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(Element.DARK).get(WeaponType.SCYTHE))));
 			mc.options.setCameraType(CameraType.FIRST_PERSON);
 		}
-		if (tt > 135 && tt < 160) look(mc, 180, 5);
+		if (tt > 135 && tt < 160) look(mc, 0, 5);
 		if (tt == 158) shot(mc, "63_fp_scythe");
 		if (tt == 160) {
 			mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
@@ -247,7 +248,7 @@ public final class ShotHarness {
 				}
 			});
 		}
-		if (tt > 160 && tt < 200) look(mc, 180, 22);
+		if (tt > 160 && tt < 200) look(mc, 0, 25);
 		if (tt == 180) server.execute(() -> { ServerPlayer p = sp(server); com.elementalweapons.spell.SpellManager.add(new com.elementalweapons.spell.ReapSpell((ServerLevel) p.level(), p, Element.DARK)); });
 		if (tt == 183) shot(mc, "64_reap_a");
 		if (tt == 186) shot(mc, "64_reap_b");
@@ -257,7 +258,7 @@ public final class ShotHarness {
 				sp(server).setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(Element.FIRE).get(WeaponType.BOW))); });
 			mc.options.setCameraType(CameraType.FIRST_PERSON);
 		}
-		if (tt > 200 && tt < 260) look(mc, 180, -4);
+		if (tt > 200 && tt < 260) look(mc, 0, -4);
 		if (tt == 210) mc.player.startUsingItem(net.minecraft.world.InteractionHand.MAIN_HAND);
 		if (tt == 228) shot(mc, "65_fp_bow_draw");
 		if (tt == 229) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
