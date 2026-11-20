@@ -170,7 +170,7 @@ public class Rift {
 		close();
 	}
 
-	private void give(ServerPlayer p, ItemStack s) { if (!p.getInventory().add(s)) p.drop(s, false); }
+	private void give(ServerPlayer p, ItemStack s) { if (!p.getInventory().add(s)) p.spawnAtLocation(level, s); }
 
 	void fail(String why) {
 		finished = true;
