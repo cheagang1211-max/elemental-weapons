@@ -190,7 +190,7 @@ public final class ShotHarness {
 		ServerLevel level = (ServerLevel) sp(server).level();
 		int i = 0;
 		for (Element el : Element.values()) {
-			Entity e = EntityType.HUSK.create(level, EntitySpawnReason.COMMAND);
+			Entity e = net.minecraft.world.entity.EntityTypes.HUSK.create(level, EntitySpawnReason.COMMAND);
 			if (e == null) continue;
 			e.snapTo(baseX + (i - 3) * 1.6, baseY, baseZ + 4.5);
 			e.setYRot(180);
