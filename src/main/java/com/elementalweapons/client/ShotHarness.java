@@ -172,36 +172,41 @@ public final class ShotHarness {
 
 	private static void tp(IntegratedServer server, double x, double y, double z) { server.execute(() -> sp(server).teleportTo(x, y, z)); }
 
+	/** 공중 세계 장면: {x, y, z, 바라볼 x, y, z} */
+	private static double[][] scenes() {
+		double a0 = com.elementalweapons.world.sky.SkyLayout.regionAngle(0);
+		double dx = Math.cos(a0), dz = Math.sin(a0);
+		double[] rc = com.elementalweapons.world.sky.SkyLayout.REGION_CENTER[0];
+		return new double[][]{
+				{0, 255, 330, 0, 175, 0},                                   // 수도 전경
+				{0, 186, 95, 0, 200, -6},                                    // 왕성 정면
+				{dx * 420 - dz * 50, 168, dz * 420 + dx * 50, dx * 640, 162, dz * 640},   // 대교 옆모습
+				{dx * 560, 180, dz * 560, dx * 900, 176, dz * 900},          // 대교 위에서 지역 방향
+				{rc[0] - dx * 760, 260, rc[1] - dz * 760, rc[0], 170, rc[1]}, // 지역 본섬 전경
+				{180, 300, 180, -400, 120, -400},                            // 하늘 높이서 본 공중 군도
+		};
+	}
+
 	private static void townScenes(Minecraft mc, IntegratedServer server, int tt) {
-		if (tt == 0) server.execute(() -> {
-			ServerLevel level = (ServerLevel) sp(server).level();
-			town = level.findNearestMapStructure(net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.STRUCTURE, ElementalWeaponsMod.id("towns")), sp(server).blockPosition(), 200, false);
-			log("마을 위치: " + town);
+		double[][] sc = scenes();
+		int per = 420;
+		int idx = tt / per, k = tt % per;
+		if (idx >= sc.length) { if (k == 5) { log("DONE"); mc.stop(); } return; }
+		double[] c = sc[idx];
+		if (k == 0) server.execute(() -> {
 			ServerPlayer p = sp(server);
 			p.getAbilities().flying = true; p.getAbilities().mayfly = true; p.onUpdateAbilities();
 			p.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-			if (town != null) p.teleportTo(town.getX() + 0.5, 200, town.getZ() + 0.5);
+			p.teleportTo(c[0] + 0.5, c[1], c[2] + 0.5);
 		});
-		if (town == null) { if (tt == 10) { log("마을 없음"); log("DONE"); mc.stop(); } return; }
-		if (tt == 240) server.execute(() -> {
-			groundY = ((ServerLevel) sp(server).level()).getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, town.getX() + 2, town.getZ() + 30) - 1;
-			log("마을 땅 높이: " + groundY);
-			sp(server).teleportTo(town.getX() - 48.5, groundY + 38, town.getZ() + 78.5);
-		});
-		if (tt > 240 && tt < 900) {
-			double dx = town.getX() - mc.player.getX(), dz = town.getZ() - mc.player.getZ();
-			float yaw = (float) (Math.toDegrees(Math.atan2(dz, dx)) - 90);
-			if (tt < 420) look(mc, yaw, 28); else if (tt < 600) look(mc, 180, 2); else look(mc, yaw, 22);
+		if (k > 0) {
+			double ddx = c[3] - mc.player.getX(), ddz = c[5] - mc.player.getZ(), ddy = c[4] - mc.player.getEyeY();
+			float yaw = (float) Math.toDegrees(Math.atan2(-ddx, ddz));
+			float pitch = (float) -Math.toDegrees(Math.atan2(ddy, Math.hypot(ddx, ddz)));
+			look(mc, yaw, pitch);
+			mc.player.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
 		}
-		if (tt == 400) shot(mc, "40_town_aerial");
-		if (tt == 410) tp(server, town.getX() + 0.5, groundY + 1.6, town.getZ() + 28.5);
-		if (tt == 580) shot(mc, "41_town_street");
-		if (tt == 590) tp(server, town.getX() + 44.5, groundY + 22, town.getZ() + 44.5);
-		if (tt == 760) shot(mc, "42_town_high");
-		if (tt == 770) tp(server, town.getX() + 0.5, groundY + 1.6, town.getZ() + 0.5 - 22);
-		if (tt > 770 && tt < 900) look(mc, 0, -2);
-		if (tt == 880) shot(mc, "43_town_plaza");
-		if (tt == 890) { log("DONE"); mc.stop(); }
+		if (k == per - 10) shot(mc, String.format("5%d_sky_scene", idx));
 	}
 
 	private static void look(Minecraft mc, float yaw, float pitch) {

@@ -58,9 +58,7 @@
 	},
 	"features": [
 		[],
-		[
-			"minecraft:lake_lava_underground"
-		],
+		[],
 		[],
 		[],
 		[],
@@ -76,7 +74,8 @@
 			"elementalweapons:gale_trees"
 		],
 		[
-			"minecraft:freeze_top_layer"
+			"minecraft:freeze_top_layer",
+			"elementalweapons:sky_painter"
 		]
 	],
 	"has_precipitation": true,

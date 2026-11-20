@@ -192,5 +192,7 @@
 	"item.elementalweapons.wind_book": "Wind Grimoire",
 	"item.elementalweapons.dark_book": "Dark Grimoire",
 	"item.elementalweapons.light_book": "Light Grimoire",
-	"entity.elementalweapons.fate_sage": "Sage of Fate"
+	"entity.elementalweapons.fate_sage": "Sage of Fate",
+	"biome.elementalweapons.capital_gardens": "Capital Gardens",
+	"biome.elementalweapons.elemental_abyss": "Elemental Abyss"
 }

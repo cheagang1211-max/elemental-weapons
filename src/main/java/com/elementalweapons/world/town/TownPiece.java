@@ -34,21 +34,25 @@ public class TownPiece extends StructurePiece {
 	public static final int SIZE = 112;
 	private final int x0, y0, z0;
 	private final long seed;
+	private final int flags;   // 1 서 2 동 4 북 8 남 (성벽), 16 대성당, 32 성문
+	public static final int ALL = 63;
 	private transient List<Feature> plan;
 
-	public TownPiece(int x0, int y0, int z0, long seed) {
+	public TownPiece(int x0, int y0, int z0, long seed) { this(x0, y0, z0, seed, ALL); }
+
+	public TownPiece(int x0, int y0, int z0, long seed, int flags) {
 		super(ModTowns.TOWN_PIECE, 0, new BoundingBox(x0, y0 - 10, z0, x0 + SIZE - 1, y0 + 48, z0 + SIZE - 1));
-		this.x0 = x0; this.y0 = y0; this.z0 = z0; this.seed = seed;
+		this.x0 = x0; this.y0 = y0; this.z0 = z0; this.seed = seed; this.flags = flags;
 	}
 
 	public TownPiece(CompoundTag tag) {
 		super(ModTowns.TOWN_PIECE, tag);
-		this.x0 = tag.getIntOr("tx", 0); this.y0 = tag.getIntOr("ty", 64); this.z0 = tag.getIntOr("tz", 0); this.seed = tag.getLongOr("seed", 0L);
+		this.x0 = tag.getIntOr("tx", 0); this.y0 = tag.getIntOr("ty", 64); this.z0 = tag.getIntOr("tz", 0); this.seed = tag.getLongOr("seed", 0L); this.flags = tag.getIntOr("flags", ALL);
 	}
 
 	@Override
 	protected void addAdditionalSaveData(StructurePieceSerializationContext ctx, CompoundTag tag) {
-		tag.putInt("tx", x0); tag.putInt("ty", y0); tag.putInt("tz", z0); tag.putLong("seed", seed);
+		tag.putInt("tx", x0); tag.putInt("ty", y0); tag.putInt("tz", z0); tag.putLong("seed", seed); tag.putInt("flags", flags);
 	}
 
 	// ===================== 배치 계획 =====================
@@ -69,15 +73,15 @@ public class TownPiece extends StructurePiece {
 		// 중앙 광장 (분수)
 		f.add(new Feature(Kind.FOUNTAIN, 41, 41, 31, 31, 0, 0, Direction.NORTH));
 		// 남쪽 대로 위 성문, 북동쪽 대성당 탑
-		f.add(new Feature(Kind.GATE, 50, 92, 13, 9, 0, 0, Direction.SOUTH));
-		f.add(new Feature(Kind.TOWER, 80, 13, 15, 15, 0, 0, Direction.SOUTH));
+		if ((flags & 32) != 0) f.add(new Feature(Kind.GATE, 50, 92, 13, 9, 0, 0, Direction.SOUTH));
+		if ((flags & 16) != 0) f.add(new Feature(Kind.TOWER, 80, 13, 15, 15, 0, 0, Direction.SOUTH));
 		// 블록마다 집 채우기
 		int[] cells = {11, 41, 59, 77};   // 각 구역 시작 (도로 사이)
 		int[] cellLen = {25, 13, 13, 25};
 		for (int i = 0; i < 4; i++) for (int j = 0; j < 4; j++) {
 			int cx = cells[i], cz = cells[j], cw = cellLen[i], cd = cellLen[j];
 			if ((i == 1 || i == 2) && (j == 1 || j == 2)) continue;                  // 광장
-			if (i == 3 && j == 0) continue;                                          // 대성당
+			if (i == 3 && j == 0 && (flags & 16) != 0) continue;                     // 대성당
 			int x = cx;
 			while (x < cx + cw - 6) {
 				int w = 7 + r.nextInt(4);
@@ -168,13 +172,14 @@ public class TownPiece extends StructurePiece {
 		}
 		// 1-b) 성벽 + 모서리 탑
 		for (int x = Math.max(0, cx0); x <= Math.min(SIZE - 1, cx1); x++) for (int z = Math.max(0, cz0); z <= Math.min(SIZE - 1, cz1); z++) {
-			boolean edge = x == 0 || z == 0 || x == SIZE - 1 || z == SIZE - 1;
+			boolean edge = (x == 0 && (flags & 1) != 0) || (x == SIZE - 1 && (flags & 2) != 0) || (z == 0 && (flags & 4) != 0) || (z == SIZE - 1 && (flags & 8) != 0);
 			if (!edge || isRoad(x, z)) continue;
 			for (int y = 0; y < 5; y++) set(x, y, z, st(h(x, y, z) % 5 == 0 ? Blocks.MOSSY_STONE_BRICKS : (h(x, y, z) % 7 == 0 ? Blocks.CRACKED_STONE_BRICKS : Blocks.STONE_BRICKS)));
 			if ((x + z) % 2 == 0) set(x, 5, z, st(Blocks.STONE_BRICK_WALL));
 			if ((x + z) % 9 == 0) set(x, 3, z == 0 ? 1 : z == SIZE - 1 ? SIZE - 2 : z, st(Blocks.LANTERN).setValue(BlockStateProperties.HANGING, false));
 		}
-		for (int[] c : new int[][]{{0, 0}, {SIZE - 5, 0}, {0, SIZE - 5}, {SIZE - 5, SIZE - 5}}) watchtower(c[0], c[1]);
+		int[][] corners = {{0, 0, 1 | 4}, {SIZE - 5, 0, 2 | 4}, {0, SIZE - 5, 1 | 8}, {SIZE - 5, SIZE - 5, 2 | 8}};
+		for (int[] c : corners) if ((flags & c[2]) == c[2]) watchtower(c[0], c[1]);
 		// 2) 건물들
 		for (Feature f : plan()) {
 			if (!f.touches(cx0, cz0, cx1, cz1, 12)) continue;
