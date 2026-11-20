@@ -56,7 +56,7 @@ def ignis():
     n = neck
     while n.children: n = n.children[0]
     n.children.append(head); head.pivot = (0, 0, -6)
-    neck.rot = (R(-28), 0, 0)
+    neck.rot = (R(-12), 0, 0)
     tail = chain("tail", 7, (0, -2, 12), 6, 8, 2, "scale", axis="z",
                  decor=lambda i, w, h, L: spikes(2, 0, 0, -h / 2, 1, L - 1, max(1, 3 - i * 0.3), max(1, 3 - i * 0.3), "horn"))
     t = tail

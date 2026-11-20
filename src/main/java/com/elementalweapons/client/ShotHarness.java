@@ -210,8 +210,8 @@ public final class ShotHarness {
 		if (e == null) { log("create failed " + type); return; }
 		double dist = 5 + e.getBbWidth() * 1.6 + e.getBbHeight() * 0.7;
 		e.snapTo(baseX, baseY, baseZ + dist);
-		e.setYRot(180);
-		if (e instanceof Mob m) { m.setNoAi(true); m.setYHeadRot(180); m.setYBodyRot(180); }
+		e.setYRot(215);
+		if (e instanceof Mob m) { m.setNoAi(true); m.setYHeadRot(215); m.setYBodyRot(215); }
 		level.addFreshEntity(e);
 		current = e;
 	}

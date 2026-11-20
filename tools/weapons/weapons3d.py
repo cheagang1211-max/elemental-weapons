@@ -199,13 +199,13 @@ def build(el, wt):
 
 DISPLAY = {
     "dagger":     {"thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 1, 1], "scale": [0.85, 0.85, 0.85]},
-                   "firstperson_righthand": {"rotation": [0, 90, 20], "translation": [1, 2, 0], "scale": [0.68, 0.68, 0.68]}},
+                   "firstperson_righthand": {"rotation": [0, 90, 20], "translation": [1, 3, 0], "scale": [0.55, 0.55, 0.55]}},
     "sword":      {"thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 3, 1], "scale": [0.85, 0.85, 0.85]},
-                   "firstperson_righthand": {"rotation": [0, 90, 20], "translation": [1, 3, 0], "scale": [0.68, 0.68, 0.68]}},
+                   "firstperson_righthand": {"rotation": [0, 90, 20], "translation": [1, 2, 0], "scale": [0.5, 0.5, 0.5]}},
     "greatsword": {"thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 5, 1], "scale": [0.95, 0.95, 0.95]},
-                   "firstperson_righthand": {"rotation": [0, 90, 20], "translation": [1, 3, 0], "scale": [0.68, 0.68, 0.68]}},
+                   "firstperson_righthand": {"rotation": [0, 90, 20], "translation": [1, 0, 0], "scale": [0.42, 0.42, 0.42]}},
     "staff":      {"thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 1, 1], "scale": [0.85, 0.85, 0.85]},
-                   "firstperson_righthand": {"rotation": [0, 90, 15], "translation": [1, 1, 0], "scale": [0.6, 0.6, 0.6]}},
+                   "firstperson_righthand": {"rotation": [0, 90, 15], "translation": [1, -2, 0], "scale": [0.38, 0.38, 0.38]}},
 }
 for v in DISPLAY.values():
     v["thirdperson_lefthand"] = v["thirdperson_righthand"]; v["firstperson_lefthand"] = v["firstperson_righthand"]
