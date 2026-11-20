@@ -103,10 +103,16 @@ public final class ModGrowth {
 
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
 			if (entity instanceof ElementalBoss) return; // 보스는 ElementalBoss.defeat 에서 처리
-			if (!(source.getEntity() instanceof ServerPlayer p)) return;
+			// 마법 폭발·낙하처럼 직접 때린 사람이 안 잡히는 죽음도, 마지막으로 때린 플레이어에게 처치 인정
+			ServerPlayer p = source.getEntity() instanceof ServerPlayer sp ? sp
+					: entity.getKillCredit() instanceof ServerPlayer sp2 ? sp2 : null;
+			if (p == null) return;
 			if (entity instanceof net.minecraft.world.entity.monster.Enemy) {
 				Tutorial.event(p, 4);
-				if (source.is(net.minecraft.world.damagesource.DamageTypes.INDIRECT_MAGIC) || source.is(net.minecraft.world.damagesource.DamageTypes.MAGIC)) Tutorial.classEvent(p, "magic_kill");
+				boolean staff = p.getMainHandItem().getItem() instanceof com.elementalweapons.item.ElementalWeaponItem w && w.type() == com.elementalweapons.item.WeaponType.STAFF;
+				boolean magic = source.is(net.minecraft.world.damagesource.DamageTypes.INDIRECT_MAGIC) || source.is(net.minecraft.world.damagesource.DamageTypes.MAGIC)
+						|| source.is(net.minecraft.tags.DamageTypeTags.IS_EXPLOSION) || source.getEntity() == null;
+				if (staff || magic) Tutorial.classEvent(p, "magic_kill");
 			}
 			long xp = entity instanceof ElementalMob ? 25 : entity instanceof ElementalCreature ? 5 : entity instanceof net.minecraft.world.entity.monster.Enemy ? 10 : 0;
 			if (xp > 0) addXp(p, xp);
