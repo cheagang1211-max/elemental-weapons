@@ -22,6 +22,7 @@ def h2(x, y, s=0):
     n = (n ^ (n >> 13)) * 1274126177 & 0xFFFFFFFF
     return (n ^ (n >> 16)) / 0xFFFFFFFF
 
+PS = 2  # 무늬 확대 배율 (HD)
 FACE_IDX = {"top": 1.0, "front": 0.0, "right": -0.6, "left": -0.6, "back": -0.9, "bottom": -1.4}
 
 def M(base, pat="plain", accent=None, glow=None, trim=None, glow_all=False, rim=True, seed=0, dither=True):
@@ -40,18 +41,29 @@ def M(base, pat="plain", accent=None, glow=None, trim=None, glow_all=False, rim=
             lv += 0.7 * (0.5 - y / max(1, h - 1))  # 위가 밝고 아래가 어둡게
         g = None
         n = h2(x, y, seed + hash(face) % 97)
-        # 패턴
+        # 패턴 (큰 무늬는 PS배 확대 좌표, 작은 입체감은 실제 픽셀)
+        X, Y, W, H = x // PS, y // PS, max(1, w // PS), max(1, h // PS)
+        sx, sy = x % PS, y % PS
+        if pat in ("scale", "plate", "stone", "bark", "crystal", "metal", "feather", "fur", "bone"):
+            lv += 0.3 if sy == 0 else (-0.3 if sy == PS - 1 else 0)
         if pat == "scale":
-            row = y // 2; cx = (x + (row % 2) * 2) % 4
-            if y % 2 == 1 and cx in (0, 3): lv -= 1.0
-            elif y % 2 == 0 and cx in (1, 2): lv += 0.6
-            if A and (row % 5 == 0) and face != "top": return pick(A, lv), None
+            cw, ch = 6, 4
+            row = y // ch; ox = (row % 2) * (cw // 2)
+            lx, ly = (x + ox) % cw, y % ch
+            dxc = abs(lx - (cw - 1) / 2) / (cw / 2)
+            if ly >= ch - 1 - int(dxc * 1.5): lv -= 1.1          # 비늘 아래 가장자리 그림자
+            elif ly == 0 and dxc < 0.6: lv += 0.9                 # 비늘 윗면 반사광
+            elif ly == 1 and dxc < 0.3: lv += 0.4
+            if A and (row % 6 == 0) and face != "top": return pick(A, lv), None
         elif pat == "plate":
-            if x % 6 == 0 or y % 6 == 0: lv -= 1.0
-            elif x % 6 == 1 or y % 6 == 1: lv += 0.6
-            if (x % 6 == 3 and y % 6 == 3): lv += 1.4
+            gx, gy = x % 12, y % 12
+            if gx == 0 or gy == 0: lv -= 1.2
+            elif gx == 1 or gy == 1: lv += 0.7
+            elif gx == 11 or gy == 11: lv -= 0.5
+            if gx in (3, 9) and gy in (3, 9): lv += 1.5 if (gx + gy) % 2 == 0 else 1.2
+            if (x - y) % 17 == 0: lv += 0.4
         elif pat == "bark":
-            k = (x + int(2 * math.sin(y * 0.6 + x))) % 4
+            k = (X + int(2 * math.sin(Y * 0.6 + X))) % 4
             lv += -1.2 if k == 0 else (0.4 if k == 2 else 0)
             if n < 0.04 and A: return pick(A, lv), None
         elif pat == "leaf":
@@ -59,48 +71,48 @@ def M(base, pat="plain", accent=None, glow=None, trim=None, glow_all=False, rim=
             if A and n > 0.82: return pick(A, lv + 0.5), None
             if G and n < 0.03: return G, G
         elif pat == "crystal":
-            d = (x + y) % 7
+            d = (X + Y) % 7
             lv += 1.6 if d == 0 else (0.7 if d == 1 else (-0.8 if d in (4, 5) else 0))
-            if G and (x * 5 + y * 3) % 13 == 0: g = G
+            if G and (X * 5 + Y * 3) % 13 == 0: g = G
         elif pat == "cloth":
-            lv += 0.5 * math.sin(x * 1.1) - (0.6 if y % 5 == 4 else 0)
-            if T and (y < 2 or y >= h - 2): return pick(T, lv + 0.3), None
+            lv += 0.5 * math.sin(X * 1.1) - (0.6 if Y % 5 == 4 else 0)
+            if T and (Y < 2 or Y >= H - 2): return pick(T, lv + 0.3), None
         elif pat == "fur":
-            s = (x * 3 + y * 2 + int(n * 3)) % 6
+            s = (X * 3 + Y * 2 + int(n * 3)) % 6
             lv += 0.8 if s == 0 else (-0.7 if s == 3 else 0)
         elif pat == "feather":
-            v = (y + abs(x - w // 2)) % 4
+            v = (Y + abs(X - W // 2)) % 4
             lv += -0.9 if v == 0 else (0.5 if v == 2 else 0)
-            if A and y >= h * 0.65: return pick(A, lv), None
+            if A and Y >= H * 0.65: return pick(A, lv), None
         elif pat == "stone":
             lv += (n - 0.5) * 1.4
-            if (x * 7 + y * 13) % 29 == 0: lv -= 1.6
+            if (X * 7 + Y * 13) % 29 == 0: lv -= 1.6
         elif pat == "bone":
-            lv += 0.4 if (x + y) % 9 == 0 else 0
-            if y % 4 == 3 and w >= 3: lv -= 0.6
+            lv += 0.4 if (X + Y) % 9 == 0 else 0
+            if Y % 4 == 3 and W >= 3: lv -= 0.6
         elif pat == "metal":
-            lv += 1.3 if (x - y) % 8 == 0 else (0.6 if (x - y) % 8 == 1 else 0)
-            if y % 7 == 6: lv -= 0.8
+            lv += 1.3 if (X - Y) % 8 == 0 else (0.6 if (X - Y) % 8 == 1 else 0)
+            if Y % 7 == 6: lv -= 0.8
         elif pat == "rune":
-            if G and w >= 5 and h >= 5 and rune(x, y, w, h): return G, G
+            if G and W >= 5 and H >= 5 and rune(X, Y, W, H): return G, G
             lv += (n - 0.5) * 0.8
         elif pat == "lava":
-            crack = abs(math.sin(x * 0.9 + math.sin(y * 0.7) * 2)) < 0.18 or abs(math.sin(y * 1.3 + x * 0.3)) < 0.12
+            crack = abs(math.sin(X * 0.9 + math.sin(Y * 0.7) * 2)) < 0.18 or abs(math.sin(Y * 1.3 + X * 0.3)) < 0.12
             if crack:
                 gc = G or (255, 150, 40); return gc, gc
             lv += (n - 0.5) * 1.0 - 0.4
         elif pat == "veins":
-            if G and (abs(math.sin(x * 0.8 + y * 0.35)) < 0.12): return G, G
+            if G and (abs(math.sin(X * 0.8 + Y * 0.35)) < 0.12): return G, G
             lv += (n - 0.5) * 0.8
         elif pat == "flesh":
-            lv += (n - 0.5) * 0.7 + (0.5 if (x * 3 + y) % 11 == 0 else 0)
+            lv += (n - 0.5) * 0.7 + (0.5 if (X * 3 + Y) % 11 == 0 else 0)
         elif pat == "energy":
-            band = (x + y * 2) % 5
+            band = (X + Y * 2) % 5
             c = R[4] if band == 0 else R[3]
             return c, c
         elif pat == "gem":
-            cx, cy = (w - 1) / 2, (h - 1) / 2
-            dd = abs(x - cx) + abs(y - cy)
+            cx, cy = (W - 1) / 2, (H - 1) / 2
+            dd = abs(X - cx) + abs(Y - cy)
             c = pick(R, 3.6 - dd * 0.8)
             if dd < 1.1: return (255, 255, 255), (G or c)
             return c, (G if G else None)
@@ -111,6 +123,7 @@ def M(base, pat="plain", accent=None, glow=None, trim=None, glow_all=False, rim=
             if x == 0 or x == w - 1: lv -= 0.9
             elif pat not in ("cloth", "fur") and y == h - 1: lv -= 0.9
             elif pat not in ("cloth", "fur") and y == 0: lv += 0.9
+        if rim and w >= 8 and h >= 8 and (x in (1, w - 2) or y == h - 2): lv -= 0.35
         if T and rim and w >= 4 and h >= 4 and (x == 0 or x == w - 1 or y == 0 or y == h - 1):
             return pick(T, lv + 0.6), None
         return pick(R, lv), g

@@ -1,4 +1,4 @@
-// 자동 생성 파일 (tools/bossgen/bosses.py) - 직접 수정하지 마세요
+// 자동 생성 파일 (tools/bossgen/mobs2.py) - 직접 수정하지 마세요
 package com.elementalweapons.client.boss.gen;
 
 import net.minecraft.client.model.geom.ModelPart;
@@ -14,14 +14,15 @@ public class SparkWispModel extends GenericBossModel {
 	private static final String[][] PATHS = {
 			{"head"},
 			{"ring"},
-			{"ring", "orb0"},
-			{"ring", "orb1"},
-			{"ring", "orb2"},
-			{"ring", "orb3"},
-			{"ring", "orb4"},
-			{"ring", "orb5"},
+			{"ring", "wo0"},
+			{"ring", "wo1"},
+			{"ring", "wo2"},
+			{"ring", "wo3"},
+			{"ring", "wo4"},
+			{"ring", "wo5"},
 			{"tail1"},
-			{"tail1", "tail2"}
+			{"tail1", "tail2"},
+			{"tail1", "tail2", "tail3"}
 	};
 
 	public SparkWispModel(ModelPart root) {
@@ -31,16 +32,17 @@ public class SparkWispModel extends GenericBossModel {
 	public static LayerDefinition createBodyLayer() {
 		MeshDefinition mesh = new MeshDefinition();
 		PartDefinition root = mesh.getRoot();
-		root.addOrReplaceChild("head", CubeListBuilder.create().texOffs(0, 0).addBox(-3F, -3F, -3F, 6F, 6F, 6F).texOffs(36, 0).addBox(-1.5F, -1.5F, -3.5F, 3F, 3F, 1F), PartPose.offsetAndRotation(0F, 10F, 0F, 0F, 0F, 0F));
-		PartDefinition ring = root.addOrReplaceChild("ring", CubeListBuilder.create(), PartPose.offsetAndRotation(0F, 10F, 0F, 0F, 0F, 0F));
-		ring.addOrReplaceChild("orb0", CubeListBuilder.create().texOffs(48, 0).addBox(-0.75F, -0.75F, -0.75F, 1F, 1F, 1F), PartPose.offsetAndRotation(5F, 0F, 0F, 0F, 0F, 0F));
-		ring.addOrReplaceChild("orb1", CubeListBuilder.create().texOffs(52, 0).addBox(-0.75F, -0.75F, -0.75F, 1F, 1F, 1F), PartPose.offsetAndRotation(2.5F, 0F, 4.3301F, 0F, 0F, 0F));
-		ring.addOrReplaceChild("orb2", CubeListBuilder.create().texOffs(56, 0).addBox(-0.75F, -0.75F, -0.75F, 1F, 1F, 1F), PartPose.offsetAndRotation(-2.5F, 0F, 4.3301F, 0F, 0F, 0F));
-		ring.addOrReplaceChild("orb3", CubeListBuilder.create().texOffs(60, 0).addBox(-0.75F, -0.75F, -0.75F, 1F, 1F, 1F), PartPose.offsetAndRotation(-5F, 0F, 0F, 0F, 0F, 0F));
-		ring.addOrReplaceChild("orb4", CubeListBuilder.create().texOffs(0, 12).addBox(-0.75F, -0.75F, -0.75F, 1F, 1F, 1F), PartPose.offsetAndRotation(-2.5F, 0F, -4.3301F, 0F, 0F, 0F));
-		ring.addOrReplaceChild("orb5", CubeListBuilder.create().texOffs(4, 12).addBox(-0.75F, -0.75F, -0.75F, 1F, 1F, 1F), PartPose.offsetAndRotation(2.5F, 0F, -4.3301F, 0F, 0F, 0F));
-		PartDefinition tail1 = root.addOrReplaceChild("tail1", CubeListBuilder.create().texOffs(24, 0).addBox(-1.5F, 0F, -1.5F, 3F, 3F, 3F), PartPose.offsetAndRotation(0F, 13F, 0F, 0F, 0F, 0F));
-		tail1.addOrReplaceChild("tail2", CubeListBuilder.create().texOffs(44, 0).addBox(-0.5F, 0F, -0.5F, 1F, 3F, 1F), PartPose.offsetAndRotation(0F, 3F, 0F, 0F, 0F, 0F));
-		return LayerDefinition.create(mesh, 64, 64);
+		root.addOrReplaceChild("head", CubeListBuilder.create().texOffs(0, 0).addBox(-7F, -7F, -7F, 14F, 14F, 14F).texOffs(0, 28).addBox(-3F, -3F, -8.6F, 6F, 6F, 2F).texOffs(16, 28).addBox(-3F, -9F, -3F, 6F, 2F, 6F).texOffs(24, 36).addBox(-1F, -13F, -1F, 2F, 4F, 2F).texOffs(56, 0).addBox(-9F, -3F, -3F, 2F, 6F, 6F).texOffs(72, 0).addBox(7F, -3F, -3F, 2F, 6F, 6F), PartPose.offsetAndRotation(0F, -4F, 0F, 0F, 0F, 0F));
+		PartDefinition ring = root.addOrReplaceChild("ring", CubeListBuilder.create(), PartPose.offsetAndRotation(0F, -4F, 0F, 0F, 0F, 0F));
+		ring.addOrReplaceChild("wo0", CubeListBuilder.create().texOffs(40, 28).addBox(-2F, -2F, -2F, 4F, 4F, 4F), PartPose.offsetAndRotation(12F, 0F, 0F, 0F, 0F, 0F));
+		ring.addOrReplaceChild("wo1", CubeListBuilder.create().texOffs(56, 28).addBox(-2F, -2F, -2F, 4F, 4F, 4F), PartPose.offsetAndRotation(6F, 0F, 10.3923F, 0F, 1.0472F, 0F));
+		ring.addOrReplaceChild("wo2", CubeListBuilder.create().texOffs(72, 28).addBox(-2F, -2F, -2F, 4F, 4F, 4F), PartPose.offsetAndRotation(-6F, 0F, 10.3923F, 0F, 2.0944F, 0F));
+		ring.addOrReplaceChild("wo3", CubeListBuilder.create().texOffs(88, 28).addBox(-2F, -2F, -2F, 4F, 4F, 4F), PartPose.offsetAndRotation(-12F, 0F, 0F, 0F, 3.1416F, 0F));
+		ring.addOrReplaceChild("wo4", CubeListBuilder.create().texOffs(104, 28).addBox(-2F, -2F, -2F, 4F, 4F, 4F), PartPose.offsetAndRotation(-6F, 0F, -10.3923F, 0F, 4.1888F, 0F));
+		ring.addOrReplaceChild("wo5", CubeListBuilder.create().texOffs(0, 36).addBox(-2F, -2F, -2F, 4F, 4F, 4F), PartPose.offsetAndRotation(6F, 0F, -10.3923F, 0F, 5.236F, 0F));
+		PartDefinition tail1 = root.addOrReplaceChild("tail1", CubeListBuilder.create().texOffs(88, 0).addBox(-3F, 0F, -3F, 6F, 6F, 6F), PartPose.offsetAndRotation(0F, 3F, 0F, 0F, 0F, 0F));
+		PartDefinition tail2 = tail1.addOrReplaceChild("tail2", CubeListBuilder.create().texOffs(112, 0).addBox(-2F, 0F, -2F, 4F, 6F, 4F), PartPose.offsetAndRotation(0F, 6F, 0F, 0F, 0F, 0F));
+		tail2.addOrReplaceChild("tail3", CubeListBuilder.create().texOffs(16, 36).addBox(-1F, 0F, -1F, 2F, 6F, 2F), PartPose.offsetAndRotation(0F, 6F, 0F, 0F, 0F, 0F));
+		return LayerDefinition.create(mesh, 128, 128);
 	}
 }

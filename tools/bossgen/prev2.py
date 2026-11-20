@@ -8,8 +8,9 @@ out = sys.argv[1]
 tiles = []
 for bid in ids:
     roots, mats = SPECS[bid]()
+    from hd import hdify; hdify(roots, 2)
     root = Part("root", children=roots, field=False)
-    for tw in (256, 512):
+    for tw in (512, 1024):
         try: pack(root, tw, tw); break
         except SystemExit: continue
     tex, glow = paint(root, tw, tw, mats, seed=7)

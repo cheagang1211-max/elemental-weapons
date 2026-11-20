@@ -54,6 +54,48 @@ def make_texture(el):
                 im.putpixel((tx + x, ty + y), c + (255,))
     im.save(f"{A}/textures/item/3d/{el}_weapon.png")
 
+PPU = 4  # 1 모델 단위당 텍스처 픽셀 (HD)
+FACE_DIRS = ("north", "south", "east", "west", "up", "down")
+
+def face_dims(e, d):
+    (x0, y0, z0), (x1, y1, z1) = e["from"], e["to"]
+    w, h, dd = x1 - x0, y1 - y0, z1 - z0
+    return {"north": (w, h), "south": (w, h), "east": (dd, h), "west": (dd, h), "up": (w, dd), "down": (w, dd)}[d]
+
+def paint_face(im, px, py, pw, ph, k, d, pal, el_style, length_hint):
+    """면 하나를 그리기: k=재질 키, d=방향"""
+    base = pal[k]
+    light = {"up": 0.12, "north": 0.04, "south": 0.0, "east": -0.06, "west": -0.06, "down": -0.18}[d]
+    for yy in range(ph):
+        for xx in range(pw):
+            fy = yy / max(1, ph - 1); fx = xx / max(1, pw - 1)
+            c = base; lv = light
+            if k in ("blade", "blade_d"):
+                lv += 0.10 - 0.22 * fy                                  # 끝(위)이 밝고 손잡이 쪽이 어둡게
+                if abs((xx - yy * 0.5) % (pw + 6) - 2) < 1.0: lv += 0.18   # 사선 광택
+                if d in ("north", "south") and pw >= 6 and xx in (0, pw - 1): lv += 0.22
+                if d in ("north", "south") and pw >= 8 and yy % 10 in (3, 4, 5) and abs(xx - pw / 2) < 1.2 and 0.12 < fy < 0.8:
+                    c = pal["accent"]; lv = 0.05                          # 룬 각인
+            elif k == "edge":
+                lv += 0.18 - 0.12 * fy + (0.1 if xx == 0 else 0)
+            elif k == "fuller":
+                lv += -0.05 + (0.12 if xx == 0 else 0) - (0.1 if xx == pw - 1 else 0)
+            elif k in ("metal", "metal_d", "metal2"):
+                lv += 0.06 * math.sin(yy * 2.2) + (0.16 if yy == 0 or xx == 0 else 0) - (0.16 if yy == ph - 1 or xx == pw - 1 else 0)
+                if pw >= 6 and ph >= 6 and (xx, yy) in ((1, 1), (pw - 2, 1), (1, ph - 2), (pw - 2, ph - 2)): lv += 0.3
+            elif k == "grip":
+                band = (xx + yy) % 6
+                lv += -0.16 if band == 0 else (0.08 if band in (2, 3) else 0)
+                if d in ("up", "down"): lv = light - 0.05
+            elif k == "gem":
+                cx, cy = (pw - 1) / 2, (ph - 1) / 2
+                dd_ = abs(xx - cx) / max(1, cx + 0.5) + abs(yy - cy) / max(1, cy + 0.5)
+                c = mix((255, 255, 255), base, min(1, dd_ * 0.9)); lv = 0.08 - 0.12 * dd_
+                if xx < cx and yy < cy and dd_ < 0.6: lv += 0.15
+            elif k == "accent":
+                lv += 0.1 - 0.15 * abs(fy - 0.5)
+            im.putpixel((px + xx, py + yy), tone(c, lv) + (255,))
+
 def uv_of(k):
     i = TILE.index(k); return [(i % 4) * 4, (i // 4) * 4, (i % 4) * 4 + 4, (i // 4) * 4 + 4]
 
@@ -63,6 +105,7 @@ def E(x0, y0, z0, x1, y1, z1, k, rot=None, glow=None):
     e = {"from": [round(min(x0, x1), 3), round(min(y0, y1), 3), round(min(z0, z1), 3)], "to": [round(max(x0, x1), 3), round(max(y0, y1), 3), round(max(z0, z1), 3)], "faces": f}
     if rot: e["rotation"] = {"angle": rot[0], "axis": rot[1], "origin": rot[2]}
     if glow or (glow is None and k in ("gem",)): e["light_emission"] = 12
+    e["_k"] = k
     return e
 
 def box(cx, cy, cz, w, h, d, k, rot=None, glow=None):
@@ -199,13 +242,13 @@ def build(el, wt):
 
 DISPLAY = {
     "dagger":     {"thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 1, 1], "scale": [0.85, 0.85, 0.85]},
-                   "firstperson_righthand": {"rotation": [0, 90, 20], "translation": [1, 3, 0], "scale": [0.55, 0.55, 0.55]}},
+                   "firstperson_righthand": {"rotation": [0, 90, 20], "translation": [1, 3, 0], "scale": [0.5, 0.5, 0.5]}},
     "sword":      {"thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 3, 1], "scale": [0.85, 0.85, 0.85]},
-                   "firstperson_righthand": {"rotation": [0, 90, 20], "translation": [1, 2, 0], "scale": [0.5, 0.5, 0.5]}},
+                   "firstperson_righthand": {"rotation": [0, 90, 20], "translation": [1, 2, 0], "scale": [0.42, 0.42, 0.42]}},
     "greatsword": {"thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 5, 1], "scale": [0.95, 0.95, 0.95]},
-                   "firstperson_righthand": {"rotation": [0, 90, 20], "translation": [1, 0, 0], "scale": [0.42, 0.42, 0.42]}},
+                   "firstperson_righthand": {"rotation": [0, 90, 20], "translation": [1, 0, 0], "scale": [0.34, 0.34, 0.34]}},
     "staff":      {"thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 1, 1], "scale": [0.85, 0.85, 0.85]},
-                   "firstperson_righthand": {"rotation": [0, 90, 15], "translation": [1, -2, 0], "scale": [0.38, 0.38, 0.38]}},
+                   "firstperson_righthand": {"rotation": [0, 90, 15], "translation": [2, 3, 0], "scale": [0.28, 0.28, 0.28]}},
 }
 for v in DISPLAY.values():
     v["thirdperson_lefthand"] = v["thirdperson_righthand"]; v["firstperson_lefthand"] = v["firstperson_righthand"]
@@ -225,7 +268,7 @@ def preview(es, size=220):
         return rx, y, rz
     for e in es:
         (x0, y0, z0), (x1, y1, z1) = e["from"], e["to"]
-        k = TILE[[uv_of(t) for t in TILE].index(e["faces"]["north"]["uv"])]
+        k = e["_k"]
         V = [(x0, y0, z0), (x1, y0, z0), (x1, y1, z0), (x0, y1, z0), (x0, y0, z1), (x1, y0, z1), (x1, y1, z1), (x0, y1, z1)]
         for idx, lt in (((0, 1, 2, 3), 1.0), ((1, 5, 6, 2), 0.8), ((3, 2, 6, 7), 1.15), ((4, 0, 3, 7), 0.8)):
             pts = [proj(*V[i]) for i in idx]
@@ -237,22 +280,45 @@ def preview(es, size=220):
         d.polygon([(size / 2 + p[0] * sc, size * 0.82 - p[1] * sc) for p in pts], fill=c, outline=tuple(int(v * 0.6) for v in c))
     return img
 
+def hd_texture(el, wt, es, pal):
+    """요소마다 면을 따로 배치(선반 패킹)하고 직접 그린 텍스처를 만든다"""
+    rects = []
+    for ei, e in enumerate(es):
+        k = e.pop("_k")
+        for d in FACE_DIRS:
+            fw, fh = face_dims(e, d)
+            pw, ph = max(1, round(fw * PPU)), max(1, round(fh * PPU))
+            rects.append((ph, pw, ei, d, k))
+    for size in (128, 256, 512):
+        x = y = rowh = 0; placed = []; ok = True
+        for ph, pw, ei, d, k in sorted(rects, key=lambda r: -r[0]):
+            if x + pw > size: x, y, rowh = 0, y + rowh, 0
+            if y + ph > size or pw > size: ok = False; break
+            placed.append((x, y, pw, ph, ei, d, k)); x += pw; rowh = max(rowh, ph)
+        if ok: break
+    im = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    for x, y, pw, ph, ei, d, k in placed:
+        paint_face(im, x, y, pw, ph, k, d, pal, EL[el]["style"], 0)
+        u = 16 / size
+        es[ei]["faces"][d] = {"uv": [round(x * u, 4), round(y * u, 4), round((x + pw) * u, 4), round((y + ph) * u, 4)], "texture": "#t"}
+    im.save(f"{A}/textures/item/3d/{el}_{wt}.png")
+
 if __name__ == "__main__":
     os.makedirs(f"{A}/textures/item/3d", exist_ok=True); os.makedirs(f"{A}/models/item/3d", exist_ok=True)
     tiles = []
     for el in EL:
-        make_texture(el)
         p = EL[el]
         CUR = {"blade": hexc(p["blade"]), "blade_d": tone(hexc(p["blade"]), -0.15), "edge": hexc(p["edge"]), "metal": hexc(p["metal"]), "metal_d": tone(hexc(p["metal"]), -0.12),
                "metal2": hexc(p["metal2"]), "grip": hexc(p["grip"]), "gem": hexc(p["gem"]), "accent": hexc(p["accent"]), "fuller": tone(hexc(p["blade"]), -0.25)}
         for wt in ("dagger", "sword", "greatsword", "staff"):
             es = build(el, wt)
-            model = {"textures": {"t": f"{NS}:item/3d/{el}_weapon", "particle": f"{NS}:item/{el}_{wt}"}, "gui_light": "front", "display": DISPLAY[wt], "elements": es}
+            if len(sys.argv) > 2: tiles.append(preview(es))
+            hd_texture(el, wt, es, CUR)
+            model = {"textures": {"t": f"{NS}:item/3d/{el}_{wt}", "particle": f"{NS}:item/{el}_{wt}"}, "gui_light": "front", "display": DISPLAY[wt], "elements": es}
             json.dump(model, open(f"{A}/models/item/3d/{el}_{wt}.json", "w"), indent="\t")
             json.dump({"model": {"type": "minecraft:select", "property": "minecraft:display_context",
                        "cases": [{"when": ["gui"], "model": {"type": "minecraft:model", "model": f"{NS}:item/{el}_{wt}"}}],
                        "fallback": {"type": "minecraft:model", "model": f"{NS}:item/3d/{el}_{wt}"}}}, open(f"{A}/items/{el}_{wt}.json", "w"), indent="\t")
-            if len(sys.argv) > 2: tiles.append(preview(es))
     if len(sys.argv) > 2:
         sheet = Image.new("RGBA", (220 * 4, 220 * 7))
         for i, t in enumerate(tiles): sheet.paste(t, ((i % 4) * 220, (i // 4) * 220))

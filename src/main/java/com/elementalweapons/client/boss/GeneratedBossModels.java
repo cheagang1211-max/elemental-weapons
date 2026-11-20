@@ -87,10 +87,10 @@ public final class GeneratedBossModels {
 	private static void register(String id, ModelLayerLocation layer, Function<ModelPart, GenericBossModel> factory) {
 		BossDef def = BossDefs.ALL.get(id);
 		EntityRenderers.register(ModEntities.BOSSES.get(id),
-				ctx -> new GenericBossRenderer<>(ctx, layer, factory, id, def.renderScale, def.shadow));
+				ctx -> new GenericBossRenderer<>(ctx, layer, factory, id, def.renderScale / 2F, def.shadow));
 	}
 
 	private static void registerVoltra(ModelLayerLocation layer, Function<ModelPart, GenericBossModel> factory) {
-		EntityRenderers.register(ModEntities.VOLTRA, ctx -> new GenericBossRenderer<>(ctx, layer, factory, "voltra", 2.7F, 2.0F));
+		EntityRenderers.register(ModEntities.VOLTRA, ctx -> new GenericBossRenderer<>(ctx, layer, factory, "voltra", 2.7F / 2F, 2.0F));
 	}
 }

@@ -12,6 +12,7 @@ from shapes import P, C, B, chain, bend_chain, spikes, wing, cape, ring_of, claw
 from PIL import Image
 
 SPECS = {}
+HD = 2
 def spec(fn): SPECS[fn.__name__] = fn; return fn
 
 def leg(name, pivot, thigh, shin, mat, foot_mat=None, claw_mat=None, knee_name=None, armor=None):
@@ -419,8 +420,10 @@ if __name__ == "__main__":
     for bid, fn in SPECS.items():
         roots, mats = fn()
         check_unique(roots)
+        from hd import hdify
+        hdify(roots, HD)
         root = Part("root", children=roots, field=False)
-        for tw in (256, 512):
+        for tw in (512, 1024):
             try: pack(root, tw, tw); break
             except SystemExit: continue
         tex, glow = paint(root, tw, tw, mats, seed=sum(map(ord, bid)))
@@ -460,11 +463,11 @@ public final class GeneratedBossModels {{
 	private static void register(String id, ModelLayerLocation layer, Function<ModelPart, GenericBossModel> factory) {{
 		BossDef def = BossDefs.ALL.get(id);
 		EntityRenderers.register(ModEntities.BOSSES.get(id),
-				ctx -> new GenericBossRenderer<>(ctx, layer, factory, id, def.renderScale, def.shadow));
+				ctx -> new GenericBossRenderer<>(ctx, layer, factory, id, def.renderScale / {HD}F, def.shadow));
 	}}
 
 	private static void registerVoltra(ModelLayerLocation layer, Function<ModelPart, GenericBossModel> factory) {{
-		EntityRenderers.register(ModEntities.VOLTRA, ctx -> new GenericBossRenderer<>(ctx, layer, factory, "voltra", 2.7F, 2.0F));
+		EntityRenderers.register(ModEntities.VOLTRA, ctx -> new GenericBossRenderer<>(ctx, layer, factory, "voltra", 2.7F / {HD}F, 2.0F));
 	}}
 }}
 """)

@@ -67,14 +67,21 @@ def wing(side, pivot, bone, membrane, span=22, depth=16, fingers=3, mat_claw=Non
     """2단 박쥐/용 날개. side = 'right'(-x) | 'left'(+x). 바깥 마디 = {side}_wing2"""
     s = -1 if side == "right" else 1
     half = span // 2
-    inner = [C(s * half / 2, 0, 0, half, 2, 2, bone),
-             B(min(0, s * half), 0, 1, half, 1, depth, membrane)]
+    inner = [C(s * half / 2, 0, 0, half, 2, 2, bone)]
+    strips = 4
+    for k in range(strips):
+        sw = half / strips
+        dd = depth * (0.82 + 0.18 * math.cos((k + 0.5) / strips * math.pi * 2))
+        inner.append(B(min(0, s * half) + k * sw, 0, 1, sw, 1, dd, membrane))
     outer = [C(s * half / 2, 0, 0, half, 2, 2, bone)]
     for f in range(fingers):
         a = (f + 1) / (fingers + 1)
         fx = s * half * (0.35 + 0.6 * a)
         outer.append(B(fx - 0.5, 0, 1, 1, 1, depth + 2 - f * 2, bone))
-    outer.append(B(min(0, s * half), 0.3, 1, half, 1, depth - 2, membrane))
+    for k in range(fingers + 1):
+        sw = half / (fingers + 1)
+        dd = (depth - 2) * (1.0 - 0.18 * k / max(1, fingers)) * (0.8 if k % 2 else 1.0)
+        outer.append(B(min(0, s * half) + k * sw, 0.3, 1, sw, 1, dd, membrane))
     if mat_claw: outer.append(C(s * (half + 1), 0, 0, 2, 2, 2, mat_claw))
     w2 = P(f"{side}_wing2", (s * half, 0, 0), (0, 0, 0), outer)
     return P(f"{side}_wing", pivot, rot, inner, [w2])
