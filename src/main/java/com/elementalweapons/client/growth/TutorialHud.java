@@ -16,7 +16,7 @@ public final class TutorialHud {
 
 	public static void render(GuiGraphicsExtractor g, DeltaTracker dt) {
 		Minecraft mc = Minecraft.getInstance();
-		if (mc.player == null || mc.options.hideGui) return;
+		if (mc.player == null) return;
 		Tutorial.Data d = Tutorial.get(mc.player);
 		if (d.step() >= Tutorial.DONE) return;
 		Font font = mc.font;
