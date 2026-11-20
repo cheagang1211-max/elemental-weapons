@@ -10,7 +10,7 @@ class Scaled:
     def arc(s, cx, cy, r, a0, a1, w, c, glow=False, steps=24): (x, y), = s._p([(cx, cy)]); s.cv.arc(x, y, r * s.S, a0, a1, w * s.S, c, glow, steps)
     def gem(s, cx, cy, r, base, glow=True): (x, y), = s._p([(cx, cy)]); s.cv.gem(x, y, r * s.S, base, glow)
 import math
-from sprite_draw import Canvas, PAL, hexc, tone
+from sprite_draw import Canvas, PAL, hexc, tone, aura
 
 def P_(el): return {k: hexc(v) for k, v in PAL[el].items()}
 
@@ -323,8 +323,8 @@ def bow(cv, el):
         for a in (155, 205):
             x, y = pt(a, R + 1.5); cv.circ(x - 1.5, y, 1.4, p["glow"], glow=True)
 
-def design(el, wt):
-    cv = Canvas(); p = P_(el); xc = 32
+def base_design(cv, el, wt):
+    p = P_(el); xc = 32
     if wt == "sword":
         grip(cv, el, xc, 51, 58, 2.6); blade(cv, el, xc, 48, 3, 4.4); guard(cv, el, xc, 49.5, 22, 1.3)
     elif wt == "greatsword":
@@ -355,4 +355,128 @@ def design(el, wt):
         scythe(cv, el)
     elif wt == "bow":
         bow(cv, el)
+
+def book(cv, el, tier=1):
+    """마법서: 펼쳐진 책 (표지·페이지·책갈피·속성 문장)"""
+    p = P_(el); xc = 32
+    cv.poly([(xc - 24, 22), (xc, 26), (xc + 24, 22), (xc + 26, 46), (xc, 50), (xc - 26, 46)], p["dark"])               # 표지 그림자
+    cv.poly([(xc - 23, 20), (xc, 24), (xc + 23, 20), (xc + 25, 44), (xc, 48), (xc - 25, 44)], p["metal"])
+    for sd in (-1, 1):                                                                                          # 펼친 페이지
+        cv.poly([(xc, 24), (xc + sd * 21, 19.5), (xc + sd * 22.5, 41), (xc, 45)], (246, 236, 214))
+        cv.poly([(xc, 24), (xc + sd * 6, 23), (xc + sd * 7, 44), (xc, 45)], (226, 212, 186))
+        for k in range(5):
+            y0 = 25 + k * 3.6
+            cv.line([(xc + sd * 9, y0 + 0.5), (xc + sd * 19, y0 - 0.6)], 0.5, (176, 160, 140))
+    cv.line([(xc, 24), (xc, 45)], 0.8, p["dark"])
+    cv.rect(xc - 1.2, 44, xc + 1.2, 54, p["gem"])                                                                  # 책갈피
+    cv.poly([(xc - 1.2, 54), (xc + 1.2, 54), (xc, 52)], p["dark"])
+    for (x, y) in ((xc - 24, 21), (xc + 24, 21), (xc - 25.5, 45), (xc + 25.5, 45)): cv.gem(x, y, 1.6, p["metal2"], glow=False)
+    # 페이지 위에 떠오른 속성 문장
+    cv.arc(xc + 13, 32, 5, 0, 360, 0.7, p["glow"], glow=True, steps=30)
+    cv.gem(xc + 13, 32, 2.4, p["gem"])
+    cv.arc(xc - 13, 32, 4, 200, 520, 0.6, tone(p["blade2"], -0.1), steps=24)
+    if tier >= 2:
+        for k in range(3): cv.rect(xc - 18 + k * 4, 13 - k * 3, xc - 15.5 + k * 4, 15.5 - k * 3, p["glow"], glow=True)   # 떠오르는 룬
+    if tier >= 3:
+        for sd in (-1, 1): wing(cv, xc + sd * 25, 30, sd, 9, p["metal2"], tone(p["metal"], 0.1), n=3)
+    if tier >= 4:
+        cv.arc(xc, 18, 10, 200, 340, 1.0, p["glow"], glow=True, steps=30)
+        for k in range(5): cv.circ(xc - 12 + k * 6, 9 + (k % 2) * 2, 1.0, p["glow"], glow=True)
+
+def tier_decor(cv, el, wt, tier):
+    """단계가 오를수록 붙는 장식: 2단계 보석·룬, 3단계 날개·빛줄, 4단계 후광"""
+    p = P_(el); xc = 32
+    blade_types = ("sword", "greatsword", "dagger")
+    if tier >= 2:
+        if wt in blade_types:
+            gy = {"sword": 49.5, "greatsword": 48.5, "dagger": 47.5}[wt]
+            cv.gem(xc, gy, 3.2, p["gem"]); cv.circ(xc - 6, gy + 2.5, 1.0, p["glow"], glow=True); cv.circ(xc + 6, gy + 2.5, 1.0, p["glow"], glow=True)
+        elif wt in ("staff", "hammer", "scythe"):
+            for y in (36, 52): cv.gem(xc + (6 if wt == "scythe" else 0), y, 1.8, p["gem"])
+        elif wt == "bow":
+            cv.gem(15, 32, 3.0, p["gem"])
+        elif wt == "shield":
+            for k in range(6):
+                a = math.radians(k * 60); cv.circ(xc + math.cos(a) * 12, 32 + math.sin(a) * 12, 1.2, p["metal2"])
+    if tier >= 3:
+        if wt in blade_types:
+            gy = {"sword": 49.5, "greatsword": 48.5, "dagger": 47.5}[wt]
+            for sd in (-1, 1): wing(cv, xc + sd * 4, gy, sd, 10 if wt != "dagger" else 7, p["metal2"], tone(p["metal"], 0.1), n=3)
+        elif wt == "staff":
+            cv.arc(xc, 13, 12, 0, 360, 0.9, p["glow"], glow=True, steps=48)
+        elif wt == "hammer":
+            for sd in (-1, 1): cv.poly([(xc + sd * 14, 9), (xc + sd * 20, 3), (xc + sd * 17, 11)], p["metal2"])
+        elif wt == "scythe":
+            cv.line([(42, 22), (50, 30), (52, 38)], 1.2, p["glow"], glow=True)
+        elif wt == "bow":
+            for sd in (-1, 1): wing(cv, 22, 32 + sd * 20, -1, 7, p["metal2"], tone(p["metal"], 0.1), n=3, up=(sd < 0))
+        elif wt == "shield":
+            for sd in (-1, 1): wing(cv, xc + sd * 22, 22, sd, 8, p["metal2"], tone(p["metal"], 0.1), n=3)
+    if tier >= 4:
+        if wt in ("staff", "hammer"):
+            cv.arc(xc, 13, 16, 190, 350, 1.2, p["glow"], glow=True, steps=40)
+        elif wt in blade_types:
+            cv.arc(xc, 49, 9, 180, 360, 0.9, p["glow"], glow=True, steps=30)
+
+def wood_design(wt):
+    """나무 무기: 손으로 깎은 나무 + 노끈 감개, 보석·빛 없음"""
+    cv = Canvas(0.95); el = "wood"; p = P_(el); xc = 32
+    rope = (196, 172, 120)
+    def wrap(y0, y1, w):
+        y = y0
+        while y < y1: cv.line([(xc - w, y), (xc + w, y + 1.0)], 0.7, rope); y += 1.5
+    if wt in ("sword", "greatsword", "dagger"):
+        top, bot, w = {"sword": (6, 48, 3.8), "greatsword": (3, 46, 6.2), "dagger": (16, 46, 3.2)}[wt]
+        cv.poly([(xc - w, bot), (xc - w, top + w * 1.6), (xc, top), (xc + w, top + w * 1.6), (xc + w, bot)], p["blade"])
+        cv.poly([(xc, top), (xc + w, top + w * 1.6), (xc + w, bot), (xc, bot)], p["blade2"])
+        for k in range(3): cv.line([(xc - w * 0.5, top + 10 + k * 9), (xc - w * 0.3, top + 15 + k * 9)], 0.5, tone(p["blade2"], -0.1))
+        cv.rect(xc - w - 4, bot, xc + w + 4, bot + 2.6, p["metal"]); cv.circ(xc - w - 2.5, bot + 1.3, 0.6, (90, 90, 96)); cv.circ(xc + w + 2.5, bot + 1.3, 0.6, (90, 90, 96))
+        cv.rect(xc - 1.6, bot + 2.6, xc + 1.6, bot + 12, p["grip"]); wrap(bot + 3, bot + 11, 1.6)
+        cv.circ(xc, bot + 13, 2.2, p["metal"])
+    elif wt == "staff":
+        cv.line([(xc + 1, 62), (xc - 1, 40), (xc + 1, 22), (xc - 1, 12)], 3.0, p["grip"])
+        cv.line([(xc, 60), (xc - 2, 40), (xc, 22)], 0.7, tone(p["grip"], 0.15))
+        cv.line([(xc - 1, 12), (xc - 7, 6), (xc - 8, 1)], 2.0, p["grip"]); cv.line([(xc - 1, 12), (xc + 6, 5), (xc + 5, 1)], 2.0, p["grip"])
+        cv.circ(xc, 8, 3.6, p["gem"]); cv.circ(xc - 1, 7, 1.2, tone(p["gem"], 0.3))
+        wrap(30, 38, 2)
+    elif wt == "hammer":
+        cv.rect(xc - 1.6, 20, xc + 1.6, 62, p["grip"]); wrap(48, 58, 1.6)
+        cv.rect(xc - 12, 8, xc + 12, 22, p["blade2"]); cv.rect(xc - 12, 8, xc + 12, 12, p["blade"])
+        for x in (xc - 12, xc + 9): cv.rect(x, 7, x + 3, 23, p["metal"])
+        for k in range(3): cv.line([(xc - 8 + k * 7, 14), (xc - 6 + k * 7, 20)], 0.5, tone(p["blade2"], -0.12))
+    elif wt == "shield":
+        cv.circ(xc, 32, 23, p["metal"]); cv.circ(xc, 32, 21, p["blade"])
+        for k in range(-3, 4):
+            x = xc + k * 6
+            cv.line([(x, 12), (x, 52)], 0.6, tone(p["blade2"], -0.05))
+        cv.rect(xc - 21, 20, xc + 21, 23, p["metal"]); cv.rect(xc - 21, 41, xc + 21, 44, p["metal"])
+        cv.circ(xc, 32, 5, p["metal"]); cv.circ(xc, 32, 3, p["metal2"])
+    elif wt == "book":
+        cv.poly([(xc - 23, 20), (xc, 24), (xc + 23, 20), (xc + 25, 44), (xc, 48), (xc - 25, 44)], p["grip"])
+        for sd in (-1, 1):
+            cv.poly([(xc, 24), (xc + sd * 21, 19.5), (xc + sd * 22.5, 41), (xc, 45)], (236, 222, 192))
+            for k in range(5): cv.line([(xc + sd * 8, 26 + k * 3.6), (xc + sd * 19, 25 + k * 3.6)], 0.5, (170, 150, 120))
+        cv.line([(xc, 24), (xc, 45)], 0.8, p["dark"]); cv.rect(xc - 1, 44, xc + 1, 53, (170, 60, 50))
+    elif wt == "scythe":
+        cv.line([(38, 8), (39, 30), (38, 50), (37, 62)], 3.0, p["grip"]); wrap(30, 40, 1.6)
+        cv.poly([(37, 10), (20, 8), (8, 16), (4, 26), (12, 18), (24, 14), (37, 16)], p["blade2"])
+        cv.poly([(37, 10), (20, 8), (8, 16), (14, 13), (26, 11)], p["blade"])
+    elif wt == "bow":
+        pts = [(46 + math.cos(math.radians(a)) * 30, 32 + math.sin(math.radians(a)) * 30) for a in range(140, 222, 4)]
+        cv.line(pts, 3.2, p["grip"]); cv.line(pts, 1.0, tone(p["grip"], 0.2))
+        cv.line([pts[0], pts[-1]], 0.6, (232, 226, 210))
+        gx, gy = 16, 32
+        cv.rect(gx - 2.4, gy - 5, gx + 2.4, gy + 5, p["blade2"]); wrap(gy - 4, gy + 4, 2.4)
     return cv.finish()
+
+def design(el, wt, tier=1):
+    if el == "wood": return wood_design(wt)
+    cv = Canvas({1: 0.9, 2: 0.95, 3: 1.0, 4: 1.0}[tier]); p = P_(el)
+    if wt == "book": book(cv, el, tier)
+    else:
+        base_design(cv, el, wt)
+        tier_decor(cv, el, wt, tier)
+    img, glow = cv.finish()
+    if tier >= 4: img, glow = aura(img, glow, p["glow"], 1)
+    return img, glow
+

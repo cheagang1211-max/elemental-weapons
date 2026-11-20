@@ -53,10 +53,12 @@ public final class SlashFx {
 			boolean start = p.isSwinging() && (sw == null || sw.hand() == InteractionHand.MAIN_HAND) && prog > 0 && (st[0] == 0 || prog < st[0] - 50);
 			st[0] = prog;
 			if (!start) continue;
-			if (!(p.getMainHandItem().getItem() instanceof ElementalWeaponItem w)) continue;
+			var it = p.getMainHandItem().getItem();
+			if (!(it instanceof ElementalWeaponItem) && !(it instanceof com.elementalweapons.item.TrainingWeaponItem)) continue;
 			int combo = clock - st[2] < 30 ? (st[1] + 1) % 3 : 0;
 			st[1] = combo; st[2] = clock;
-			begin(mc, p, w.type(), w.element(), combo);
+			if (it instanceof ElementalWeaponItem w) begin(mc, p, w.type(), w.element(), combo);
+			else begin(mc, p, ((com.elementalweapons.item.TrainingWeaponItem) it).type(), null, combo);
 		}
 		for (Iterator<Arc> it = ARCS.iterator(); it.hasNext(); ) {
 			Arc a = it.next();
@@ -74,7 +76,7 @@ public final class SlashFx {
 	}
 
 	private static void begin(Minecraft mc, Player p, WeaponType type, Element el, int combo) {
-		int c1 = ElementFx.color(el), c2 = ElementFx.color2(el);
+		int c1 = el == null ? 0xC8A070 : ElementFx.color(el), c2 = el == null ? 0xFFF2DA : ElementFx.color2(el);
 		if (el == Element.DARK) c2 = 0xD7A6FF;
 		double lunge = 0;
 		switch (type) {

@@ -209,5 +209,17 @@
 	"item.elementalweapons.dark_bow": "Dark Bow",
 	"item.elementalweapons.light_scythe": "Light Scythe",
 	"item.elementalweapons.light_bow": "Light Bow",
-	"item.elementalweapons.rift_key": "Rift Key"
+	"item.elementalweapons.rift_key": "Rift Key",
+	"item.elementalweapons.wooden_dagger": "Wooden Dagger",
+	"item.elementalweapons.wooden_sword": "Wooden Sword",
+	"item.elementalweapons.wooden_greatsword": "Wooden Greatsword",
+	"item.elementalweapons.wooden_staff": "Wooden Staff",
+	"item.elementalweapons.wooden_hammer": "Wooden Hammer",
+	"item.elementalweapons.wooden_shield": "Wooden Shield",
+	"item.elementalweapons.wooden_book": "Wooden Grimoire",
+	"item.elementalweapons.wooden_scythe": "Wooden Scythe",
+	"item.elementalweapons.wooden_bow": "Wooden Bow",
+	"key.elementalweapons.skill1": "Skill 1 (Z)",
+	"key.elementalweapons.skill2": "Skill 2 (X)",
+	"key.elementalweapons.skill3": "Skill 3 (C)"
 }

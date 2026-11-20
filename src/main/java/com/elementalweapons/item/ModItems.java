@@ -53,6 +53,33 @@ public class ModItems {
 		}
 	}
 
+	/** 나무 무기 (종류 → 아이템) */
+	public static final Map<WeaponType, Item> WOODEN = new EnumMap<>(WeaponType.class);
+
+	static {
+		for (WeaponType type : WeaponType.values()) {
+			Item.Properties props = woodStats(type, new Item.Properties());
+			WOODEN.put(type, register(key("wooden_" + type.id), p -> new TrainingWeaponItem(p, type), props));
+		}
+	}
+
+	private static Item.Properties woodStats(WeaponType type, Item.Properties props) {
+		var W = net.minecraft.world.item.ToolMaterial.WOOD;
+		return switch (type) {
+			case DAGGER -> props.sword(W, 1.0F, -1.6F);
+			case SWORD -> props.sword(W, 3.0F, -2.4F);
+			case GREATSWORD -> props.sword(W, 5.0F, -3.0F);
+			case HAMMER -> props.sword(W, 6.0F, -3.3F);
+			case SCYTHE -> props.sword(W, 4.0F, -2.8F);
+			case SHIELD -> props.durability(300).component(net.minecraft.core.component.DataComponents.BLOCKS_ATTACKS,
+					new net.minecraft.world.item.component.BlocksAttacks(0.25F, 1.0F,
+							java.util.List.of(new net.minecraft.world.item.component.BlocksAttacks.DamageReduction(90.0F, java.util.Optional.empty(), 0.0F, 1.0F)),
+							new net.minecraft.world.item.component.BlocksAttacks.ItemDamageFunction(3.0F, 1.0F, 1.0F),
+							java.util.Optional.empty(), java.util.Optional.of(net.minecraft.sounds.SoundEvents.SHIELD_BLOCK), java.util.Optional.of(net.minecraft.sounds.SoundEvents.SHIELD_BREAK)));
+			default -> props.stacksTo(1);
+		};
+	}
+
 	// ===== 보스 관련 아이템 =====
 	/** 뇌신의 핵: 볼트라 처치 보상. 전기 속성 무기 제작 재료 */
 	public static final Item VOLTRA_CORE = register(key("voltra_core"), Item::new,
@@ -127,6 +154,7 @@ public class ModItems {
 					output.accept(VOLTRA_CORE);
 					for (Item it : BOSS_CORES.values()) output.accept(it);
 					output.accept(ELEMENT_ESSENCE);
+					for (Item it : WOODEN.values()) output.accept(it);
 					output.accept(com.elementalweapons.rift.RiftItems.RIFT_KEY);
 					for (Element element : Element.values()) {
 						for (WeaponType type : WeaponType.values()) {

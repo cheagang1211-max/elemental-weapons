@@ -209,5 +209,17 @@
 	"item.elementalweapons.dark_bow": "어둠의 활",
 	"item.elementalweapons.light_scythe": "빛의 낫",
 	"item.elementalweapons.light_bow": "빛의 활",
-	"item.elementalweapons.rift_key": "균열의 열쇠"
+	"item.elementalweapons.rift_key": "균열의 열쇠",
+	"item.elementalweapons.wooden_dagger": "나무 단검",
+	"item.elementalweapons.wooden_sword": "나무 검",
+	"item.elementalweapons.wooden_greatsword": "나무 대검",
+	"item.elementalweapons.wooden_staff": "나무 지팡이",
+	"item.elementalweapons.wooden_hammer": "나무 망치",
+	"item.elementalweapons.wooden_shield": "나무 방패",
+	"item.elementalweapons.wooden_book": "나무 마법서",
+	"item.elementalweapons.wooden_scythe": "나무 낫",
+	"item.elementalweapons.wooden_bow": "나무 활",
+	"key.elementalweapons.skill1": "스킬 1 (Z)",
+	"key.elementalweapons.skill2": "스킬 2 (X)",
+	"key.elementalweapons.skill3": "스킬 3 (C)"
 }

@@ -93,6 +93,8 @@ DISP = {
                    "firstperson_righthand": {"rotation": [0, 90, 20], "translation": [1, 0, 0], "scale": [0.42, 0.42, 0.42]}},
     "shield":     {"thirdperson_righthand": {"rotation": [0, 180, 0], "translation": [0, -2, -2], "scale": [0.7, 0.7, 0.7]},
                    "firstperson_righthand": {"rotation": [0, 180, 5], "translation": [0, -3, -2], "scale": [0.45, 0.45, 0.45]}},
+    "book":       {"thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 1, 1], "scale": [0.75, 0.75, 0.75]},
+                   "firstperson_righthand": {"rotation": [0, 90, 15], "translation": [1, 2, 0], "scale": [0.45, 0.45, 0.45]}},
     "scythe":     {"thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 2, 1], "scale": [1.3, 1.3, 1.3]},
                    "firstperson_righthand": {"rotation": [0, 90, 15], "translation": [2, 2, 0], "scale": [0.48, 0.48, 0.48]}},
     "bow":        {"thirdperson_righthand": {"rotation": [-80, 260, -40], "translation": [-1, -2, 2.5], "scale": [0.95, 0.95, 0.95]},
@@ -103,24 +105,34 @@ for v in DISP.values():
     v["ground"] = {"rotation": [0, 0, 0], "translation": [0, 2, 0], "scale": [0.4, 0.4, 0.4]}
     v["head"] = {"rotation": [0, 0, 0], "translation": [0, 0, 0], "scale": [1, 1, 1]}
 
+def build(name, img, glow, wt):
+    es = extrude(img, glow, name)
+    disp = json.loads(json.dumps(DISP[wt]))
+    disp["gui"] = W3.gui_transform(es, "front" if wt in ("shield", "book") else "diag")
+    fx = json.loads(json.dumps(disp["gui"])); fx["scale"] = [round(v * 2.3, 3) for v in fx["scale"]]; fx["translation"] = [round(v * 2.3, 3) for v in fx["translation"]]
+    disp["fixed"] = fx
+    img.save(f"{A}/textures/item/3d/{name}.png")
+    json.dump({"textures": {"t": f"{NS}:item/3d/{name}", "particle": f"{NS}:item/3d/{name}"}, "gui_light": "front", "display": disp, "elements": es},
+              open(f"{A}/models/item/3d/{name}.json", "w"))
+    return len(es)
+
+def model_ref(name): return {"type": "minecraft:model", "model": f"{NS}:item/3d/{name}"}
+
 if __name__ == "__main__":
     os.makedirs(f"{A}/textures/item/3d", exist_ok=True); os.makedirs(f"{A}/models/item/3d", exist_ok=True)
     total = 0
     for el in W3.EL:
         for wt in DISP:
-            img, glow = design(el, wt)
-            img.save(f"{A}/textures/item/3d/{el}_{wt}.png")
-            es = extrude(img, glow, f"{el}_{wt}")
-            disp = json.loads(json.dumps(DISP[wt]))
-            disp["gui"] = W3.gui_transform(es, "front" if wt == "shield" else "diag")
-            fx = json.loads(json.dumps(disp["gui"])); fx["scale"] = [round(v * 2.3, 3) for v in fx["scale"]]; fx["translation"] = [round(v * 2.3, 3) for v in fx["translation"]]
-            disp["fixed"] = fx
-            json.dump({"textures": {"t": f"{NS}:item/3d/{el}_{wt}", "particle": f"{NS}:item/3d/{el}_{wt}"}, "gui_light": "front", "display": disp, "elements": es},
-                      open(f"{A}/models/item/3d/{el}_{wt}.json", "w"))
-            json.dump({"model": {"type": "minecraft:model", "model": f"{NS}:item/3d/{el}_{wt}"}}, open(f"{A}/items/{el}_{wt}.json", "w"), indent="\t")
-            total += len(es)
-    for el in W3.EL:   # 마법서(3D)도 액자에서 크게
-        p = f"{A}/models/item/3d/{el}_book.json"; m = json.load(open(p))
-        fx = json.loads(json.dumps(m["display"]["gui"])); fx["scale"] = [round(v * 2.0, 3) for v in fx["scale"]]; fx["translation"] = [round(v * 2.0, 3) for v in fx["translation"]]
-        m["display"]["fixed"] = fx; json.dump(m, open(p, "w"))
+            for tier in (1, 2, 3, 4):
+                img, glow = design(el, wt, tier)
+                total += build(f"{el}_{wt}_t{tier}", img, glow, wt)
+            # 레벨 단계(custom_model_data 0번)에 따라 모양이 바뀜: 1=10~29, 2=30~59, 3=60~99, 4=100+
+            item = {"model": {"type": "minecraft:range_dispatch", "property": "minecraft:custom_model_data", "index": 0,
+                              "entries": [{"threshold": t, "model": model_ref(f"{el}_{wt}_t{t}")} for t in (2, 3, 4)],
+                              "fallback": model_ref(f"{el}_{wt}_t1")}}
+            json.dump(item, open(f"{A}/items/{el}_{wt}.json", "w"), indent="\t")
+    for wt in DISP:
+        img, glow = design("wood", wt)
+        total += build(f"wooden_{wt}", img, glow, wt)
+        json.dump({"model": model_ref(f"wooden_{wt}")}, open(f"{A}/items/wooden_{wt}.json", "w"), indent="\t")
     print("weapons5 ok, elements total", total)

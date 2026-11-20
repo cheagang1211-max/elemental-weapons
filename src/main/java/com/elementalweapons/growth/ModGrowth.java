@@ -83,6 +83,10 @@ public final class ModGrowth {
 				if (!world.isClientSide()) denyMessage(player, w.type());
 				return net.minecraft.world.InteractionResult.FAIL;
 			}
+			if (player.getMainHandItem().getItem() instanceof com.elementalweapons.item.TrainingWeaponItem tw && !canUse(player, tw.type())) {
+				if (!world.isClientSide()) denyMessage(player, tw.type());
+				return net.minecraft.world.InteractionResult.FAIL;
+			}
 			if (!world.isClientSide()) Tutorial.classEvent(player, "hit");
 			return net.minecraft.world.InteractionResult.PASS;
 		});
@@ -165,6 +169,7 @@ public final class ModGrowth {
 			p.sendSystemMessage(Component.literal("✦ 레벨 업! Lv " + level + "  (스탯 포인트 +" + gained * Growth.POINTS_PER_LEVEL + ", [K] 성장 창)")
 					.withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
 			applyStats(p);
+			if (level >= Evolution.LEVEL && level - gained < Evolution.LEVEL) Evolution.check(p);
 		}
 	}
 
@@ -279,6 +284,7 @@ public final class ModGrowth {
 		}
 		int spent = g.str() + g.mag() + g.vit() + g.agi();
 		set(p, new Growth(g.level(), g.xp(), g.points() + spent, 0, 0, 0, 0, 0));
+		Evolution.reset(p);
 		applyStats(p);
 		p.sendSystemMessage(Component.literal("✦ 운명이 초기화되었습니다. 새 직업을 고르고 스탯을 다시 찍으세요.").withStyle(ChatFormatting.LIGHT_PURPLE, ChatFormatting.BOLD));
 		Fx.burst((ServerLevel) p.level(), Fx.dust(0xD080FF, 1.5F), p.position().add(0, 1, 0), 60, 0.8, 0.05);

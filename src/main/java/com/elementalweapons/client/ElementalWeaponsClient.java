@@ -17,6 +17,7 @@ public class ElementalWeaponsClient implements ClientModInitializer {
 		ShotHarness.initialize();
 		WeaponAura.initialize();
 		com.elementalweapons.client.armor.ModArmorDeco.initialize();
+		com.elementalweapons.client.skill.SkillClient.initialize();
 		net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry.getInstance().register(com.elementalweapons.fx.ModParticles.SLASH, com.elementalweapons.client.fx.SlashParticle.Provider::new);
 		net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry.getInstance().register(com.elementalweapons.fx.ModParticles.FX,
 				(net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry.PendingParticleProvider<com.elementalweapons.fx.FxOptions>) com.elementalweapons.client.fx.FxParticle.Provider::new);

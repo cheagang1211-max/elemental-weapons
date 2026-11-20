@@ -25,6 +25,8 @@ public class ElementalWeaponsMod implements ModInitializer {
 		com.elementalweapons.rift.RiftItems.initialize();
 		com.elementalweapons.item.ModGear.initialize();
 		com.elementalweapons.growth.ModGrowth.initialize();
+		com.elementalweapons.growth.Evolution.initialize();
+		com.elementalweapons.skill.SkillNet.initialize();
 		com.elementalweapons.world.town.ModTowns.initialize();
 		com.elementalweapons.world.sky.ModSky.initialize();
 		SpellManager.initialize();

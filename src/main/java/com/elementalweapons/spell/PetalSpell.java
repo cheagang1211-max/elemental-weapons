@@ -17,7 +17,10 @@ import net.minecraft.world.phys.Vec3;
  */
 public class PetalSpell extends Spell {
 	private static final com.elementalweapons.fx.FxOptions[] PETALS = {
-			Fx.dust(0xFFB7D5, 1.1F), Fx.dust(0xFF8FC0, 1.0F), Fx.dust(0xFFE8F2, 0.9F), Fx.dust(0x7BD36B, 0.8F)
+			com.elementalweapons.fx.FxOptions.of(com.elementalweapons.fx.FxOptions.PETAL, 0xFFB7D5, 0.16F, 8).spin(12F),
+			com.elementalweapons.fx.FxOptions.of(com.elementalweapons.fx.FxOptions.PETAL, 0xFF8FC0, 0.15F, 8).spin(-10F),
+			com.elementalweapons.fx.FxOptions.of(com.elementalweapons.fx.FxOptions.PETAL, 0xFFE8F2, 0.13F, 8).spin(8F),
+			com.elementalweapons.fx.FxOptions.of(com.elementalweapons.fx.FxOptions.LEAF, 0x7BD36B, 0.14F, 8).spin(6F)
 	};
 
 	private final List<LivingEntity> targets;

@@ -3,7 +3,7 @@ import math, colorsys
 from PIL import Image, ImageDraw
 
 SS = 4
-N = 96
+N = 64
 K = N / 64   # 디자인 좌표(64 기준) → 실제 픽셀 배율
 
 def hexc(h): return ((h >> 16) & 255, (h >> 8) & 255, h & 255)
@@ -18,26 +18,59 @@ PAL = {
  "grass":    dict(blade=0x7CD86A, blade2=0x2A7A30, metal=0x6A4A2A, metal2=0xC8D870, dark=0x1E140A, glow=0xFFB0D8, gem=0xFF70B0, grip=0x3A2814),
  "wind":     dict(blade=0xE8FFF8, blade2=0x6ABAB0, metal=0xF4F8F8, metal2=0x7FE0D0, dark=0x1E3A3A, glow=0xD0FFF4, gem=0x80FFE8, grip=0x2A5A58),
  "dark":     dict(blade=0xB070FF, blade2=0x3A1070, metal=0x2A2234, metal2=0x7A4AB0, dark=0x0A0610, glow=0xE0A0FF, gem=0xC060FF, grip=0x140A1E),
+ "wood":     dict(blade=0xC79A62, blade2=0x8A5A32, metal=0x9A7048, metal2=0xD8B27A, dark=0x3A2614, glow=0xE8D0A0, gem=0x8FB86A, grip=0x5A3A1E),
  "light":    dict(blade=0xFFF4D0, blade2=0xD8A840, metal=0xF0C040, metal2=0xFFFFFF, dark=0x5A4010, glow=0xFFFFC0, gem=0xFFE070, grip=0xE8D8B0),
 }
 
+BANDS = [0.13, 0.26, 0.42, 0.6, 0.76, 0.9]
+
+def handshade(c):
+    """부드러운 그라데이션을 몇 단계 띠로 끊고(손으로 칠한 느낌), 어두울수록 푸르게, 밝을수록 따뜻하게"""
+    r, g, b = [v / 255 for v in c]
+    h, l, s = colorsys.rgb_to_hls(r, g, b)
+    lq = min(BANDS, key=lambda v: abs(v - l))
+    t = (lq - 0.5)
+    h = (h - 0.035 * t) % 1.0 if s > 0.08 else h
+    s = min(1, s * (1.12 if lq < 0.45 else 0.97))
+    return tuple(int(max(0, min(1, v)) * 255) for v in colorsys.hls_to_rgb(h, lq, s))
+
+def aura(img, glow, rgb, width=1, alpha_steps=(255,)):
+    """실루엣 바깥에 빛나는 테두리 (최종 단계 무기)"""
+    N = img.width; px = img.load()
+    for w in range(width):
+        solid = [[px[x, y][3] > 0 for x in range(N)] for y in range(N)]
+        add = []
+        for y in range(N):
+            for x in range(N):
+                if solid[y][x]: continue
+                if any(0 <= x + dx < N and 0 <= y + dy < N and solid[y + dy][x + dx] for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                    add.append((x, y))
+        col = tone(rgb, 0.12 - 0.12 * w)
+        for x, y in add:
+            px[x, y] = col + (255,); glow[y][x] = True
+    return img, glow
+
 class Canvas:
-    def __init__(self):
+    S = 1.0   # 단계별 크기 (가운데 기준)
+    def __init__(self, scale=1.0):
+        self.S = scale
         self.col = Image.new("RGBA", (N * SS, N * SS), (0, 0, 0, 0))
         self.glw = Image.new("L", (N * SS, N * SS), 0)
         self.d = ImageDraw.Draw(self.col); self.g = ImageDraw.Draw(self.glw)
-    def P(self, pts): return [(x * SS * K, y * SS * K) for x, y in pts]
+    def T(self, x, y): return (32 + (x - 32) * self.S, 32 + (y - 32) * self.S)
+    def P(self, pts): return [((32 + (x - 32) * self.S) * SS * K, (32 + (y - 32) * self.S) * SS * K) for x, y in pts]
     def poly(self, pts, c, glow=False):
         self.d.polygon(self.P(pts), fill=c + (255,))
         if glow: self.g.polygon(self.P(pts), fill=255)
         else: self.g.polygon(self.P(pts), fill=0)
     def rect(self, x0, y0, x1, y1, c, glow=False): self.poly([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], c, glow)
     def circ(self, cx, cy, r, c, glow=False):
+        cx, cy = self.T(cx, cy); r = r * self.S
         b = [(cx - r) * SS * K, (cy - r) * SS * K, (cx + r) * SS * K, (cy + r) * SS * K]
         self.d.ellipse(b, fill=c + (255,)); self.g.ellipse(b, fill=255 if glow else 0)
     def line(self, pts, w, c, glow=False):
-        self.d.line(self.P(pts), fill=c + (255,), width=max(1, int(w * SS * K)), joint="curve")
-        self.g.line(self.P(pts), fill=255 if glow else 0, width=max(1, int(w * SS * K)))
+        self.d.line(self.P(pts), fill=c + (255,), width=max(1, int(w * self.S * SS * K)), joint="curve")
+        self.g.line(self.P(pts), fill=255 if glow else 0, width=max(1, int(w * self.S * SS * K)))
     def arc(self, cx, cy, r, a0, a1, w, c, glow=False, steps=24):
         pts = [(cx + math.cos(math.radians(a0 + (a1 - a0) * i / steps)) * r, cy + math.sin(math.radians(a0 + (a1 - a0) * i / steps)) * r) for i in range(steps + 1)]
         self.line(pts, w, c, glow)
@@ -58,8 +91,10 @@ class Canvas:
                 r, g, b, a = px[x, y]
                 if a >= 110:
                     k = 255 / max(1, a)
-                    o[x, y] = (min(255, int(r * k)), min(255, int(g * k)), min(255, int(b * k)), 255)
+                    c = (min(255, int(r * k)), min(255, int(g * k)), min(255, int(b * k)))
                     glow[y][x] = gp[x, y] > 128
+                    if not glow[y][x]: c = handshade(c)
+                    o[x, y] = c + (255,)
         if outline:
             solid = [[o[x, y][3] > 0 for x in range(N)] for y in range(N)]
             for y in range(N):
