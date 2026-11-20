@@ -102,6 +102,10 @@ public class ElementalWeaponItem extends Item {
 				}
 				user.getCooldowns().addCooldown(user.getItemInHand(hand), GREATSWORD_COOLDOWN);
 			}
+			case BOOK -> {
+				ElementEffects.supportAura(element, server, user);
+				user.getCooldowns().addCooldown(user.getItemInHand(hand), (int) Math.round(300 * com.elementalweapons.growth.ModGrowth.get(user).staffCooldownFactor()));
+			}
 			case HAMMER -> {
 				ElementEffects.hammerSlam(element, server, user);
 				user.getCooldowns().addCooldown(user.getItemInHand(hand), 100);

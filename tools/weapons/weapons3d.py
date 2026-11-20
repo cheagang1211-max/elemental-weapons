@@ -466,6 +466,36 @@ def gui_transform(es, mode="diag"):
     rx, ry = dx * math.cos(a) - dy * math.sin(a), dx * math.sin(a) + dy * math.cos(a)
     return {"rotation": [0, 0, -45], "translation": [round(-rx * sc, 2), round(-ry * sc, 2), 0], "scale": [sc, sc, sc]}
 
+def book4(el):
+    """마법서: 펼쳐진 책 + 떠 있는 마법구 + 떠다니는 룬"""
+    o = [box(8, 9, 9.3, 1.4, 9.6, 1.4, "metal")]                         # 책등
+    for sd in (-1, 1):
+        rot = (22.5 * -sd, "y", [8, 9, 9.3])
+        cx = 8 + sd * 3.4
+        o += [box(cx, 9, 9.6, 6.6, 9.4, 0.6, "grip", rot=rot),               # 표지
+              box(cx, 9, 9.1, 6.0, 8.6, 0.6, "edge", rot=rot),               # 종이 묶음
+              box(cx, 9, 8.7, 5.6, 8.2, 0.3, "edge", rot=rot)]
+        for cy in (4.6, 13.4):
+            o.append(box(8 + sd * 6.4, cy, 9.7, 1.0, 1.0, 0.8, "metal2", rot=rot))  # 모서리 장식
+        o.append(box(8 + sd * 3.4, 9, 8.5, 0.4, 5, 0.2, "accent", glow=True, rot=rot))  # 페이지 위 빛나는 글씨 줄
+        o.append(box(8 + sd * 2.4, 10.5, 8.5, 2.2, 0.3, 0.2, "accent", glow=True, rot=rot))
+        o.append(box(8 + sd * 2.4, 7.5, 8.5, 2.2, 0.3, 0.2, "accent", glow=True, rot=rot))
+    o += [box(8, 18.2, 7.2, 2.6, 2.6, 2.6, "gem"), box(8, 18.2, 7.2, 4.2, 0.5, 0.5, "metal2"), box(8, 18.2, 7.2, 0.5, 0.5, 4.2, "metal2"),
+          box(8, 18.2, 7.2, 3.4, 3.4, 0.4, "metal2", rot=(22.5, "z", [8, 18.2, 7.2]))]     # 마법구
+    for (dx, dy, dz) in ((-3.5, 15, 7), (3.2, 16, 7.5), (-1.8, 21.5, 6.8), (2.4, 21, 7), (0, 14.5, 6.5)):
+        o.append(box(8 + dx, dy, dz, 0.8, 0.8, 0.2, "accent", glow=True))    # 떠다니는 룬
+    o.append(box(8.8, 2.8, 9.4, 0.6, 3.4, 0.2, "accent", glow=False))          # 책갈피
+    deco = {
+        "fire": [box(8 + x, 14.2, 8.8, 0.8, 1.4 + (x % 2), 0.6, "accent", glow=True) for x in (-4, -2, 2, 4)],
+        "water": [box(8 + x, 3.6, 9.2, 0.8, 1.0, 0.8, "gem") for x in (-3, 0, 3)],
+        "grass": [box(8 - 6.8, 9 + y, 10, 0.6, 1.6, 0.6, "fuller") for y in (-3, 0, 3)] + [box(8 - 6.8, 12.8, 10, 1, 1, 1, "accent", glow=True)],
+        "wind": [box(9.6, 2.2, 9.5, 0.6, 4.4, 0.3, "edge", glow=False), box(10.2, 1.0, 9.5, 0.6, 2.2, 0.3, "edge", glow=False)],
+        "dark": [box(8 + x, 4.0, 9.6, 0.5, 0.5, 0.9, "metal2") for x in (-5, -4, -3, 3, 4, 5)] + [box(8, 9, 10.6, 1.6, 1.6, 0.4, "gem")],
+        "light": [box(8 + sd * (1 + k * 0.9), 14.5 + k * 0.8, 9.3, 1.0, 1.2, 0.6, "metal2" if k < 2 else "accent", glow=(k == 2)) for sd in (-1, 1) for k in range(3)],
+        "electric": [box(8.5, 15.2, 8.5, 0.6, 1.6, 0.4, "accent", glow=True), box(7.6, 16.4, 8.5, 0.6, 1.4, 0.4, "accent", glow=True)],
+    }[el]
+    return o + deco
+
 def build(el, wt):
     st = EL[el]["style"]
     if wt == "dagger":
@@ -479,6 +509,8 @@ def build(el, wt):
         es = grip3(el, -12, 26, 1.1) + [box(8, 14.2, 8, 2.4, 1.2, 2.4, "metal2")] + hammer_head(el, 18.5)
     elif wt == "shield":
         es = shield4(el)
+    elif wt == "book":
+        es = book4(el)
     else:  # staff
         es = staff_shaft(el) + scaled(staff_head(st, 17.2), 1.45, 17.2)
     # 범위 제한 (-16~32)
@@ -500,6 +532,8 @@ DISPLAY["hammer"] = {"thirdperson_righthand": {"rotation": [0, 90, 0], "translat
                      "firstperson_righthand": {"rotation": [0, 90, 20], "translation": [1, 0, 0], "scale": [0.38, 0.38, 0.38]}}
 DISPLAY["shield"] = {"thirdperson_righthand": {"rotation": [0, 180, 0], "translation": [0, 0, -2], "scale": [0.9, 0.9, 0.9]},
                      "firstperson_righthand": {"rotation": [0, 180, 5], "translation": [0, -2, -2], "scale": [0.6, 0.6, 0.6]}}
+DISPLAY["book"] = {"thirdperson_righthand": {"rotation": [0, 180, 0], "translation": [0, -1, -3], "scale": [0.75, 0.75, 0.75]},
+                   "firstperson_righthand": {"rotation": [5, 160, 0], "translation": [0, 1, -2], "scale": [0.5, 0.5, 0.5]}}
 for v in DISPLAY.values():
     v["thirdperson_lefthand"] = v["thirdperson_righthand"]; v["firstperson_lefthand"] = v["firstperson_righthand"]
     v["fixed"] = {"rotation": [0, 0, 0], "translation": [0, 0, 0], "scale": [0.5, 0.5, 0.5]}
@@ -560,18 +594,18 @@ if __name__ == "__main__":
         p = EL[el]
         CUR = {"blade": hexc(p["blade"]), "blade_d": tone(hexc(p["blade"]), -0.15), "edge": hexc(p["edge"]), "metal": hexc(p["metal"]), "metal_d": tone(hexc(p["metal"]), -0.12),
                "metal2": hexc(p["metal2"]), "grip": hexc(p["grip"]), "gem": hexc(p["gem"]), "accent": hexc(p["accent"]), "fuller": tone(hexc(p["blade"]), -0.25)}
-        for wt in ("dagger", "sword", "greatsword", "staff", "hammer", "shield"):
+        for wt in ("dagger", "sword", "greatsword", "staff", "hammer", "shield", "book"):
             es = build(el, wt)
             if len(sys.argv) > 2: tiles.append(preview(es))
             hd_texture(el, wt, es, CUR)
             disp = json.loads(json.dumps(DISPLAY[wt]))
-            disp["gui"] = gui_transform(es, "front" if wt == "shield" else "diag")
+            disp["gui"] = gui_transform(es, "front" if wt in ("shield", "book") else "diag")
             disp["fixed"] = disp["gui"]
             model = {"textures": {"t": f"{NS}:item/3d/{el}_{wt}", "particle": f"{NS}:item/3d/{el}_{wt}"}, "gui_light": "front", "display": disp, "elements": es}
             json.dump(model, open(f"{A}/models/item/3d/{el}_{wt}.json", "w"), indent="\t")
             json.dump({"model": {"type": "minecraft:model", "model": f"{NS}:item/3d/{el}_{wt}"}}, open(f"{A}/items/{el}_{wt}.json", "w"), indent="\t")
     if len(sys.argv) > 2:
-        sheet = Image.new("RGBA", (220 * 6, 220 * 7))
-        for i, t in enumerate(tiles): sheet.paste(t, ((i % 6) * 220, (i // 6) * 220))
+        sheet = Image.new("RGBA", (220 * 7, 220 * 7))
+        for i, t in enumerate(tiles): sheet.paste(t, ((i % 7) * 220, (i // 7) * 220))
         sheet.save(sys.argv[2])
     print("weapons3d ok", len(EL) * 4)

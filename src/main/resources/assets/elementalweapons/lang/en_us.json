@@ -184,5 +184,12 @@
 	"item.elementalweapons.dark_hammer": "Dark Hammer",
 	"item.elementalweapons.dark_shield": "Dark Shield",
 	"item.elementalweapons.light_hammer": "Light Hammer",
-	"item.elementalweapons.light_shield": "Light Shield"
+	"item.elementalweapons.light_shield": "Light Shield",
+	"item.elementalweapons.electric_book": "Electric Grimoire",
+	"item.elementalweapons.fire_book": "Fire Grimoire",
+	"item.elementalweapons.water_book": "Water Grimoire",
+	"item.elementalweapons.grass_book": "Grass Grimoire",
+	"item.elementalweapons.wind_book": "Wind Grimoire",
+	"item.elementalweapons.dark_book": "Dark Grimoire",
+	"item.elementalweapons.light_book": "Light Grimoire"
 }

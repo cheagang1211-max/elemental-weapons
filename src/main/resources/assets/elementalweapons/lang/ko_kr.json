@@ -184,5 +184,12 @@
 	"item.elementalweapons.dark_hammer": "어둠의 망치",
 	"item.elementalweapons.dark_shield": "어둠의 방패",
 	"item.elementalweapons.light_hammer": "빛의 망치",
-	"item.elementalweapons.light_shield": "빛의 방패"
+	"item.elementalweapons.light_shield": "빛의 방패",
+	"item.elementalweapons.electric_book": "전기의 마법서",
+	"item.elementalweapons.fire_book": "불의 마법서",
+	"item.elementalweapons.water_book": "물의 마법서",
+	"item.elementalweapons.grass_book": "풀의 마법서",
+	"item.elementalweapons.wind_book": "바람의 마법서",
+	"item.elementalweapons.dark_book": "어둠의 마법서",
+	"item.elementalweapons.light_book": "빛의 마법서"
 }

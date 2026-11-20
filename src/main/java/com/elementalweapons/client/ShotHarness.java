@@ -47,7 +47,7 @@ public final class ShotHarness {
 	private static double baseX, baseY, baseZ;
 	private static final List<EntityType<?>> SUBJECTS = new ArrayList<>();
 	private static Entity current;
-	private static final int WEAP_START = 520, ENT_START = 1150, ENT_STEP = 70;
+	private static final int WEAP_START = 545, ENT_START = 1220, ENT_STEP = 70;
 	private static final List<Entity> gallery = new ArrayList<>();
 
 	public static void initialize() {
@@ -127,10 +127,14 @@ public final class ShotHarness {
 			if (t == 516) server.execute(() -> { ServerPlayer p = sp(server);
 				p.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(Element.LIGHT).get(WeaponType.SWORD)));
 				p.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(ModItems.WEAPONS.get(Element.FIRE).get(WeaponType.SHIELD))); });
-			if (t == 519) shot(mc, "06b_firstperson_sword_shield");
-			if (t >= WEAP_START && t < WEAP_START + 6 * 70) {
+			if (t == 530) shot(mc, "06b_firstperson_sword_shield");
+			if (t == 531) server.execute(() -> { ServerPlayer p = sp(server);
+				p.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
+				p.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(Element.WATER).get(WeaponType.BOOK))); });
+			if (t == 543) shot(mc, "06c_firstperson_book");
+			if (t >= WEAP_START && t < WEAP_START + 7 * 70) {
 				int k = (t - WEAP_START) / 70, ph = (t - WEAP_START) % 70;
-				if (k < 6) {
+				if (k < 7) {
 					WeaponType wt = WeaponType.values()[k];
 					if (ph == 0) server.execute(() -> gallery(server, wt));
 					if (ph > 0) look(mc, 0, 18);
@@ -138,8 +142,8 @@ public final class ShotHarness {
 					if (ph == 55) server.execute(() -> { for (Entity e : gallery) e.discard(); gallery.clear(); });
 				}
 			}
-			if (t >= 960 && t < 960 + 7 * 25) {
-				int k = (t - 960) / 25, ph = (t - 960) % 25;
+			if (t >= 1020 && t < 1020 + 7 * 25) {
+				int k = (t - 1020) / 25, ph = (t - 1020) % 25;
 				Element el = Element.values()[k];
 				if (ph == 0) server.execute(() -> sp(server).setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(el).get(k % 2 == 0 ? WeaponType.SWORD : WeaponType.GREATSWORD))));
 				if (ph > 0) look(mc, 0, 25);

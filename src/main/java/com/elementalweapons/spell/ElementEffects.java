@@ -58,6 +58,37 @@ public final class ElementEffects {
 		Fx.sound(level, c, net.minecraft.sounds.SoundEvents.ANVIL_LAND, 1.0F, 0.6F);
 	}
 
+	/** 마법서: 주변 아군(플레이어)에게 속성 지원 효과 */
+	public static void supportAura(Element element, ServerLevel level, Player caster) {
+		Vec3 c = caster.position();
+		int dur = 20 * 15;
+		for (Player ally : level.getEntitiesOfClass(Player.class, caster.getBoundingBox().inflate(10.0))) {
+			switch (element) {
+				case FIRE -> { buff(ally, net.minecraft.world.effect.MobEffects.STRENGTH, dur, 1); buff(ally, net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE, dur, 0); }
+				case WATER -> { ally.heal(8.0F); buff(ally, net.minecraft.world.effect.MobEffects.REGENERATION, 20 * 8, 0); }
+				case GRASS -> { buff(ally, net.minecraft.world.effect.MobEffects.REGENERATION, dur, 1); buff(ally, net.minecraft.world.effect.MobEffects.SATURATION, 20, 0); }
+				case WIND -> { buff(ally, net.minecraft.world.effect.MobEffects.SPEED, dur, 1); buff(ally, net.minecraft.world.effect.MobEffects.JUMP_BOOST, dur, 1); }
+				case ELECTRIC -> { buff(ally, net.minecraft.world.effect.MobEffects.HASTE, dur, 1); buff(ally, net.minecraft.world.effect.MobEffects.SPEED, dur, 0); }
+				case DARK -> { buff(ally, net.minecraft.world.effect.MobEffects.RESISTANCE, dur, 1); buff(ally, net.minecraft.world.effect.MobEffects.NIGHT_VISION, 20 * 30, 0); }
+				case LIGHT -> { ally.heal(10.0F); buff(ally, net.minecraft.world.effect.MobEffects.ABSORPTION, dur, 2); ally.removeEffect(net.minecraft.world.effect.MobEffects.POISON); ally.removeEffect(net.minecraft.world.effect.MobEffects.WITHER); }
+			}
+			Fx.line(level, com.elementalweapons.boss.ElementFx.dust(element, 1.0F), c.add(0, 1.2, 0), ally.position().add(0, 1.0, 0), 0.4);
+			Fx.burst(level, com.elementalweapons.boss.ElementFx.particle(element), ally.position().add(0, 1.0, 0), 12, 0.5, 0.03);
+		}
+		if (element == Element.DARK) {   // 어둠: 주변 적 약화
+			for (LivingEntity e : Fx.enemies(level, c, 10.0)) {
+				e.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.WEAKNESS, dur, 1));
+				e.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.SLOWNESS, dur, 1));
+			}
+		}
+		for (int k = 1; k <= 3; k++) Fx.ring(level, com.elementalweapons.boss.ElementFx.dust(element, 1.2F), c.add(0, 0.1 + k * 0.5, 0), 3.0 + k * 2.2, 30 + k * 10, 0);
+		Fx.sound(level, c, net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP, 0.8F, 1.6F);
+	}
+
+	private static void buff(Player p, net.minecraft.core.Holder<net.minecraft.world.effect.MobEffect> eff, int dur, int amp) {
+		p.addEffect(new net.minecraft.world.effect.MobEffectInstance(eff, dur, amp));
+	}
+
 	/** 방패로 막았을 때 속성 반격 */
 	public static void shieldCounter(Element element, ServerLevel level, Player owner, LivingEntity attacker) {
 		Vec3 p = attacker.position();

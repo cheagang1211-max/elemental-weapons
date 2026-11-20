@@ -7,7 +7,8 @@ public enum WeaponType {
 	GREATSWORD("greatsword", "대검", "Greatsword"),
 	STAFF("staff", "지팡이", "Staff"),
 	HAMMER("hammer", "망치", "Hammer"),
-	SHIELD("shield", "방패", "Shield");
+	SHIELD("shield", "방패", "Shield"),
+	BOOK("book", "마법서", "Grimoire");
 
 	public final String id;
 	public final String koName;
@@ -20,6 +21,7 @@ public enum WeaponType {
 			case GREATSWORD, HAMMER -> PlayerClass.WARRIOR;
 			case SWORD, SHIELD -> PlayerClass.KNIGHT;
 			case DAGGER -> PlayerClass.ASSASSIN;
+			case BOOK -> PlayerClass.SUPPORT;
 		};
 	}
 

@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "equipment",
+	"pattern": [
+		"XCX",
+		"OBO"
+	],
+	"key": {
+		"X": "elementalweapons:storm_crystal",
+		"C": "elementalweapons:voltra_core",
+		"O": "elementalweapons:orichalcum_ingot",
+		"B": "minecraft:book"
+	},
+	"result": {
+		"id": "elementalweapons:electric_book",
+		"count": 1
+	}
+}
