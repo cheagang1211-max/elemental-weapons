@@ -23,7 +23,7 @@ public class SlashParticle extends SingleQuadParticle {
 		this.quadSize = baseSize;
 		this.baseAlpha = 0.95F;
 		setAlpha(baseAlpha);
-		setLifetime(5 + random.nextInt(4));
+		setLifetime(7 + random.nextInt(4));
 	}
 
 	@Override

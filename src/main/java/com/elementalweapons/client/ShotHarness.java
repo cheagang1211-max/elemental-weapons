@@ -281,14 +281,18 @@ public final class ShotHarness {
 					p.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(el).get(wt))); });
 				mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
 			}
-			if (tt > t0 && tt < t0 + 8 + n * 10) look(mc, 20, 12);
+			if (tt > t0 && tt < t0 + 8 + n * 10) look(mc, 25, 38);
 			for (int i = 0; i < n; i++) {
 				int ts = t0 + 6 + i * 10;
 				if (tt == ts) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, true);
-				if (tt == ts + (wt == WeaponType.SCYTHE ? 3 : 2)) shot(mc, String.format("68_%s_%d", wt.id, i));
+				if (tt == ts + (wt == WeaponType.SCYTHE ? 5 : wt == WeaponType.SWORD ? 3 : 4)) shot(mc, String.format("68_%s_%d", wt.id, i));
 			}
 		}
-		if (tt == 432) { mc.options.setCameraType(CameraType.FIRST_PERSON); armorSet(server, "orichalcum"); }
+		if (tt == 427) { mc.options.setCameraType(CameraType.FIRST_PERSON); server.execute(() -> sp(server).setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(Element.FIRE).get(WeaponType.GREATSWORD)))); }
+		if (tt > 427 && tt < 440) look(mc, 25, 10);
+		if (tt == 431) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, true);
+		if (tt == 434) shot(mc, "69_fp_greatsword_slash");
+		if (tt == 438) armorSet(server, "orichalcum");
 	}
 
 	private static void townScenes(Minecraft mc, IntegratedServer server, int tt) {
