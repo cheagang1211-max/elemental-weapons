@@ -37,7 +37,7 @@ echo 서버 시작: %JAR%  (메모리 %MEMORY%)
 echo 끄려면 이 창에 stop 을 입력하세요. 창을 X로 닫으면 월드가 저장 안 될 수 있어요!
 echo 패치를 적용하려면: stop 으로 끄고 start.bat 을 다시 실행하면 됩니다.
 echo.
-java -Xms2G -Xmx%MEMORY% -jar "%JAR%" nogui
+java -Xms%MEMORY% -Xmx%MEMORY% -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=15 -jar "%JAR%" nogui
 echo.
 echo 서버가 꺼졌습니다.
 pause

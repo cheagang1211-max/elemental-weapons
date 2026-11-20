@@ -129,14 +129,14 @@ public final class SlashFx {
 		Vec3 rr = r.scale(Math.cos(a.roll)).add(u.scale(Math.sin(a.roll)));
 		Vec3 c = a.p.getEyePosition().subtract(u.scale(0.45)).add(f.scale(0.15));
 		double span = Math.abs(a.a1 - a.a0);
-		int steps = Math.max(2, (int) Math.ceil(span * (p1 - p0) / Math.toRadians(2.5)));
+		int steps = Math.max(2, (int) Math.ceil(span * (p1 - p0) / Math.toRadians(3.4)));
 		for (int i = 0; i <= steps; i++) {
 			double t = p0 + (p1 - p0) * i / steps;
 			double th = a.a0 + (a.a1 - a.a0) * t;
 			Vec3 dir = f.scale(Math.cos(th)).add(rr.scale(Math.sin(th)));
 			Vec3 tan = f.scale(-Math.sin(th)).add(rr.scale(Math.cos(th))).scale(Math.signum(a.a1 - a.a0));
 			double thick = a.width * Math.pow(Math.sin(Math.PI * Math.min(1, Math.max(0, t))), 0.7) + 0.08;
-			int layers = Math.max(2, (int) Math.round(thick / 0.16));
+			int layers = Math.max(2, (int) Math.round(thick / 0.22));
 			for (int k = 0; k <= layers; k++) {
 				double q = k / (double) layers;             // 0 = 바깥 날, 1 = 안쪽
 				double rad = a.r1 - thick * q;

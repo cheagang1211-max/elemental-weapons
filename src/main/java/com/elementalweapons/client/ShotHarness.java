@@ -188,6 +188,7 @@ public final class ShotHarness {
 				{60, 200, 60, -200, 420, -300, 18000},                        // 별이 가득한 밤하늘
 				{dx * 420 - dz * 50, 168, dz * 420 + dx * 50, dx * 640, 162, dz * 640, 12600},   // 노을 무렵 대교
 				{rc[0] - dx * 560 - dz * 120, 235, rc[1] - dz * 560 + dx * 120, rc[0], 165, rc[1], 6000}, // 지역 본섬 전경
+				{rc[0] - dx * 150, com.elementalweapons.world.sky.SkyLayout.surfaceTop((int) (rc[0] - dx * 150), (int) (rc[1] - dz * 150)) + 6, rc[1] - dz * 150, rc[0] - dx * 120 + dz * 30, com.elementalweapons.world.sky.SkyLayout.surfaceTop((int) (rc[0] - dx * 150), (int) (rc[1] - dz * 150)), rc[1] - dz * 120 - dx * 30, 6000}, // 지역 땅 위: 몹 스폰 확인
 		};
 	}
 

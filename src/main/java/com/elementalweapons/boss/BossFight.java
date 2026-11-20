@@ -113,7 +113,7 @@ public class BossFight {
 
 		// 결계
 		if (arena != null) {
-			if (age % 5 == 0) Fx.ring(level, ElementFx.dust(el, 1.5F), c.add(0, 1.2, 0), Arenas.R + 0.5, 72, age * 0.01);
+			if (age % 8 == 0) Fx.ring(level, ElementFx.dust(el, 1.6F), c.add(0, 1.2, 0), Arenas.R + 0.5, 48, age * 0.01);
 			for (ServerPlayer p : ps) {
 				Vec3 d = p.position().subtract(c).multiply(1, 0, 1);
 				if (d.length() > Arenas.R + 1.5 && d.length() < 40) {
@@ -166,7 +166,7 @@ public class BossFight {
 		}
 		// 폭풍 고리 (3페이즈): 가장자리는 위험
 		if (storm && phase >= 3 && arena != null) {
-			if (age % 6 == 0) for (int k = 0; k < 2; k++) Fx.ring(level, ParticleTypes.CLOUD, c.add(0, 0.5 + k * 2, 0), Arenas.R - 3 + k, 56, age * 0.1);
+			if (age % 8 == 0) for (int k = 0; k < 2; k++) Fx.ring(level, ParticleTypes.CLOUD, c.add(0, 0.5 + k * 2, 0), Arenas.R - 3 + k, 36, age * 0.1);
 			if (age % 20 == 0) for (ServerPlayer p : ps) if (p.position().subtract(c).multiply(1, 0, 1).length() > Arenas.R - 7) {
 				p.hurtServer(level, level.damageSources().indirectMagic(boss, boss), 4.0F);
 				Vec3 in = c.subtract(p.position()).multiply(1, 0, 1).normalize().scale(0.8);

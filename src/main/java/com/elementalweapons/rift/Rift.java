@@ -75,9 +75,9 @@ public class Rift {
 		age++;
 		List<ServerPlayer> ps = alive();
 		// 결계: 원기둥 모양의 보라 입자 + 가운데 빛기둥
-		if (age % 4 == 0) {
-			for (int k = 0; k < 3; k++) Fx.ring(level, Fx.dust(0xB46CFF, 1.6F), c.add(0, 0.3 + k * 1.6, 0), R, 64, age * 0.02 + k);
-			Fx.ring(level, ParticleTypes.REVERSE_PORTAL, c.add(0, 0.2, 0), R - 0.5, 32, age * 0.05);
+		if (age % 6 == 0) {
+			for (int k = 0; k < 2; k++) Fx.ring(level, Fx.dust(0xB46CFF, 1.8F), c.add(0, 0.3 + k * 2.2, 0), R, 44, age * 0.02 + k);
+			Fx.ring(level, ParticleTypes.REVERSE_PORTAL, c.add(0, 0.2, 0), R - 0.5, 20, age * 0.05);
 			for (int y = 0; y < 12; y += 2) Fx.at(level, ParticleTypes.END_ROD, c.add(0, y, 0));
 		}
 		// 결계 밖으로 나가면 안쪽으로 되돌림
