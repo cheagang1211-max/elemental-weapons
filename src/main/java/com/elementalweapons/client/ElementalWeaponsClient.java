@@ -15,5 +15,6 @@ public class ElementalWeaponsClient implements ClientModInitializer {
 		ModModelLayers.initialize();
 		com.elementalweapons.client.growth.GrowthClient.initialize();
 		ShotHarness.initialize();
+		WeaponAura.initialize();
 	}
 }

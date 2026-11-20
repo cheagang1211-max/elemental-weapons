@@ -224,17 +224,125 @@ def scaled(es, k, oy):
             o = e["rotation"]["origin"]; e["rotation"]["origin"] = [8 + (o[0] - 8) * k, oy + (o[1] - oy) * k, 8 + (o[2] - 8) * k]
     return es
 
+
+# ======================= v3: 속성별 완전히 다른 칼날 형태 =======================
+def tri(x): return 4 * abs((x % 1) - 0.5) - 1   # 삼각파 -1..1
+
+def profile(el, t, W):
+    """t(0=가드,1=끝) -> (중심 x 오프셋, 반폭)"""
+    hw = W / 2
+    if el == "fire":       # 불꽃 물결 날 (플랑베르주)
+        c = 0.18 * W * math.sin(t * math.pi * 4.5); w = hw * (1.05 - 0.5 * t ** 1.5) * (1 + 0.2 * math.sin(t * math.pi * 9 + 1))
+    elif el == "electric": # 번개 지그재그 날
+        c = 0.5 * W * tri(t * 1.5 + 0.25); w = hw * (0.85 - 0.4 * t)
+    elif el == "water":    # 물결처럼 휘는 곡도
+        c = 0.85 * W * t ** 2; w = hw * (0.8 + 0.45 * math.sin(t * math.pi * 0.9))
+    elif el == "grass":    # 나뭇잎 날
+        c = 0.0; w = hw * 1.35 * max(0.15, math.sin(math.pi * (0.1 + 0.9 * t))) ** 0.7
+    elif el == "wind":     # 가늘게 휜 깃털 날
+        c = 0.65 * W * t ** 1.8; w = hw * 0.62 * (1 - 0.25 * t)
+    elif el == "dark":     # 톱날 + 끝 갈고리
+        c = -0.55 * W * max(0, (t - 0.72) / 0.28) ** 2; w = hw * (1.05 - 0.4 * t)
+    else:                  # light: 위로 넓어지는 성검
+        c = 0.0; w = hw * (0.85 + 0.45 * min(t, 0.75))
+    return c, w
+
+def blade3(el, y0, L, W, thick, step=1.0, tipfrac=0.18):
+    out = []
+    rows = int(L / step)
+    for r in range(rows):
+        t = (r + 0.5) / rows
+        c, w = profile(el, t, W)
+        if t > 1 - tipfrac: w *= max(0.12, (1 - t) / tipfrac)
+        if el == "dark" and r % 3 == 0 and t < 0.85: w += 0.55        # 톱니
+        y = y0 + r * step + step / 2
+        w = max(0.3, w)
+        core = max(0.2, 2 * w - 0.8)
+        out.append(box(8 + c, y, 8, core, step, thick, "blade"))
+        if w > 0.5:
+            for sd in (-1, 1):
+                out.append(box(8 + c + sd * (w - 0.2), y, 8, 0.4, step, thick * 0.55, "edge", glow=False))
+        # 속성 무늬 (가운데 선)
+        if el in ("fire", "electric", "light") and 0.06 < t < 0.88 and core >= 0.8:
+            out.append(box(8 + c, y, 8, 0.4, step, thick + 0.12, "accent", glow=True))
+        if el == "grass" and r % 3 == 1 and core > 1.2:
+            for sd in (-1, 1): out.append(box(8 + c + sd * w * 0.45, y + 0.3, 8, w * 0.5, 0.3, thick + 0.1, "fuller"))
+        if el == "water" and r % 4 == 2:
+            out.append(box(8 + c - w + 0.3, y, 8, 0.5, step, thick + 0.15, "accent", glow=True))
+        if el == "dark" and r % 3 == 0 and t < 0.85:
+            for sd in (-1, 1): out.append(box(8 + c + sd * (w - 0.1), y, 8, 0.4, step * 0.6, thick * 0.4, "accent", glow=True))
+        if el == "wind" and r % 4 == 0 and t < 0.85:
+            out.append(box(8 + c + w + 0.4, y - 0.4, 8, 0.8, 0.4, 0.4, "edge", glow=False))
+    return out
+
+def grip3(el, y0, L, size=1.0):
+    g = [box(8, y0 + L / 2, 8, 1.4 * size, L, 1.4 * size, "grip")]
+    for i in range(int(L * 1.5)):
+        y = y0 + 0.4 + i * 0.66
+        if el == "grass": g.append(box(8 + (0.75 if i % 2 else -0.75) * size, y, 8 + (0.4 if i % 4 < 2 else -0.4), 0.35, 0.5, 0.35, "fuller"))
+        elif i % 2 == 0: g.append(box(8, y, 8, 1.6 * size, 0.35, 1.6 * size, "metal_d"))
+    p = y0 - 0.7 * size
+    pom = {
+        "fire": [box(8, p, 8, 2, 1.2, 2, "metal2"), box(8, p - 1.2, 8, 1.2, 1.2, 1.2, "accent", glow=True), box(8, p - 2.1, 8, 0.6, 0.8, 0.6, "accent", glow=True)],
+        "electric": [box(8, p, 8, 2, 1, 2, "metal2"), box(8.5, p - 1.2, 8, 0.8, 1.4, 0.8, "accent", glow=True), box(7.5, p - 2.2, 8, 0.8, 1, 0.8, "accent", glow=True)],
+        "water": [box(8, p, 8, 2, 1, 2, "metal2"), box(8, p - 1.3, 8, 1.6, 1.6, 1.6, "gem"), box(8, p - 1.3, 9.2, 0.4, 2, 1.2, "metal2")],
+        "grass": [box(8, p, 8, 2, 1, 2, "metal"), box(8, p - 1.2, 8, 1.6, 1.4, 1.6, "gem"), box(9.1, p - 1.4, 8, 1, 0.4, 0.6, "fuller"), box(6.9, p - 1, 8, 1, 0.4, 0.6, "fuller")],
+        "wind": [box(8, p, 8, 1.8, 1, 1.8, "metal2"), box(8, p - 1.2, 8, 1.2, 1.2, 1.2, "gem"), box(8.6, p - 2.6, 8, 0.5, 2.6, 0.4, "edge"), box(7.4, p - 2.2, 8, 0.5, 2.0, 0.4, "edge")],
+        "dark": [box(8, p, 8, 2.2, 1, 2.2, "metal"), box(8, p - 1.4, 8, 2, 1.8, 2, "metal2"), box(7.5, p - 1.4, 7, 0.5, 0.5, 0.2, "accent", glow=True), box(8.5, p - 1.4, 7, 0.5, 0.5, 0.2, "accent", glow=True)],
+        "light": [box(8, p, 8, 2, 1, 2, "metal"), box(8, p - 1.3, 8, 1.4, 1.4, 1.4, "gem"), box(6.6, p - 1.2, 8, 1.2, 0.6, 0.6, "metal2"), box(9.4, p - 1.2, 8, 1.2, 0.6, 0.6, "metal2")],
+    }[el]
+    return g + [scaled([e], size, y0)[0] for e in pom] if size != 1.0 else g + pom
+
+def extras(el, wt, y0, L, W):
+    """대검 전용 속성 장식"""
+    o = []
+    if wt != "greatsword": return o
+    if el == "fire":
+        for k in range(4): o.append(box(8 + (k % 2 - 0.5) * 2.2, y0 + 3 + k * 4.5, 8, 0.6, 2, 1.6, "accent", glow=True))
+    elif el == "electric":
+        for k in range(3): o.append(box(8 + 0.5 * W * tri((3 + k * 5.5) / L * 1.5 + 0.25), y0 + 3 + k * 5.5, 8, W * 0.9, 0.5, 1.7, "metal2"))
+    elif el == "water":
+        for k in range(3): o.append(box(8 - W * 0.65 + 0.85 * W * ((4 + k * 5) / L) ** 2, y0 + 4 + k * 5, 8, 1.2, 1.2, 1.2, "gem"))
+    elif el == "grass":
+        for k, sd in ((0, -1), (1, 1), (2, -1)):
+            yy = y0 + 4 + k * 6
+            o += [box(8 + sd * (W * 0.75), yy, 8, 2.2, 1, 0.5, "fuller", rot=(22.5 * sd, "z", [8 + sd * W * 0.6, yy, 8])), box(8 + sd * (W * 0.95), yy + 0.8, 8, 0.8, 0.8, 0.8, "accent", glow=True)]
+    elif el == "wind":
+        o += [box(8 + 0.65 * W * 0.4, y0 + L * 0.55, 8, 1.2, 3, 1.8, "metal2")]
+    elif el == "dark":
+        for k in range(3):
+            yy = y0 + 4 + k * 6
+            for sd in (-1, 1): o.append(box(8 + sd * (W * 0.7 + 0.6), yy, 8, 1.2, 0.8, 0.8, "metal"))
+    elif el == "light":
+        o += [box(8, y0 + 0.5, 9.4, 7, 0.6, 0.6, "accent", glow=True), box(8, y0 - 3, 9.4, 0.6, 7, 0.6, "accent", glow=True)]
+    return o
+
+def staff_shaft(el):
+    """속성별 지팡이 자루"""
+    es = []
+    for i in range(15):
+        y = -13 + i * 2 + 1
+        if el == "grass": dx = 0.35 * math.sin(i * 1.3); es.append(box(8 + dx, y, 8 + 0.3 * math.cos(i * 1.1), 1.6, 2, 1.6, "grip"))
+        elif el == "water": es.append(box(8, y, 8, 1.4, 2, 1.4, "grip")); (i % 3 == 1) and es.append(box(8 + (1 if i % 2 else -1), y, 8, 1.2, 0.6, 0.6, "accent", glow=True))
+        elif el == "electric": es.append(box(8, y, 8, 1.2, 2, 1.2, "metal")); es.append(box(8, y, 8, 1.7, 0.5, 1.7, "accent" if i % 2 else "metal2", glow=(i % 2 == 1)))
+        elif el == "fire": es.append(box(8, y, 8, 1.5, 2, 1.5, "grip")); (i % 2 == 0) and es.append(box(8, y, 8, 0.5, 1.6, 1.6, "accent", glow=True))
+        elif el == "wind": es.append(box(8, y, 8, 1.1, 2, 1.1, "metal2")); (i % 4 == 0) and es.append(box(8.9, y - 0.5, 8, 0.6, 2.2, 0.3, "accent", glow=False))
+        elif el == "dark": es.append(box(8, y, 8, 1.5 if i % 2 else 1.1, 2, 1.5 if i % 2 else 1.1, "metal2" if i % 2 else "grip")); (i % 2) and es.append(box(8, y, 9, 0.5, 0.6, 0.8, "metal"))
+        else: es.append(box(8, y, 8, 1.3, 2, 1.3, "grip")); (i % 3 == 0) and es.append(box(8, y, 8, 1.8, 0.6, 1.8, "metal"))
+    es.append(box(8, -13.5, 8, 2, 1.5, 2, "metal"))
+    return es
+
 def build(el, wt):
     st = EL[el]["style"]
     if wt == "dagger":
-        es = grip(1, 4, 1.4) + guard(st, 5.5, 5, 0.8) + blade(6.2, 9, 2.2, 0.8, tip=3, fuller=False) + blade_deco(st, 6.2, 7, 2.2, 0.8)
+        es = grip3(el, 1, 4) + guard(st, 5.5, 5, 0.8) + blade3(el, 6.2, 9, 2.4, 0.8, step=0.5, tipfrac=0.25)
     elif wt == "sword":
-        es = grip(0, 6) + guard(st, 6.6, 8) + blade(7.4, 18, 2.8, 1.0, tip=4) + blade_deco(st, 7.4, 15, 2.8, 1.0)
+        es = grip3(el, 0, 6) + guard(st, 6.6, 8) + blade3(el, 7.4, 18, 3.0, 1.0)
     elif wt == "greatsword":
-        es = grip(-4, 9, 2.0) + guard(st, 5.8, 12, 1.4) + blade(6.8, 24, 4.6, 1.4, tip=5) + blade_deco(st, 6.8, 20, 4.6, 1.4) + [box(8, 10, 8, 2.2, 3, 1.6, "metal2"), box(8, 10, 8, 1, 1, 1.8, "gem")]
+        es = grip3(el, -4, 9, 1.3) + guard(st, 5.8, 12, 1.4) + blade3(el, 6.8, 24, 5.0, 1.4, tipfrac=0.16) + extras(el, wt, 6.8, 24, 5.0) + \
+             [box(8, 10, 8, 2.2, 3, 1.6, "metal2"), box(8, 10, 8, 1, 1, 1.8, "gem")]
     else:  # staff
-        es = [box(8, 2, 8, 1.4, 30, 1.4, "grip")] + [box(8, -12 + i * 7, 8, 1.8, 0.8, 1.8, "metal2") for i in range(4)] + \
-             [box(8, -13.5, 8, 2, 1.5, 2, "metal")] + scaled(staff_head(st, 17.2), 1.45, 17.2)
+        es = staff_shaft(el) + scaled(staff_head(st, 17.2), 1.45, 17.2)
     # 범위 제한 (-16~32)
     for e in es:
         e["from"] = [max(-16, min(32, v)) for v in e["from"]]; e["to"] = [max(-16, min(32, v)) for v in e["to"]]
