@@ -25,7 +25,7 @@ public class ClassSelectScreen extends Screen {
 			{"낫으로 넓게 베어 가르기", "낫: 회전 베기", "적을 끌어당긴 뒤 폭발"},
 			{"멀리서 속성 화살 사격", "활: 당길수록 강해짐", "끝까지 당기면 5연발"}};
 	private static final WeaponType[][] WEAPONS = {{WeaponType.STAFF}, {WeaponType.GREATSWORD, WeaponType.HAMMER}, {WeaponType.SWORD, WeaponType.SHIELD}, {WeaponType.DAGGER}, {WeaponType.BOOK}, {WeaponType.SCYTHE}, {WeaponType.BOW}};
-	private static final int CW = 64, CH = 150, GAP = 3;
+	private static final int CW = 56, CH = 150, GAP = 3;
 	private int left, top;
 
 	public ClassSelectScreen() { super(Component.literal("직업 선택")); }
@@ -41,7 +41,7 @@ public class ClassSelectScreen extends Screen {
 			Button b = Button.builder(Component.literal(label), btn -> {
 				ClientPlayNetworking.send(new GrowthPayloads.ChooseClass(pc.ordinal()));
 				onClose();
-			}).bounds(left + i * (CW + GAP) + 6, top + CH - 24, CW - 12, 18).build();
+			}).bounds(left + i * (CW + GAP) + 4, top + CH - 24, CW - 8, 18).build();
 			b.active = cur == PlayerClass.NONE;
 			addRenderableWidget(b);
 		}
@@ -79,12 +79,12 @@ public class ClassSelectScreen extends Screen {
 			g.pose().popMatrix();
 			// 무기 아이콘
 			WeaponType[] ws = WEAPONS[i];
-			int iconW = ws.length * 27;
+			int iconW = ws.length * 26;
 			for (int k = 0; k < ws.length; k++) {
 				ItemStack st = new ItemStack(ModItems.WEAPONS.get(Element.values()[(i * 2 + k) % 7]).get(ws[k]));
 				g.pose().pushMatrix();
-				g.pose().translate(x + CW / 2F - iconW / 2F + k * 27 + 1, top + 34);
-				g.pose().scale(1.6F, 1.6F);
+				g.pose().translate(x + CW / 2F - iconW / 2F + k * 26 + 1, top + 34);
+				g.pose().scale(1.5F, 1.5F);
 				g.item(st, 0, 0);
 				g.pose().popMatrix();
 			}
