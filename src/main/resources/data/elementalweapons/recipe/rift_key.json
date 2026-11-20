@@ -1,0 +1,14 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": [
+		"elementalweapons:element_essence",
+		"minecraft:amethyst_shard",
+		"minecraft:amethyst_shard",
+		"minecraft:ender_pearl"
+	],
+	"result": {
+		"id": "elementalweapons:rift_key",
+		"count": 2
+	}
+}

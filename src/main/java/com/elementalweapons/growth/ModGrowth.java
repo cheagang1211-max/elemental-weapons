@@ -41,6 +41,20 @@ public final class ModGrowth {
 			.syncWith(Growth.STREAM_CODEC, AttachmentSyncPredicate.targetOnly())
 			.buildAndRegister(id("growth"));
 
+	public static final AttachmentType<Paragon> PARAGON = AttachmentRegistry.<Paragon>builder()
+			.persistent(Paragon.CODEC)
+			.copyOnDeath()
+			.initializer(() -> Paragon.DEFAULT)
+			.syncWith(Paragon.STREAM_CODEC, AttachmentSyncPredicate.targetOnly())
+			.buildAndRegister(id("paragon"));
+
+	public static Paragon paragon(Player p) {
+		Paragon g = p.getAttached(PARAGON);
+		return g == null ? Paragon.DEFAULT : g;
+	}
+
+	public static void setParagon(Player p, Paragon g) { p.setAttached(PARAGON, g); }
+
 	private static Identifier id(String p) { return Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, p); }
 
 	public static Growth get(Player p) {
@@ -54,6 +68,8 @@ public final class ModGrowth {
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.Spend.TYPE, GrowthPayloads.Spend.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.Reset.TYPE, GrowthPayloads.Reset.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.Spend.TYPE, (payload, ctx) -> spend(ctx.player(), payload.stat(), payload.amount()));
+		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.SpendParagon.TYPE, GrowthPayloads.SpendParagon.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.SpendParagon.TYPE, (payload, ctx) -> spendParagon(ctx.player(), payload.stat(), payload.amount()));
 		PayloadTypeRegistry.clientboundPlay().register(GrowthPayloads.OpenSage.TYPE, GrowthPayloads.OpenSage.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.ResetClass.TYPE, GrowthPayloads.ResetClass.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.ResetClass.TYPE, (payload, ctx) -> sageReset(ctx.player()));
@@ -112,7 +128,7 @@ public final class ModGrowth {
 
 	public static void addXp(ServerPlayer p, long amount) {
 		Growth g = get(p);
-		if (g.level() >= Growth.MAX_LEVEL) return;
+		if (g.level() >= Growth.MAX_LEVEL) { addParagonXp(p, amount); return; }
 		int level = g.level();
 		long xp = g.xp() + amount;
 		int points = g.points();
@@ -134,6 +150,34 @@ public final class ModGrowth {
 					.withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
 			applyStats(p);
 		}
+	}
+
+	/** 100레벨 이후: 초월 경험치 (끝없이 오름) */
+	public static void addParagonXp(ServerPlayer p, long amount) {
+		Paragon g = paragon(p);
+		int level = g.level(), points = g.points(), gained = 0;
+		long xp = g.xp() + amount;
+		while (xp >= Paragon.need(level)) { xp -= Paragon.need(level); level++; points++; gained++; }
+		setParagon(p, new Paragon(level, xp, points, g.pow(), g.arc(), g.imm(), g.swf(), g.best()));
+		if (gained > 0) {
+			ServerLevel sl = (ServerLevel) p.level();
+			Fx.burst(sl, Fx.dust(0xB46CFF, 2.0F), p.position().add(0, 1.0, 0), 120, 1.2, 0.1);
+			Fx.ring(sl, Fx.dust(0xFFD34D, 1.6F), p.position().add(0, 0.2, 0), 2.5, 48, 0);
+			Fx.sound(sl, p.position(), SoundEvents.PLAYER_LEVELUP, 1.0F, 0.6F);
+			Fx.sound(sl, p.position(), SoundEvents.BEACON_POWER_SELECT, 1.0F, 1.2F);
+			p.sendSystemMessage(Component.literal("✧ 초월 레벨 업! 초월 " + level + "  (초월 포인트 +" + gained + ", [K] 성장 창 → 초월)")
+					.withStyle(ChatFormatting.LIGHT_PURPLE, ChatFormatting.BOLD));
+			applyStats(p);
+		}
+	}
+
+	public static void spendParagon(ServerPlayer p, int stat, int amount) {
+		if (stat < 0 || stat > 3 || amount <= 0) return;
+		Paragon g = paragon(p);
+		int add = Math.min(amount, g.points());
+		if (add <= 0) return;
+		setParagon(p, g.withStat(stat, g.stat(stat) + add).withPoints(g.points() - add));
+		applyStats(p);
 	}
 
 	private static final java.util.Map<java.util.UUID, Long> COUNTER = new java.util.HashMap<>();
@@ -255,6 +299,7 @@ public final class ModGrowth {
 	}
 
 	private static final Identifier HP = id("growth_health"), SPD = id("growth_speed"), ASPD = id("growth_attack_speed"), ATK = id("growth_attack");
+	private static final Identifier PHP = id("paragon_health"), PSPD = id("paragon_speed"), PASPD = id("paragon_attack_speed"), PATK = id("paragon_attack");
 
 	public static void applyStats(Player p) {
 		Growth g = get(p);
@@ -262,6 +307,12 @@ public final class ModGrowth {
 		mod(p, Attributes.MOVEMENT_SPEED, SPD, g.speedBonus(), AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
 		mod(p, Attributes.ATTACK_SPEED, ASPD, g.attackSpeedBonus(), AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
 		mod(p, Attributes.ATTACK_DAMAGE, ATK, g.attackDamageBonus(), AttributeModifier.Operation.ADD_VALUE);
+		Paragon pg = paragon(p);
+		mod(p, Attributes.MAX_HEALTH, PHP, pg.health(), AttributeModifier.Operation.ADD_VALUE);
+		mod(p, Attributes.MOVEMENT_SPEED, PSPD, pg.speed(), AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+		mod(p, Attributes.ARMOR_TOUGHNESS, id("paragon_toughness"), pg.toughness(), AttributeModifier.Operation.ADD_VALUE);
+		mod(p, Attributes.ATTACK_SPEED, PASPD, pg.attackSpeed(), AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+		mod(p, Attributes.ATTACK_DAMAGE, PATK, pg.damageMult() - 1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
 		if (p.getHealth() > p.getMaxHealth()) p.setHealth(p.getMaxHealth());
 	}
 

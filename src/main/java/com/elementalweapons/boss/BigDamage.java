@@ -43,6 +43,8 @@ public final class BigDamage {
 				mult = ELEMENTAL_WEAPON * com.elementalweapons.item.Enhancement.multiplier(held);
 				com.elementalweapons.growth.Growth g = com.elementalweapons.growth.ModGrowth.get(p);
 				mult *= w.type() == com.elementalweapons.item.WeaponType.STAFF ? g.staffBossBonus() : g.meleeBossBonus();
+				com.elementalweapons.growth.Paragon pg = com.elementalweapons.growth.ModGrowth.paragon(p);
+				mult *= w.type() == com.elementalweapons.item.WeaponType.STAFF ? pg.spellMult() : pg.damageMult();
 				el = w.element();
 				aff = affinity(el, boss.element());
 				Element second = boss.secondaryElement();

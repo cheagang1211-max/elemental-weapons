@@ -105,7 +105,7 @@ public class ElementalWeaponItem extends Item {
 			}
 			case BOOK -> {
 				ElementEffects.supportAura(element, server, user);
-				user.getCooldowns().addCooldown(user.getItemInHand(hand), (int) Math.round(300 * com.elementalweapons.growth.ModGrowth.get(user).staffCooldownFactor()));
+				user.getCooldowns().addCooldown(user.getItemInHand(hand), (int) Math.round(300 * (com.elementalweapons.growth.ModGrowth.get(user).staffCooldownFactor() * (1 - com.elementalweapons.growth.ModGrowth.paragon(user).cooldownCut()))));
 			}
 			case SCYTHE -> {
 				SpellManager.add(new com.elementalweapons.spell.ReapSpell(server, user, element));
@@ -119,7 +119,7 @@ public class ElementalWeaponItem extends Item {
 				Spell spell = ElementEffects.staffSpell(element, server, user);
 				if (spell == null) return InteractionResult.PASS;
 				SpellManager.add(spell);
-				user.getCooldowns().addCooldown(user.getItemInHand(hand), (int) Math.round(element.staffCooldown * com.elementalweapons.growth.ModGrowth.get(user).staffCooldownFactor()));
+				user.getCooldowns().addCooldown(user.getItemInHand(hand), (int) Math.round(element.staffCooldown * (com.elementalweapons.growth.ModGrowth.get(user).staffCooldownFactor() * (1 - com.elementalweapons.growth.ModGrowth.paragon(user).cooldownCut()))));
 			}
 			default -> {
 				return InteractionResult.PASS;

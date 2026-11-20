@@ -127,6 +127,7 @@ public class ModItems {
 					output.accept(VOLTRA_CORE);
 					for (Item it : BOSS_CORES.values()) output.accept(it);
 					output.accept(ELEMENT_ESSENCE);
+					output.accept(com.elementalweapons.rift.RiftItems.RIFT_KEY);
 					for (Element element : Element.values()) {
 						for (WeaponType type : WeaponType.values()) {
 							output.accept(get(element, type));

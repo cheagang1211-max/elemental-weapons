@@ -47,4 +47,12 @@ public final class GrowthPayloads {
 		public static final StreamCodec<ByteBuf, ChooseClass> CODEC = ByteBufCodecs.VAR_INT.map(ChooseClass::new, ChooseClass::cls);
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
+
+	/** 초월 스탯 찍기 */
+	public record SpendParagon(int stat, int amount) implements CustomPacketPayload {
+		public static final Type<SpendParagon> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "paragon_spend"));
+		public static final StreamCodec<ByteBuf, SpendParagon> CODEC = StreamCodec.composite(
+				ByteBufCodecs.VAR_INT, SpendParagon::stat, ByteBufCodecs.VAR_INT, SpendParagon::amount, SpendParagon::new);
+		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+	}
 }
