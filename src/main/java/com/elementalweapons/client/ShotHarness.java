@@ -373,6 +373,10 @@ public final class ShotHarness {
 			mc.player.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
 		}
 		if (k == per - 10) shot(mc, String.format("5%d_sky_scene", idx));
+		if (k == per - 12) server.execute(() -> { ServerPlayer p = sp(server);
+			int n = p.level().getEntitiesOfClass(com.elementalweapons.mob.ElementalMob.class, p.getBoundingBox().inflate(64)).size();
+			int c = p.level().getEntitiesOfClass(com.elementalweapons.mob.ElementalCreature.class, p.getBoundingBox().inflate(64)).size();
+			log("장면 " + idx + " 주변 몹 " + n + " / 동물 " + c); });
 	}
 
 	private static void look(Minecraft mc, float yaw, float pitch) {
