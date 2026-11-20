@@ -228,6 +228,101 @@ def shield(cv, el):
     for (x, y) in ((xc - 18, 14), (xc + 18, 14), (xc - 18, 30), (xc + 18, 30), (xc - 9, 44), (xc + 9, 44)): cv.circ(x, y, 1.0, tone(p["metal2"], 0.15))
     cv.arc(xc, 32, 15, 200, 340, 0.5, tone(p["metal2"], 0.1), steps=30)
 
+def scythe(cv, el):
+    """낫: 세로 자루 + 위쪽에서 왼쪽 아래로 휘어지는 초승달 날"""
+    p = P_(el); xc = 38
+    # 자루 (살짝 휨)
+    shaft = [(xc + 0.0, 9), (xc + 0.6, 30), (xc + 0.2, 50), (xc - 0.8, 62)]
+    cv.line(shaft, 3.2, p["grip"])
+    cv.line([(x - 1.0, y) for x, y in shaft], 0.8, tone(p["grip"], 0.18))
+    for k in range(10):
+        y = 30 + k * 3.0
+        cv.line([(xc - 1.4, y), (xc + 1.8, y + 1.5)], 0.6, p["metal2"])
+    for y in (28, 46): cv.rect(xc - 2.4, y, xc + 2.4, y + 1.6, p["metal2"]); cv.gem(xc, y + 0.8, 0.9, p["gem"])
+    cv.poly([(xc - 2, 61), (xc + 1.2, 61), (xc - 1.4, 66)], p["metal2"])
+    # 날: 바깥 호를 따라 두께가 끝으로 갈수록 얇아지는 초승달
+    def pt(cx, cy, r, a): return (cx + math.cos(math.radians(a)) * r, cy + math.sin(math.radians(a)) * r)
+    OC, R0 = (xc + 1, 40), 28
+    def edge(t, inset=0.0):
+        a = 276 - 112 * t; th = 9.0 * (1 - t) ** 0.85 + 0.25
+        return pt(OC[0], OC[1], R0 - inset * th, a)
+    ts = [i / 30 for i in range(31)]
+    cv.poly([edge(t) for t in ts] + [edge(t, 1.0) for t in reversed(ts)], p["blade2"])
+    cv.poly([edge(t, 0.12) for t in ts[:-1]] + [edge(t, 0.62) for t in reversed(ts[:-1])], p["blade"])
+    cv.line([edge(t, 0.04) for t in ts], 0.9, p["glow"], glow=True)
+    # 속성 장식
+    if el == "fire":
+        for k in range(5):
+            t = 0.12 + k * 0.15; a = 276 - 112 * t; x, y = edge(t); cv.poly([(x - 1.5, y + 1), (x + math.cos(math.radians(a)) * 5, y + math.sin(math.radians(a)) * 5), (x + 1.5, y + 1)], p["glow"], glow=True)
+    elif el == "electric":
+        cv.line([edge(t, 0.45 + (0.2 if k % 2 else -0.2)) for k, t in enumerate((0.1, 0.25, 0.4, 0.55, 0.7, 0.82))], 1.1, p["glow"], glow=True)
+    elif el == "water":
+        cv.line([edge(t, 0.5) for t in ts[2:26]], 0.8, p["glow"], glow=True)
+        for t in (0.2, 0.45, 0.7): x, y = edge(t, 0.5); cv.circ(x, y, 1.1, p["glow"], glow=True)
+    elif el == "grass":
+        for t in (0.25, 0.5): x, y = edge(t, 0.5); cv.poly([(x, y), (x - 3, y - 2), (x - 5, y + 1), (x - 2, y + 2)], p["glow"], glow=True)
+    elif el == "wind":
+        wing(cv, xc + 1, 15, 1, 9, p["metal"], p["metal2"], n=3)
+    elif el == "dark":
+        for k in range(6):
+            x, y = edge(0.08 + k * 0.13, 1.0); cv.poly([(x - 1, y), (x + 1.2, y + 3), (x + 2, y - 0.5)], p["dark"])
+        cv.gem(xc + 1, 20, 2.4, p["gem"])
+    else:
+        cv.arc(xc + 1, 14, 6, 0, 360, 0.8, p["glow"], glow=True, steps=30)
+    # 날과 자루를 잇는 받침 + 뒤쪽 가시
+    cv.poly([(xc - 3, 12), (xc + 3.5, 10), (xc + 3.5, 19), (xc - 2.5, 18)], p["metal"])
+    cv.poly([(xc + 3, 11), (xc + 11, 5), (xc + 6, 14)], p["metal2"])
+    cv.gem(xc + 0.5, 14.5, 2.0, p["gem"])
+
+def bow(cv, el):
+    """활: 왼쪽으로 휜 몸체 + 오른쪽 시위, 끝이 젖혀진 리커브"""
+    p = P_(el)
+    cx, cy, R = 54, 32, 33
+    def pt(a, r=R): return (cx + math.cos(math.radians(a)) * r, cy + math.sin(math.radians(a)) * r)
+    top, bot = pt(222), pt(138)
+    # 시위
+    cv.line([(top[0] + 3.5, top[1] - 3), (bot[0] + 3.5, bot[1] + 3)], 0.6, tone(p["metal"], 0.25))
+    cv.line([(top[0] + 3.5, top[1] - 3), (bot[0] + 3.5, bot[1] + 3)], 0.3, p["glow"], glow=True)
+    # 몸체 (두께가 가운데 두껍고 끝으로 갈수록 얇아짐)
+    for a0 in range(138, 222, 2):
+        t = abs(a0 - 180) / 42
+        w = 4.2 - 2.4 * t
+        cv.line([pt(a0), pt(a0 + 2)], w, p["blade2"])
+    for a0 in range(140, 220, 2):
+        t = abs(a0 - 180) / 42
+        cv.line([pt(a0, R - 1.1), pt(a0 + 2, R - 1.1)], max(0.6, 1.6 - 1.0 * t), p["blade"])
+    cv.arc(cx, cy, R + 0.4, 146, 214, 0.6, p["glow"], glow=True, steps=30)
+    # 젖혀진 끝 (리커브) + 끝 장식
+    for sgn, e in ((-1, top), (1, bot)):
+        tipx, tipy = e[0] + 5, e[1] + sgn * 5
+        cv.line([e, (e[0] + 2.5, e[1] + sgn * 3), (tipx, tipy)], 1.6, p["metal"])
+        cv.gem(tipx, tipy, 1.6, p["gem"])
+    # 손잡이
+    gx, gy = pt(180)
+    cv.rect(gx - 2.6, gy - 5.5, gx + 2.6, gy + 5.5, p["grip"])
+    for y in range(int(gy - 5), int(gy + 5), 2): cv.line([(gx - 2.6, y), (gx + 2.6, y + 1)], 0.5, tone(p["grip"], 0.2))
+    cv.rect(gx - 3.2, gy - 6.5, gx + 3.2, gy - 5.3, p["metal2"]); cv.rect(gx - 3.2, gy + 5.3, gx + 3.2, gy + 6.5, p["metal2"])
+    cv.gem(gx - 3.5, gy, 2.2, p["gem"])
+    # 속성 날개/장식 (몸체 바깥쪽)
+    if el in ("wind", "light"):
+        for a, sd in ((158, 1), (202, -1)):
+            x, y = pt(a, R + 1.5); wing(cv, x, y, -1, 8, p["metal"], p["metal2"], n=3, up=(sd < 0))
+    elif el == "fire":
+        for a in (152, 166, 194, 208):
+            x, y = pt(a, R + 1.5); cv.poly([(x, y - 1.5), (x - 5, y), (x, y + 1.5)], p["glow"], glow=True)
+    elif el == "electric":
+        for a in (160, 200):
+            x, y = pt(a, R + 1); cv.line([(x, y), (x - 3, y + 1.5), (x - 1.5, y + 3), (x - 5, y + 5)], 0.9, p["glow"], glow=True)
+    elif el == "dark":
+        for a in (150, 162, 198, 210):
+            x, y = pt(a, R + 1.5); cv.poly([(x, y - 1), (x - 4, y + (1 if a < 180 else -1) * 1.5), (x, y + 1)], p["metal2"])
+    elif el == "grass":
+        for a in (156, 204):
+            x, y = pt(a, R + 1.2); cv.poly([(x, y), (x - 4, y - 2), (x - 6, y + 1), (x - 2, y + 2)], p["glow"], glow=True)
+    else:
+        for a in (155, 205):
+            x, y = pt(a, R + 1.5); cv.circ(x - 1.5, y, 1.4, p["glow"], glow=True)
+
 def design(el, wt):
     cv = Canvas(); p = P_(el); xc = 32
     if wt == "sword":
@@ -256,4 +351,8 @@ def design(el, wt):
         hammer_head(cv, el, xc, 14)
     elif wt == "shield":
         shield(cv, el)
+    elif wt == "scythe":
+        scythe(cv, el)
+    elif wt == "bow":
+        bow(cv, el)
     return cv.finish()

@@ -7,7 +7,9 @@ public enum PlayerClass {
 	WARRIOR("전사", "Warrior", "대검 · 망치", 0xFFFF8A6A),
 	KNIGHT("기사", "Knight", "검 + 방패", 0xFF8AD0FF),
 	ASSASSIN("암살자", "Assassin", "단검", 0xFF6AFFBA),
-	SUPPORT("서포터", "Support", "마법서", 0xFFFFB0E0);
+	SUPPORT("서포터", "Support", "마법서", 0xFFFFB0E0),
+	REAPER("사신", "Reaper", "낫", 0xFFC27AFF),
+	RANGER("궁수", "Ranger", "활", 0xFFB6F07A);
 
 	public final String koName, enName, weapons;
 	public final int color;

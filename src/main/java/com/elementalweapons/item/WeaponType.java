@@ -1,6 +1,6 @@
 package com.elementalweapons.item;
 
-/** 6가지 무기 종류 */
+/** 9가지 무기 종류 */
 public enum WeaponType {
 	DAGGER("dagger", "단검", "Dagger"),
 	SWORD("sword", "검", "Sword"),
@@ -8,7 +8,9 @@ public enum WeaponType {
 	STAFF("staff", "지팡이", "Staff"),
 	HAMMER("hammer", "망치", "Hammer"),
 	SHIELD("shield", "방패", "Shield"),
-	BOOK("book", "마법서", "Grimoire");
+	BOOK("book", "마법서", "Grimoire"),
+	SCYTHE("scythe", "낫", "Scythe"),
+	BOW("bow", "활", "Bow");
 
 	public final String id;
 	public final String koName;
@@ -22,6 +24,8 @@ public enum WeaponType {
 			case SWORD, SHIELD -> PlayerClass.KNIGHT;
 			case DAGGER -> PlayerClass.ASSASSIN;
 			case BOOK -> PlayerClass.SUPPORT;
+			case SCYTHE -> PlayerClass.REAPER;
+			case BOW -> PlayerClass.RANGER;
 		};
 	}
 

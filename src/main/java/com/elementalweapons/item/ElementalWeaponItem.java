@@ -67,6 +67,7 @@ public class ElementalWeaponItem extends Item {
 			return InteractionResult.FAIL;
 		}
 		if (type == WeaponType.SHIELD) return super.use(level, user, hand); // 방패 막기
+		if (type == WeaponType.BOW) { user.startUsingItem(hand); return InteractionResult.CONSUME; } // 활 당기기
 		if (type == WeaponType.DAGGER) {
 			// 플레이어 이동은 클라이언트가 처리하므로 양쪽에서 실행
 			Vec3 look = user.getLookAngle();
@@ -106,6 +107,10 @@ public class ElementalWeaponItem extends Item {
 				ElementEffects.supportAura(element, server, user);
 				user.getCooldowns().addCooldown(user.getItemInHand(hand), (int) Math.round(300 * com.elementalweapons.growth.ModGrowth.get(user).staffCooldownFactor()));
 			}
+			case SCYTHE -> {
+				SpellManager.add(new com.elementalweapons.spell.ReapSpell(server, user, element));
+				user.getCooldowns().addCooldown(user.getItemInHand(hand), 70);
+			}
 			case HAMMER -> {
 				ElementEffects.hammerSlam(element, server, user);
 				user.getCooldowns().addCooldown(user.getItemInHand(hand), 100);
@@ -121,5 +126,29 @@ public class ElementalWeaponItem extends Item {
 			}
 		}
 		return InteractionResult.SUCCESS;
+	}
+
+	// ---------------- 활 ----------------
+	@Override
+	public net.minecraft.world.item.ItemUseAnimation getUseAnimation(net.minecraft.world.item.ItemStack stack) {
+		return type == WeaponType.BOW ? net.minecraft.world.item.ItemUseAnimation.BOW : super.getUseAnimation(stack);
+	}
+
+	@Override
+	public int getUseDuration(net.minecraft.world.item.ItemStack stack, net.minecraft.world.entity.LivingEntity entity) {
+		return type == WeaponType.BOW ? 72000 : super.getUseDuration(stack, entity);
+	}
+
+	@Override
+	public boolean releaseUsing(net.minecraft.world.item.ItemStack stack, Level level, net.minecraft.world.entity.LivingEntity entity, int timeLeft) {
+		if (type != WeaponType.BOW || !(entity instanceof Player p)) return super.releaseUsing(stack, level, entity, timeLeft);
+		int used = getUseDuration(stack, entity) - timeLeft;
+		float charge = Math.min(1.0F, used / 20.0F);
+		if (charge < 0.15F) return false;
+		if (level instanceof ServerLevel server) {
+			SpellManager.add(new com.elementalweapons.spell.ElementArrowSpell(server, p, element, charge, stack));
+			p.getCooldowns().addCooldown(stack, charge >= 1.0F ? 30 : 8);
+		}
+		return true;
 	}
 }

@@ -194,5 +194,19 @@
 	"item.elementalweapons.light_book": "Light Grimoire",
 	"entity.elementalweapons.fate_sage": "Sage of Fate",
 	"biome.elementalweapons.capital_gardens": "Capital Gardens",
-	"biome.elementalweapons.elemental_abyss": "Elemental Abyss"
+	"biome.elementalweapons.elemental_abyss": "Elemental Abyss",
+	"item.elementalweapons.electric_scythe": "Electric Scythe",
+	"item.elementalweapons.electric_bow": "Electric Bow",
+	"item.elementalweapons.fire_scythe": "Fire Scythe",
+	"item.elementalweapons.fire_bow": "Fire Bow",
+	"item.elementalweapons.water_scythe": "Water Scythe",
+	"item.elementalweapons.water_bow": "Water Bow",
+	"item.elementalweapons.grass_scythe": "Grass Scythe",
+	"item.elementalweapons.grass_bow": "Grass Bow",
+	"item.elementalweapons.wind_scythe": "Wind Scythe",
+	"item.elementalweapons.wind_bow": "Wind Bow",
+	"item.elementalweapons.dark_scythe": "Dark Scythe",
+	"item.elementalweapons.dark_bow": "Dark Bow",
+	"item.elementalweapons.light_scythe": "Light Scythe",
+	"item.elementalweapons.light_bow": "Light Bow"
 }

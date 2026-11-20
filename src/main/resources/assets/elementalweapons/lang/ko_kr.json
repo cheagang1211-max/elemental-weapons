@@ -194,5 +194,19 @@
 	"item.elementalweapons.light_book": "빛의 마법서",
 	"entity.elementalweapons.fate_sage": "운명의 현자",
 	"biome.elementalweapons.capital_gardens": "수도 정원",
-	"biome.elementalweapons.elemental_abyss": "원소의 심연"
+	"biome.elementalweapons.elemental_abyss": "원소의 심연",
+	"item.elementalweapons.electric_scythe": "전기의 낫",
+	"item.elementalweapons.electric_bow": "전기의 활",
+	"item.elementalweapons.fire_scythe": "불의 낫",
+	"item.elementalweapons.fire_bow": "불의 활",
+	"item.elementalweapons.water_scythe": "물의 낫",
+	"item.elementalweapons.water_bow": "물의 활",
+	"item.elementalweapons.grass_scythe": "풀의 낫",
+	"item.elementalweapons.grass_bow": "풀의 활",
+	"item.elementalweapons.wind_scythe": "바람의 낫",
+	"item.elementalweapons.wind_bow": "바람의 활",
+	"item.elementalweapons.dark_scythe": "어둠의 낫",
+	"item.elementalweapons.dark_bow": "어둠의 활",
+	"item.elementalweapons.light_scythe": "빛의 낫",
+	"item.elementalweapons.light_bow": "빛의 활"
 }

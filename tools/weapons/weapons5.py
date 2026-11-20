@@ -93,6 +93,10 @@ DISP = {
                    "firstperson_righthand": {"rotation": [0, 90, 20], "translation": [1, 0, 0], "scale": [0.42, 0.42, 0.42]}},
     "shield":     {"thirdperson_righthand": {"rotation": [0, 180, 0], "translation": [0, -2, -2], "scale": [0.7, 0.7, 0.7]},
                    "firstperson_righthand": {"rotation": [0, 180, 5], "translation": [0, -3, -2], "scale": [0.45, 0.45, 0.45]}},
+    "scythe":     {"thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 2, 1], "scale": [1.3, 1.3, 1.3]},
+                   "firstperson_righthand": {"rotation": [0, 90, 15], "translation": [2, 2, 0], "scale": [0.48, 0.48, 0.48]}},
+    "bow":        {"thirdperson_righthand": {"rotation": [-80, 260, -40], "translation": [-1, -2, 2.5], "scale": [0.95, 0.95, 0.95]},
+                   "firstperson_righthand": {"rotation": [0, -90, 25], "translation": [1.13, 3.2, 1.13], "scale": [0.68, 0.68, 0.68]}},
 }
 for v in DISP.values():
     v["thirdperson_lefthand"] = v["thirdperson_righthand"]; v["firstperson_lefthand"] = v["firstperson_righthand"]
