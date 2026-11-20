@@ -122,6 +122,7 @@ public class TownPiece extends StructurePiece {
 	}
 
 	private static BlockState st(Block b) { return b.defaultBlockState(); }
+	private static Block blk(String id) { return net.minecraft.core.registries.BuiltInRegistries.BLOCK.getValue(net.minecraft.resources.Identifier.fromNamespaceAndPath("minecraft", id)); }
 	private static int h(int x, int y, int z) { int n = x * 73856093 ^ y * 19349663 ^ z * 83492791; n ^= n >>> 13; n *= 0x5bd1e995; return (n ^ n >>> 15) & 0x7fffffff; }
 
 	private BlockState road(int x, int z) {
@@ -183,7 +184,7 @@ public class TownPiece extends StructurePiece {
 	}
 
 	// ---------- 집 ----------
-	private static final Block[] UPPER = {Blocks.CALCITE, Blocks.WHITE_TERRACOTTA, Blocks.SMOOTH_SANDSTONE, Blocks.CALCITE};
+	private static final Block[] UPPER = {Blocks.CALCITE, blk("white_terracotta"), Blocks.SMOOTH_SANDSTONE, Blocks.CALCITE};
 	private static final Block[] BEAM = {Blocks.STRIPPED_SPRUCE_LOG, Blocks.STRIPPED_DARK_OAK_LOG, Blocks.STRIPPED_SPRUCE_LOG, Blocks.STRIPPED_OAK_LOG};
 
 	private void house(Feature f) {
@@ -268,14 +269,14 @@ public class TownPiece extends StructurePiece {
 				int a = s - 1, b = span - s + 1;
 				if (a > b) continue;
 				Direction up1 = alongX ? Direction.SOUTH : Direction.EAST;   // 계단 면 방향
-				BlockState s1 = st(Blocks.WAXED_CUT_COPPER_STAIRS).setValue(BlockStateProperties.HORIZONTAL_FACING, up1);
-				BlockState s2 = st(Blocks.WAXED_CUT_COPPER_STAIRS).setValue(BlockStateProperties.HORIZONTAL_FACING, up1.getOpposite());
+				BlockState s1 = st(blk("waxed_cut_copper_stairs")).setValue(BlockStateProperties.HORIZONTAL_FACING, up1);
+				BlockState s2 = st(blk("waxed_cut_copper_stairs")).setValue(BlockStateProperties.HORIZONTAL_FACING, up1.getOpposite());
 				if (alongX) { set(x + l, y, z + a, s1); set(x + l, y, z + b, s2); }
 				else { set(x + a, y, z + l, s1); set(x + b, y, z + l, s2); }
-				if (a == b) { if (alongX) set(x + l, y, z + a, st(Blocks.WAXED_CUT_COPPER_SLAB)); else set(x + a, y, z + l, st(Blocks.WAXED_CUT_COPPER_SLAB)); }
+				if (a == b) { if (alongX) set(x + l, y, z + a, st(blk("waxed_cut_copper_slab"))); else set(x + a, y, z + l, st(blk("waxed_cut_copper_slab"))); }
 				// 박공벽
 				if (l == 0 || l == len) for (int m = a + 1; m < b; m++) {
-					if (alongX) set(x + l, y, z + m, st(Blocks.ORANGE_TERRACOTTA)); else set(x + m, y, z + l, st(Blocks.ORANGE_TERRACOTTA));
+					if (alongX) set(x + l, y, z + m, st(blk("orange_terracotta"))); else set(x + m, y, z + l, st(blk("orange_terracotta")));
 				}
 			}
 		}
@@ -293,18 +294,18 @@ public class TownPiece extends StructurePiece {
 				if (corner) set(x + i, y, z + k, st(y % 6 == 5 ? Blocks.CHISELED_STONE_BRICKS : Blocks.STONE_BRICKS));
 				else if (wall) {
 					boolean win = (i == W / 2 || k == W / 2 || i == W / 2 - 2 || i == W / 2 + 2 || k == W / 2 - 2 || k == W / 2 + 2) && y % 8 >= 2 && y % 8 <= 6;
-					set(x + i, y, z + k, win ? st(Blocks.PURPLE_STAINED_GLASS) : st(h(x + i, y, z + k) % 6 == 0 ? Blocks.MOSSY_STONE_BRICKS : Blocks.STONE_BRICKS));
+					set(x + i, y, z + k, win ? st(blk("purple_stained_glass")) : st(h(x + i, y, z + k) % 6 == 0 ? Blocks.MOSSY_STONE_BRICKS : Blocks.STONE_BRICKS));
 				} else if (y % 8 == 0 && y > 0) set(x + i, y, z + k, st(Blocks.DARK_OAK_PLANKS));
 			}
 		}
 		// 첨탑
 		for (int s = 0; s <= W / 2; s++) for (int i = s; i < W - s; i++) for (int k = s; k < W - s; k++)
-			if (i == s || k == s || i == W - 1 - s || k == W - 1 - s) set(x + i, H + s * 2, z + k, st(Blocks.WAXED_CUT_COPPER));
+			if (i == s || k == s || i == W - 1 - s || k == W - 1 - s) set(x + i, H + s * 2, z + k, st(blk("waxed_cut_copper")));
 		for (int s = 0; s <= W / 2; s++) for (int i = s; i < W - s; i++) for (int k = s; k < W - s; k++)
-			if (i == s || k == s || i == W - 1 - s || k == W - 1 - s) set(x + i, H + s * 2 + 1, z + k, st(Blocks.WAXED_CUT_COPPER));
+			if (i == s || k == s || i == W - 1 - s || k == W - 1 - s) set(x + i, H + s * 2 + 1, z + k, st(blk("waxed_cut_copper")));
 		int top = H + W + 1;
 		set(x + W / 2, top, z + W / 2, st(Blocks.GOLD_BLOCK));
-		set(x + W / 2, top + 1, z + W / 2, st(Blocks.LIGHTNING_ROD));
+		set(x + W / 2, top + 1, z + W / 2, st(blk("lightning_rod")));
 		// 문 + 현자
 		for (int y = 0; y < 4; y++) for (int i = W / 2 - 1; i <= W / 2 + 1; i++) set(x + i, y, z + W - 1, y == 3 ? st(Blocks.CHISELED_STONE_BRICKS) : st(Blocks.AIR));
 		set(x + W / 2, 6, z + W / 2, st(Blocks.LANTERN).setValue(BlockStateProperties.HANGING, true));
@@ -327,7 +328,7 @@ public class TownPiece extends StructurePiece {
 			set(x + i, y, z + k, s);
 		}
 		roof(x, z, W - 1, D - 1, 14);
-		for (int i = 1; i < W - 1; i++) { set(x + i, 7, z - 1, st(Blocks.POLISHED_ANDESITE_WALL)); set(x + i, 7, z + D, st(Blocks.POLISHED_ANDESITE_WALL)); }
+		for (int i = 1; i < W - 1; i++) { set(x + i, 7, z - 1, st(blk("andesite_wall"))); set(x + i, 7, z + D, st(blk("andesite_wall"))); }
 		set(x + W / 2, 5, z + D / 2, st(Blocks.LANTERN).setValue(BlockStateProperties.HANGING, true));
 		set(x + W / 2, 9, z - 1, st(Blocks.GOLD_BLOCK));   // 시계 자리
 	}
@@ -382,13 +383,13 @@ public class TownPiece extends StructurePiece {
 		}
 	}
 
-	private static final Block[] WOOL = {Blocks.RED_WOOL, Blocks.BLUE_WOOL, Blocks.YELLOW_WOOL, Blocks.GREEN_WOOL, Blocks.PURPLE_WOOL, Blocks.ORANGE_WOOL};
+	private static final Block[] WOOL = {blk("red_wool"), blk("blue_wool"), blk("yellow_wool"), blk("green_wool"), blk("purple_wool"), blk("orange_wool")};
 
 	private void stall(Feature f) {
 		int x = f.x(), z = f.z();
 		for (int i = 0; i < 4; i++) for (int k = 0; k < 4; k++) {
 			if ((i == 0 || i == 3) && (k == 0 || k == 3)) for (int y = 0; y < 3; y++) set(x + i, y, z + k, st(Blocks.SPRUCE_FENCE));
-			set(x + i, 3, z + k, st(((i + k) & 1) == 0 ? WOOL[f.a()] : Blocks.WHITE_WOOL));
+			set(x + i, 3, z + k, st(((i + k) & 1) == 0 ? WOOL[f.a()] : blk("white_wool")));
 		}
 		set(x + 1, 0, z + 1, st(Blocks.BARREL)); set(x + 2, 0, z + 1, st(Blocks.CRAFTING_TABLE));
 	}
