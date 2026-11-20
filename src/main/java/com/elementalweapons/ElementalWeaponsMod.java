@@ -21,6 +21,7 @@ public class ElementalWeaponsMod implements ModInitializer {
 		ModEntities.initialize();
 		ModMobs.initialize();
 		ModItems.initialize();
+		com.elementalweapons.fx.ModParticles.initialize();
 		com.elementalweapons.item.ModGear.initialize();
 		com.elementalweapons.growth.ModGrowth.initialize();
 		com.elementalweapons.world.town.ModTowns.initialize();
