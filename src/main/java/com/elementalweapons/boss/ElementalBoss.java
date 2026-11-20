@@ -106,6 +106,10 @@ public abstract class ElementalBoss extends Monster {
 
 		Entity attacker = source.getEntity();
 		BigDamage.Result result = BigDamage.compute(this, attacker, amount, this.getRandom());
+		if (BossFight.shielded(this)) {
+			result = new BigDamage.Result(Math.max(1, result.damage() / 10), result.affinity(), result.attackElement());
+			com.elementalweapons.spell.Fx.burst(level, ElementFx.dust(element(), 1.4F), this.position().add(0, this.getBbHeight() * 0.5, 0), 12, this.getBbWidth() * 0.6, 0.02);
+		}
 
 		// 바닐라 쪽은 맞는 연출/어그로만 (체력은 다시 가득)
 		super.hurtServer(level, source, 0.01F);
@@ -113,7 +117,9 @@ public abstract class ElementalBoss extends Monster {
 
 		bigHealth = Math.max(0, bigHealth - result.damage());
 		if (attacker instanceof Player p) {
-			p.sendOverlayMessage(BigDamage.hitMessage(result));
+			p.sendOverlayMessage(BossFight.shielded(this)
+					? BigDamage.hitMessage(result).copy().append(Component.literal("  🛡 수정 탑 보호막: 피해 -90%").withStyle(ChatFormatting.AQUA))
+					: BigDamage.hitMessage(result));
 		}
 		updateBossBar();
 		checkPhase(level);

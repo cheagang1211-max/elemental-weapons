@@ -42,6 +42,7 @@ public final class SkyPainter implements Feature {
 			for (SkyLayout.Bridge b : SkyLayout.BRIDGES) bridge(b);
 			for (SkyLayout.Island is : SkyLayout.ISLANDS) if (is.kind == 3) pavilion(is);
 			waterfalls();
+			for (Arenas.Arena a : Arenas.all()) if (maxX >= a.x() - 32 && minX <= a.x() + 32 && maxZ >= a.z() - 32 && minZ <= a.z() + 32) arena(a);
 		} catch (Throwable t) {
 			if (!logged) { logged = true; com.elementalweapons.ElementalWeaponsMod.LOGGER.error("[SKY] 페인터 오류", t); }
 		} finally { lv = null; }
@@ -215,6 +216,66 @@ public final class SkyPainter implements Feature {
 			new TownPiece(x0, G + 1, z0, 777L + i * 31 + j * 97, flags).postProcess(lv, null, null, random, box, cp, BlockPos.ZERO);
 		}
 		fantasy();
+	}
+
+	// ---------------- 보스방 ----------------
+	private static final String[][] ARENA_PAL = {   // 바닥, 무늬, 발광, 기둥
+			{"mossy_stone_bricks", "moss_block", "verdant_froglight", "stripped_jungle_log"},
+			{"prismarine_bricks", "dark_prismarine", "sea_lantern", "prismarine_bricks"},
+			{"polished_deepslate", "deepslate_tiles", "glowstone", "deepslate_bricks"},
+			{"calcite", "smooth_quartz", "sea_lantern", "quartz_pillar"},
+			{"polished_blackstone_bricks", "nether_bricks", "shroomlight", "polished_blackstone"},
+			{"smooth_quartz", "chiseled_quartz_block", "ochre_froglight", "quartz_pillar"},
+			{"obsidian", "crying_obsidian", "pearlescent_froglight", "polished_blackstone_bricks"},
+			{"end_stone_bricks", "purpur_block", "pearlescent_froglight", "purpur_pillar"},
+	};
+
+	private void arena(Arenas.Arena a) {
+		String[] P = ARENA_PAL[a.region()];
+		BlockState floor = st(blk(P[0])), pat = st(blk(P[1])), glow = st(blk(P[2])), pil = st(blk(P[3]));
+		int F = a.floor(), R = Arenas.R;
+		for (int x = Math.max(minX, a.x() - R - 4); x <= Math.min(maxX, a.x() + R + 4); x++)
+			for (int z = Math.max(minZ, a.z() - R - 4); z <= Math.min(maxZ, a.z() + R + 4); z++) {
+				int dx = x - a.x(), dz = z - a.z();
+				double r = Math.hypot(dx, dz), th = Math.toDegrees(Math.atan2(dz, dx));
+				if (r > R + 3.5) continue;
+				// 위 비우기 + 바닥 아래 받침
+				for (int y = F + 1; y <= F + 34; y++) if (!air(x, y, z)) set(x, y, z, st(Blocks.AIR));
+				for (int y = F - 4; y < F; y++) set(x, y, z, y == F - 4 && r > R ? pat : floor);
+				// 바닥 무늬: 동심원 룬 고리, 8갈래 빛줄기, 체크
+				BlockState f = ((int) Math.floor(r) % 6 == 0) ? pat : (((dx >> 1) + (dz >> 1)) & 1) == 0 ? floor : pat;
+				if (Math.abs(r - 9) < 0.5 || Math.abs(r - 17.5) < 0.5) f = Math.floorMod((int) Math.round(th), 15) < 5 ? glow : pat;
+				double spoke = Math.abs(((th % 45) + 45) % 45 - 22.5);
+				if (spoke > 21.6 && r > 3 && r < R - 1) f = glow;
+				if (r > R + 0.5) f = pat;
+				set(x, F, z, f);
+				// 가장자리 낮은 벽 (네 방향 입구)
+				boolean gate = Math.abs(dx) <= 2 || Math.abs(dz) <= 2;
+				if (r > R - 0.5 && r <= R + 0.6 && !gate) {
+					set(x, F + 1, z, pil);
+					if (Math.floorMod((int) Math.round(th), 6) < 3) set(x, F + 2, z, pil);
+				}
+				// 기둥 8개 + 화로
+				for (int k = 0; k < 8; k++) {
+					double ang = Math.toRadians(k * 45 + 22.5);
+					double px = Math.cos(ang) * 22, pz = Math.sin(ang) * 22;
+					double pr = Math.hypot(dx - px, dz - pz);
+					if (pr <= 1.7) {
+						for (int y = F + 1; y <= F + 10; y++) set(x, y, z, y == F + 10 ? pat : pil);
+						if (pr < 0.8) { set(x, F + 11, z, glow); set(x, F + 12, z, st(Blocks.AMETHYST_CLUSTER)); }
+					}
+				}
+				// 수정 탑 자리 (네 곳)
+				for (int k = 0; k < 4; k++) {
+					double ang = Math.toRadians(k * 90 + 45);
+					if (Math.abs(dx - Math.cos(ang) * 17) <= 1.5 && Math.abs(dz - Math.sin(ang) * 17) <= 1.5) set(x, F, z, glow);
+				}
+				// 가운데 제단
+				if (r <= 3.6) {
+					set(x, F + 1, z, r <= 2.6 ? floor : st(blk("polished_blackstone_slab")));
+					if (r <= 0.5) { set(x, F + 1, z, st(Blocks.LODESTONE)); set(x, F + 2, z, glow); }
+				}
+			}
 	}
 
 	// ---------------- 수도 판타지 장식 ----------------

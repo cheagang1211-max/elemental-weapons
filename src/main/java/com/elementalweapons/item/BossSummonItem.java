@@ -37,8 +37,22 @@ public class BossSummonItem extends Item {
 		Vec3 pos = user.position().add(Fx.flatLook(user).scale(8)).add(0, 1, 0);
 		ElementalBoss boss = bossType.get().create(server, EntitySpawnReason.SPAWN_ITEM_USE);
 		if (boss == null) return InteractionResult.FAIL;
+		// 공중 세계: 보스방 안에서 쓰면 제단 위에 강림 + 기믹 전투
+		com.elementalweapons.world.sky.Arenas.Arena arena = null;
+		String bid = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(boss.getType()).getPath();
+		if (com.elementalweapons.world.sky.ModSky.active(server)) {
+			com.elementalweapons.world.sky.Arenas.Arena near = com.elementalweapons.world.sky.Arenas.near(user.getX(), user.getZ(), com.elementalweapons.world.sky.Arenas.R + 6);
+			if (near != null) arena = near;
+			else {
+				com.elementalweapons.world.sky.Arenas.Arena home = com.elementalweapons.world.sky.Arenas.of(bid);
+				if (home != null) user.sendSystemMessage(Component.literal("✦ 이 보스의 보스방: (" + home.x() + ", " + home.floor() + ", " + home.z() + ") — 보스방에서 소환하면 결계·수정 탑·장판 기믹 전투가 펼쳐집니다.")
+						.withStyle(ChatFormatting.AQUA));
+			}
+		}
+		if (arena != null) pos = new Vec3(arena.x() + 0.5, arena.floor() + 3, arena.z() + 0.5);
 		boss.snapTo(pos.x, pos.y, pos.z, user.getYRot() + 180.0F, 0.0F);
 		server.addFreshEntity(boss);
+		com.elementalweapons.boss.BossFight.start(server, boss, arena != null ? new Vec3(arena.x() + 0.5, arena.floor() + 1, arena.z() + 0.5) : pos.add(0, -1, 0), arena);
 
 		// 등장 연출
 		ElectricStormSpell.drawBolt(server, pos);
