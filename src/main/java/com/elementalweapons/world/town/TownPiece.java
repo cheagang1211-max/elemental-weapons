@@ -166,6 +166,15 @@ public class TownPiece extends StructurePiece {
 			// 도로 경계석
 			if (road) for (int a : AVENUES) if (x == a || x == a + ROAD - 1 || z == a || z == a + ROAD - 1) { if (h(x, 3, z) % 3 == 0) set(x, -1, z, st(Blocks.STONE_BRICKS)); }
 		}
+		// 1-b) 성벽 + 모서리 탑
+		for (int x = Math.max(0, cx0); x <= Math.min(SIZE - 1, cx1); x++) for (int z = Math.max(0, cz0); z <= Math.min(SIZE - 1, cz1); z++) {
+			boolean edge = x == 0 || z == 0 || x == SIZE - 1 || z == SIZE - 1;
+			if (!edge || isRoad(x, z)) continue;
+			for (int y = 0; y < 5; y++) set(x, y, z, st(h(x, y, z) % 5 == 0 ? Blocks.MOSSY_STONE_BRICKS : (h(x, y, z) % 7 == 0 ? Blocks.CRACKED_STONE_BRICKS : Blocks.STONE_BRICKS)));
+			if ((x + z) % 2 == 0) set(x, 5, z, st(Blocks.STONE_BRICK_WALL));
+			if ((x + z) % 9 == 0) set(x, 3, z == 0 ? 1 : z == SIZE - 1 ? SIZE - 2 : z, st(Blocks.LANTERN).setValue(BlockStateProperties.HANGING, false));
+		}
+		for (int[] c : new int[][]{{0, 0}, {SIZE - 5, 0}, {0, SIZE - 5}, {SIZE - 5, SIZE - 5}}) watchtower(c[0], c[1]);
 		// 2) 건물들
 		for (Feature f : plan()) {
 			if (!f.touches(cx0, cz0, cx1, cz1, 12)) continue;
@@ -222,6 +231,16 @@ public class TownPiece extends StructurePiece {
 				set(x + i, y, z + d + 1, st(h(i, y, z + 1) % 2 == 0 ? Blocks.FLOWERING_AZALEA_LEAVES : Blocks.AZALEA_LEAVES).setValue(BlockStateProperties.PERSISTENT, true));
 			}
 		}
+		// 담쟁이 (벽 바깥에 늘어짐)
+		for (int i = 0; i <= w; i++) for (int k = 0; k <= d; k += d) {
+			if (h(x + i, 7, z + k) % 4 != 0) continue;
+			int len = 2 + h(x + i, 8, z + k) % (H - 1);
+			int oz = k == 0 ? z - 1 : z + d + 1;
+			for (int y = H - 1; y >= H - len && y > 0; y--)
+				set(x + i, y, oz, st(Blocks.VINE).setValue(k == 0 ? BlockStateProperties.SOUTH : BlockStateProperties.NORTH, true));
+		}
+		// 앞마당 울타리 꽃
+		for (int i = 0; i <= w; i++) if (h(x + i, 9, z) % 3 == 0) set(x + i, 0, z - 1, st(h(i, 1, z) % 2 == 0 ? Blocks.AZALEA : Blocks.FLOWERING_AZALEA));
 		// 문
 		door(f);
 		// 지붕 (긴 쪽을 따라 박공)
@@ -280,6 +299,17 @@ public class TownPiece extends StructurePiece {
 				}
 			}
 		}
+	}
+
+	private void watchtower(int x, int z) {
+		for (int i = 0; i < 5; i++) for (int k = 0; k < 5; k++) for (int y = 0; y < 11; y++) {
+			boolean wall = i == 0 || k == 0 || i == 4 || k == 4;
+			if (wall) set(x + i, y, z + k, st(y == 10 ? Blocks.POLISHED_ANDESITE : (h(x + i, y, z + k) % 6 == 0 ? Blocks.MOSSY_STONE_BRICKS : Blocks.STONE_BRICKS)));
+			else if (y == 10) set(x + i, y, z + k, st(Blocks.SPRUCE_PLANKS));
+		}
+		for (int i = 0; i < 5; i++) for (int k = 0; k < 5; k++) if ((i == 0 || k == 0 || i == 4 || k == 4) && (i + k) % 2 == 0) set(x + i, 11, z + k, st(Blocks.STONE_BRICK_WALL));
+		set(x + 2, 12, z + 2, st(Blocks.LANTERN));
+		for (int y = 2; y < 10; y += 4) { set(x + 2, y, z, st(blk("glass_pane"))); set(x + 2, y, z + 4, st(blk("glass_pane"))); }
 	}
 
 	// ---------- 대성당 탑 ----------
