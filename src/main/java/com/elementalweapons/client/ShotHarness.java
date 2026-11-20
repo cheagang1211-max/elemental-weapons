@@ -284,7 +284,7 @@ public final class ShotHarness {
 			if (tt > t0 && tt < t0 + 8 + n * 10) look(mc, 20, 12);
 			for (int i = 0; i < n; i++) {
 				int ts = t0 + 6 + i * 10;
-				if (tt == ts) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+				if (tt == ts) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, true);
 				if (tt == ts + (wt == WeaponType.SCYTHE ? 3 : 2)) shot(mc, String.format("68_%s_%d", wt.id, i));
 			}
 		}
