@@ -33,8 +33,13 @@ public final class SkyPainter implements Feature {
 	private WorldGenLevel lv;
 	private int minX, minZ, maxX, maxZ;
 
+	/** 청크마다 새 작업자를 만들어 여러 월드 생성 스레드가 동시에 칠할 수 있게 함 (예전엔 한 줄로 줄 서서 느렸음) */
 	@Override
-	public synchronized boolean place(WorldGenLevel level, ChunkGenerator gen, RandomSource random, BlockPos origin) {
+	public boolean place(WorldGenLevel level, ChunkGenerator gen, RandomSource random, BlockPos origin) {
+		return new SkyPainter().paint(level, random, origin);
+	}
+
+	private boolean paint(WorldGenLevel level, RandomSource random, BlockPos origin) {
 		this.lv = level;
 		minX = (origin.getX() >> 4) << 4; minZ = (origin.getZ() >> 4) << 4; maxX = minX + 15; maxZ = minZ + 15;
 		try {

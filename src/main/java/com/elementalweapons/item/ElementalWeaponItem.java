@@ -75,6 +75,7 @@ public class ElementalWeaponItem extends Item {
 			user.fallDistance = 0;
 			if (level instanceof ServerLevel server) {
 				ElementEffects.dashBurst(element, server, user.position());
+				com.elementalweapons.growth.Tutorial.event(user, 1);
 			}
 			user.getCooldowns().addCooldown(user.getItemInHand(hand), DAGGER_COOLDOWN);
 			return InteractionResult.SUCCESS;
@@ -125,6 +126,8 @@ public class ElementalWeaponItem extends Item {
 				return InteractionResult.PASS;
 			}
 		}
+		com.elementalweapons.growth.Tutorial.classEvent(user, "skill");
+		com.elementalweapons.growth.Tutorial.event(user, 1);
 		return InteractionResult.SUCCESS;
 	}
 
@@ -147,6 +150,8 @@ public class ElementalWeaponItem extends Item {
 		if (charge < 0.15F) return false;
 		if (level instanceof ServerLevel server) {
 			SpellManager.add(new com.elementalweapons.spell.ElementArrowSpell(server, p, element, charge, stack));
+			if (charge >= 1.0F) com.elementalweapons.growth.Tutorial.classEvent(p, "full_volley");
+			com.elementalweapons.growth.Tutorial.event(p, 1);
 			p.getCooldowns().addCooldown(stack, charge >= 1.0F ? 30 : 8);
 		}
 		return true;

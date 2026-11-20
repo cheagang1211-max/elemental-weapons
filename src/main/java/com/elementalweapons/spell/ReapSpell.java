@@ -51,6 +51,7 @@ public class ReapSpell extends Spell {
 		}
 		if (age >= DURATION - 1) {
 			ElementFx.impact(level, element, caster.position(), 4.5);
+			if (hit.size() >= 2) com.elementalweapons.growth.Tutorial.classEvent(caster, "reap2");
 			for (LivingEntity e : hit) if (e.isAlive()) Fx.hurt(level, caster, e, 6.0F);
 			Fx.sound(level, caster.position(), SoundEvents.PLAYER_ATTACK_CRIT, 1.0F, 0.7F);
 			return true;

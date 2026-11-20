@@ -174,12 +174,13 @@ public class TownPiece extends StructurePiece {
 		for (int x = Math.max(0, cx0); x <= Math.min(SIZE - 1, cx1); x++) for (int z = Math.max(0, cz0); z <= Math.min(SIZE - 1, cz1); z++) {
 			boolean edge = (x == 0 && (flags & 1) != 0) || (x == SIZE - 1 && (flags & 2) != 0) || (z == 0 && (flags & 4) != 0) || (z == SIZE - 1 && (flags & 8) != 0);
 			if (!edge || isRoad(x, z)) continue;
-			for (int y = 0; y < 5; y++) set(x, y, z, st(h(x, y, z) % 5 == 0 ? Blocks.MOSSY_STONE_BRICKS : (h(x, y, z) % 7 == 0 ? Blocks.CRACKED_STONE_BRICKS : Blocks.STONE_BRICKS)));
-			if ((x + z) % 2 == 0) set(x, 5, z, st(Blocks.STONE_BRICK_WALL));
-			if ((x + z) % 9 == 0) set(x, 3, z == 0 ? 1 : z == SIZE - 1 ? SIZE - 2 : z, st(Blocks.LANTERN).setValue(BlockStateProperties.HANGING, false));
+			// 낮은 담장: 돌벽돌 한 줄 + 담장 블록, 9칸마다 등불 기둥
+			set(x, 0, z, st(h(x, 0, z) % 5 == 0 ? Blocks.MOSSY_STONE_BRICKS : Blocks.STONE_BRICKS));
+			boolean post = (x + z) % 9 == 0;
+			set(x, 1, z, st(post ? Blocks.CHISELED_STONE_BRICKS : Blocks.STONE_BRICK_WALL));
+			if (post) { set(x, 2, z, st(Blocks.STONE_BRICK_WALL)); set(x, 3, z, st(Blocks.LANTERN)); }
+			for (int y = 2; y < 6; y++) if (!post || y > 3) set(x, y, z, st(Blocks.AIR));
 		}
-		int[][] corners = {{0, 0, 1 | 4}, {SIZE - 5, 0, 2 | 4}, {0, SIZE - 5, 1 | 8}, {SIZE - 5, SIZE - 5, 2 | 8}};
-		for (int[] c : corners) if ((flags & c[2]) == c[2]) watchtower(c[0], c[1]);
 		// 2) 건물들
 		for (Feature f : plan()) {
 			if (!f.touches(cx0, cz0, cx1, cz1, 12)) continue;

@@ -34,6 +34,7 @@ public final class GrowthClient {
 	public static void initialize() {
 		OPEN_KEY = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.elementalweapons.growth", InputConstants.KEY_K, KeyMapping.Category.GAMEPLAY));
 		HudElementRegistry.addLast(Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "growth_hud"), GrowthHud::render);
+		HudElementRegistry.addLast(Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "tutorial_hud"), TutorialHud::render);
 		ClientTickEvents.END_CLIENT_TICK.register(GrowthClient::tick);
 		ClientPlayNetworking.registerGlobalReceiver(com.elementalweapons.growth.GrowthPayloads.OpenSage.TYPE,
 				(payload, ctx) -> Minecraft.getInstance().gui.setScreen(new SageScreen()));

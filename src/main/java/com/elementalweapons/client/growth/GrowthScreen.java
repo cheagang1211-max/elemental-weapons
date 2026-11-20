@@ -37,6 +37,10 @@ public class GrowthScreen extends Screen {
 		}
 		addRenderableWidget(Button.builder(Component.literal("✧ 초월"), b -> paragonMode = !paragonMode)
 				.bounds(left + W - 104, top + 4, 50, 16).build());
+		boolean tutDone = minecraft.player != null && com.elementalweapons.growth.Tutorial.get(minecraft.player).step() >= com.elementalweapons.growth.Tutorial.DONE;
+		addRenderableWidget(Button.builder(Component.literal(tutDone ? "튜토리얼 다시" : "튜토리얼 끄기"), b -> {
+					ClientPlayNetworking.send(new GrowthPayloads.TutorialSkip(tutDone)); onClose(); })
+				.bounds(left + 8, top + H + 4, 84, 16).build());
 	}
 
 	@Override

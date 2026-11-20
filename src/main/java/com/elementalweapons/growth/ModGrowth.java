@@ -83,6 +83,7 @@ public final class ModGrowth {
 				if (!world.isClientSide()) denyMessage(player, w.type());
 				return net.minecraft.world.InteractionResult.FAIL;
 			}
+			if (!world.isClientSide()) Tutorial.classEvent(player, "hit");
 			return net.minecraft.world.InteractionResult.PASS;
 		});
 		// 원소 방패로 막으면 속성 반격
@@ -94,6 +95,7 @@ public final class ModGrowth {
 				if (last == null || now - last >= 20) {
 					COUNTER.put(p.getUUID(), now);
 					com.elementalweapons.spell.ElementEffects.shieldCounter(w.element(), (ServerLevel) p.level(), p, att);
+					Tutorial.classEvent(p, "block");
 				}
 			}
 			return true;
@@ -102,6 +104,10 @@ public final class ModGrowth {
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
 			if (entity instanceof ElementalBoss) return; // 보스는 ElementalBoss.defeat 에서 처리
 			if (!(source.getEntity() instanceof ServerPlayer p)) return;
+			if (entity instanceof net.minecraft.world.entity.monster.Enemy) {
+				Tutorial.event(p, 4);
+				if (source.is(net.minecraft.world.damagesource.DamageTypes.INDIRECT_MAGIC) || source.is(net.minecraft.world.damagesource.DamageTypes.MAGIC)) Tutorial.classEvent(p, "magic_kill");
+			}
 			long xp = entity instanceof ElementalMob ? 25 : entity instanceof ElementalCreature ? 5 : entity instanceof net.minecraft.world.entity.monster.Enemy ? 10 : 0;
 			if (xp > 0) addXp(p, xp);
 		});
@@ -112,7 +118,11 @@ public final class ModGrowth {
 			String path = key.getPath();
 			if (path.equals("orichalcum_ore")) addXp(sp, 30);
 			else if (path.endsWith("_ore")) addXp(sp, 8);
+			if (path.endsWith("_ore")) Tutorial.event(sp, 6);
 		});
+		Tutorial.initialize();
+		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.TutorialSkip.TYPE, GrowthPayloads.TutorialSkip.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.TutorialSkip.TYPE, (payload, ctx) -> Tutorial.set(ctx.player(), payload.restart() ? (get(ctx.player()).cls() == 0 ? 0 : 1) : Tutorial.DONE));
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
 			if (server.getTickCount() % 20 != 0) return;
 			for (ServerPlayer p : server.getPlayerList().getPlayers()) applyStats(p);
@@ -205,6 +215,7 @@ public final class ModGrowth {
 			return;
 		}
 		set(p, g.withClass(cls));
+		Tutorial.onClassChosen(p, cls);
 		com.elementalweapons.item.PlayerClass pc = com.elementalweapons.item.PlayerClass.of(cls);
 		p.sendSystemMessage(Component.literal("✦ 직업: " + pc.koName + "  (사용 무기: " + pc.weapons + ")").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
 		Fx.sound((ServerLevel) p.level(), p.position(), SoundEvents.PLAYER_LEVELUP, 1.0F, 1.2F);

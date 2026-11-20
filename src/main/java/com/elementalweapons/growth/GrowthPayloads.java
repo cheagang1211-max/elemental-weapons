@@ -55,4 +55,11 @@ public final class GrowthPayloads {
 				ByteBufCodecs.VAR_INT, SpendParagon::stat, ByteBufCodecs.VAR_INT, SpendParagon::amount, SpendParagon::new);
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
+
+	/** 튜토리얼 건너뛰기(false) / 처음부터(true) */
+	public record TutorialSkip(boolean restart) implements CustomPacketPayload {
+		public static final Type<TutorialSkip> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "tutorial_skip"));
+		public static final StreamCodec<ByteBuf, TutorialSkip> CODEC = StreamCodec.composite(ByteBufCodecs.BOOL, TutorialSkip::restart, TutorialSkip::new);
+		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+	}
 }

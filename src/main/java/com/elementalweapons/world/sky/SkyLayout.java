@@ -35,8 +35,8 @@ public final class SkyLayout {
 	/** 지역 순서 (바이옴 소스의 regions 목록 순서와 같음) */
 	public static final String[] REGION_NAMES = {"grass", "water", "electric", "wind", "fire", "light", "dark"};
 	public static final double[] REGION_TOP = {166, 176, 186, 201, 161, 191, 171};
-	public static final double RING = 2300, MAIN_R = 480, CAPITAL_R = 380, CAPITAL_TOP = 171;
-	public static final double ABYSS_DIST = 4500, ABYSS_R = 560, ABYSS_TOP = 151;
+	public static final double RING = 1350, MAIN_R = 480, CAPITAL_R = 380, CAPITAL_TOP = 171;
+	public static final double ABYSS_DIST = 2480, ABYSS_R = 560, ABYSS_TOP = 151;
 
 	public static final List<Island> ISLANDS = new ArrayList<>();
 	public static final List<Bridge> BRIDGES = new ArrayList<>();
@@ -64,34 +64,49 @@ public final class SkyLayout {
 		for (int k = 0; k < 7; k++) mains[k] = add(REGION_CENTER[k][0], REGION_CENTER[k][1], MAIN_R, REGION_TOP[k], 115, 26, 30, 100 + k, 1);
 		Island abyss = add(ABYSS_X, ABYSS_Z, ABYSS_R, ABYSS_TOP, 125, 22, 40, 200, 5);
 
-		// 위성섬 (지역마다 9개, 심연 7개)
+		// 위성섬 (지역마다 9개, 심연 7개): 본섬 바깥쪽 부채꼴에, 다른 섬·대교 길과 겹치지 않게
+		List<double[]> lanes = new ArrayList<>();
+		for (int k = 0; k < 7; k++) {
+			lanes.add(new double[]{0, 0, REGION_CENTER[k][0], REGION_CENTER[k][1]});
+			int n2 = (k + 1) % 7;
+			lanes.add(new double[]{REGION_CENTER[k][0], REGION_CENTER[k][1], REGION_CENTER[n2][0], REGION_CENTER[n2][1]});
+		}
+		lanes.add(new double[]{REGION_CENTER[5][0], REGION_CENTER[5][1], ABYSS_X, ABYSS_Z});
+		lanes.add(new double[]{REGION_CENTER[6][0], REGION_CENTER[6][1], ABYSS_X, ABYSS_Z});
 		for (int k = 0; k < 8; k++) {
 			Island m = k < 7 ? mains[k] : abyss;
 			int n = k < 7 ? 9 : 7;
+			double out = Math.atan2(m.z, m.x);
+			double spread = k < 7 ? Math.toRadians(150) : Math.toRadians(260);
 			for (int i = 0; i < n; i++) {
 				int s = 1000 + k * 37 + i;
-				double ang = (i + 0.35 * hash(s, 1, 2)) * Math.PI * 2 / n;
-				double dist = m.r + 260 + 260 * hash(s, 3, 4);
-				double rr = 110 + 110 * hash(s, 5, 6);
-				Island sat = add(m.x + Math.cos(ang) * dist, m.z + Math.sin(ang) * dist, rr, m.top - 22 + 44 * hash(s, 7, 8), Math.min(80, rr * 0.5), 14, 12, s, 2);
+				double ang = out - spread / 2 + spread * (i + 0.5 + 0.3 * (hash(s, 1, 2) - 0.5)) / n;
+				double rr = 85 + 85 * hash(s, 5, 6);
+				double dist = m.r + rr + 55 + 90 * hash(s, 3, 4);
+				double x = m.x + Math.cos(ang) * dist, z = m.z + Math.sin(ang) * dist;
+				boolean clash = Math.hypot(x, z) < CAPITAL_R + rr + 80;
+				for (Island o : ISLANDS) if (!clash && o != m && Math.hypot(o.x - x, o.z - z) < (o.r + rr) * 1.15 + 40) clash = true;
+				for (double[] l : lanes) if (!clash && segDist(x, z, l[0], l[1], l[2], l[3]) < rr + 45) clash = true;
+				if (clash) continue;
+				Island sat = add(x, z, rr, m.top - 22 + 44 * hash(s, 7, 8), Math.min(80, rr * 0.5), 14, 12, s, 2);
 				bridgeBetween(m, sat, 5.0, 4, 2);
 			}
 		}
 		// 수도 → 각 지역 대교 (중간 기착섬 3개)
-		for (int k = 0; k < 7; k++) chain(cap, mains[k], new double[]{0.25, 0.5, 0.75}, 11.0, 0, 2000 + k);
+		for (int k = 0; k < 7; k++) chain(cap, mains[k], new double[]{0.3, 0.7}, 11.0, 0, 2000 + k);
 		// 이웃 지역끼리 (기착섬 2개)
-		for (int k = 0; k < 7; k++) chain(mains[k], mains[(k + 1) % 7], new double[]{0.33, 0.67}, 9.0, 1, 3000 + k);
+		for (int k = 0; k < 7; k++) chain(mains[k], mains[(k + 1) % 7], new double[]{0.5}, 9.0, 1, 3000 + k);
 		// 빛·어둠 → 심연
-		chain(mains[5], abyss, new double[]{0.25, 0.5, 0.75}, 11.0, 0, 4000);
-		chain(mains[6], abyss, new double[]{0.25, 0.5, 0.75}, 11.0, 0, 4001);
+		chain(mains[5], abyss, new double[]{0.5}, 11.0, 0, 4000);
+		chain(mains[6], abyss, new double[]{0.5}, 11.0, 0, 4001);
 
 		// 장식용 부유섬
 		int big = ISLANDS.size();
-		for (int cx = -50; cx <= 50; cx++) for (int cz = -50; cz <= 50; cz++) {
+		for (int cx = -31; cx <= 31; cx++) for (int cz = -31; cz <= 31; cz++) {
 			int s = 50000 + cx * 131 + cz * 7919;
 			if (hash(s, 9, 1) > 0.42) continue;
 			double x = (cx + hash(s, 2, 3)) * 110, z = (cz + hash(s, 4, 5)) * 110;
-			if (Math.hypot(x, z) > 5600) continue;
+			if (Math.hypot(x, z) > 3300) continue;
 			double r = 6 + 22 * Math.pow(hash(s, 6, 7), 2);
 			boolean clash = false;
 			for (int i = 0; i < big && !clash; i++) { Island o = ISLANDS.get(i); if (Math.hypot(o.x - x, o.z - z) < o.r * 1.25 + r + 25) clash = true; }
@@ -140,15 +155,21 @@ public final class SkyLayout {
 	/** a → (기착섬들) → b */
 	private static void chain(Island a, Island b, double[] ts, double width, int style, int seed) {
 		Island prev = a;
-		double dx = b.x - a.x, dz = b.z - a.z;
+		double dx = b.x - a.x, dz = b.z - a.z, L = Math.hypot(dx, dz);
 		for (int i = 0; i < ts.length; i++) {
-			double t = ts[i];
+			double t = (a.r + ts[i] * (L - a.r - b.r)) / L;
 			double top = a.top + (b.top - a.top) * t + 6 * Math.sin(t * Math.PI);
 			Island w = add(a.x + dx * t, a.z + dz * t, 42, top, 34, 0, 0, seed * 10 + i, 3);
 			bridgeBetween(prev, w, width, Math.min(14, Math.hypot(dx, dz) * (ts[0]) / 40), style);
 			prev = w;
 		}
 		bridgeBetween(prev, b, width, Math.min(14, Math.hypot(dx, dz) * (ts[0]) / 40), style);
+	}
+
+	public static double segDist(double x, double z, double ax, double az, double bx, double bz) {
+		double vx = bx - ax, vz = bz - az, L2 = vx * vx + vz * vz;
+		double t = L2 == 0 ? 0 : Math.max(0, Math.min(1, ((x - ax) * vx + (z - az) * vz) / L2));
+		return Math.hypot(x - (ax + vx * t), z - (az + vz * t));
 	}
 
 	public static double segDist(double x, double z, Bridge b) {
