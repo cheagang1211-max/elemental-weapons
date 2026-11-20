@@ -498,8 +498,8 @@ DISPLAY = {
 }
 DISPLAY["hammer"] = {"thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 3, 1], "scale": [0.85, 0.85, 0.85]},
                      "firstperson_righthand": {"rotation": [0, 90, 20], "translation": [1, 0, 0], "scale": [0.38, 0.38, 0.38]}}
-DISPLAY["shield"] = {"thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 1, -3], "scale": [0.9, 0.9, 0.9]},
-                     "firstperson_righthand": {"rotation": [0, 180, 5], "translation": [-3, -1, -4], "scale": [0.7, 0.7, 0.7]}}
+DISPLAY["shield"] = {"thirdperson_righthand": {"rotation": [0, 180, 0], "translation": [0, 0, -2], "scale": [0.9, 0.9, 0.9]},
+                     "firstperson_righthand": {"rotation": [0, 180, 5], "translation": [0, -2, -2], "scale": [0.6, 0.6, 0.6]}}
 for v in DISPLAY.values():
     v["thirdperson_lefthand"] = v["thirdperson_righthand"]; v["firstperson_lefthand"] = v["firstperson_righthand"]
     v["fixed"] = {"rotation": [0, 0, 0], "translation": [0, 0, 0], "scale": [0.5, 0.5, 0.5]}

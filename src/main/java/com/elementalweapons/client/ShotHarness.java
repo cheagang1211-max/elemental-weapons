@@ -124,6 +124,10 @@ public final class ShotHarness {
 			if (t == 500) shot(mc, "05_firstperson_greatsword");
 			if (t == 505) server.execute(() -> sp(server).setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(Element.LIGHT).get(WeaponType.STAFF))));
 			if (t == 515) shot(mc, "06_firstperson_light_staff");
+			if (t == 516) server.execute(() -> { ServerPlayer p = sp(server);
+				p.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(Element.LIGHT).get(WeaponType.SWORD)));
+				p.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(ModItems.WEAPONS.get(Element.FIRE).get(WeaponType.SHIELD))); });
+			if (t == 519) shot(mc, "06b_firstperson_sword_shield");
 			if (t >= WEAP_START && t < WEAP_START + 6 * 70) {
 				int k = (t - WEAP_START) / 70, ph = (t - WEAP_START) % 70;
 				if (k < 6) {
@@ -201,7 +205,7 @@ public final class ShotHarness {
 		for (Element el : Element.values()) {
 			Entity e = net.minecraft.world.entity.EntityTypes.HUSK.create(level, EntitySpawnReason.COMMAND);
 			if (e == null) continue;
-			e.snapTo(baseX + (i - 3) * 1.6, baseY, baseZ + 4.5);
+			e.snapTo(baseX + (i - 3) * 1.25, baseY, baseZ + 3.2);
 			e.setYRot(180);
 			if (e instanceof Mob m) {
 				m.setNoAi(true); m.setYHeadRot(180); m.setYBodyRot(180);
