@@ -22,5 +22,8 @@ public class ElementalWeaponsClient implements ClientModInitializer {
 		net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry.getInstance().register(com.elementalweapons.fx.ModParticles.FX,
 				(net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry.PendingParticleProvider<com.elementalweapons.fx.FxOptions>) com.elementalweapons.client.fx.FxParticle.Provider::new);
 		ClientTickEvents.END_CLIENT_TICK.register(com.elementalweapons.client.fx.SlashFx::tick);
+		// 접속할 때마다 3인칭(뒤에서 보기)으로 시작 — F5로 언제든 바꿀 수 있음
+		net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.JOIN.register((handler, sender, mc) ->
+				mc.execute(() -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK)));
 	}
 }
