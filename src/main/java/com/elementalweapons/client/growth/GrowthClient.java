@@ -6,6 +6,7 @@ import java.util.List;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.KeyMapping;
@@ -28,11 +29,14 @@ public final class GrowthClient {
 	static final List<int[]> popups = new ArrayList<>(); // {amount, age}
 	static int tick = 0;
 	static boolean prompted = false;
+	static int lastCls = -1;
 
 	public static void initialize() {
 		OPEN_KEY = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.elementalweapons.growth", InputConstants.KEY_K, KeyMapping.Category.GAMEPLAY));
 		HudElementRegistry.addLast(Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "growth_hud"), GrowthHud::render);
 		ClientTickEvents.END_CLIENT_TICK.register(GrowthClient::tick);
+		ClientPlayNetworking.registerGlobalReceiver(com.elementalweapons.growth.GrowthPayloads.OpenSage.TYPE,
+				(payload, ctx) -> Minecraft.getInstance().gui.setScreen(new SageScreen()));
 	}
 
 	public static Growth current() {
@@ -51,6 +55,8 @@ public final class GrowthClient {
 			prompted = true;
 			mc.gui.setScreen(new ClassSelectScreen());
 		}
+		if (lastCls > 0 && g.cls() == 0 && mc.gui.screen() == null) mc.gui.setScreen(new ClassSelectScreen());
+		lastCls = g.cls();
 		if (lastLevel >= 0) {
 			if (g.level() > lastLevel) {
 				levelUpTicks = 70; levelUpFrom = lastLevel; levelUpTo = g.level();

@@ -35,12 +35,12 @@ public class ClassSelectScreen extends Screen {
 		PlayerClass cur = GrowthClient.current().playerClass();
 		for (int i = 0; i < 5; i++) {
 			PlayerClass pc = CLASSES[i];
-			String label = cur == pc ? "현재 직업" : (cur == PlayerClass.NONE ? "선택" : "변경 (정수3)");
+			String label = cur == pc ? "현재 직업" : (cur == PlayerClass.NONE ? "선택" : "잠김");
 			Button b = Button.builder(Component.literal(label), btn -> {
 				ClientPlayNetworking.send(new GrowthPayloads.ChooseClass(pc.ordinal()));
 				onClose();
 			}).bounds(left + i * (CW + GAP) + 8, top + CH - 24, CW - 16, 18).build();
-			b.active = cur != pc;
+			b.active = cur == PlayerClass.NONE;
 			addRenderableWidget(b);
 		}
 	}
@@ -66,6 +66,7 @@ public class ClassSelectScreen extends Screen {
 		g.centeredText(font, "직업 선택", 0, 0, 0xFFFFD34D);
 		g.pose().popMatrix();
 		g.centeredText(font, "직업마다 쓸 수 있는 무기가 정해져 있어요", width / 2, top - 10, 0xFFC9C2E6);
+		g.centeredText(font, "한 번 고르면 운명의 현자에게 가야만 바꿀 수 있어요", width / 2, top + CH + 6, 0xFFD080FF);
 		for (int i = 0; i < 5; i++) {
 			int x = left + i * (CW + GAP);
 			PlayerClass pc = CLASSES[i];

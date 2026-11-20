@@ -191,5 +191,6 @@
 	"item.elementalweapons.grass_book": "Grass Grimoire",
 	"item.elementalweapons.wind_book": "Wind Grimoire",
 	"item.elementalweapons.dark_book": "Dark Grimoire",
-	"item.elementalweapons.light_book": "Light Grimoire"
+	"item.elementalweapons.light_book": "Light Grimoire",
+	"entity.elementalweapons.fate_sage": "Sage of Fate"
 }

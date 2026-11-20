@@ -134,6 +134,22 @@ def elemental_merchant():
     body = P("body", (0, 0, 0), (0, 0, 0), [C(0, 6, 0, 8, 12, 6, "robe"), C(0, 17.5, 0, 9, 13, 7, "robe"), C(0, 12, -3.6, 2, 22, 1, "trim"), C(0, 11, 0, 9, 2, 7, "cloth2"), *pack_], [head, ra, la])
     return [body], m
 
+@spec
+def fate_sage():
+    m = {"robe": M(0x2A1A4A, "cloth"), "robe2": M(0x4A2A7A, "cloth"), "gold": M(0xE8C060, "metal"), "skin": M(0xD8B898, "flesh"),
+         "beard": M(0xF4F0F8, "fur"), "rune": M(0xD080FF, glow_all=True), "wood": M(0x4A3020, "bark"), "orb": M(0xE0B0FF, "gem", glow=0xF0D0FF)}
+    m["face"] = FACE(m["skin"], 0xE0A0FF, mode="two")
+    hood = [C(0, -5, 1, 10, 11, 10, "robe"), C(0, -10.5, 3, 6, 2, 6, "robe"), C(0, -0.5, -4.6, 8, 1, 1, "gold")]
+    beard = chain("swayB", 3, (0, -1, -4.5), 3, 6, 3, "beard", axis="y", h0=2, h1=1)
+    head = P("head", (0, 0, 0), (0, 0, 0), [C(0, -4.5, -0.5, 8, 9, 8, "skin", {"front": m["face"]}), *hood], [beard])
+    staff = [C(0, 4, -2, 1, 26, 1, "wood"), C(0, -10, -2, 3, 3, 3, "gold"), C(0, -13, -2, 3, 3, 3, "orb"), C(0, -15.5, -2, 1, 2, 1, "rune")]
+    ra = arm("right", (-5, 2, 0), (3, 6), (3, 6), "robe2", "skin", shoulder="gold", extra_fore=staff)
+    la = arm("left", (5, 2, 0), (3, 6), (3, 6), "robe2", "skin", shoulder="gold", extra_fore=[C(0, 12, -2, 4, 5, 2, "robe"), C(0, 12, -3.2, 2, 2, 1, "rune")])
+    ring = P("ring", (0, -4, 0), (0, 0, 0), [], ring_of("sr", 8, 9, 1, "rune", y=0))
+    body = P("body", (0, 0, 0), (0, 0, 0), [C(0, 6, 0, 8, 12, 6, "robe2"), C(0, 17.5, 0, 10, 13, 8, "robe"), C(0, 12, -3.6, 2, 22, 1, "gold"),
+             C(0, 11, 0, 9, 2, 7, "gold"), C(0, 11, -4, 2, 2, 1, "rune"), C(4.6, 14, -1, 1, 4, 3, "wood")], [head, ra, la, ring])
+    return [body], m
+
 SCALE = {"magma_brute": 1.2}
 
 if __name__ == "__main__":
@@ -157,7 +173,7 @@ if __name__ == "__main__":
     sheet.save("/tmp/mobs2_sheet.png")
     lines = []
     for mid, cls in reg:
-        typ = {"fluffle": "ModMobs.FLUFFLE", "horned_deer": "ModMobs.HORNED_DEER", "elemental_merchant": "ModMobs.MERCHANT"}.get(mid, f'ModMobs.MOBS.get("{mid}")')
+        typ = {"fluffle": "ModMobs.FLUFFLE", "horned_deer": "ModMobs.HORNED_DEER", "elemental_merchant": "ModMobs.MERCHANT", "fate_sage": "ModMobs.SAGE"}.get(mid, f'ModMobs.MOBS.get("{mid}")')
         lines.append(f'		layer = new ModelLayerLocation(ElementalWeaponsMod.id("{mid}"), "main");\n		ModelLayerRegistry.registerModelLayer(layer, {cls}::createBodyLayer);\n		final ModelLayerLocation l_{mid} = layer;\n		EntityRenderers.register({typ}, ctx -> new GenericBossRenderer<>(ctx, l_{mid}, {cls}::new, "{mid}", {SCALE.get(mid, 1.0) / HD}F, 0.5F));')
     imports = "\n".join(f"import com.elementalweapons.client.boss.gen.{c};" for _, c in reg)
     open(f"{root_dir}/src/main/java/com/elementalweapons/client/boss/GeneratedMobModels.java", "w").write(f"""// 자동 생성 파일 (tools/bossgen/mobs2.py)

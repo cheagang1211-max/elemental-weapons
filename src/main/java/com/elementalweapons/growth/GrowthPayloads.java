@@ -26,6 +26,22 @@ public final class GrowthPayloads {
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
 
+	/** 서버 → 클라: 현자 창 열기 */
+	public record OpenSage() implements CustomPacketPayload {
+		public static final OpenSage INSTANCE = new OpenSage();
+		public static final Type<OpenSage> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "open_sage"));
+		public static final StreamCodec<ByteBuf, OpenSage> CODEC = StreamCodec.unit(INSTANCE);
+		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+	}
+
+	/** 클라 → 서버: 현자에게 직업·스탯 초기화 요청 */
+	public record ResetClass() implements CustomPacketPayload {
+		public static final ResetClass INSTANCE = new ResetClass();
+		public static final Type<ResetClass> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "reset_class"));
+		public static final StreamCodec<ByteBuf, ResetClass> CODEC = StreamCodec.unit(INSTANCE);
+		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+	}
+
 	public record ChooseClass(int cls) implements CustomPacketPayload {
 		public static final Type<ChooseClass> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "choose_class"));
 		public static final StreamCodec<ByteBuf, ChooseClass> CODEC = ByteBufCodecs.VAR_INT.map(ChooseClass::new, ChooseClass::cls);

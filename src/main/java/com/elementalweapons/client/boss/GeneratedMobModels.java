@@ -17,6 +17,7 @@ import com.elementalweapons.client.boss.gen.LightSentinelModel;
 import com.elementalweapons.client.boss.gen.FluffleModel;
 import com.elementalweapons.client.boss.gen.HornedDeerModel;
 import com.elementalweapons.client.boss.gen.ElementalMerchantModel;
+import com.elementalweapons.client.boss.gen.FateSageModel;
 
 public final class GeneratedMobModels {
 	private GeneratedMobModels() {}
@@ -63,5 +64,9 @@ public final class GeneratedMobModels {
 		ModelLayerRegistry.registerModelLayer(layer, ElementalMerchantModel::createBodyLayer);
 		final ModelLayerLocation l_elemental_merchant = layer;
 		EntityRenderers.register(ModMobs.MERCHANT, ctx -> new GenericBossRenderer<>(ctx, l_elemental_merchant, ElementalMerchantModel::new, "elemental_merchant", 0.5F, 0.5F));
+		layer = new ModelLayerLocation(ElementalWeaponsMod.id("fate_sage"), "main");
+		ModelLayerRegistry.registerModelLayer(layer, FateSageModel::createBodyLayer);
+		final ModelLayerLocation l_fate_sage = layer;
+		EntityRenderers.register(ModMobs.SAGE, ctx -> new GenericBossRenderer<>(ctx, l_fate_sage, FateSageModel::new, "fate_sage", 0.5F, 0.5F));
 	}
 }

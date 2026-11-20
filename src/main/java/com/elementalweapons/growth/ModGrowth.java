@@ -54,8 +54,12 @@ public final class ModGrowth {
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.Spend.TYPE, GrowthPayloads.Spend.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.Reset.TYPE, GrowthPayloads.Reset.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.Spend.TYPE, (payload, ctx) -> spend(ctx.player(), payload.stat(), payload.amount()));
-		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.Reset.TYPE, (payload, ctx) -> reset(ctx.player()));
-		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.ChooseClass.TYPE, GrowthPayloads.ChooseClass.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(GrowthPayloads.OpenSage.TYPE, GrowthPayloads.OpenSage.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.ResetClass.TYPE, GrowthPayloads.ResetClass.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.ResetClass.TYPE, (payload, ctx) -> sageReset(ctx.player()));
+		// 운명의 현자: 처음 접속한 플레이어 근처에 한 번 배치하고, 사라지면 같은 자리에 다시 세움
+		net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> server.execute(() -> placeSage(handler.getPlayer())));
+		ServerTickEvents.END_SERVER_TICK.register(server -> { if (server.getTickCount() % 200 == 100) keepSage(server.overworld()); });		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.ChooseClass.TYPE, GrowthPayloads.ChooseClass.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.ChooseClass.TYPE, (payload, ctx) -> chooseClass(ctx.player(), payload.cls()));
 		// 직업에 맞지 않는 무기로는 공격 불가
 		net.fabricmc.fabric.api.event.player.AttackEntityCallback.EVENT.register((player, world, hand, target, hit) -> {
@@ -152,15 +156,59 @@ public final class ModGrowth {
 		if (cls <= 0 || cls >= com.elementalweapons.item.PlayerClass.values().length) return;
 		Growth g = get(p);
 		if (g.cls() == cls) return;
-		if (g.cls() != 0 && !p.isCreative()) {
-			int need = 3;
-			int have = 0;
+		if (g.cls() != 0) {
+			p.sendOverlayMessage(Component.literal("직업은 운명의 현자에게서만 바꿀 수 있습니다.").withStyle(ChatFormatting.RED));
+			return;
+		}
+		set(p, g.withClass(cls));
+		com.elementalweapons.item.PlayerClass pc = com.elementalweapons.item.PlayerClass.of(cls);
+		p.sendSystemMessage(Component.literal("✦ 직업: " + pc.koName + "  (사용 무기: " + pc.weapons + ")").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
+		Fx.sound((ServerLevel) p.level(), p.position(), SoundEvents.PLAYER_LEVELUP, 1.0F, 1.2F);
+	}
+
+	public static final AttachmentType<net.minecraft.core.BlockPos> SAGE_POS = AttachmentRegistry.<net.minecraft.core.BlockPos>builder()
+			.persistent(net.minecraft.core.BlockPos.CODEC).buildAndRegister(id("sage_pos"));
+
+	private static void placeSage(ServerPlayer p) {
+		ServerLevel level = p.level().getServer().overworld();
+		if (level.getAttached(SAGE_POS) != null || p.level() != level) return;
+		net.minecraft.world.phys.Vec3 look = p.getLookAngle();
+		int x = (int) Math.floor(p.getX() + look.x * 5), z = (int) Math.floor(p.getZ() + look.z * 5);
+		int y = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+		net.minecraft.core.BlockPos pos = new net.minecraft.core.BlockPos(x, y, z);
+		level.setAttached(SAGE_POS, pos);
+		spawnSage(level, pos);
+		p.sendSystemMessage(Component.literal("✦ 운명의 현자가 근처(" + x + ", " + y + ", " + z + ")에 나타났습니다. 직업·스탯 초기화는 현자에게 말을 거세요.").withStyle(ChatFormatting.LIGHT_PURPLE));
+	}
+
+	private static void keepSage(ServerLevel level) {
+		net.minecraft.core.BlockPos pos = level.getAttached(SAGE_POS);
+		if (pos == null || !level.isLoaded(pos)) return;
+		if (level.getEntitiesOfClass(com.elementalweapons.mob.FateSage.class, new net.minecraft.world.phys.AABB(pos).inflate(16)).isEmpty()) spawnSage(level, pos);
+	}
+
+	private static void spawnSage(ServerLevel level, net.minecraft.core.BlockPos pos) {
+		com.elementalweapons.mob.FateSage s = com.elementalweapons.mob.ModMobs.SAGE.create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+		if (s == null) return;
+		s.snapTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+		level.addFreshEntity(s);
+	}
+
+	/** 현자에게 직업·스탯 초기화 (원소 정수 3개) */
+	public static void sageReset(ServerPlayer p) {
+		if (p.level().getEntitiesOfClass(com.elementalweapons.mob.FateSage.class, p.getBoundingBox().inflate(8)).isEmpty()) {
+			p.sendOverlayMessage(Component.literal("운명의 현자 가까이에서만 초기화할 수 있습니다.").withStyle(ChatFormatting.RED));
+			return;
+		}
+		Growth g = get(p);
+		if (!p.isCreative()) {
+			int need = 3, have = 0;
 			for (int i = 0; i < p.getInventory().getContainerSize(); i++) {
 				ItemStack s = p.getInventory().getItem(i);
 				if (s.is(ModItems.ELEMENT_ESSENCE)) have += s.getCount();
 			}
 			if (have < need) {
-				p.sendOverlayMessage(Component.literal("직업 변경에는 원소 정수 3개가 필요합니다.").withStyle(ChatFormatting.RED));
+				p.sendOverlayMessage(Component.literal("초기화에는 원소 정수 3개가 필요합니다.").withStyle(ChatFormatting.RED));
 				return;
 			}
 			for (int i = 0; i < p.getInventory().getContainerSize() && need > 0; i++) {
@@ -168,10 +216,12 @@ public final class ModGrowth {
 				if (s.is(ModItems.ELEMENT_ESSENCE)) { int take = Math.min(need, s.getCount()); s.shrink(take); need -= take; }
 			}
 		}
-		set(p, g.withClass(cls));
-		com.elementalweapons.item.PlayerClass pc = com.elementalweapons.item.PlayerClass.of(cls);
-		p.sendSystemMessage(Component.literal("✦ 직업: " + pc.koName + "  (사용 무기: " + pc.weapons + ")").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
-		Fx.sound((ServerLevel) p.level(), p.position(), SoundEvents.PLAYER_LEVELUP, 1.0F, 1.2F);
+		int spent = g.str() + g.mag() + g.vit() + g.agi();
+		set(p, new Growth(g.level(), g.xp(), g.points() + spent, 0, 0, 0, 0, 0));
+		applyStats(p);
+		p.sendSystemMessage(Component.literal("✦ 운명이 초기화되었습니다. 새 직업을 고르고 스탯을 다시 찍으세요.").withStyle(ChatFormatting.LIGHT_PURPLE, ChatFormatting.BOLD));
+		Fx.burst((ServerLevel) p.level(), Fx.dust(0xD080FF, 1.5F), p.position().add(0, 1, 0), 60, 0.8, 0.05);
+		Fx.sound((ServerLevel) p.level(), p.position(), SoundEvents.PLAYER_LEVELUP, 1.0F, 0.6F);
 	}
 
 	public static void spend(ServerPlayer p, int stat, int amount) {

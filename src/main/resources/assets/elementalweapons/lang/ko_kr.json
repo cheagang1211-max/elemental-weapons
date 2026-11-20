@@ -191,5 +191,6 @@
 	"item.elementalweapons.grass_book": "풀의 마법서",
 	"item.elementalweapons.wind_book": "바람의 마법서",
 	"item.elementalweapons.dark_book": "어둠의 마법서",
-	"item.elementalweapons.light_book": "빛의 마법서"
+	"item.elementalweapons.light_book": "빛의 마법서",
+	"entity.elementalweapons.fate_sage": "운명의 현자"
 }

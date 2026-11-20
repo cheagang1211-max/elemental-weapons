@@ -40,6 +40,7 @@ public final class ModMobs {
 	public static EntityType<ElementalCreature> FLUFFLE;
 	public static EntityType<ElementalCreature> HORNED_DEER;
 	public static EntityType<ElementalMerchant> MERCHANT;
+	public static EntityType<FateSage> SAGE;
 
 	public static Item ELEMENTAL_MEAT, COOKED_ELEMENTAL_MEAT, FLUFF;
 
@@ -74,6 +75,10 @@ public final class ModMobs {
 				mob -> mob.spawnPlacement(SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mob::checkMobSpawnRules)
 						.defaultAttributes(ElementalMerchant::attributes))
 				.sized(0.6F, 1.95F).clientTrackingRange(10));
+
+		SAGE = register("fate_sage", FabricEntityType.Builder.<FateSage>createMob(FateSage::new, MobCategory.MISC,
+				mob -> mob.defaultAttributes(FateSage::attributes))
+				.sized(0.7F, 2.1F).clientTrackingRange(10));
 
 		ELEMENTAL_MEAT = item("elemental_meat", new Item.Properties().food(new FoodProperties.Builder().nutrition(3).saturationModifier(0.3F).build()));
 		COOKED_ELEMENTAL_MEAT = item("cooked_elemental_meat", new Item.Properties().food(new FoodProperties.Builder().nutrition(8).saturationModifier(0.8F).build()));

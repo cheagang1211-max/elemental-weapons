@@ -30,11 +30,7 @@ public class GrowthScreen extends Screen {
 					ClientPlayNetworking.send(new GrowthPayloads.Spend(stat, minecraft.hasShiftDown() ? 5 : 1)))
 					.bounds(left + W - 28, top + 32 + i * 34 + 6, 20, 20).build());
 		}
-		addRenderableWidget(Button.builder(Component.literal("직업 변경"), b -> minecraft.gui.setScreen(new ClassSelectScreen()))
-				.bounds(left + W - 170, top + 5, 54, 14).build());
-		addRenderableWidget(Button.builder(Component.literal("초기화 (원소 정수 1)"), b ->
-				ClientPlayNetworking.send(GrowthPayloads.Reset.INSTANCE))
-				.bounds(left + W - 112, top + H - 22, 104, 16).build());
+
 	}
 
 	@Override
@@ -102,6 +98,11 @@ public class GrowthScreen extends Screen {
 		g.pose().translate(barX + barW / 2F, barY + 1);
 		g.pose().scale(0.75F, 0.75F);
 		g.centeredText(font, xt, 0, 0, 0xFFFFFFFF);
+		g.pose().popMatrix();
+		g.pose().pushMatrix();
+		g.pose().translate(left + W - 8, top + H - 18);
+		g.pose().scale(0.7F, 0.7F);
+		g.text(font, "직업·스탯 초기화: 운명의 현자", -font.width("직업·스탯 초기화: 운명의 현자"), 0, 0xFFD080FF, false);
 		g.pose().popMatrix();
 		g.text(font, "남은 포인트", left + 98, top + H - 18, 0xFFFFFFFF, true);
 		g.text(font, String.valueOf(gr.points()), left + 98 + font.width("남은 포인트 "), top + H - 18, 0xFFFFD34D, true);

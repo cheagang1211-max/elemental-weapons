@@ -93,7 +93,7 @@ public final class ShotHarness {
 		try {
 			if (t == 40) {
 				SUBJECTS.addAll(ModMobs.MOBS.values());
-				SUBJECTS.add(ModMobs.FLUFFLE); SUBJECTS.add(ModMobs.HORNED_DEER); SUBJECTS.add(ModMobs.MERCHANT);
+				SUBJECTS.add(ModMobs.FLUFFLE); SUBJECTS.add(ModMobs.HORNED_DEER); SUBJECTS.add(ModMobs.MERCHANT); SUBJECTS.add(ModMobs.SAGE);
 				SUBJECTS.add(ModEntities.VOLTRA);
 				SUBJECTS.addAll(ModEntities.BOSSES.values());
 				server.execute(() -> setup(server));
@@ -107,7 +107,9 @@ public final class ShotHarness {
 			if (t == 425) shot(mc, "03_growth_screen");
 			if (t == 426) mc.gui.setScreen(new com.elementalweapons.client.growth.ClassSelectScreen());
 			if (t == 442) shot(mc, "03b_class_select");
-			if (t == 446) {
+			if (t == 443) mc.gui.setScreen(new com.elementalweapons.client.growth.SageScreen());
+			if (t == 445) shot(mc, "03c_sage");
+			if (t == 448) {
 				mc.gui.setScreen(null);
 				server.execute(() -> {
 					ServerPlayer p = sp(server);
