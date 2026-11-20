@@ -1,0 +1,7 @@
+{
+	"type": "elementalweapons:town",
+	"biomes": "#elementalweapons:has_town",
+	"step": "surface_structures",
+	"spawn_overrides": {},
+	"terrain_adaptation": "beard_thin"
+}

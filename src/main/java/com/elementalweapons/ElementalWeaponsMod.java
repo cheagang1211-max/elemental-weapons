@@ -23,6 +23,7 @@ public class ElementalWeaponsMod implements ModInitializer {
 		ModItems.initialize();
 		com.elementalweapons.item.ModGear.initialize();
 		com.elementalweapons.growth.ModGrowth.initialize();
+		com.elementalweapons.world.town.ModTowns.initialize();
 		SpellManager.initialize();
 		DevSelfTest.initialize();
 		LOGGER.info("원소 무기 모드 로딩 완료! (무기 28종 + 보스)");
