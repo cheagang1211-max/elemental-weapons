@@ -16,7 +16,7 @@ import net.minecraft.world.phys.Vec3;
  * 🌸 풀 지팡이: 먼 곳에서 꽃잎 무리가 날아와 적을 감싸고 맴돌며 지속 피해를 줍니다.
  */
 public class PetalSpell extends Spell {
-	private static final DustParticleOptions[] PETALS = {
+	private static final com.elementalweapons.fx.FxOptions[] PETALS = {
 			Fx.dust(0xFFB7D5, 1.1F), Fx.dust(0xFF8FC0, 1.0F), Fx.dust(0xFFE8F2, 0.9F), Fx.dust(0x7BD36B, 0.8F)
 	};
 
