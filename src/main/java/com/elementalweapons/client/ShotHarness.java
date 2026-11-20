@@ -293,11 +293,63 @@ public final class ShotHarness {
 		if (tt == 431) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, true);
 		if (tt == 434) shot(mc, "69_fp_greatsword_slash");
 		if (tt == 438) armorSet(server, "orichalcum");
+		// 초월 성장 창
+		if (tt == 442) server.execute(() -> { ServerPlayer p = sp(server);
+			com.elementalweapons.growth.Growth g = ModGrowth.get(p);
+			ModGrowth.set(p, new com.elementalweapons.growth.Growth(100, 0, 0, g.str(), g.mag(), g.vit(), g.agi(), g.cls()));
+			ModGrowth.addParagonXp(p, 900_000);
+			ModGrowth.spendParagon(p, 0, 9); ModGrowth.spendParagon(p, 2, 6); ModGrowth.spendParagon(p, 3, 4);
+			ModGrowth.setParagon(p, ModGrowth.paragon(p).withBest(12)); });
+		if (tt == 455) { com.elementalweapons.client.growth.GrowthScreen.paragonMode = true; mc.gui.setScreen(new GrowthScreen()); }
+		if (tt == 472) shot(mc, "70_paragon_screen");
+		if (tt == 474) { mc.gui.setScreen(null); com.elementalweapons.client.growth.GrowthScreen.paragonMode = false; }
+		// 원소 균열
+		if (tt == 480) server.execute(() -> { ServerPlayer p = sp(server); p.teleportTo(0.5, 172, 50.5);
+			server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "gamemode creative " + p.getScoreboardName());
+			ModGrowth.setParagon(p, ModGrowth.paragon(p).withBest(7));
+			com.elementalweapons.rift.RiftItems.open(p, false); });
+		if (tt == 481) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+		if (tt > 481 && tt < 600) look(mc, 0, 32);
+		if (tt == 575) shot(mc, "71_rift");
+		if (tt == 600) server.execute(() -> { for (var r : new ArrayList<>(com.elementalweapons.rift.RiftItems.ACTIVE)) r.fail("테스트 종료"); com.elementalweapons.rift.RiftItems.ACTIVE.clear(); });
+		// 보스방 (화염 지역: 이그니스)
+		var ar = com.elementalweapons.world.sky.Arenas.of("ignis");
+		if (ar != null) {
+			if (tt == 610) server.execute(() -> { ServerPlayer p = sp(server);
+				p.getAbilities().flying = true; p.getAbilities().mayfly = true; p.onUpdateAbilities();
+				p.teleportTo(ar.x() + 0.5, ar.floor() + 30, ar.z() + 50.5); });
+			if (tt == 611) mc.options.setCameraType(CameraType.FIRST_PERSON);
+			if (tt > 611 && tt < 820) { mc.player.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO); lookAt(mc, ar.x(), ar.floor(), ar.z()); }
+			if (tt == 815) shot(mc, "72_arena_overview");
+			if (tt == 820) server.execute(() -> { ServerPlayer p = sp(server);
+				p.getAbilities().flying = false; p.onUpdateAbilities();
+				p.teleportTo(ar.x() + 0.5, ar.floor() + 1, ar.z() + 15.5);
+				ServerLevel level = (ServerLevel) p.level();
+				var boss = com.elementalweapons.boss.ModEntities.BOSSES.get("ignis").create(level, EntitySpawnReason.COMMAND);
+				boss.snapTo(ar.x() + 0.5, ar.floor() + 3, ar.z() + 0.5, 0, 0);
+				level.addFreshEntity(boss);
+				bossRef = boss;
+				com.elementalweapons.boss.BossFight.start(level, boss, new net.minecraft.world.phys.Vec3(ar.x() + 0.5, ar.floor() + 1, ar.z() + 0.5), ar); });
+			if (tt == 821) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+			if (tt > 821 && tt < 920) lookAt(mc, ar.x(), ar.floor() + 4, ar.z());
+			if (tt == 860) shot(mc, "73_arena_fight");
+			if (tt == 865) server.execute(() -> { if (bossRef != null) bossRef.debugDamage((ServerLevel) bossRef.level(), (long) (bossRef.maxBigHealth() * 0.7)); });
+			if (tt == 905) shot(mc, "74_arena_phase3");
+			if (tt == 915) server.execute(() -> { if (bossRef != null) bossRef.discard(); bossRef = null; ServerPlayer p = sp(server);
+				server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "gamemode survival " + p.getScoreboardName()); });
+		}
+	}
+
+	private static com.elementalweapons.boss.ElementalBoss bossRef;
+
+	private static void lookAt(Minecraft mc, double x, double y, double z) {
+		double ddx = x + 0.5 - mc.player.getX(), ddz = z + 0.5 - mc.player.getZ(), ddy = y - mc.player.getEyeY();
+		look(mc, (float) Math.toDegrees(Math.atan2(-ddx, ddz)), (float) -Math.toDegrees(Math.atan2(ddy, Math.hypot(ddx, ddz))));
 	}
 
 	private static void townScenes(Minecraft mc, IntegratedServer server, int tt) {
-		if (tt < 440) { demo(mc, server, tt); return; }
-		tt -= 440;
+		if (tt < 930) { demo(mc, server, tt); return; }
+		tt -= 930;
 		double[][] sc = scenes();
 		int per = 420;
 		int idx = tt / per, k = tt % per;

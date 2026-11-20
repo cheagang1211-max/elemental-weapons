@@ -18,7 +18,7 @@ public class GrowthScreen extends Screen {
 	private static final int[] COLORS = {0xFFFF8A6A, 0xFFB0A2FF, 0xFFFF6A84, 0xFF6AFFBA};
 	private static final String[] PDESCS = {"모든 피해 +1% (상한 없음)", "마법 피해 +1%, 쿨타임 감소 (최대 35%)", "최대 체력 +1, 방어 강도 (최대 16)", "이동 속도·공격 속도 (최대 30%/50%)"};
 	private static final int[] PCOLORS = {0xFFFF5A5A, 0xFFC27AFF, 0xFFFFD34D, 0xFF6AE8FF};
-	static boolean paragonMode = false;
+	public static boolean paragonMode = false;
 	private int left, top;
 
 	public GrowthScreen() { super(Component.literal("원소 성장")); }

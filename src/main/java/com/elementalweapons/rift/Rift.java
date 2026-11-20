@@ -172,7 +172,7 @@ public class Rift {
 
 	private void give(ServerPlayer p, ItemStack s) { if (!p.getInventory().add(s)) p.spawnAtLocation(level, s); }
 
-	void fail(String why) {
+	public void fail(String why) {
 		finished = true;
 		for (ServerPlayer p : alive()) p.sendSystemMessage(Component.literal("✧ " + why + " (균열 " + tier + "단계 실패)").withStyle(ChatFormatting.RED));
 		for (LivingEntity m : mobs) m.discard();
