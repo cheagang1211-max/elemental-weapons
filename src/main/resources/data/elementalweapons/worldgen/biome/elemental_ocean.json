@@ -20,8 +20,10 @@
 			},
 			"modifier": "overlay"
 		},
-		"minecraft:visual/sky_color": "#6ab0ff",
-		"minecraft:visual/water_fog_color": "#1a6aff"
+		"minecraft:visual/sky_color": "#1c4280",
+		"minecraft:visual/water_fog_color": "#1a6aff",
+		"minecraft:visual/fog_color": "#285284",
+		"minecraft:visual/cloud_height": 112.0
 	},
 	"carvers": [
 		"minecraft:cave",

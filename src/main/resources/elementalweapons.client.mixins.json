@@ -3,7 +3,8 @@
 	"package": "com.elementalweapons.mixin.client",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
-		"EntityTurnMixin"
+		"EntityTurnMixin",
+		"StarFieldMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -284,7 +284,18 @@ public class TownPiece extends StructurePiece {
 		set(dx, 2, dz, st(Blocks.SPRUCE_PLANKS));
 	}
 
+	// 판타지 지붕 색: 청록 동판, 보라 퍼퍼, 짙은 남색 타일, 프리즈머린, 주황 동판
+	private static final String[][] ROOFS = {
+		{"waxed_oxidized_cut_copper_stairs", "waxed_oxidized_cut_copper_slab", "white_terracotta"},
+		{"purpur_stairs", "purpur_slab", "white_terracotta"},
+		{"deepslate_tile_stairs", "deepslate_tile_slab", "light_gray_terracotta"},
+		{"dark_prismarine_stairs", "dark_prismarine_slab", "white_terracotta"},
+		{"waxed_cut_copper_stairs", "waxed_cut_copper_slab", "orange_terracotta"},
+		{"waxed_oxidized_cut_copper_stairs", "waxed_oxidized_cut_copper_slab", "white_terracotta"},
+	};
+
 	private void roof(int x, int z, int w, int d, int base) {
+		String[] RP = ROOFS[h(x, 77, z) % ROOFS.length];
 		boolean alongX = w >= d;
 		int span = alongX ? d : w, len = alongX ? w : d;
 		for (int s = 0; s <= span / 2 + 1; s++) {
@@ -293,14 +304,14 @@ public class TownPiece extends StructurePiece {
 				int a = s - 1, b = span - s + 1;
 				if (a > b) continue;
 				Direction up1 = alongX ? Direction.SOUTH : Direction.EAST;   // 계단 면 방향
-				BlockState s1 = st(blk("waxed_cut_copper_stairs")).setValue(BlockStateProperties.HORIZONTAL_FACING, up1);
-				BlockState s2 = st(blk("waxed_cut_copper_stairs")).setValue(BlockStateProperties.HORIZONTAL_FACING, up1.getOpposite());
+				BlockState s1 = st(blk(RP[0])).setValue(BlockStateProperties.HORIZONTAL_FACING, up1);
+				BlockState s2 = st(blk(RP[0])).setValue(BlockStateProperties.HORIZONTAL_FACING, up1.getOpposite());
 				if (alongX) { set(x + l, y, z + a, s1); set(x + l, y, z + b, s2); }
 				else { set(x + a, y, z + l, s1); set(x + b, y, z + l, s2); }
-				if (a == b) { if (alongX) set(x + l, y, z + a, st(blk("waxed_cut_copper_slab"))); else set(x + a, y, z + l, st(blk("waxed_cut_copper_slab"))); }
+				if (a == b) { if (alongX) set(x + l, y, z + a, st(blk(RP[1]))); else set(x + a, y, z + l, st(blk(RP[1]))); }
 				// 박공벽
 				if (l == 0 || l == len) for (int m = a + 1; m < b; m++) {
-					if (alongX) set(x + l, y, z + m, st(blk("orange_terracotta"))); else set(x + m, y, z + l, st(blk("orange_terracotta")));
+					if (alongX) set(x + l, y, z + m, st(blk(RP[2]))); else set(x + m, y, z + l, st(blk(RP[2])));
 				}
 			}
 		}

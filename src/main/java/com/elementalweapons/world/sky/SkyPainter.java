@@ -145,7 +145,7 @@ public final class SkyPainter implements Feature {
 			if (Math.abs(i) == 3 && Math.abs(k) == 3) for (int y = g + 1; y <= g + 4; y++) set(x, y, z, st(Blocks.STRIPPED_DARK_OAK_LOG));
 		}
 		for (int lvl = 0; lvl < 3; lvl++) for (int i = -4 + lvl; i <= 4 - lvl; i++) for (int k = -4 + lvl; k <= 4 - lvl; k++)
-			set(px + i, g + 5 + lvl, pz + k, lvl == 2 ? st(blk("waxed_cut_copper")) : st(blk("waxed_cut_copper_slab")));
+			set(px + i, g + 5 + lvl, pz + k, lvl == 2 ? roof() : st(blk("waxed_cut_copper_slab")));
 		set(px, g + 4, pz, st(Blocks.LANTERN).setValue(BlockStateProperties.HANGING, true));
 		set(px - 1, g + 1, pz + 2, st(Blocks.SPRUCE_STAIRS)); set(px + 1, g + 1, pz + 2, st(Blocks.SPRUCE_STAIRS));
 		set(px, g + 1, pz - 2, st(Blocks.FLOWERING_AZALEA));
@@ -214,6 +214,144 @@ public final class SkyPainter implements Feature {
 					| (i == 1 && j == -1 ? 16 : 0) | (i == 0 && j == 1 ? 32 : 0);
 			new TownPiece(x0, G + 1, z0, 777L + i * 31 + j * 97, flags).postProcess(lv, null, null, random, box, cp, BlockPos.ZERO);
 		}
+		fantasy();
+	}
+
+	// ---------------- 수도 판타지 장식 ----------------
+	private static final String[] GLASS = {"lime", "light_blue", "yellow", "cyan", "orange", "white", "purple"};
+	private static final String[] GLOW = {"verdant_froglight", "sea_lantern", "glowstone", "sea_lantern", "shroomlight", "ochre_froglight", "pearlescent_froglight"};
+	private static final int CRY_Y = 266, CRY_Z = -6;
+
+	private void fantasy() {
+		// 하늘 위 거대 원소 수정 + 기울어진 고리 + 주위를 도는 파편 + 첨탑에서 올라가는 빛줄기
+		if (maxX >= -42 && minX <= 42 && maxZ >= CRY_Z - 42 && minZ <= CRY_Z + 42) skyCrystal();
+		// 지역으로 가는 대교 사이마다 원소 마법탑 7개
+		for (int k = 0; k < 7; k++) {
+			double a = SkyLayout.regionAngle(k) + Math.PI / 7;
+			int cx = (int) Math.round(Math.cos(a) * 246), cz = (int) Math.round(Math.sin(a) * 246);
+			if (maxX >= cx - 14 && minX <= cx + 14 && maxZ >= cz - 14 && minZ <= cz + 14) mageTower(cx, cz, k);
+		}
+		// 수도 하늘을 떠다니는 작은 섬들 (사슬로 묶임)
+		for (int i = 0; i < 12; i++) {
+			double a = Math.toRadians(i * 30 + 15);
+			boolean nearBridge = false;
+			for (int k = 0; k < 7; k++) { double d = Math.abs(Math.atan2(Math.sin(a - SkyLayout.regionAngle(k)), Math.cos(a - SkyLayout.regionAngle(k)))); if (d < Math.toRadians(8)) nearBridge = true; }
+			if (nearBridge) continue;
+			int rad = 318 + (i % 3) * 18;
+			int cx = (int) Math.round(Math.cos(a) * rad), cz = (int) Math.round(Math.sin(a) * rad);
+			int R = 7 + (i * 7) % 5, top = 214 + (i * 11) % 24;
+			if (maxX >= cx - R - 2 && minX <= cx + R + 2 && maxZ >= cz - R - 2 && minZ <= cz + R + 2) floatIslet(cx, cz, R, top, i);
+		}
+		// 하늘에 떠 있는 빛 구슬
+		for (int x = minX; x <= maxX; x++) for (int z = minZ; z <= maxZ; z++) {
+			if (h(x, 7, z) % 640 != 0 || x * x + z * z > 370 * 370) continue;
+			int y = 194 + h(x, 8, z) % 48;
+			int t = h(x, 9, z) % 3;
+			if (air(x, y, z)) set(x, y, z, st(blk(t == 0 ? "pearlescent_froglight" : t == 1 ? "verdant_froglight" : "ochre_froglight")));
+		}
+	}
+
+	private void skyCrystal() {
+		for (int x = minX; x <= maxX; x++) for (int z = minZ; z <= maxZ; z++) {
+			int dx = x, dz = z - CRY_Z;
+			// 본체: 길쭉한 팔면체
+			int man = Math.abs(dx) + Math.abs(dz);
+			if (man <= 11) for (int y = CRY_Y - 26; y <= CRY_Y + 26; y++) {
+				double d = man / 11.0 + Math.abs(y - CRY_Y) / 26.0;
+				if (d > 1) continue;
+				BlockState b;
+				if (d > 0.82) b = st(blk(((Math.signum(dx) + 2 * Math.signum(dz) + (y > CRY_Y ? 1 : 0)) % 2 == 0) ? "magenta_stained_glass" : "purple_stained_glass"));
+				else if (d < 0.3) b = st(h(x, y, z) % 3 == 0 ? Blocks.AMETHYST_BLOCK : Blocks.SEA_LANTERN);
+				else b = st(h(x, y, z) % 4 == 0 ? blk("pink_stained_glass") : Blocks.AMETHYST_BLOCK);
+				set(x, y, z, b);
+			}
+			// 빛줄기: 본성 첨탑 꼭대기 → 수정 아래
+			if (dx == 0 && dz == 0) for (int y = G + 53; y < CRY_Y - 26; y++) set(x, y, z, st(Blocks.END_ROD));
+			// 기울어진 고리 2개
+			for (int y = CRY_Y - 30; y <= CRY_Y + 30; y++) {
+				double vx = dx, vy = y - CRY_Y, vz = dz;
+				double len = Math.sqrt(vx * vx + vy * vy + vz * vz);
+				double t1 = 0.42, p1 = Math.abs(vx * Math.sin(t1) + vy * Math.cos(t1));
+				if (p1 < 0.6 && Math.abs(len - 24) < 0.75) set(x, y, z, (Math.floorMod((int) Math.round(Math.atan2(vz, vx) * 24), 6) == 0) ? st(Blocks.SEA_LANTERN) : st(blk("purple_stained_glass")));
+				double t2 = -0.5, p2 = Math.abs(vz * Math.sin(t2) + vy * Math.cos(t2));
+				if (p2 < 0.6 && Math.abs(len - 30) < 0.75) set(x, y, z, (Math.floorMod((int) Math.round(Math.atan2(vz, vx) * 30), 7) == 0) ? st(Blocks.GLOWSTONE) : st(blk("light_blue_stained_glass")));
+			}
+			// 주위를 도는 7원소 파편
+			for (int k = 0; k < 7; k++) {
+				double a = k * Math.PI * 2 / 7 + 0.3;
+				int sx = (int) Math.round(Math.cos(a) * 37), sz = (int) Math.round(Math.sin(a) * 37), sy = CRY_Y - 8 + (k % 3) * 9;
+				int m2 = Math.abs(dx - sx) + Math.abs(dz - sz);
+				if (m2 <= 3) for (int y = sy - 7; y <= sy + 7; y++) {
+					double d = m2 / 3.0 + Math.abs(y - sy) / 7.0;
+					if (d <= 1) set(x, y, z, d < 0.45 ? st(blk(GLOW[k])) : st(blk(GLASS[k] + "_stained_glass")));
+				}
+			}
+		}
+	}
+
+	private void mageTower(int cx, int cz, int k) {
+		int Y = G + 1, H = 58;
+		BlockState glass = st(blk(GLASS[k] + "_stained_glass")), glow = st(blk(GLOW[k]));
+		double toC = Math.atan2(-cz, -cx);
+		for (int x = Math.max(minX, cx - 14); x <= Math.min(maxX, cx + 14); x++) for (int z = Math.max(minZ, cz - 14); z <= Math.min(maxZ, cz + 14); z++) {
+			double r = Math.hypot(x - cx, z - cz);
+			double th = Math.atan2(z - cz, x - cx);
+			// 주변 정리 + 원형 광장
+			if (r <= 11.5) {
+				for (int y = Y; y <= Y + H + 24; y++) if (!air(x, y, z)) set(x, y, z, st(Blocks.AIR));
+				for (int y = G - 3; y <= G; y++) set(x, y, z, y < G ? st(Blocks.STONE) : (Math.abs(r - 10) < 0.6 ? st(Blocks.AMETHYST_BLOCK) : ((int) r % 3 == 0 ? st(Blocks.POLISHED_BLACKSTONE_BRICKS) : st(Blocks.CALCITE))));
+				if (Math.abs(r - 10.8) < 0.5 && Math.floorMod((int) Math.round(th * 10), 8) == 0) { set(x, Y, z, st(Blocks.POLISHED_BLACKSTONE_WALL)); set(x, Y + 1, z, glow); }
+			}
+			// 탑 몸체 (위로 갈수록 가늘어짐) + 나선형 원소 유리창
+			for (int y = Y; y < Y + H; y++) {
+				double R = 6.5 - 2.5 * (y - Y) / (double) H;
+				if (r > R + 0.5) continue;
+				if (r > R - 1.3) {
+					double sp = th / (Math.PI * 2) * 3 + (y - Y) / 9.0;
+					boolean win = (sp - Math.floor(sp)) < 0.14;
+					boolean door = y < Y + 4 && Math.abs(Math.atan2(Math.sin(th - toC), Math.cos(th - toC))) < 0.28;
+					if (door) { set(x, y, z, st(Blocks.AIR)); continue; }
+					set(x, y, z, win ? glass : (y - Y) % 12 == 0 ? st(Blocks.CHISELED_POLISHED_BLACKSTONE) : (h(x, y, z) % 9 == 0 ? st(Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS) : st(Blocks.POLISHED_BLACKSTONE_BRICKS)));
+				} else if ((y - Y) % 12 == 0 && y > Y) set(x, y, z, st(Blocks.DARK_OAK_PLANKS));
+				else if (r < 1 && (y - Y) % 12 == 6) set(x, y, z, glow);
+			}
+			// 꼭대기 테라스 + 받침 장식
+			int T = Y + H;
+			if (r <= 7.5) { set(x, T, z, r > 6.5 ? st(Blocks.CHISELED_POLISHED_BLACKSTONE) : st(Blocks.POLISHED_BLACKSTONE_BRICKS)); if (r > 6.5 && Math.floorMod((int) Math.round(th * 12), 2) == 0) set(x, T + 1, z, st(Blocks.POLISHED_BLACKSTONE_WALL)); }
+			if (r <= 7.5 && r > 4) for (int y = T - 3; y < T; y++) if (r < 4 + (y - (T - 3)) * 1.2 + 0.5) set(x, y, z, st(Blocks.POLISHED_BLACKSTONE_BRICKS));
+			// 공중에 뜬 원소 수정
+			int m = Math.abs(x - cx) + Math.abs(z - cz);
+			if (m <= 3) for (int y = T + 6; y <= T + 18; y++) {
+				double d = m / 3.0 + Math.abs(y - (T + 12)) / 6.0;
+				if (d <= 1) set(x, y, z, d < 0.45 ? glow : glass);
+			}
+			// 탑 허리를 감싸는 룬 고리
+			int ry = Y + 36;
+			if (Math.abs(r - 10) < 0.6 && Math.floorMod((int) Math.round(th * 10), 3) != 0) set(x, ry + (int) Math.round(Math.sin(th) * 1.5), z, glass);
+		}
+	}
+
+	private void floatIslet(int cx, int cz, int R, int top, int seed) {
+		for (int x = Math.max(minX, cx - R - 2); x <= Math.min(maxX, cx + R + 2); x++) for (int z = Math.max(minZ, cz - R - 2); z <= Math.min(maxZ, cz + R + 2); z++) {
+			double r = Math.hypot(x - cx, z - cz) + (h(x, seed, z) % 100) / 140.0;
+			if (r <= R) {
+				int depth = (int) ((R - r) * 1.6) + 2 + h(x, 1, z) % 3;
+				for (int y = top - depth; y <= top; y++) set(x, y, z, y == top ? st(Blocks.GRASS_BLOCK) : y > top - 3 ? st(Blocks.DIRT) : (h(x, y, z) % 5 == 0 ? st(Blocks.ANDESITE) : st(Blocks.STONE)));
+				if (r < R - 1.5 && h(x, 2, z) % 6 == 0) set(x, top + 1, z, st(h(x, 3, z) % 2 == 0 ? Blocks.ALLIUM : Blocks.CORNFLOWER));
+				if (r < 1) { set(x, top + 1, z, st(Blocks.FLOWERING_AZALEA)); }
+			}
+			// 사슬: 섬 아래에서 수도 땅까지
+			for (int c = 0; c < 3; c++) {
+				double a = c * Math.PI * 2 / 3 + seed;
+				int px = cx + (int) Math.round(Math.cos(a) * R * 0.45), pz = cz + (int) Math.round(Math.sin(a) * R * 0.45);
+				if (x == px && z == pz) {
+					int bottom = top - (int) (R * 0.55 * 1.6) - 2;
+					for (int y = G + 1; y < bottom; y++) setIfAir(x, y, z, st(blk("iron_chain")));
+				}
+			}
+			// 섬 아래 빛나는 뿌리 수정
+			if (x == cx && z == cz) for (int y = top - (int) (R * 1.6) - 6; y < top - (int) (R * 1.6) - 1; y++) set(x, y, z, st(blk(GLOW[seed % 7])));
+		}
 	}
 
 	// ---------------- 왕성 ----------------
@@ -259,8 +397,8 @@ public final class SkyPainter implements Feature {
 					} else if ((y - Y) % 10 == 0 && y > Y) set(x, y, z, st(Blocks.DARK_OAK_PLANKS));
 				}
 				// 피라미드 지붕
-				for (int s = 0; s <= 17; s++) if (km == 17 - s) { set(x, Y + 32 + s, z, st(blk("waxed_cut_copper"))); }
-				if (km <= 2) for (int y = Y + 32; y < Y + 52; y++) if (km == 0 || y < Y + 50) set(x, y, z, km == 0 && y >= Y + 49 ? st(Blocks.GOLD_BLOCK) : st(blk("waxed_cut_copper")));
+				for (int s = 0; s <= 17; s++) if (km == 17 - s) { set(x, Y + 32 + s, z, roof()); }
+				if (km <= 2) for (int y = Y + 32; y < Y + 52; y++) if (km == 0 || y < Y + 50) set(x, y, z, km == 0 && y >= Y + 49 ? st(Blocks.GOLD_BLOCK) : roof());
 				if (!wall && km <= 15 && h(x, 0, z) % 37 == 0) set(x, Y + 9, z, st(Blocks.LANTERN).setValue(BlockStateProperties.HANGING, true));
 				if (km < 15 && akx <= 1 && kz > -14) set(x, Y, z, st(blk("red_carpet")));
 			}
@@ -270,11 +408,21 @@ public final class SkyPainter implements Feature {
 			double fr = Math.hypot(x, z - 30);
 			if (fr <= 4.5) { set(x, G, z, st(Blocks.WATER)); set(x, G - 1, z, st(Blocks.PRISMARINE_BRICKS)); }
 			else if (fr <= 5.5) set(x, Y, z, st(Blocks.STONE_BRICK_WALL));
+			if (fr > 5.5 && fr <= 10.5) {
+				double ang = Math.toDegrees(Math.atan2(z - 30, x));
+				boolean spoke = Math.abs(((ang % 45) + 45) % 45 - 22.5) > 19.5 && fr < 9;
+				if (fr > 9.4) set(x, G, z, st(Blocks.AMETHYST_BLOCK));
+				else if (Math.abs(fr - 7.2) < 0.45) set(x, G, z, st(Blocks.PURPUR_BLOCK));
+				else if (spoke) set(x, G, z, st(Blocks.POLISHED_BLACKSTONE));
+				else set(x, G, z, st(Blocks.CALCITE));
+				if (Math.abs(fr - 9.9) < 0.5 && Math.abs(((ang % 60) + 60) % 60 - 30) > 26) { set(x, G, z, st(Blocks.SEA_LANTERN)); set(x, Y, z, st(Blocks.AMETHYST_CLUSTER)); }
+			}
 			if (x == 0 && z == 30) { for (int y = G; y < Y + 3; y++) set(x, y, z, st(Blocks.CHISELED_STONE_BRICKS)); set(x, Y + 3, z, st(Blocks.SEA_LANTERN)); set(x, Y + 4, z, st(Blocks.WATER)); }
 		}
 	}
 
 	private static boolean y0(int x, int z) { return true; }
+	private static BlockState roof() { return st(blk("waxed_oxidized_cut_copper")); }
 
 	private void roundTower(int x, int z, int cx, int cz, int R, int Y, int H) {
 		double r = Math.hypot(x - cx, z - cz);
@@ -290,7 +438,7 @@ public final class SkyPainter implements Feature {
 		int roofH = R * 2 + 4;
 		for (int k = 0; k < roofH; k++) {
 			double rr = (R + 1) * (1 - k / (double) roofH);
-			if (r <= rr + 0.5 && r > rr - 1.2) set(x, Y + H + k, z, st(blk("waxed_cut_copper")));
+			if (r <= rr + 0.5 && r > rr - 1.2) set(x, Y + H + k, z, roof());
 		}
 		if (x == cx && z == cz) { set(x, Y + H + roofH, z, st(Blocks.GOLD_BLOCK)); set(x, Y + H + roofH + 1, z, st(blk("lightning_rod"))); }
 		if (r <= R + 0.5 && r > R - 0.5 && Math.floorMod(x + z, 2) == 0) set(x, Y + H, z, st(Blocks.STONE_BRICK_WALL));

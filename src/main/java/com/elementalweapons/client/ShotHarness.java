@@ -177,14 +177,17 @@ public final class ShotHarness {
 		double a0 = com.elementalweapons.world.sky.SkyLayout.regionAngle(0);
 		double dx = Math.cos(a0), dz = Math.sin(a0);
 		double[] rc = com.elementalweapons.world.sky.SkyLayout.REGION_CENTER[0];
+		double ta = com.elementalweapons.world.sky.SkyLayout.regionAngle(0) + Math.PI / 7;
+		double tx = Math.cos(ta) * 246, tz = Math.sin(ta) * 246;
 		return new double[][]{
-				{0, 255, 330, 0, 175, 0},                                   // 수도 전경
-				{0, 186, 95, 0, 200, -6},                                    // 왕성 정면
-				{dx * 420 - dz * 50, 168, dz * 420 + dx * 50, dx * 640, 162, dz * 640},   // 대교 옆모습
-				{dx * 560, 180, dz * 560, dx * 900, 176, dz * 900},          // 대교 위에서 지역 방향
-				{rc[0] - dx * 560 - dz * 120, 235, rc[1] - dz * 560 + dx * 120, rc[0], 165, rc[1]}, // 지역 본섬 전경
-				{rc[0] - dx * 470 + dz * 160, 120, rc[1] - dz * 470 - dx * 160, rc[0] - dx * 300, 150, rc[1] - dz * 300}, // 섬 아랫면과 폭포
-				{180, 300, 180, -400, 120, -400},                            // 하늘 높이서 본 공중 군도
+				{0, 250, 360, 0, 215, 0, 6000},                              // 수도 전경 + 하늘 수정
+				{0, 192, 112, 0, 238, -6, 6000},                             // 왕성 정면 + 마법진
+				{tx * 0.78 + tz * 0.12, 200, tz * 0.78 - tx * 0.12, tx, 210, tz, 6000},   // 원소 마법탑
+				{330, 236, 60, 300, 222, -60, 6000},                          // 떠 있는 섬과 사슬
+				{0, 230, 300, 0, 300, -150, 18000},                           // 밤의 수도와 별
+				{60, 200, 60, -200, 420, -300, 18000},                        // 별이 가득한 밤하늘
+				{dx * 420 - dz * 50, 168, dz * 420 + dx * 50, dx * 640, 162, dz * 640, 12600},   // 노을 무렵 대교
+				{rc[0] - dx * 560 - dz * 120, 235, rc[1] - dz * 560 + dx * 120, rc[0], 165, rc[1], 6000}, // 지역 본섬 전경
 		};
 	}
 
@@ -199,7 +202,9 @@ public final class ShotHarness {
 			p.getAbilities().flying = true; p.getAbilities().mayfly = true; p.onUpdateAbilities();
 			p.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 			p.teleportTo(c[0] + 0.5, c[1], c[2] + 0.5);
+			server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set " + (long) c[6]);
 		});
+		if (k == per - 40) server.execute(() -> server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set " + (long) c[6]));
 		if (k > 0) {
 			double ddx = c[3] - mc.player.getX(), ddz = c[5] - mc.player.getZ(), ddy = c[4] - mc.player.getEyeY();
 			float yaw = (float) Math.toDegrees(Math.atan2(-ddx, ddz));

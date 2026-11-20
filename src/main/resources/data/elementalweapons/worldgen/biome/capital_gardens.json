@@ -19,8 +19,18 @@
 			},
 			"modifier": "overlay"
 		},
-		"minecraft:visual/sky_color": "#8fc4ff",
-		"minecraft:visual/water_fog_color": "#7ad0ff"
+		"minecraft:visual/sky_color": "#3b4a94",
+		"minecraft:visual/water_fog_color": "#7ad0ff",
+		"minecraft:visual/fog_color": "#5b5a9c",
+		"minecraft:visual/cloud_height": 112.0,
+		"minecraft:visual/ambient_particles": [
+			{
+				"particle": {
+					"type": "minecraft:end_rod"
+				},
+				"probability": 0.0012
+			}
+		]
 	},
 	"carvers": [
 		"minecraft:cave",
@@ -46,8 +56,7 @@
 		[],
 		[],
 		[
-			"elementalweapons:blossom_trees",
-			"elementalweapons:radiant_trees"
+			"elementalweapons:capital_trees"
 		],
 		[
 			"minecraft:freeze_top_layer",
