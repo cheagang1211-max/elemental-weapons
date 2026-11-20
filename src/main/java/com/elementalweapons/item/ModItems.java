@@ -44,7 +44,8 @@ public class ModItems {
 		for (Element element : Element.values()) {
 			Map<WeaponType, Item> byType = new EnumMap<>(WeaponType.class);
 			for (WeaponType type : WeaponType.values()) {
-				Item.Properties props = stats(type, new Item.Properties().rarity(Rarity.EPIC).fireResistant());
+				Item.Properties props = stats(type, new Item.Properties().rarity(Rarity.EPIC).fireResistant())
+						.component(net.minecraft.core.component.DataComponents.UNBREAKABLE, net.minecraft.util.Unit.INSTANCE);   // 내구도 무한
 				Item item = register(key(element.id + "_" + type.id),
 						p -> new ElementalWeaponItem(p, element, type), props);
 				byType.put(type, item);
@@ -58,7 +59,8 @@ public class ModItems {
 
 	static {
 		for (WeaponType type : WeaponType.values()) {
-			Item.Properties props = woodStats(type, new Item.Properties());
+			Item.Properties props = woodStats(type, new Item.Properties())
+					.component(net.minecraft.core.component.DataComponents.UNBREAKABLE, net.minecraft.util.Unit.INSTANCE);
 			WOODEN.put(type, register(key("wooden_" + type.id), p -> new TrainingWeaponItem(p, type), props));
 		}
 	}

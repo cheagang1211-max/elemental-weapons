@@ -103,6 +103,7 @@ public final class Fx {
 		// 기존 속도를 지우고 push()로 새 속도를 줌 (push가 클라이언트 동기화 표시까지 처리)
 		e.setDeltaMovement(Vec3.ZERO);
 		e.push(x, y, z);
+		e.syncVelocity = true;   // 플레이어 본인 화면에도 속도 전달
 	}
 
 	/** 플레이어가 바라보는 지점 (막힌 곳이 없으면 range 앞 허공) */

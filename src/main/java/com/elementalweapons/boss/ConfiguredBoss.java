@@ -465,7 +465,7 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 					p.setInvulnerableTime(0);
 					p.hurtServer(level, level.damageSources().mobAttack(this), 0.5F); // 움직임 동기화용 약한 피해
 					Vec3 v = d.normalize().scale(0.55);
-					p.setDeltaMovement(v.x, 0.15, v.z);
+					p.setDeltaMovement(v.x, 0.15, v.z); p.syncVelocity = true;
 				}
 			}
 			if (t >= 42) BossFx.warnRing(level, BossFx.ground(level, anchor.x, anchor.z), s.radius(), BossFx.WARN_RED, t * 0.2);

@@ -87,7 +87,7 @@ public final class Skills {
 	public static void forget(UUID id) { READY.remove(id); }
 
 	// ---------------- 공통 도구 ----------------
-	private static void launchSelf(Player p, Vec3 v) { p.setDeltaMovement(v); p.needsSync = true; p.resetFallDistance(); }
+	private static void launchSelf(Player p, Vec3 v) { p.setDeltaMovement(v); p.syncVelocity = true; p.needsSync = true; p.resetFallDistance(); }
 
 	private static int hit(ServerLevel l, Player p, Vec3 c, double r, float dmg, Set<LivingEntity> once) {
 		int n = 0;
@@ -107,6 +107,26 @@ public final class Skills {
 		Fx.burst(l, FxOptions.of(FxOptions.SMOKE, 0xD8C8A8, 0.35F, 14).grow(1.6F), p.position().add(0, 0.2, 0), 6, 0.3, 0.02);
 		Fx.sound(l, p.position(), SoundEvents.PLAYER_ATTACK_NODAMAGE, 1F, 1.4F);
 		return true;
+	}
+
+	/** 몸(2칸)이 들어갈 빈 공간인지 */
+	private static boolean standable(ServerLevel l, net.minecraft.core.BlockPos b) {
+		return l.getBlockState(b).getCollisionShape(l, b).isEmpty() && l.getBlockState(b.above()).getCollisionShape(l, b.above()).isEmpty();
+	}
+
+	/** 바라보는 방향으로 최대 dist칸, 벽·땅에 박히지 않는 발 위치 */
+	private static Vec3 safeBlink(ServerLevel l, ServerPlayer p, Vec3 look, double dist) {
+		Vec3 feet = p.position();
+		Vec3 best = feet;
+		for (double d = 0.5; d <= dist; d += 0.5) {
+			Vec3 c = feet.add(look.scale(d));
+			net.minecraft.core.BlockPos b = net.minecraft.core.BlockPos.containing(c);
+			if (standable(l, b)) { best = c; continue; }
+			// 낮은 턱이면 한 칸 위로
+			if (standable(l, b.above())) { best = new Vec3(c.x, b.getY() + 1, c.z); continue; }
+			break;   // 벽 — 그 앞에서 멈춤
+		}
+		return best;
 	}
 
 	// ---------------- 속성 무기 스킬 27종 ----------------
@@ -228,8 +248,10 @@ public final class Skills {
 					List<LivingEntity> es = Fx.enemies(l, pos, 10);
 					if (es.isEmpty()) { p.sendOverlayMessage(Component.literal("주변에 적이 없습니다").withStyle(ChatFormatting.GRAY)); return false; }
 					LivingEntity e = es.get(0);
-					Vec3 back = e.position().subtract(Vec3.directionFromRotation(0, e.getYRot()).scale(1.3));
+					Vec3 back0 = e.position().subtract(Vec3.directionFromRotation(0, e.getYRot()).scale(1.3));
+					Vec3 back = back0;
 					Fx.burst(l, FxOptions.of(FxOptions.SMOKE, 0x1A1024, 0.5F, 16).grow(1.6F), pos.add(0, 1, 0), 8, 0.4, 0.02);
+					if (!standable(l, net.minecraft.core.BlockPos.containing(back.x, e.getY(), back.z))) back = e.position();
 					p.teleportTo(back.x, e.getY(), back.z);
 					Fx.burst(l, FxOptions.of(FxOptions.SMOKE, 0x1A1024, 0.5F, 16).grow(1.6F), back.add(0, 1, 0), 8, 0.4, 0.02);
 					Fx.at(l, slash(c2, 1.6F, 6).facing(p.getYRot() + 90, 0, 60), e.position().add(0, 1, 0));
@@ -278,11 +300,10 @@ public final class Skills {
 					}
 					Fx.sound(l, pos, SoundEvents.EVOKER_CAST_SPELL, 1F, 1.5F);
 				} else if (s == 1) {   // 순간 이동
-					HitResult hr = p.pick(8, 0F, false);
-					Vec3 to = hr.getType() == HitResult.Type.MISS ? p.getEyePosition().add(look.scale(8)) : hr.getLocation().subtract(look.scale(0.8));
+					Vec3 to = safeBlink(l, p, look, 8);
 					Fx.burst(l, ElementFx.particle(el), pos.add(0, 1, 0), 14, 0.4, 0.08);
 					ElementFx.rune(l, c1, pos, 1.2, 12, 10F);
-					p.teleportTo(to.x, to.y - 1.4, to.z);
+					p.teleportTo(to.x, to.y, to.z);
 					p.fallDistance = 0;
 					ElementFx.rune(l, c1, p.position(), 1.2, 12, -10F);
 					Fx.burst(l, ElementFx.particle(el), p.position().add(0, 1, 0), 14, 0.4, 0.08);
