@@ -191,7 +191,90 @@ public final class ShotHarness {
 		};
 	}
 
+	private static final List<Entity> dummies = new ArrayList<>();
+
+	private static void armorSet(IntegratedServer server, String tier) {
+		server.execute(() -> {
+			ServerPlayer p = sp(server);
+			p.setItemSlot(EquipmentSlot.HEAD, new ItemStack(ModGear.ITEMS.get(tier + "_helmet")));
+			p.setItemSlot(EquipmentSlot.CHEST, new ItemStack(ModGear.ITEMS.get(tier + "_chestplate")));
+			p.setItemSlot(EquipmentSlot.LEGS, new ItemStack(ModGear.ITEMS.get(tier + "_leggings")));
+			p.setItemSlot(EquipmentSlot.FEET, new ItemStack(ModGear.ITEMS.get(tier + "_boots")));
+			p.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY); p.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
+		});
+	}
+
+	/** 갑옷(정면/옆) + 낫 회전 베기 + 활 당기기/연사 장면 */
+	private static void demo(Minecraft mc, IntegratedServer server, int tt) {
+		if (tt == 0) {
+			server.execute(() -> {
+				ServerPlayer p = sp(server);
+				p.getAbilities().flying = false; p.onUpdateAbilities();
+				p.teleportTo(0.5, 172, 34.5);
+				server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set 6000");
+			});
+			armorSet(server, "aether");
+			mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
+		}
+		if (tt > 0 && tt < 45) look(mc, 180, 8);
+		if (tt == 40) shot(mc, "60_armor_aether_front");
+		if (tt >= 45 && tt < 75) look(mc, 215, 5);
+		if (tt == 72) shot(mc, "61_armor_aether_side");
+		if (tt >= 75 && tt < 105) look(mc, 20, 5);
+		if (tt == 102) shot(mc, "61b_armor_aether_back");
+		if (tt == 105) armorSet(server, "orichalcum");
+		if (tt > 105 && tt < 135) look(mc, 155, 8);
+		if (tt == 132) shot(mc, "62_armor_orichalcum");
+		if (tt == 135) {
+			armorSet(server, "aether");
+			server.execute(() -> sp(server).setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(Element.DARK).get(WeaponType.SCYTHE))));
+			mc.options.setCameraType(CameraType.FIRST_PERSON);
+		}
+		if (tt > 135 && tt < 160) look(mc, 180, 5);
+		if (tt == 158) shot(mc, "63_fp_scythe");
+		if (tt == 160) {
+			mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+			server.execute(() -> {
+				ServerPlayer p = sp(server);
+				ServerLevel level = (ServerLevel) p.level();
+				for (int i = 0; i < 6; i++) {
+					Entity e = net.minecraft.world.entity.EntityTypes.HUSK.create(level, EntitySpawnReason.COMMAND);
+					if (e == null) continue;
+					double a = i * Math.PI / 3;
+					e.snapTo(p.getX() + Math.cos(a) * 3.6, p.getY(), p.getZ() + Math.sin(a) * 3.6);
+					if (e instanceof Mob m) m.setNoAi(true);
+					level.addFreshEntity(e); dummies.add(e);
+				}
+			});
+		}
+		if (tt > 160 && tt < 200) look(mc, 180, 22);
+		if (tt == 180) server.execute(() -> { ServerPlayer p = sp(server); com.elementalweapons.spell.SpellManager.add(new com.elementalweapons.spell.ReapSpell((ServerLevel) p.level(), p, Element.DARK)); });
+		if (tt == 183) shot(mc, "64_reap_a");
+		if (tt == 186) shot(mc, "64_reap_b");
+		if (tt == 189) shot(mc, "64_reap_c");
+		if (tt == 200) {
+			server.execute(() -> { for (Entity e : dummies) e.discard(); dummies.clear();
+				sp(server).setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(Element.FIRE).get(WeaponType.BOW))); });
+			mc.options.setCameraType(CameraType.FIRST_PERSON);
+		}
+		if (tt > 200 && tt < 260) look(mc, 180, -4);
+		if (tt == 210) mc.player.startUsingItem(net.minecraft.world.InteractionHand.MAIN_HAND);
+		if (tt == 228) shot(mc, "65_fp_bow_draw");
+		if (tt == 229) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+		if (tt == 238) shot(mc, "66_bow_draw_back");
+		if (tt == 240) {
+			mc.player.stopUsingItem();
+			server.execute(() -> { ServerPlayer p = sp(server);
+				com.elementalweapons.spell.SpellManager.add(new com.elementalweapons.spell.ElementArrowSpell((ServerLevel) p.level(), p, Element.FIRE, 1.0F, p.getMainHandItem())); });
+		}
+		if (tt == 244) shot(mc, "67_bow_volley");
+		if (tt == 250) shot(mc, "67b_bow_volley");
+		if (tt == 270) { mc.options.setCameraType(CameraType.FIRST_PERSON); armorSet(server, "orichalcum"); }
+	}
+
 	private static void townScenes(Minecraft mc, IntegratedServer server, int tt) {
+		if (tt < 280) { demo(mc, server, tt); return; }
+		tt -= 280;
 		double[][] sc = scenes();
 		int per = 420;
 		int idx = tt / per, k = tt % per;
@@ -256,7 +339,7 @@ public final class ShotHarness {
 	private static void showcase(IntegratedServer server) {
 		ServerLevel level = (ServerLevel) sp(server).level();
 		int wz = (int) Math.floor(baseZ) + 9, by = (int) Math.floor(baseY);
-		WeaponType[] order = {WeaponType.STAFF, WeaponType.GREATSWORD, WeaponType.HAMMER, WeaponType.SWORD, WeaponType.SHIELD, WeaponType.DAGGER, WeaponType.BOOK};
+		WeaponType[] order = {WeaponType.STAFF, WeaponType.GREATSWORD, WeaponType.HAMMER, WeaponType.SWORD, WeaponType.SHIELD, WeaponType.DAGGER, WeaponType.BOOK, WeaponType.SCYTHE, WeaponType.BOW};
 		BlockState wall = Blocks.POLISHED_DEEPSLATE.defaultBlockState();
 		for (int dx = -5; dx <= 5; dx++) for (int dy = -1; dy <= 9; dy++)
 			level.setBlock(new BlockPos((int) Math.floor(baseX) + dx, by + dy, wz), dx == -5 || dx == 5 || dy == -1 || dy == 9 ? Blocks.GILDED_BLACKSTONE.defaultBlockState() : wall, 3);

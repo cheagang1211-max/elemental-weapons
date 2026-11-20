@@ -48,7 +48,7 @@ public final class WeaponAura {
 		float yaw = p.yBodyRot * Mth.DEG_TO_RAD;
 		Vec3 right = new Vec3(-Mth.cos(yaw), 0, -Mth.sin(yaw));
 		Vec3 fwd = new Vec3(-Mth.sin(yaw), 0, Mth.cos(yaw));
-		double len = switch (type) { case DAGGER -> 0.5; case SWORD -> 0.9; case GREATSWORD -> 1.3; case STAFF -> 1.5; case HAMMER -> 1.2; case SHIELD -> 0.7; case BOOK -> 0.6; };
+		double len = switch (type) { case DAGGER -> 0.5; case SWORD -> 0.9; case GREATSWORD -> 1.3; case STAFF -> 1.5; case HAMMER -> 1.2; case SHIELD -> 0.7; case BOOK -> 0.6; case SCYTHE -> 1.4; case BOW -> 0.9; };
 		Vec3 hand;
 		if (firstPerson) {
 			Vec3 look = p.getLookAngle();
