@@ -151,7 +151,8 @@ public final class ShotHarness {
 			if (t >= ENT_START) {
 				int idx = (t - ENT_START) / ENT_STEP, k = (t - ENT_START) % ENT_STEP;
 				if (idx >= SUBJECTS.size()) {
-					if (k == 20) { log("DONE " + SUBJECTS.size()); mc.stop(); }
+					int tt = t - (ENT_START + SUBJECTS.size() * ENT_STEP);
+					townScenes(mc, server, tt);
 					return;
 				}
 				EntityType<?> type = SUBJECTS.get(idx);
@@ -163,6 +164,31 @@ public final class ShotHarness {
 		} catch (Throwable e) {
 			ElementalWeaponsMod.LOGGER.error("[SHOTS] 오류 t=" + t, e);
 		}
+	}
+
+	private static BlockPos town;
+
+	private static void townScenes(Minecraft mc, IntegratedServer server, int tt) {
+		if (tt == 0) server.execute(() -> {
+			ServerLevel level = (ServerLevel) sp(server).level();
+			town = level.findNearestMapStructure(net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.STRUCTURE, ElementalWeaponsMod.id("towns")), sp(server).blockPosition(), 200, false);
+			log("마을 위치: " + town);
+			if (town != null) { sp(server).teleportTo(town.getX() - 56 + 0.5, level.getHeight(Heightmap.Types.MOTION_BLOCKING, town.getX(), town.getZ()) + 45, town.getZ() + 75); sp(server).getAbilities().flying = true; sp(server).getAbilities().mayfly = true; sp(server).onUpdateAbilities(); }
+		});
+		if (town == null && tt > 5) { if (tt == 10) { log("마을 없음"); log("DONE"); mc.stop(); } return; }
+		if (tt > 5 && tt < 700) {
+			double dx = town.getX() - mc.player.getX(), dz = town.getZ() - mc.player.getZ();
+			float yaw = (float) (Math.toDegrees(Math.atan2(dz, dx)) - 90);
+			if (tt < 380) look(mc, yaw, 32); else look(mc, yaw, 4);
+		}
+		if (tt == 300) shot(mc, "40_town_aerial");
+		if (tt == 310) server.execute(() -> { ServerLevel level = (ServerLevel) sp(server).level();
+			sp(server).teleportTo(town.getX() + 0.5, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, town.getX(), town.getZ() + 50) + 1.5, town.getZ() + 50.5); });
+		if (tt == 420) shot(mc, "41_town_street");
+		if (tt == 430) server.execute(() -> { ServerLevel level = (ServerLevel) sp(server).level();
+			sp(server).teleportTo(town.getX() + 30.5, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, town.getX() + 30, town.getZ() + 30) + 12, town.getZ() + 30.5); });
+		if (tt == 560) shot(mc, "42_town_high");
+		if (tt == 620) { log("DONE"); mc.stop(); }
 	}
 
 	private static void look(Minecraft mc, float yaw, float pitch) {
