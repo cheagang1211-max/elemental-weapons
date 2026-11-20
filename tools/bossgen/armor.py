@@ -8,7 +8,7 @@ K = 2
 materials2.PS = 2
 ROOT = sys.argv[1]
 OUT = f"{ROOT}/src/main/resources/assets/elementalweapons/textures/entity/equipment"
-TIERS = {"aether": dict(base=0xBFE0F4, trim=0x6AA8D0, gem=0x9FE8FF), "orichalcum": dict(base=0xE8A050, trim=0xFFE08A, gem=0xFF7040)}
+TIERS = {"aether": dict(base=0x2E2A3C, trim=0x5A4E7A, gem=0xB46CFF), "orichalcum": dict(base=0x3A2C26, trim=0xC8913E, gem=0xFF8A3A)}
 def bx(u, v, w, h, d, mat, faces=None):
     b = Box(0, 0, 0, w * K, h * K, d * K, mat, faces or {}); b.u, b.v = u * K, v * K; return b
 for tier, c in TIERS.items():
