@@ -41,7 +41,10 @@ jobs:
           mkdir -p out
           for c in $CLASSES; do
             echo "===== $c" >> out/api.txt
-            javap -p -cp "$CP" "$c" >> out/api.txt 2>&1 || echo "NOT FOUND: $c" >> out/api.txt
+            case "$c" in
+              c:*) javap -c -p -cp "$CP" "${c#c:}" >> out/api.txt 2>&1 || echo "NOT FOUND: $c" >> out/api.txt;;
+              *) javap -p -cp "$CP" "$c" >> out/api.txt 2>&1 || echo "NOT FOUND: $c" >> out/api.txt;;
+            esac
           done
           if [ -n "$FILES" ]; then
             MCJ=""
