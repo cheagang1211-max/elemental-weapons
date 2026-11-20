@@ -35,7 +35,10 @@ public final class GrowthHud {
 		// 이름·칭호
 		int tx = bx + bs + 5;
 		g.text(font, mc.player.getName().getString(), tx, y + 4, 0xFFE9DDFF, true);
-		g.text(font, gr.title(), tx, y + 14, 0xFFFFCF6B, true);
+		com.elementalweapons.item.PlayerClass pc = gr.playerClass();
+		if (pc == com.elementalweapons.item.PlayerClass.NONE) {
+			if ((GrowthClient.tick / 10) % 2 == 0) g.text(font, "직업 선택 [K]", tx, y + 14, 0xFFFF8080, true);
+		} else g.text(font, pc.koName, tx, y + 14, pc.color, true);
 		// 포인트
 		if (gr.points() > 0) {
 			String pts = "+" + gr.points();

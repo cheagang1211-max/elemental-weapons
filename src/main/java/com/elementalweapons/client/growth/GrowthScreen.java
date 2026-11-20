@@ -30,6 +30,8 @@ public class GrowthScreen extends Screen {
 					ClientPlayNetworking.send(new GrowthPayloads.Spend(stat, minecraft.hasShiftDown() ? 5 : 1)))
 					.bounds(left + W - 28, top + 32 + i * 34 + 6, 20, 20).build());
 		}
+		addRenderableWidget(Button.builder(Component.literal("직업 변경"), b -> minecraft.gui.setScreen(new ClassSelectScreen()))
+				.bounds(left + W - 170, top + 5, 54, 14).build());
 		addRenderableWidget(Button.builder(Component.literal("초기화 (원소 정수 1)"), b ->
 				ClientPlayNetworking.send(GrowthPayloads.Reset.INSTANCE))
 				.bounds(left + W - 112, top + H - 22, 104, 16).build());
@@ -59,7 +61,7 @@ public class GrowthScreen extends Screen {
 		Growth gr = GrowthClient.current();
 		g.text(font, "원소 성장", left + 8, top + 8, 0xFFFFFFFF, true);
 		g.text(font, "Lv " + gr.level(), left + 62, top + 8, 0xFFFFD34D, true);
-		g.text(font, gr.title(), left + 100, top + 8, 0xFFFFCF6B, true);
+		g.text(font, gr.playerClass().koName, left + 100, top + 8, gr.playerClass().color, true);
 		g.text(font, "[K] 닫기", left + W - 46, top + 8, 0xFF9A93B8, false);
 		if (minecraft.player != null) {
 			InventoryScreen.extractEntityInInventoryFollowsMouse(g, left + 10, top + 32, left + 90, top + 112, 32, 0.0625F, mx, my, minecraft.player);

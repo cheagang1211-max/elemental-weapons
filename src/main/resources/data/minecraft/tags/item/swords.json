@@ -23,6 +23,13 @@
 		"elementalweapons:light_sword",
 		"elementalweapons:light_greatsword",
 		"elementalweapons:aether_sword",
-		"elementalweapons:orichalcum_sword"
+		"elementalweapons:orichalcum_sword",
+		"elementalweapons:electric_hammer",
+		"elementalweapons:fire_hammer",
+		"elementalweapons:water_hammer",
+		"elementalweapons:grass_hammer",
+		"elementalweapons:wind_hammer",
+		"elementalweapons:dark_hammer",
+		"elementalweapons:light_hammer"
 	]
 }

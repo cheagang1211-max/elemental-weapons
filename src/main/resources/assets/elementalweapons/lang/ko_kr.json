@@ -170,5 +170,19 @@
 	"item.elementalweapons.orichalcum_chestplate": "오리하르콘 흉갑",
 	"item.elementalweapons.orichalcum_leggings": "오리하르콘 각반",
 	"item.elementalweapons.orichalcum_boots": "오리하르콘 부츠",
-	"key.elementalweapons.growth": "성장 창 열기"
+	"key.elementalweapons.growth": "성장 창 / 직업",
+	"item.elementalweapons.electric_hammer": "전기의 망치",
+	"item.elementalweapons.electric_shield": "전기의 방패",
+	"item.elementalweapons.fire_hammer": "불의 망치",
+	"item.elementalweapons.fire_shield": "불의 방패",
+	"item.elementalweapons.water_hammer": "물의 망치",
+	"item.elementalweapons.water_shield": "물의 방패",
+	"item.elementalweapons.grass_hammer": "풀의 망치",
+	"item.elementalweapons.grass_shield": "풀의 방패",
+	"item.elementalweapons.wind_hammer": "바람의 망치",
+	"item.elementalweapons.wind_shield": "바람의 방패",
+	"item.elementalweapons.dark_hammer": "어둠의 망치",
+	"item.elementalweapons.dark_shield": "어둠의 방패",
+	"item.elementalweapons.light_hammer": "빛의 망치",
+	"item.elementalweapons.light_shield": "빛의 방패"
 }

@@ -170,5 +170,19 @@
 	"item.elementalweapons.orichalcum_chestplate": "Orichalcum Chestplate",
 	"item.elementalweapons.orichalcum_leggings": "Orichalcum Leggings",
 	"item.elementalweapons.orichalcum_boots": "Orichalcum Boots",
-	"key.elementalweapons.growth": "Open Growth Screen"
+	"key.elementalweapons.growth": "Open Growth Screen",
+	"item.elementalweapons.electric_hammer": "Electric Hammer",
+	"item.elementalweapons.electric_shield": "Electric Shield",
+	"item.elementalweapons.fire_hammer": "Fire Hammer",
+	"item.elementalweapons.fire_shield": "Fire Shield",
+	"item.elementalweapons.water_hammer": "Water Hammer",
+	"item.elementalweapons.water_shield": "Water Shield",
+	"item.elementalweapons.grass_hammer": "Grass Hammer",
+	"item.elementalweapons.grass_shield": "Grass Shield",
+	"item.elementalweapons.wind_hammer": "Wind Hammer",
+	"item.elementalweapons.wind_shield": "Wind Shield",
+	"item.elementalweapons.dark_hammer": "Dark Hammer",
+	"item.elementalweapons.dark_shield": "Dark Shield",
+	"item.elementalweapons.light_hammer": "Light Hammer",
+	"item.elementalweapons.light_shield": "Light Shield"
 }

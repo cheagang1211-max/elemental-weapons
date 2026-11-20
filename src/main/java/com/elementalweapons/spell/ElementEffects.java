@@ -45,6 +45,33 @@ public final class ElementEffects {
 		}
 	}
 
+	/** 망치: 땅을 내리쳐 충격파 (주변 적에게 피해 + 띄우기) */
+	public static void hammerSlam(Element element, ServerLevel level, Player caster) {
+		Vec3 c = caster.position();
+		com.elementalweapons.boss.ElementFx.impact(level, element, c, 5.0);
+		for (int k = 1; k <= 3; k++) Fx.ring(level, com.elementalweapons.boss.ElementFx.particle(element), c.add(0, 0.2, 0), k * 2.0, 18 * k, 0.02);
+		for (LivingEntity e : Fx.enemies(level, c, 6.5)) {
+			if (e == caster) continue;
+			e.hurtServer(level, level.damageSources().playerAttack(caster), 14.0F);
+			e.push(0, 0.9, 0);
+		}
+		Fx.sound(level, c, net.minecraft.sounds.SoundEvents.ANVIL_LAND, 1.0F, 0.6F);
+	}
+
+	/** 방패로 막았을 때 속성 반격 */
+	public static void shieldCounter(Element element, ServerLevel level, Player owner, LivingEntity attacker) {
+		Vec3 p = attacker.position();
+		switch (element) {
+			case ELECTRIC -> ElectricStormSpell.bolt(level, owner, p, 6.0F);
+			case FIRE -> { attacker.igniteForSeconds(4.0F); Fx.burst(level, ParticleTypes.FLAME, p.add(0, 1, 0), 20, 0.5, 0.05); }
+			case WATER -> { Vec3 d = p.subtract(owner.position()).normalize(); attacker.push(d.x * 1.5, 0.4, d.z * 1.5); Fx.burst(level, ParticleTypes.SPLASH, p.add(0, 1, 0), 30, 0.6, 0.1); }
+			case GRASS -> { owner.heal(2.0F); Fx.burst(level, Fx.dust(0xFFB7D5, 1.0F), owner.position().add(0, 1, 0), 15, 0.6, 0.02); }
+			case WIND -> { Vec3 d = p.subtract(owner.position()).normalize(); attacker.push(d.x * 2.2, 0.6, d.z * 2.2); Fx.burst(level, ParticleTypes.CLOUD, p.add(0, 1, 0), 15, 0.5, 0.05); }
+			case DARK -> { attacker.hurtServer(level, level.damageSources().playerAttack(owner), 4.0F); owner.heal(2.0F); Fx.burst(level, ParticleTypes.SQUID_INK, p.add(0, 1, 0), 15, 0.4, 0.02); }
+			case LIGHT -> { owner.heal(3.0F); Fx.burst(level, ParticleTypes.END_ROD, owner.position().add(0, 1, 0), 20, 0.6, 0.03); }
+		}
+	}
+
 	/** 단검 돌진 시 남는 속성 파티클 */
 	public static void dashBurst(Element element, ServerLevel level, Vec3 pos) {
 		ParticleOptions p = switch (element) {

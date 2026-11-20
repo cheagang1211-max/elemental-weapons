@@ -1,21 +1,6 @@
 {
 	"model": {
-		"type": "minecraft:select",
-		"property": "minecraft:display_context",
-		"cases": [
-			{
-				"when": [
-					"gui"
-				],
-				"model": {
-					"type": "minecraft:model",
-					"model": "elementalweapons:item/water_dagger"
-				}
-			}
-		],
-		"fallback": {
-			"type": "minecraft:model",
-			"model": "elementalweapons:item/3d/water_dagger"
-		}
+		"type": "minecraft:model",
+		"model": "elementalweapons:item/3d/water_dagger"
 	}
 }

@@ -61,6 +61,12 @@ public class ElementalWeaponItem extends Item {
 			}
 			return InteractionResult.SUCCESS;
 		}
+		// 직업 확인
+		if (!com.elementalweapons.growth.ModGrowth.canUse(user, type)) {
+			com.elementalweapons.growth.ModGrowth.denyMessage(user, type);
+			return InteractionResult.FAIL;
+		}
+		if (type == WeaponType.SHIELD) return super.use(level, user, hand); // 방패 막기
 		if (type == WeaponType.DAGGER) {
 			// 플레이어 이동은 클라이언트가 처리하므로 양쪽에서 실행
 			Vec3 look = user.getLookAngle();
@@ -95,6 +101,10 @@ public class ElementalWeaponItem extends Item {
 					ElementEffects.strike(element, server, user, c.add(Math.cos(a) * 4.5, 0, Math.sin(a) * 4.5));
 				}
 				user.getCooldowns().addCooldown(user.getItemInHand(hand), GREATSWORD_COOLDOWN);
+			}
+			case HAMMER -> {
+				ElementEffects.hammerSlam(element, server, user);
+				user.getCooldowns().addCooldown(user.getItemInHand(hand), 100);
 			}
 			case STAFF -> {
 				Spell spell = ElementEffects.staffSpell(element, server, user);

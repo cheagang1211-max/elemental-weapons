@@ -47,7 +47,7 @@ public final class ShotHarness {
 	private static double baseX, baseY, baseZ;
 	private static final List<EntityType<?>> SUBJECTS = new ArrayList<>();
 	private static Entity current;
-	private static final int WEAP_START = 520, ENT_START = 980, ENT_STEP = 70;
+	private static final int WEAP_START = 520, ENT_START = 1150, ENT_STEP = 70;
 	private static final List<Entity> gallery = new ArrayList<>();
 
 	public static void initialize() {
@@ -105,7 +105,9 @@ public final class ShotHarness {
 			if (t == 334) shot(mc, "02_levelup");
 			if (t == 400) mc.gui.setScreen(new GrowthScreen());
 			if (t == 425) shot(mc, "03_growth_screen");
-			if (t == 430) {
+			if (t == 426) mc.gui.setScreen(new com.elementalweapons.client.growth.ClassSelectScreen());
+			if (t == 442) shot(mc, "03b_class_select");
+			if (t == 446) {
 				mc.gui.setScreen(null);
 				server.execute(() -> {
 					ServerPlayer p = sp(server);
@@ -122,9 +124,9 @@ public final class ShotHarness {
 			if (t == 500) shot(mc, "05_firstperson_greatsword");
 			if (t == 505) server.execute(() -> sp(server).setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(Element.LIGHT).get(WeaponType.STAFF))));
 			if (t == 515) shot(mc, "06_firstperson_light_staff");
-			if (t >= WEAP_START && t < ENT_START) {
+			if (t >= WEAP_START && t < WEAP_START + 6 * 70) {
 				int k = (t - WEAP_START) / 70, ph = (t - WEAP_START) % 70;
-				if (k < 4) {
+				if (k < 6) {
 					WeaponType wt = WeaponType.values()[k];
 					if (ph == 0) server.execute(() -> gallery(server, wt));
 					if (ph > 0) look(mc, 0, 18);
@@ -132,8 +134,8 @@ public final class ShotHarness {
 					if (ph == 55) server.execute(() -> { for (Entity e : gallery) e.discard(); gallery.clear(); });
 				}
 			}
-			if (t >= 800 && t < 800 + 7 * 25) {
-				int k = (t - 800) / 25, ph = (t - 800) % 25;
+			if (t >= 960 && t < 960 + 7 * 25) {
+				int k = (t - 960) / 25, ph = (t - 960) % 25;
 				Element el = Element.values()[k];
 				if (ph == 0) server.execute(() -> sp(server).setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(el).get(k % 2 == 0 ? WeaponType.SWORD : WeaponType.GREATSWORD))));
 				if (ph > 0) look(mc, 0, 25);
@@ -188,7 +190,7 @@ public final class ShotHarness {
 				ModGear.ITEMS.get("orichalcum_pickaxe"), ModItems.ELEMENT_ESSENCE, ModMobs.COOKED_ELEMENTAL_MEAT};
 		for (int i = 0; i < hot.length; i++) if (hot[i] != null) p.getInventory().setItem(i, new ItemStack(hot[i], i == 5 ? 12 : 1));
 		long xp = Math.round(Growth.need(23) * 0.68);
-		ModGrowth.set(p, new Growth(23, xp, 3, 18, 10, 14, 10));
+		ModGrowth.set(p, new Growth(23, xp, 3, 18, 10, 14, 10, 3));
 		ModGrowth.applyStats(p);
 		log("setup at " + baseX + "," + baseY + "," + baseZ);
 	}

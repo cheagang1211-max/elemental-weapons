@@ -55,6 +55,29 @@ public final class ModGrowth {
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.Reset.TYPE, GrowthPayloads.Reset.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.Spend.TYPE, (payload, ctx) -> spend(ctx.player(), payload.stat(), payload.amount()));
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.Reset.TYPE, (payload, ctx) -> reset(ctx.player()));
+		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.ChooseClass.TYPE, GrowthPayloads.ChooseClass.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.ChooseClass.TYPE, (payload, ctx) -> chooseClass(ctx.player(), payload.cls()));
+		// 직업에 맞지 않는 무기로는 공격 불가
+		net.fabricmc.fabric.api.event.player.AttackEntityCallback.EVENT.register((player, world, hand, target, hit) -> {
+			if (player.getMainHandItem().getItem() instanceof com.elementalweapons.item.ElementalWeaponItem w && !canUse(player, w.type())) {
+				if (!world.isClientSide()) denyMessage(player, w.type());
+				return net.minecraft.world.InteractionResult.FAIL;
+			}
+			return net.minecraft.world.InteractionResult.PASS;
+		});
+		// 원소 방패로 막으면 속성 반격
+		ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
+			if (entity instanceof ServerPlayer p && p.isBlocking() && p.getItemBlockingWith().getItem() instanceof com.elementalweapons.item.ElementalWeaponItem w
+					&& w.type() == com.elementalweapons.item.WeaponType.SHIELD && source.getEntity() instanceof net.minecraft.world.entity.LivingEntity att && att != p) {
+				long now = p.level().getGameTime();
+				Long last = COUNTER.get(p.getUUID());
+				if (last == null || now - last >= 20) {
+					COUNTER.put(p.getUUID(), now);
+					com.elementalweapons.spell.ElementEffects.shieldCounter(w.element(), (ServerLevel) p.level(), p, att);
+				}
+			}
+			return true;
+		});
 
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
 			if (entity instanceof ElementalBoss) return; // 보스는 ElementalBoss.defeat 에서 처리
@@ -97,7 +120,7 @@ public final class ModGrowth {
 			gained++;
 		}
 		if (level >= Growth.MAX_LEVEL) xp = 0;
-		set(p, new Growth(level, xp, points, g.str(), g.mag(), g.vit(), g.agi()));
+		set(p, new Growth(level, xp, points, g.str(), g.mag(), g.vit(), g.agi(), g.cls()));
 		if (gained > 0) {
 			ServerLevel sl = (ServerLevel) p.level();
 			Fx.burst(sl, Fx.dust(0xFFD34D, 1.8F), p.position().add(0, 1.0, 0), 80, 1.0, 0.08);
@@ -107,6 +130,48 @@ public final class ModGrowth {
 					.withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
 			applyStats(p);
 		}
+	}
+
+	private static final java.util.Map<java.util.UUID, Long> COUNTER = new java.util.HashMap<>();
+
+	/** 직업이 이 무기를 쓸 수 있는가 */
+	public static boolean canUse(Player p, com.elementalweapons.item.WeaponType type) {
+		return get(p).playerClass() == type.playerClass();
+	}
+
+	public static void denyMessage(Player p, com.elementalweapons.item.WeaponType type) {
+		com.elementalweapons.item.PlayerClass cur = get(p).playerClass();
+		String msg = cur == com.elementalweapons.item.PlayerClass.NONE
+				? "먼저 직업을 선택하세요! [K] → " + type.playerClass().koName + "만 " + type.koName + "을(를) 쓸 수 있습니다."
+				: type.koName + "은(는) " + type.playerClass().koName + " 전용 무기입니다. (현재 직업: " + cur.koName + ")";
+		p.sendOverlayMessage(Component.literal(msg).withStyle(ChatFormatting.RED));
+	}
+
+	/** 직업 선택 (처음은 무료, 변경은 원소 정수 3개) */
+	public static void chooseClass(ServerPlayer p, int cls) {
+		if (cls <= 0 || cls >= com.elementalweapons.item.PlayerClass.values().length) return;
+		Growth g = get(p);
+		if (g.cls() == cls) return;
+		if (g.cls() != 0 && !p.isCreative()) {
+			int need = 3;
+			int have = 0;
+			for (int i = 0; i < p.getInventory().getContainerSize(); i++) {
+				ItemStack s = p.getInventory().getItem(i);
+				if (s.is(ModItems.ELEMENT_ESSENCE)) have += s.getCount();
+			}
+			if (have < need) {
+				p.sendOverlayMessage(Component.literal("직업 변경에는 원소 정수 3개가 필요합니다.").withStyle(ChatFormatting.RED));
+				return;
+			}
+			for (int i = 0; i < p.getInventory().getContainerSize() && need > 0; i++) {
+				ItemStack s = p.getInventory().getItem(i);
+				if (s.is(ModItems.ELEMENT_ESSENCE)) { int take = Math.min(need, s.getCount()); s.shrink(take); need -= take; }
+			}
+		}
+		set(p, g.withClass(cls));
+		com.elementalweapons.item.PlayerClass pc = com.elementalweapons.item.PlayerClass.of(cls);
+		p.sendSystemMessage(Component.literal("✦ 직업: " + pc.koName + "  (사용 무기: " + pc.weapons + ")").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
+		Fx.sound((ServerLevel) p.level(), p.position(), SoundEvents.PLAYER_LEVELUP, 1.0F, 1.2F);
 	}
 
 	public static void spend(ServerPlayer p, int stat, int amount) {
@@ -134,7 +199,7 @@ public final class ModGrowth {
 			}
 			found.shrink(1);
 		}
-		set(p, new Growth(g.level(), g.xp(), g.points() + spent, 0, 0, 0, 0));
+		set(p, new Growth(g.level(), g.xp(), g.points() + spent, 0, 0, 0, 0, g.cls()));
 		applyStats(p);
 		p.sendOverlayMessage(Component.literal("스탯을 초기화했습니다.").withStyle(ChatFormatting.GOLD));
 	}

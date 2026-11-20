@@ -25,4 +25,10 @@ public final class GrowthPayloads {
 		public static final StreamCodec<ByteBuf, Reset> CODEC = StreamCodec.unit(INSTANCE);
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
+
+	public record ChooseClass(int cls) implements CustomPacketPayload {
+		public static final Type<ChooseClass> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "choose_class"));
+		public static final StreamCodec<ByteBuf, ChooseClass> CODEC = ByteBufCodecs.VAR_INT.map(ChooseClass::new, ChooseClass::cls);
+		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+	}
 }

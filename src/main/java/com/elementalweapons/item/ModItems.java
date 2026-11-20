@@ -88,6 +88,14 @@ public class ModItems {
 			case SWORD -> props.sword(ELEMENTAL_MATERIAL, 3.0F, -2.4F);      // 바닐라 검과 같은 비율
 			case GREATSWORD -> props.sword(ELEMENTAL_MATERIAL, 7.0F, -3.0F); // 강하지만 느림
 			case STAFF -> props.stacksTo(1);                                  // 마법 전용
+			case HAMMER -> props.sword(ELEMENTAL_MATERIAL, 9.0F, -3.3F);     // 가장 강하고 가장 느림
+			case SHIELD -> props.durability(3000).component(net.minecraft.core.component.DataComponents.BLOCKS_ATTACKS,
+					new net.minecraft.world.item.component.BlocksAttacks(0.1F, 1.0F,
+							java.util.List.of(new net.minecraft.world.item.component.BlocksAttacks.DamageReduction(120.0F, java.util.Optional.empty(), 0.0F, 1.0F)),
+							new net.minecraft.world.item.component.BlocksAttacks.ItemDamageFunction(3.0F, 1.0F, 1.0F),
+							java.util.Optional.empty(),
+							java.util.Optional.of(net.minecraft.sounds.SoundEvents.SHIELD_BLOCK),
+							java.util.Optional.of(net.minecraft.sounds.SoundEvents.SHIELD_BREAK)));
 		};
 	}
 

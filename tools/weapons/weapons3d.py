@@ -332,15 +332,153 @@ def staff_shaft(el):
     es.append(box(8, -13.5, 8, 2, 1.5, 2, "metal"))
     return es
 
+# ======================= v4: 고급 단면(베벨) + 망치 + 방패 + 3D 아이콘 =======================
+def blade4(el, y0, L, W, thick, step=0.5, tipfrac=0.18):
+    """칼날 단면을 3겹(가운데 능선 / 몸 / 날)으로 쌓아 빛을 받는 입체 칼날"""
+    out = []
+    rows = int(L / step)
+    for r in range(rows):
+        t = (r + 0.5) / rows
+        c, w = profile(el, t, W)
+        if t > 1 - tipfrac: w *= max(0.1, (1 - t) / tipfrac)
+        if el == "dark" and (r // 2) % 3 == 0 and t < 0.85: w += 0.5
+        w = max(0.25, w)
+        y = y0 + r * step + step / 2
+        x = 8 + c
+        out.append(box(x, y, 8, 2 * w, step, thick * 0.45, "edge", glow=False))                 # 얇은 날
+        if w > 0.45: out.append(box(x, y, 8, 2 * w - 0.6, step, thick * 0.8, "blade"))           # 몸
+        if w > 0.8: out.append(box(x, y, 8, max(0.4, w * 0.55), step, thick * 1.15, "blade_d"))  # 가운데 능선
+        if el in ("fire", "electric", "light") and 0.06 < t < 0.9 and w > 0.8:
+            out.append(box(x, y, 8, 0.3, step, thick * 1.25, "accent", glow=True))
+        if el == "water" and r % 6 == 3 and w > 0.6:
+            out.append(box(x - w + 0.35, y, 8, 0.4, step, thick * 0.95, "accent", glow=True))
+        if el == "dark" and (r // 2) % 3 == 0 and t < 0.85 and r % 2 == 0:
+            for sd in (-1, 1): out.append(box(x + sd * (w - 0.1), y, 8, 0.35, step, thick * 0.5, "accent", glow=True))
+        if el == "grass" and r % 6 == 2 and w > 1.2:
+            for sd in (-1, 1): out.append(box(x + sd * w * 0.5, y + 0.2, 8, w * 0.55, 0.25, thick * 0.95, "fuller", rot=(22.5 * sd, "z", [x, y, 8])))
+        if el == "wind" and r % 8 == 0 and t < 0.85:
+            out.append(box(x + w + 0.35, y - 0.3, 8, 0.7, 0.35, 0.35, "edge", glow=False))
+    return out
+
+def guard4(el, y, w, big=1.0):
+    """속성별 화려한 가드: 두 겹 금속 + 휘어진 갈래 + 보석 받침"""
+    g = [box(8, y, 8, w, 1.2 * big, 2.0 * big, "metal"), box(8, y + 0.7 * big, 8, w * 0.7, 0.5 * big, 2.3 * big, "metal2"),
+         box(8, y, 8, 2.6 * big, 2.6 * big, 2.6 * big, "metal2"), box(8, y, 8, 1.4 * big, 1.4 * big, 2.9 * big, "gem")]
+    h = w / 2
+    for sd in (-1, 1):
+        ox = 8 + sd * h
+        if el == "fire":
+            g += [box(ox, y + 1.2 * big, 8, 1, 2.6 * big, 1.2, "metal2", rot=(-22.5 * sd, "z", [ox, y, 8])), box(ox + sd * 0.6, y + 3 * big, 8, 0.8, 1.6 * big, 0.8, "accent", glow=True)]
+        elif el == "electric":
+            g += [box(ox + sd * 0.4, y + 0.9, 8, 1, 1.8, 1, "metal2"), box(ox + sd * 1.2, y + 2.4, 8, 1, 1.6, 1, "metal2"), box(ox + sd * 0.6, y + 3.8, 8, 0.8, 1.4, 0.8, "accent", glow=True), box(ox + sd * 0.8, y - 1, 8, 0.8, 1, 0.8, "accent", glow=True)]
+        elif el == "water":
+            g += [box(ox, y + 1, 8, 1.2, 2.2, 1.4, "metal2", rot=(22.5 * sd, "z", [ox, y, 8])), box(ox - sd * 0.8, y + 2.6, 8, 1.4, 0.8, 1.2, "metal2"), box(ox + sd * 0.6, y - 0.9, 8, 0.9, 0.9, 0.9, "gem")]
+        elif el == "grass":
+            g += [box(ox + sd * 0.8, y + 0.6, 8, 2.6, 1.0, 0.6, "fuller", rot=(22.5 * sd, "z", [ox, y, 8])), box(ox + sd * 2.0, y + 1.6, 8, 0.9, 0.9, 0.9, "accent", glow=True), box(ox, y - 0.8, 8, 1, 1, 1, "metal")]
+        elif el == "wind":
+            for k in range(3): g.append(box(ox + sd * k * 0.7, y + 0.6 + k * 0.7, 8, 0.8, 1.4 + k * 0.5, 0.8, "metal2", rot=(-22.5 * sd, "z", [ox, y, 8])))
+        elif el == "dark":
+            g += [box(ox + sd * 0.3, y - 1.2, 8, 1, 2.8, 1, "metal2", rot=(22.5 * sd, "z", [ox, y, 8])), box(ox + sd * 0.9, y - 2.8, 8, 0.6, 1.2, 0.6, "accent", glow=True), box(ox - sd * 0.8, y + 1.4, 8, 0.9, 1.8, 0.9, "metal")]
+        else:
+            for k in range(4): g.append(box(ox + sd * (k * 0.75), y + 0.8 + k * 0.85, 8, 1.2, 1.5, 0.8, "metal2" if k < 3 else "accent", glow=(k == 3), rot=(-22.5 * sd, "z", [ox, y, 8])))
+    return [scaled([e], big, y)[0] for e in g] if False else g
+
+def hammer_head(el, y):
+    """망치 머리: 속성마다 다른 형태"""
+    h = []
+    if el == "fire":       # 용암 덩어리 망치
+        h += [box(8, y, 8, 9, 6, 6, "metal"), box(8, y, 8, 9.4, 4, 4, "fuller"), box(8, y, 8, 0.6, 6.4, 6.4, "accent", glow=True)]
+        for sd in (-1, 1): h += [box(8 + sd * 5, y, 8, 1.2, 5, 5, "metal2"), box(8 + sd * 5.6, y, 8, 0.6, 3, 3, "accent", glow=True)]
+        h += [box(8, y + 3.6, 8, 2, 1.5, 2, "accent", glow=True), box(8, y + 4.8, 8, 1, 1.2, 1, "accent", glow=True)]
+    elif el == "electric": # 번개 신의 망치
+        h += [box(8, y, 8, 10, 5, 5, "metal"), box(8, y, 8, 10.4, 1, 5.4, "metal2"), box(8, y + 2, 8, 10.4, 0.6, 5.4, "metal2"), box(8, y - 2, 8, 10.4, 0.6, 5.4, "metal2")]
+        for sd in (-1, 1): h += [box(8 + sd * 5.3, y, 8, 0.6, 3, 3, "accent", glow=True), box(8 + sd * 3, y + 3.2, 8, 0.8, 1.6, 0.8, "accent", glow=True)]
+    elif el == "water":    # 닻·소라 망치
+        h += [box(8, y, 8, 5, 5, 5, "metal"), box(8, y, 8, 5.4, 3, 3, "gem")]
+        for sd in (-1, 1): h += [box(8 + sd * 4, y, 8, 3, 3.6, 3.6, "metal2"), box(8 + sd * 5.8, y + 1.2, 8, 1, 2.6, 2, "metal2", rot=(22.5 * sd, "z", [8 + sd * 5.5, y, 8]))]
+        h += [box(8, y + 3, 8, 1, 1, 1, "accent", glow=True)]
+    elif el == "grass":    # 이끼 낀 나무 망치
+        h += [box(8, y, 8, 9, 6, 6, "grip"), box(8, y + 3.1, 8, 9.2, 0.6, 6.2, "fuller"), box(8, y - 3.1, 8, 9.2, 0.6, 6.2, "fuller")]
+        for sd in (-1, 1): h += [box(8 + sd * 4.6, y, 8, 0.4, 5, 5, "metal2")]
+        h += [box(6, y + 3.6, 7, 1.2, 1.2, 1.2, "accent", glow=True), box(10, y + 3.4, 9, 1.2, 1.2, 1.2, "accent", glow=True), box(8, y + 3.8, 8, 2, 0.6, 2, "fuller")]
+    elif el == "wind":     # 날개 달린 바람 망치
+        h += [box(8, y, 8, 7, 4, 4, "metal2"), box(8, y, 8, 7.4, 1, 4.4, "metal")]
+        for sd in (-1, 1):
+            for k in range(3): h.append(box(8 + sd * (4 + k * 0.6), y + 1.2 + k * 1.0, 8, 0.8, 2 + k * 0.6, 0.6, "edge", glow=False, rot=(-22.5 * sd, "z", [8 + sd * 4, y, 8])))
+    elif el == "dark":     # 가시 철퇴
+        h += [box(8, y, 8, 6, 6, 6, "metal2"), box(8, y, 8, 6.4, 2, 6.4, "metal")]
+        for dx, dy, dz in ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, 0, 1), (0, 0, -1), (1, 1, 0), (-1, 1, 0)):
+            h.append(box(8 + dx * 3.6, y + dy * 3.6, 8 + dz * 3.6, 1, 1, 1, "accent", glow=True))
+            h.append(box(8 + dx * 3.2, y + dy * 3.2, 8 + dz * 3.2, 1.4, 1.4, 1.4, "metal"))
+    else:                  # 태양 망치
+        h += [box(8, y, 8, 8, 5, 5, "metal"), box(8, y, 8, 3.5, 3.5, 5.6, "gem")]
+        for k in range(8):
+            a = k * math.pi / 4
+            h.append(box(8 + math.cos(a) * 3.2, y + math.sin(a) * 3.2, 5.2, 0.8, 0.8, 0.6, "accent", glow=True))
+        for sd in (-1, 1): h.append(box(8 + sd * 4.3, y, 8, 0.6, 5.4, 5.4, "metal2"))
+    return h
+
+def shield4(el):
+    """방패: 앞면(-z)이 바깥. 속성별 모양 + 문장"""
+    out = []
+    W, H = 12.0, 16.0
+    rows = 32
+    for r in range(rows):
+        t = r / (rows - 1)     # 0 = 위, 1 = 아래
+        y = 15 - t * H
+        if el in ("fire", "light", "dark"):        # 기사 방패 (아래가 뾰족)
+            w = W / 2 * (1.0 if t < 0.55 else max(0.15, 1 - (t - 0.55) / 0.45))
+        elif el in ("water", "wind"):              # 둥근 방패
+            w = W / 2 * math.sqrt(max(0.02, 1 - (2 * t - 1) ** 2))
+        else:                                      # 나뭇잎·번개는 육각
+            w = W / 2 * (0.6 + 0.4 * min(t, 1 - t) * 2.5 if t < 0.2 or t > 0.8 else 1.0)
+        out.append(box(8, y, 8, 2 * w, H / rows, 1.0, "metal"))
+        out.append(box(8, y, 7.4, 2 * w - 1.2, H / rows, 0.3, "blade"))
+        if w > 0.6:
+            for sd in (-1, 1): out.append(box(8 + sd * (w - 0.3), y, 7.3, 0.6, H / rows, 0.5, "metal2"))
+    # 가운데 문장
+    cy = 8.5
+    emb = {
+        "fire": [box(8, cy, 7, 2, 4, 0.4, "accent", glow=True), box(7, cy + 2.5, 7, 1, 2, 0.4, "accent", glow=True), box(9, cy + 1.5, 7, 1, 2, 0.4, "accent", glow=True)],
+        "electric": [box(8.6, cy + 1.6, 7, 1, 2.6, 0.4, "accent", glow=True), box(8, cy, 7, 2.4, 0.8, 0.4, "accent", glow=True), box(7.4, cy - 1.6, 7, 1, 2.6, 0.4, "accent", glow=True)],
+        "water": [box(8, cy, 7, 3, 3, 0.4, "gem"), box(8, cy, 7, 6, 0.6, 0.4, "metal2"), box(8, cy, 7, 0.6, 6, 0.4, "metal2")],
+        "grass": [box(8, cy, 7, 2, 5, 0.4, "accent", glow=True), box(6.6, cy + 0.8, 7, 2, 1, 0.4, "fuller", rot=(22.5, "z", [8, cy, 7])), box(9.4, cy + 0.8, 7, 2, 1, 0.4, "fuller", rot=(-22.5, "z", [8, cy, 7]))],
+        "wind": [box(8 + math.cos(k * 2.1) * 1.8, cy + math.sin(k * 2.1) * 1.8, 7, 2.2, 0.8, 0.4, "edge", glow=False, rot=(22.5, "z", [8, cy, 7])) for k in range(3)] + [box(8, cy, 7, 1.2, 1.2, 0.5, "gem")],
+        "dark": [box(8, cy, 7, 3, 3, 0.5, "metal2"), box(7.2, cy + 0.4, 6.7, 0.8, 0.8, 0.3, "accent", glow=True), box(8.8, cy + 0.4, 6.7, 0.8, 0.8, 0.3, "accent", glow=True), box(8, cy - 1.2, 6.7, 2, 0.4, 0.3, "metal")],
+        "light": [box(8, cy, 7, 1, 7, 0.4, "accent", glow=True), box(8, cy + 1, 7, 5, 1, 0.4, "accent", glow=True), box(8, cy + 1, 7, 2, 2, 0.6, "gem")],
+    }[el]
+    out += emb
+    out += [box(8, 7, 9, 1.2, 4, 1.4, "grip"), box(8, 9.4, 8.8, 2, 0.8, 1, "metal_d"), box(8, 4.6, 8.8, 2, 0.8, 1, "metal_d")]   # 손잡이(뒤)
+    return out
+
+def gui_transform(es, mode="diag"):
+    xs = [v for e in es for v in (e["from"][0], e["to"][0])]; ys = [v for e in es for v in (e["from"][1], e["to"][1])]
+    cx, cy = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
+    if mode == "front":
+        span = max(max(xs) - min(xs), max(ys) - min(ys))
+        sc = min(1.0, 15.0 / span)
+        return {"rotation": [10, -25, 0], "translation": [round((8 - cx) * sc, 2), round((8 - cy) * sc, 2), 0], "scale": [sc, sc, sc]}
+    span = max(ys) - min(ys)
+    sc = min(1.0, 21.0 / span)
+    # -45도 회전 후 중심 맞추기
+    a = math.radians(-45)
+    dx, dy = cx - 8, cy - 8
+    rx, ry = dx * math.cos(a) - dy * math.sin(a), dx * math.sin(a) + dy * math.cos(a)
+    return {"rotation": [0, 0, -45], "translation": [round(-rx * sc, 2), round(-ry * sc, 2), 0], "scale": [sc, sc, sc]}
+
 def build(el, wt):
     st = EL[el]["style"]
     if wt == "dagger":
-        es = grip3(el, 1, 4) + guard(st, 5.5, 5, 0.8) + blade3(el, 6.2, 9, 2.4, 0.8, step=0.5, tipfrac=0.25)
+        es = grip3(el, 1, 4) + guard4(el, 5.6, 5.5, 0.8) + blade4(el, 6.3, 9, 2.6, 0.9, step=0.5, tipfrac=0.25)
     elif wt == "sword":
-        es = grip3(el, 0, 6) + guard(st, 6.6, 8) + blade3(el, 7.4, 18, 3.0, 1.0)
+        es = grip3(el, 0, 6) + guard4(el, 6.6, 8.5) + blade4(el, 7.4, 19, 3.2, 1.1)
     elif wt == "greatsword":
-        es = grip3(el, -4, 9, 1.3) + guard(st, 5.8, 12, 1.4) + blade3(el, 6.8, 24, 5.0, 1.4, tipfrac=0.16) + extras(el, wt, 6.8, 24, 5.0) + \
-             [box(8, 10, 8, 2.2, 3, 1.6, "metal2"), box(8, 10, 8, 1, 1, 1.8, "gem")]
+        es = grip3(el, -4, 9, 1.3) + guard4(el, 5.8, 12.5, 1.3) + blade4(el, 6.8, 25, 5.4, 1.5, tipfrac=0.16) + extras(el, wt, 6.8, 24, 5.0) + \
+             [box(8, 10, 8, 2.4, 3.2, 2.0, "metal2"), box(8, 10, 8, 1.2, 1.2, 2.3, "gem")]
+    elif wt == "hammer":
+        es = grip3(el, -12, 26, 1.1) + [box(8, 14.2, 8, 2.4, 1.2, 2.4, "metal2")] + hammer_head(el, 18.5)
+    elif wt == "shield":
+        es = shield4(el)
     else:  # staff
         es = staff_shaft(el) + scaled(staff_head(st, 17.2), 1.45, 17.2)
     # 범위 제한 (-16~32)
@@ -358,6 +496,10 @@ DISPLAY = {
     "staff":      {"thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 1, 1], "scale": [0.85, 0.85, 0.85]},
                    "firstperson_righthand": {"rotation": [0, 90, 15], "translation": [2, 3, 0], "scale": [0.28, 0.28, 0.28]}},
 }
+DISPLAY["hammer"] = {"thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 3, 1], "scale": [0.85, 0.85, 0.85]},
+                     "firstperson_righthand": {"rotation": [0, 90, 20], "translation": [1, 0, 0], "scale": [0.38, 0.38, 0.38]}}
+DISPLAY["shield"] = {"thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 1, -3], "scale": [0.9, 0.9, 0.9]},
+                     "firstperson_righthand": {"rotation": [0, 180, 5], "translation": [-3, -1, -4], "scale": [0.7, 0.7, 0.7]}}
 for v in DISPLAY.values():
     v["thirdperson_lefthand"] = v["thirdperson_righthand"]; v["firstperson_lefthand"] = v["firstperson_righthand"]
     v["fixed"] = {"rotation": [0, 0, 0], "translation": [0, 0, 0], "scale": [0.5, 0.5, 0.5]}
@@ -418,17 +560,18 @@ if __name__ == "__main__":
         p = EL[el]
         CUR = {"blade": hexc(p["blade"]), "blade_d": tone(hexc(p["blade"]), -0.15), "edge": hexc(p["edge"]), "metal": hexc(p["metal"]), "metal_d": tone(hexc(p["metal"]), -0.12),
                "metal2": hexc(p["metal2"]), "grip": hexc(p["grip"]), "gem": hexc(p["gem"]), "accent": hexc(p["accent"]), "fuller": tone(hexc(p["blade"]), -0.25)}
-        for wt in ("dagger", "sword", "greatsword", "staff"):
+        for wt in ("dagger", "sword", "greatsword", "staff", "hammer", "shield"):
             es = build(el, wt)
             if len(sys.argv) > 2: tiles.append(preview(es))
             hd_texture(el, wt, es, CUR)
-            model = {"textures": {"t": f"{NS}:item/3d/{el}_{wt}", "particle": f"{NS}:item/{el}_{wt}"}, "gui_light": "front", "display": DISPLAY[wt], "elements": es}
+            disp = json.loads(json.dumps(DISPLAY[wt]))
+            disp["gui"] = gui_transform(es, "front" if wt == "shield" else "diag")
+            disp["fixed"] = disp["gui"]
+            model = {"textures": {"t": f"{NS}:item/3d/{el}_{wt}", "particle": f"{NS}:item/3d/{el}_{wt}"}, "gui_light": "front", "display": disp, "elements": es}
             json.dump(model, open(f"{A}/models/item/3d/{el}_{wt}.json", "w"), indent="\t")
-            json.dump({"model": {"type": "minecraft:select", "property": "minecraft:display_context",
-                       "cases": [{"when": ["gui"], "model": {"type": "minecraft:model", "model": f"{NS}:item/{el}_{wt}"}}],
-                       "fallback": {"type": "minecraft:model", "model": f"{NS}:item/3d/{el}_{wt}"}}}, open(f"{A}/items/{el}_{wt}.json", "w"), indent="\t")
+            json.dump({"model": {"type": "minecraft:model", "model": f"{NS}:item/3d/{el}_{wt}"}}, open(f"{A}/items/{el}_{wt}.json", "w"), indent="\t")
     if len(sys.argv) > 2:
-        sheet = Image.new("RGBA", (220 * 4, 220 * 7))
-        for i, t in enumerate(tiles): sheet.paste(t, ((i % 4) * 220, (i // 4) * 220))
+        sheet = Image.new("RGBA", (220 * 6, 220 * 7))
+        for i, t in enumerate(tiles): sheet.paste(t, ((i % 6) * 220, (i // 6) * 220))
         sheet.save(sys.argv[2])
     print("weapons3d ok", len(EL) * 4)

@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "equipment",
+	"pattern": [
+		"OCO",
+		"OSO",
+		" S "
+	],
+	"key": {
+		"O": "elementalweapons:orichalcum_ingot",
+		"C": "elementalweapons:voltra_core",
+		"S": "minecraft:stick"
+	},
+	"result": {
+		"id": "elementalweapons:electric_hammer",
+		"count": 1
+	}
+}

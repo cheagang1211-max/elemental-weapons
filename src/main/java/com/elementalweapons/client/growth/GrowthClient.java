@@ -27,6 +27,7 @@ public final class GrowthClient {
 	static int levelUpFrom = 0, levelUpTo = 0;
 	static final List<int[]> popups = new ArrayList<>(); // {amount, age}
 	static int tick = 0;
+	static boolean prompted = false;
 
 	public static void initialize() {
 		OPEN_KEY = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.elementalweapons.growth", InputConstants.KEY_K, KeyMapping.Category.GAMEPLAY));
@@ -43,9 +44,13 @@ public final class GrowthClient {
 		tick++;
 		if (mc.player == null) { lastLevel = -1; return; }
 		while (OPEN_KEY.consumeClick()) {
-			if (mc.gui.screen() == null) mc.gui.setScreen(new GrowthScreen());
+			if (mc.gui.screen() == null) mc.gui.setScreen(current().cls() == 0 ? new ClassSelectScreen() : new GrowthScreen());
 		}
 		Growth g = current();
+		if (!prompted && g.cls() == 0 && tick > 200 && mc.gui.screen() == null && System.getenv("EW_SHOTS") == null) {
+			prompted = true;
+			mc.gui.setScreen(new ClassSelectScreen());
+		}
 		if (lastLevel >= 0) {
 			if (g.level() > lastLevel) {
 				levelUpTicks = 70; levelUpFrom = lastLevel; levelUpTo = g.level();

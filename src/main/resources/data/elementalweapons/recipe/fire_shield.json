@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "equipment",
+	"pattern": [
+		"OXO",
+		"OCO",
+		" O "
+	],
+	"key": {
+		"O": "elementalweapons:orichalcum_ingot",
+		"C": "elementalweapons:ignis_core",
+		"X": "elementalweapons:ember_crystal"
+	},
+	"result": {
+		"id": "elementalweapons:fire_shield",
+		"count": 1
+	}
+}
