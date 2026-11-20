@@ -250,9 +250,9 @@ public final class Capital {
 			try {
 				BlockPos pos = new BlockPos(wx(x, z), G + y, wz(x, z));
 				if (in(pos.getX(), pos.getZ()) && lv.getBlockEntity(pos) instanceof SignBlockEntity sb) {
-					SignText t = new SignText().setMessage(1, Component.literal(line1));
-					if (line2 != null) t = t.setMessage(2, Component.literal(line2));
-					sb.setText(t, true);
+					java.util.List<Component> lines = java.util.List.of(Component.empty(), Component.literal(line1),
+							line2 == null ? Component.empty() : Component.literal(line2), Component.empty());
+					sb.setText(new SignText(lines, lines, net.minecraft.world.item.DyeColor.WHITE, true), net.minecraft.world.level.block.entity.SignTextSlot.FRONT);
 				}
 			} catch (Throwable ignored) {}
 		}
@@ -300,11 +300,11 @@ public final class Capital {
 	/** 여관: 2층 목조, 1층 식당(탁자·통), 2층 침대방, 굴뚝, 발코니 */
 	private void inn(Bld o) {
 		o.floor(-10, -8, 10, 8, 0, st(Blocks.SPRUCE_PLANKS));
-		o.walls(-10, -8, 10, 8, 1, 5, st(Blocks.COBBLESTONE), st(Blocks.WHITE_TERRACOTTA), st(Blocks.DARK_OAK_LOG));
-		o.walls(-10, -8, 10, 8, 6, 9, st(Blocks.DARK_OAK_PLANKS), st(Blocks.WHITE_TERRACOTTA), st(Blocks.DARK_OAK_LOG));
+		o.walls(-10, -8, 10, 8, 1, 5, st(Blocks.COBBLESTONE), b("white_terracotta"), st(Blocks.DARK_OAK_LOG));
+		o.walls(-10, -8, 10, 8, 6, 9, st(Blocks.DARK_OAK_PLANKS), b("white_terracotta"), st(Blocks.DARK_OAK_LOG));
 		for (int x = -10; x <= 10; x++) { o.p(x, 5, -8, st(Blocks.DARK_OAK_LOG)); o.p(x, 5, 8, st(Blocks.DARK_OAK_LOG)); }
 		o.floor(-9, -7, 9, 7, 5, st(Blocks.SPRUCE_PLANKS));
-		o.gable(-10, -8, 10, 8, 10, stairs("dark_oak"), slab("dark_oak"), st(Blocks.WHITE_TERRACOTTA));
+		o.gable(-10, -8, 10, 8, 10, stairs("dark_oak"), slab("dark_oak"), b("white_terracotta"));
 		o.door(0, 1, 8, "spruce"); o.door(1, 1, 8, "spruce");
 		for (int x : new int[]{-7, -4, 4, 7}) { o.window(x, 2, 8, true); o.window(x, 7, 8, true); o.window(x, 2, -8, false); }
 		// 1층 식당
