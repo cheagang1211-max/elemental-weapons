@@ -29,6 +29,7 @@ public final class SkyPainter implements Feature {
 
 	@Override public MapCodec<? extends Feature> codec() { return CODEC; }
 
+	private static boolean logged;
 	private WorldGenLevel lv;
 	private int minX, minZ, maxX, maxZ;
 
@@ -41,6 +42,8 @@ public final class SkyPainter implements Feature {
 			for (SkyLayout.Bridge b : SkyLayout.BRIDGES) bridge(b);
 			for (SkyLayout.Island is : SkyLayout.ISLANDS) if (is.kind == 3) pavilion(is);
 			waterfalls();
+		} catch (Throwable t) {
+			if (!logged) { logged = true; com.elementalweapons.ElementalWeaponsMod.LOGGER.error("[SKY] 페인터 오류", t); }
 		} finally { lv = null; }
 		return true;
 	}

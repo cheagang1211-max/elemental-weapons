@@ -36,7 +36,9 @@ public class SkyBiomeSource extends BiomeSource {
 	@Override
 	public BiomeResolver createResolver(Climate.Sampler sampler) {
 		return (qx, qy, qz) -> {
-			int r = SkyLayout.regionAt(qx * 4 + 2, qz * 4 + 2);
+			int r;
+			try { r = SkyLayout.regionAt(qx * 4 + 2, qz * 4 + 2); }
+			catch (Throwable t) { com.elementalweapons.ElementalWeaponsMod.LOGGER.error("[SKY] 바이옴 오류", t); return capital; }
 			if (r < 0) return capital;
 			if (r == 7) return abyss;
 			return regions.get(Math.min(r, regions.size() - 1));

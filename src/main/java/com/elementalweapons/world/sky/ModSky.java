@@ -30,6 +30,8 @@ public final class ModSky {
 	private static final Map<UUID, Vec3> SAFE = new HashMap<>();
 
 	public static void initialize() {
+		try { ElementalWeaponsMod.LOGGER.info("[SKY] 배치 준비: 섬 {}개 다리 {}개", SkyLayout.ISLANDS.size(), SkyLayout.BRIDGES.size()); }
+		catch (Throwable t) { ElementalWeaponsMod.LOGGER.error("[SKY] 배치 오류", t); }
 		Registry.register(BuiltInRegistries.DENSITY_FUNCTION_TYPE, ElementalWeaponsMod.id("sky_islands"), SkyDensity.CODEC);
 		Registry.register(BuiltInRegistries.BIOME_SOURCE, ElementalWeaponsMod.id("sky_regions"), SkyBiomeSource.CODEC);
 		Registry.register(BuiltInRegistries.FEATURE_TYPE, ElementalWeaponsMod.id("sky_painter"), SkyPainter.CODEC);

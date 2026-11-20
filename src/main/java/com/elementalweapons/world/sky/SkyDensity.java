@@ -23,9 +23,12 @@ public final class SkyDensity implements DensityFunction {
 
 		@Override
 		public float sampleValue(SamplerContext ctx, int x, int y, int z) {
-			return SkyLayout.density(x, y, z);
+			try { return SkyLayout.density(x, y, z); }
+			catch (Throwable t) { if (!logged) { logged = true; com.elementalweapons.ElementalWeaponsMod.LOGGER.error("[SKY] 밀도 오류", t); } return -1; }
 		}
 	};
+
+	private static boolean logged;
 
 	private SkyDensity() {}
 
