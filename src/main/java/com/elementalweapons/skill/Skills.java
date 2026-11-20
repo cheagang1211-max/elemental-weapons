@@ -86,7 +86,7 @@ public final class Skills {
 	public static void forget(UUID id) { READY.remove(id); }
 
 	// ---------------- 공통 도구 ----------------
-	private static void launchSelf(Player p, Vec3 v) { p.setDeltaMovement(v); p.hurtMarked = true; p.fallDistance = 0; }
+	private static void launchSelf(Player p, Vec3 v) { p.setDeltaMovement(v); p.needsSync = true; p.resetFallDistance(); }
 
 	private static int hit(ServerLevel l, Player p, Vec3 c, double r, float dmg, Set<LivingEntity> once) {
 		int n = 0;
@@ -102,7 +102,7 @@ public final class Skills {
 	private static boolean dodge(ServerLevel l, ServerPlayer p) {
 		Vec3 f = Fx.flatLook(p);
 		launchSelf(p, new Vec3(f.x * 1.15, 0.28, f.z * 1.15));
-		p.invulnerableTime = 12;
+		p.setInvulnerableTime(12);
 		Fx.burst(l, FxOptions.of(FxOptions.SMOKE, 0xD8C8A8, 0.35F, 14).grow(1.6F), p.position().add(0, 0.2, 0), 6, 0.3, 0.02);
 		Fx.sound(l, p.position(), SoundEvents.PLAYER_ATTACK_NODAMAGE, 1F, 1.4F);
 		return true;

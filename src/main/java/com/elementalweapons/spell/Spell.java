@@ -30,7 +30,7 @@ public abstract class Spell {
 	/** 마법이 끝날 때 정리 작업 (소환물 제거 등) */
 	protected void onEnd() {}
 
-	boolean casterGone() {
+	protected boolean casterGone() {
 		return caster.isRemoved() || caster.level() != level;
 	}
 }
