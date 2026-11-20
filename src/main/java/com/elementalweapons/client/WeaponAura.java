@@ -66,7 +66,7 @@ public final class WeaponAura {
 		float sz = firstPerson ? 0.15F + r.nextFloat() * 0.1F : 0.25F + r.nextFloat() * 0.2F + lv * 0.02F;
 		level.addParticle(ElementFx.dust(el, sz), pos.x, pos.y, pos.z, vx, 0.01, vz);
 		// 속성 고유 파티클 (가끔)
-		if (r.nextInt(firstPerson ? 6 : 3) != 0) return;
+		if (firstPerson || r.nextInt(3) != 0) return;
 		ParticleOptions sig = switch (el) {
 			case ELECTRIC -> ParticleTypes.ELECTRIC_SPARK;
 			case FIRE -> r.nextInt(4) == 0 ? ParticleTypes.FLAME : ParticleTypes.SMALL_FLAME;
