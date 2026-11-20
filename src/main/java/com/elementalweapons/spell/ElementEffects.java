@@ -94,25 +94,25 @@ public final class ElementEffects {
 		Vec3 p = attacker.position();
 		switch (element) {
 			case ELECTRIC -> ElectricStormSpell.bolt(level, owner, p, 6.0F);
-			case FIRE -> { attacker.igniteForSeconds(4.0F); Fx.burst(level, ParticleTypes.FLAME, p.add(0, 1, 0), 20, 0.5, 0.05); }
-			case WATER -> { Vec3 d = p.subtract(owner.position()).normalize(); attacker.push(d.x * 1.5, 0.4, d.z * 1.5); Fx.burst(level, ParticleTypes.SPLASH, p.add(0, 1, 0), 30, 0.6, 0.1); }
+			case FIRE -> { attacker.igniteForSeconds(4.0F); Fx.burst(level, com.elementalweapons.fx.P.FLAME, p.add(0, 1, 0), 20, 0.5, 0.05); }
+			case WATER -> { Vec3 d = p.subtract(owner.position()).normalize(); attacker.push(d.x * 1.5, 0.4, d.z * 1.5); Fx.burst(level, com.elementalweapons.fx.P.SPLASH, p.add(0, 1, 0), 30, 0.6, 0.1); }
 			case GRASS -> { owner.heal(2.0F); Fx.burst(level, Fx.dust(0xFFB7D5, 1.0F), owner.position().add(0, 1, 0), 15, 0.6, 0.02); }
-			case WIND -> { Vec3 d = p.subtract(owner.position()).normalize(); attacker.push(d.x * 2.2, 0.6, d.z * 2.2); Fx.burst(level, ParticleTypes.CLOUD, p.add(0, 1, 0), 15, 0.5, 0.05); }
-			case DARK -> { attacker.hurtServer(level, level.damageSources().playerAttack(owner), 4.0F); owner.heal(2.0F); Fx.burst(level, ParticleTypes.SQUID_INK, p.add(0, 1, 0), 15, 0.4, 0.02); }
-			case LIGHT -> { owner.heal(3.0F); Fx.burst(level, ParticleTypes.END_ROD, owner.position().add(0, 1, 0), 20, 0.6, 0.03); }
+			case WIND -> { Vec3 d = p.subtract(owner.position()).normalize(); attacker.push(d.x * 2.2, 0.6, d.z * 2.2); Fx.burst(level, com.elementalweapons.fx.P.CLOUD, p.add(0, 1, 0), 15, 0.5, 0.05); }
+			case DARK -> { attacker.hurtServer(level, level.damageSources().playerAttack(owner), 4.0F); owner.heal(2.0F); Fx.burst(level, com.elementalweapons.fx.P.SQUID_INK, p.add(0, 1, 0), 15, 0.4, 0.02); }
+			case LIGHT -> { owner.heal(3.0F); Fx.burst(level, com.elementalweapons.fx.P.END_ROD, owner.position().add(0, 1, 0), 20, 0.6, 0.03); }
 		}
 	}
 
 	/** 단검 돌진 시 남는 속성 파티클 */
 	public static void dashBurst(Element element, ServerLevel level, Vec3 pos) {
 		ParticleOptions p = switch (element) {
-			case ELECTRIC -> ParticleTypes.ELECTRIC_SPARK;
-			case FIRE -> ParticleTypes.FLAME;
-			case WATER -> ParticleTypes.SPLASH;
+			case ELECTRIC -> com.elementalweapons.fx.P.ELECTRIC_SPARK;
+			case FIRE -> com.elementalweapons.fx.P.FLAME;
+			case WATER -> com.elementalweapons.fx.P.SPLASH;
 			case GRASS -> Fx.dust(0xFFB7D5, 1.0F);
-			case WIND -> ParticleTypes.CLOUD;
-			case DARK -> ParticleTypes.SQUID_INK;
-			case LIGHT -> ParticleTypes.END_ROD;
+			case WIND -> com.elementalweapons.fx.P.CLOUD;
+			case DARK -> com.elementalweapons.fx.P.SQUID_INK;
+			case LIGHT -> com.elementalweapons.fx.P.END_ROD;
 		};
 		Fx.burst(level, p, pos.add(0, 1, 0), 25, 0.5, 0.08);
 		Fx.burst(level, Fx.dust(element.color, 1.3F), pos.add(0, 1, 0), 20, 0.6, 0.02);

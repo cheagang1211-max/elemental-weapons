@@ -68,17 +68,17 @@ public final class WeaponAura {
 		// 속성 고유 파티클 (가끔)
 		if (firstPerson || r.nextInt(3) != 0) return;
 		ParticleOptions sig = switch (el) {
-			case ELECTRIC -> ParticleTypes.ELECTRIC_SPARK;
-			case FIRE -> r.nextInt(4) == 0 ? ParticleTypes.FLAME : ParticleTypes.SMALL_FLAME;
-			case WATER -> ParticleTypes.DRIPPING_WATER;
-			case GRASS -> ParticleTypes.CHERRY_LEAVES;
-			case WIND -> ParticleTypes.WHITE_ASH;
-			case DARK -> ParticleTypes.PORTAL;
-			case LIGHT -> ParticleTypes.END_ROD;
+			case ELECTRIC -> com.elementalweapons.fx.P.ELECTRIC_SPARK;
+			case FIRE -> r.nextInt(4) == 0 ? com.elementalweapons.fx.P.FLAME : com.elementalweapons.fx.P.SMALL_FLAME;
+			case WATER -> com.elementalweapons.fx.P.DRIPPING_WATER;
+			case GRASS -> com.elementalweapons.fx.P.CHERRY_LEAVES;
+			case WIND -> com.elementalweapons.fx.P.WHITE_ASH;
+			case DARK -> com.elementalweapons.fx.P.PORTAL;
+			case LIGHT -> com.elementalweapons.fx.P.END_ROD;
 		};
 		double vy = switch (el) { case FIRE -> 0.03; case LIGHT -> 0.015; case WATER -> -0.02; case WIND -> 0.0; default -> 0.005; };
 		if (el == WIND_ELEMENT) { vx = Math.cos(ang + 1.6) * 0.05; vz = Math.sin(ang + 1.6) * 0.05; }
-		if (el == Element.LIGHT && sig == ParticleTypes.END_ROD) { vx *= 0.3; vz *= 0.3; vy = 0.01; }
+		if (el == Element.LIGHT && sig == com.elementalweapons.fx.P.END_ROD) { vx *= 0.3; vz *= 0.3; vy = 0.01; }
 		level.addParticle(sig, pos.x, pos.y, pos.z, vx, vy, vz);
 	}
 

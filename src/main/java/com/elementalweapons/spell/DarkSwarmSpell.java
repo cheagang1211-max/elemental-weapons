@@ -22,9 +22,9 @@ import net.minecraft.world.phys.Vec3;
  * 주변 적들에게 어둠의 화살을 쏘아 피해와 시듦 효과를 줍니다. 끝나면 박쥐는 연기로 사라집니다.
  */
 public class DarkSwarmSpell extends Spell {
-	private static final DustParticleOptions VOID = Fx.dust(0x2A0A3A, 2.0F);
-	private static final DustParticleOptions SHADOW = Fx.dust(0x5A1A8A, 1.4F);
-	private static final DustParticleOptions BOLT = Fx.dust(0x9A3BEA, 1.3F);
+	private static final com.elementalweapons.fx.FxOptions VOID = Fx.dust(0x2A0A3A, 2.0F);
+	private static final com.elementalweapons.fx.FxOptions SHADOW = Fx.dust(0x5A1A8A, 1.4F);
+	private static final com.elementalweapons.fx.FxOptions BOLT = Fx.dust(0x9A3BEA, 1.3F);
 
 	private static final int BATS = 10;
 	private static final int DURATION = 120; // 6초
@@ -49,7 +49,7 @@ public class DarkSwarmSpell extends Spell {
 				bat.setPos(c.x + Math.cos(a) * 2, c.y + 2 + r.nextDouble(), c.z + Math.sin(a) * 2);
 				level.addFreshEntity(bat);
 				bats.add(bat);
-				Fx.burst(level, ParticleTypes.SQUID_INK, bat.position(), 5, 0.2, 0.02);
+				Fx.burst(level, com.elementalweapons.fx.P.SQUID_INK, bat.position(), 5, 0.2, 0.02);
 			}
 			Fx.sound(level, c, SoundEvents.BAT_TAKEOFF, 2.0F, 0.7F);
 			Fx.sound(level, c, SoundEvents.ELDER_GUARDIAN_CURSE, 0.7F, 1.4F);
@@ -62,10 +62,10 @@ public class DarkSwarmSpell extends Spell {
 			double h = (age * 0.08 + k) % 3;
 			Vec3 p = c.add(Math.cos(a) * rr, h, Math.sin(a) * rr);
 			Fx.at(level, VOID, p);
-			Fx.at(level, ParticleTypes.SQUID_INK, p);
+			Fx.at(level, com.elementalweapons.fx.P.SQUID_INK, p);
 		}
 		Fx.ring(level, VOID, c.add(0, 0.1, 0), 5, 20, age * 0.05);
-		if (age % 5 == 0) Fx.burst(level, ParticleTypes.SOUL, c.add(0, 1, 0), 2, 2.0, 0.02);
+		if (age % 5 == 0) Fx.burst(level, com.elementalweapons.fx.P.SOUL, c.add(0, 1, 0), 2, 2.0, 0.02);
 		for (Entity bat : bats) {
 			if (!bat.isRemoved()) Fx.at(level, SHADOW, bat.position());
 		}
@@ -79,7 +79,7 @@ public class DarkSwarmSpell extends Spell {
 				Vec3 from = randomBatPos(r);
 				Vec3 to = e.position().add(0, e.getBbHeight() * 0.5, 0);
 				Fx.line(level, BOLT, from, to, 0.3);
-				Fx.burst(level, ParticleTypes.SQUID_INK, to, 8, 0.3, 0.05);
+				Fx.burst(level, com.elementalweapons.fx.P.SQUID_INK, to, 8, 0.3, 0.05);
 				Fx.hurt(level, caster, e, 4.0F);
 				e.addEffect(new MobEffectInstance(MobEffects.WITHER, 60, 1));
 			}
@@ -99,7 +99,7 @@ public class DarkSwarmSpell extends Spell {
 	protected void onEnd() {
 		for (Entity bat : bats) {
 			if (!bat.isRemoved()) {
-				Fx.burst(level, ParticleTypes.LARGE_SMOKE, bat.position(), 8, 0.2, 0.02);
+				Fx.burst(level, com.elementalweapons.fx.P.LARGE_SMOKE, bat.position(), 8, 0.2, 0.02);
 				bat.discard();
 			}
 		}
@@ -107,7 +107,7 @@ public class DarkSwarmSpell extends Spell {
 
 	/** 검/대검용: 어둠 폭발 */
 	public static void burst(ServerLevel level, Player caster, Vec3 pos) {
-		Fx.burst(level, ParticleTypes.SQUID_INK, pos.add(0, 0.6, 0), 30, 0.8, 0.08);
+		Fx.burst(level, com.elementalweapons.fx.P.SQUID_INK, pos.add(0, 0.6, 0), 30, 0.8, 0.08);
 		Fx.burst(level, SHADOW, pos.add(0, 0.8, 0), 40, 1.2, 0.02);
 		Fx.ring(level, VOID, pos.add(0, 0.1, 0), 2.5, 20, 0);
 		for (LivingEntity e : Fx.enemies(level, pos, 3.5)) {

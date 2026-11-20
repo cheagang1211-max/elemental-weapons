@@ -88,7 +88,7 @@ public class PetalSpell extends Spell {
 				double y = 0.3 + (k % 3) * 0.6 + Math.sin(t * 0.2 + k) * 0.2;
 				Fx.at(level, PETALS[k % PETALS.length], c.add(Math.cos(a) * w, y, Math.sin(a) * w));
 			}
-			if (t % 8 == 0) Fx.burst(level, ParticleTypes.HAPPY_VILLAGER, c.add(0, 1, 0), 2, 0.5, 0);
+			if (t % 8 == 0) Fx.burst(level, com.elementalweapons.fx.P.HAPPY_VILLAGER, c.add(0, 1, 0), 2, 0.5, 0);
 			if (t % 10 == 0) Fx.hurt(level, caster, e, damagePerHit);
 		}
 		return !anyAlive || t >= swirlTicks;

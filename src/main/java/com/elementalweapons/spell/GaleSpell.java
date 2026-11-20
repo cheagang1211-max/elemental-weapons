@@ -13,8 +13,8 @@ import net.minecraft.world.phys.Vec3;
  * (높이 떠오른 적은 떨어질 때 낙하 피해도 받아요)
  */
 public class GaleSpell extends Spell {
-	private static final DustParticleOptions WIND = Fx.dust(0xF0FFFA, 1.3F);
-	private static final DustParticleOptions MINT = Fx.dust(0xB8F5E4, 1.0F);
+	private static final com.elementalweapons.fx.FxOptions WIND = Fx.dust(0xF0FFFA, 1.3F);
+	private static final com.elementalweapons.fx.FxOptions MINT = Fx.dust(0xB8F5E4, 1.0F);
 
 	private static final double RADIUS = 11;
 	private static final int DURATION = 36;
@@ -34,11 +34,11 @@ public class GaleSpell extends Spell {
 				double rr = 1.5 + h * 1.0;
 				double a = age * 0.55 + arm * Math.PI / 2 + h * 0.5;
 				Vec3 p = center.add(Math.cos(a) * rr, h, Math.sin(a) * rr);
-				Fx.burst(level, ParticleTypes.CLOUD, p, 1, 0.05, 0.02);
+				Fx.burst(level, com.elementalweapons.fx.P.CLOUD, p, 1, 0.05, 0.02);
 				if (((int) (h * 2)) % 2 == 0) Fx.at(level, arm % 2 == 0 ? WIND : MINT, p);
 			}
 		}
-		if (age % 4 == 0) Fx.ring(level, ParticleTypes.SWEEP_ATTACK, center.add(0, 0.5, 0), 5, 8, age * 0.2);
+		if (age % 4 == 0) Fx.ring(level, com.elementalweapons.fx.P.SWEEP_ATTACK, center.add(0, 0.5, 0), 5, 8, age * 0.2);
 
 		// 두 번에 걸쳐 띄워 올림
 		if (age == 0 || age == 14) {
@@ -50,7 +50,7 @@ public class GaleSpell extends Spell {
 				flat = flat.lengthSqr() < 1.0E-4 ? Vec3.ZERO : flat.normalize();
 				Fx.launch(e, flat.x * 0.5, age == 0 ? 1.5 : 1.0, flat.z * 0.5);
 				Fx.hurt(level, caster, e, 4.0F);
-				Fx.burst(level, ParticleTypes.CLOUD, e.position(), 10, 0.4, 0.1);
+				Fx.burst(level, com.elementalweapons.fx.P.CLOUD, e.position(), 10, 0.4, 0.1);
 			}
 		}
 		return age >= DURATION;
@@ -58,9 +58,9 @@ public class GaleSpell extends Spell {
 
 	/** 검/대검용: 작은 돌풍으로 적을 띄움 */
 	public static void gust(ServerLevel level, Player caster, Vec3 pos) {
-		Fx.burst(level, ParticleTypes.CLOUD, pos.add(0, 0.5, 0), 30, 1.2, 0.15);
+		Fx.burst(level, com.elementalweapons.fx.P.CLOUD, pos.add(0, 0.5, 0), 30, 1.2, 0.15);
 		Fx.ring(level, WIND, pos.add(0, 0.3, 0), 2.5, 20, 0);
-		Fx.at(level, ParticleTypes.SWEEP_ATTACK, pos.add(0, 1, 0));
+		Fx.at(level, com.elementalweapons.fx.P.SWEEP_ATTACK, pos.add(0, 1, 0));
 		for (LivingEntity e : Fx.enemies(level, pos, 3.5)) {
 			Fx.launch(e, 0, 1.1, 0);
 			Fx.hurt(level, caster, e, 4.0F);

@@ -15,8 +15,8 @@ import com.elementalweapons.spell.Fx;
 public final class BossFx {
 	private BossFx() {}
 
-	public static final DustParticleOptions WARN_RED = Fx.dust(0xFF3030, 1.6F);
-	public static final DustParticleOptions WARN_YELLOW = Fx.dust(0xFFE040, 1.4F);
+	public static final com.elementalweapons.fx.FxOptions WARN_RED = Fx.dust(0xFF3030, 1.6F);
+	public static final com.elementalweapons.fx.FxOptions WARN_YELLOW = Fx.dust(0xFFE040, 1.4F);
 
 	/** 반경 안의 공격 가능한 플레이어 (크리에이티브/관전자 제외) */
 	public static List<Player> players(ServerLevel level, Vec3 c, double r) {
@@ -33,7 +33,7 @@ public final class BossFx {
 	}
 
 	/** 바닥에 경고 원 (곧 공격이 떨어질 자리) */
-	public static void warnRing(ServerLevel level, Vec3 c, double r, DustParticleOptions color, double phase) {
+	public static void warnRing(ServerLevel level, Vec3 c, double r, com.elementalweapons.fx.FxOptions color, double phase) {
 		int pts = Math.max(12, (int) (r * 10));
 		Fx.ring(level, color, c.add(0, 0.15, 0), r, pts, phase);
 	}

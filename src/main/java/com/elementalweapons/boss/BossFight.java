@@ -166,7 +166,7 @@ public class BossFight {
 		}
 		// 폭풍 고리 (3페이즈): 가장자리는 위험
 		if (storm && phase >= 3 && arena != null) {
-			if (age % 8 == 0) for (int k = 0; k < 2; k++) Fx.ring(level, ParticleTypes.CLOUD, c.add(0, 0.5 + k * 2, 0), Arenas.R - 3 + k, 36, age * 0.1);
+			if (age % 8 == 0) for (int k = 0; k < 2; k++) Fx.ring(level, com.elementalweapons.fx.P.CLOUD, c.add(0, 0.5 + k * 2, 0), Arenas.R - 3 + k, 36, age * 0.1);
 			if (age % 20 == 0) for (ServerPlayer p : ps) if (p.position().subtract(c).multiply(1, 0, 1).length() > Arenas.R - 7) {
 				p.hurtServer(level, level.damageSources().indirectMagic(boss, boss), 4.0F);
 				Vec3 in = c.subtract(p.position()).multiply(1, 0, 1).normalize().scale(0.8);
@@ -251,7 +251,7 @@ public class BossFight {
 			double prog = a / (double) h.delay;
 			if (h.kind == 2) {
 				// 안전지대: 빛 기둥 원
-				if (a % 3 == 0) { Fx.ring(level, Fx.dust(0xFFF2B0, 1.6F), h.pos, h.r, 36, a * 0.1); Fx.at(level, ParticleTypes.END_ROD, h.pos.add(0, (a % 30) / 10.0, 0)); }
+				if (a % 3 == 0) { Fx.ring(level, Fx.dust(0xFFF2B0, 1.6F), h.pos, h.r, 36, a * 0.1); Fx.at(level, com.elementalweapons.fx.P.END_ROD, h.pos.add(0, (a % 30) / 10.0, 0)); }
 				if (a >= h.delay) {
 					for (ServerPlayer p : ps) {
 						boolean safe = false;

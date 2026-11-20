@@ -77,8 +77,8 @@ public class Rift {
 		// 결계: 원기둥 모양의 보라 입자 + 가운데 빛기둥
 		if (age % 6 == 0) {
 			for (int k = 0; k < 2; k++) Fx.ring(level, Fx.dust(0xB46CFF, 1.8F), c.add(0, 0.3 + k * 2.2, 0), R, 44, age * 0.02 + k);
-			Fx.ring(level, ParticleTypes.REVERSE_PORTAL, c.add(0, 0.2, 0), R - 0.5, 20, age * 0.05);
-			for (int y = 0; y < 12; y += 2) Fx.at(level, ParticleTypes.END_ROD, c.add(0, y, 0));
+			Fx.ring(level, com.elementalweapons.fx.P.REVERSE_PORTAL, c.add(0, 0.2, 0), R - 0.5, 20, age * 0.05);
+			for (int y = 0; y < 12; y += 2) Fx.at(level, com.elementalweapons.fx.P.END_ROD, c.add(0, y, 0));
 		}
 		// 결계 밖으로 나가면 안쪽으로 되돌림
 		for (ServerPlayer p : ps) {
@@ -139,7 +139,7 @@ public class Rift {
 		if (m instanceof Mob mob) mob.setPersistenceRequired();
 		level.addFreshEntity(m);
 		Fx.burst(level, Fx.dust(0xB46CFF, 1.4F), pos.add(0, 1, 0), 24, 0.6, 0.05);
-		Fx.burst(level, ParticleTypes.REVERSE_PORTAL, pos.add(0, 1, 0), 20, 0.5, 0.1);
+		Fx.burst(level, com.elementalweapons.fx.P.REVERSE_PORTAL, pos.add(0, 1, 0), 20, 0.5, 0.1);
 		return m;
 	}
 
@@ -182,6 +182,6 @@ public class Rift {
 
 	private void close() {
 		bar.removeAllPlayers();
-		Fx.burst(level, ParticleTypes.REVERSE_PORTAL, c.add(0, 1, 0), 200, 6, 0.3);
+		Fx.burst(level, com.elementalweapons.fx.P.REVERSE_PORTAL, c.add(0, 1, 0), 200, 6, 0.3);
 	}
 }

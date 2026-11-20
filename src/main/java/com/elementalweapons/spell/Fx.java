@@ -25,8 +25,13 @@ public final class Fx {
 	// ---------- 파티클 ----------
 
 	/** 원하는 색의 점 파티클 (rgb 예: 0xFF8800) */
-	public static DustParticleOptions dust(int rgb, float size) {
-		return new DustParticleOptions(rgb, size);
+	public static com.elementalweapons.fx.FxOptions dust(int rgb, float size) {
+		return com.elementalweapons.fx.FxOptions.of(com.elementalweapons.fx.FxOptions.ORB, rgb, 0.03F + 0.07F * size, 11);
+	}
+
+	/** 정해진 속도로 입자 하나 (count 0 = 속도 그대로) */
+	public static void move(ServerLevel level, ParticleOptions p, Vec3 pos, Vec3 vel) {
+		level.sendParticles(p, pos.x, pos.y, pos.z, 0, vel.x, vel.y, vel.z, 1.0);
 	}
 
 	public static void at(ServerLevel level, ParticleOptions p, Vec3 pos) {

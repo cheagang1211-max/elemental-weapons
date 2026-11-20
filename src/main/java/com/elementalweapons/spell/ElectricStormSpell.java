@@ -19,9 +19,9 @@ import net.minecraft.world.phys.Vec3;
  * (마인크래프트 기본 번개 엔티티는 쓰지 않습니다)
  */
 public class ElectricStormSpell extends Spell {
-	private static final DustParticleOptions CORE = Fx.dust(0xF2FBFF, 1.8F);
-	private static final DustParticleOptions GLOW = Fx.dust(0x6FD8FF, 1.2F);
-	private static final DustParticleOptions BRANCH = Fx.dust(0xA8ECFF, 0.9F);
+	private static final com.elementalweapons.fx.FxOptions CORE = Fx.dust(0xF2FBFF, 1.8F);
+	private static final com.elementalweapons.fx.FxOptions GLOW = Fx.dust(0x6FD8FF, 1.2F);
+	private static final com.elementalweapons.fx.FxOptions BRANCH = Fx.dust(0xA8ECFF, 0.9F);
 
 	private static final int MAX_TARGETS = 6;
 	private static final int INTERVAL = 4; // 벼락 간격 (틱)
@@ -72,7 +72,7 @@ public class ElectricStormSpell extends Spell {
 		for (int i = 0; i < path.size() - 1; i++) {
 			Fx.line(level, CORE, path.get(i), path.get(i + 1), 0.2);
 			Fx.line(level, GLOW, path.get(i), path.get(i + 1), 0.45);
-			Fx.burst(level, ParticleTypes.ELECTRIC_SPARK, path.get(i), 2, 0.15, 0.05);
+			Fx.burst(level, com.elementalweapons.fx.P.ELECTRIC_SPARK, path.get(i), 2, 0.15, 0.05);
 		}
 		// 갈라지는 가지 3개
 		for (int b = 0; b < 3; b++) {
@@ -84,8 +84,8 @@ public class ElectricStormSpell extends Spell {
 			}
 		}
 		// 착탄 지점 섬광
-		Fx.burst(level, ParticleTypes.ELECTRIC_SPARK, ground.add(0, 0.3, 0), 60, 0.6, 0.6);
-		Fx.burst(level, ParticleTypes.END_ROD, ground.add(0, 0.5, 0), 20, 0.3, 0.25);
+		Fx.burst(level, com.elementalweapons.fx.P.ELECTRIC_SPARK, ground.add(0, 0.3, 0), 60, 0.6, 0.6);
+		Fx.burst(level, com.elementalweapons.fx.P.END_ROD, ground.add(0, 0.5, 0), 20, 0.3, 0.25);
 		Fx.ring(level, GLOW, ground.add(0, 0.1, 0), 1.5, 16, r.nextDouble());
 		Fx.ring(level, BRANCH, ground.add(0, 0.1, 0), 2.6, 24, r.nextDouble());
 

@@ -14,9 +14,9 @@ import net.minecraft.world.phys.Vec3;
  * 다 모이면 그 지점으로 떨어져 터지며 주변 적을 밀쳐냅니다.
  */
 public class WaterOrbSpell extends Spell {
-	private static final DustParticleOptions DEEP = Fx.dust(0x1E6FD9, 1.8F);
-	private static final DustParticleOptions MID = Fx.dust(0x3FA0FF, 1.5F);
-	private static final DustParticleOptions FOAM = Fx.dust(0xDDF4FF, 1.2F);
+	private static final com.elementalweapons.fx.FxOptions DEEP = Fx.dust(0x1E6FD9, 1.8F);
+	private static final com.elementalweapons.fx.FxOptions MID = Fx.dust(0x3FA0FF, 1.5F);
+	private static final com.elementalweapons.fx.FxOptions FOAM = Fx.dust(0xDDF4FF, 1.2F);
 
 	private static final int GATHER = 40;  // 모이는 시간
 	private static final int FALL = 12;    // 떨어지는 시간
@@ -52,12 +52,12 @@ public class WaterOrbSpell extends Spell {
 					Vec3 pos = sky.add(streams[i].scale(size + 10 * (1 - phase)));
 					Fx.at(level, k == 0 ? FOAM : MID, pos);
 				}
-				Fx.at(level, ParticleTypes.FALLING_WATER, sky.add(streams[i].scale(size + 6)));
+				Fx.at(level, com.elementalweapons.fx.P.FALLING_WATER, sky.add(streams[i].scale(size + 6)));
 			}
 			// 점점 커지는 물구슬
 			Fx.sphere(level, DEEP, sky, size, 30 + (int) (40 * p));
 			Fx.sphere(level, FOAM, sky, size * 0.6, 10);
-			Fx.burst(level, ParticleTypes.SPLASH, sky, 6, size * 0.5, 0.1);
+			Fx.burst(level, com.elementalweapons.fx.P.SPLASH, sky, 6, size * 0.5, 0.1);
 			// 지면 표시 (어디에 떨어질지)
 			Fx.ring(level, MID, target.add(0, 0.1, 0), 5.0, 30, age * 0.05);
 			if (age % 8 == 0) Fx.sound(level, sky, SoundEvents.BUCKET_FILL, 1.5F, 0.5F + (float) p);
@@ -69,15 +69,15 @@ public class WaterOrbSpell extends Spell {
 			Vec3 c = sky.add(0, -HEIGHT * t * t, 0); // 가속하며 떨어짐
 			Fx.sphere(level, DEEP, c, ORB_RADIUS, 70);
 			Fx.sphere(level, FOAM, c, ORB_RADIUS * 0.6, 15);
-			Fx.burst(level, ParticleTypes.FALLING_WATER, c.add(0, ORB_RADIUS, 0), 10, 1.5, 0);
+			Fx.burst(level, com.elementalweapons.fx.P.FALLING_WATER, c.add(0, ORB_RADIUS, 0), 10, 1.5, 0);
 			return false;
 		}
 
 		if (age == GATHER + FALL) {
 			// 💦 착탄
 			splash(level, caster, target, 14.0F, 5.5);
-			Fx.burst(level, ParticleTypes.SPLASH, target.add(0, 0.5, 0), 500, 3.0, 0.5);
-			Fx.burst(level, ParticleTypes.CLOUD, target.add(0, 0.5, 0), 40, 2.0, 0.15);
+			Fx.burst(level, com.elementalweapons.fx.P.SPLASH, target.add(0, 0.5, 0), 500, 3.0, 0.5);
+			Fx.burst(level, com.elementalweapons.fx.P.CLOUD, target.add(0, 0.5, 0), 40, 2.0, 0.15);
 			Fx.sphere(level, MID, target.add(0, 1, 0), 2.0, 80);
 			Fx.sound(level, target, SoundEvents.PLAYER_SPLASH_HIGH_SPEED, 3.0F, 0.6F);
 			Fx.sound(level, target, SoundEvents.GENERIC_SPLASH, 3.0F, 0.5F);
@@ -87,13 +87,13 @@ public class WaterOrbSpell extends Spell {
 		// 퍼져 나가는 물결
 		double rr = (age - GATHER - FALL) * 0.8;
 		Fx.ring(level, FOAM, target.add(0, 0.15, 0), rr, 40, r.nextDouble());
-		Fx.ring(level, ParticleTypes.SPLASH, target.add(0, 0.2, 0), rr, 20, 0);
+		Fx.ring(level, com.elementalweapons.fx.P.SPLASH, target.add(0, 0.2, 0), rr, 20, 0);
 		return age >= GATHER + FALL + 10;
 	}
 
 	/** 물보라 피해 + 밀쳐내기 + 불 끄기 (검/대검도 사용) */
 	public static void splash(ServerLevel level, Player caster, Vec3 pos, float damage, double radius) {
-		Fx.burst(level, ParticleTypes.SPLASH, pos.add(0, 0.5, 0), 120, radius * 0.4, 0.4);
+		Fx.burst(level, com.elementalweapons.fx.P.SPLASH, pos.add(0, 0.5, 0), 120, radius * 0.4, 0.4);
 		Fx.burst(level, MID, pos.add(0, 0.8, 0), 40, radius * 0.3, 0.05);
 		for (LivingEntity e : Fx.enemies(level, pos, radius)) {
 			Fx.hurt(level, caster, e, damage);

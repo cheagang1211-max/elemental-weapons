@@ -18,14 +18,14 @@ import net.minecraft.world.phys.Vec3;
  * 진행 (틱): 0~30 문 열림 → 30~55 대천사 강림 → 55~185 공격 → 185~210 귀환 → 216 종료
  */
 public class HeavenGateSpell extends Spell {
-	private static final DustParticleOptions GOLD = Fx.dust(0xFFC830, 2.0F);
-	private static final DustParticleOptions PALE_GOLD = Fx.dust(0xFFF4C0, 1.3F);
-	private static final DustParticleOptions RAY = Fx.dust(0xFFE89A, 1.0F);
-	private static final DustParticleOptions WHITE = Fx.dust(0xFFFFFF, 1.2F);
-	private static final DustParticleOptions SKIN = Fx.dust(0xFFF1E0, 1.2F);
-	private static final DustParticleOptions HALO = Fx.dust(0xFFD84A, 1.0F);
-	private static final DustParticleOptions FEATHER_TIP = Fx.dust(0xFFE38A, 1.0F);
-	private static final DustParticleOptions SPEAR = Fx.dust(0xFFE070, 1.6F);
+	private static final com.elementalweapons.fx.FxOptions GOLD = Fx.dust(0xFFC830, 2.0F);
+	private static final com.elementalweapons.fx.FxOptions PALE_GOLD = Fx.dust(0xFFF4C0, 1.3F);
+	private static final com.elementalweapons.fx.FxOptions RAY = Fx.dust(0xFFE89A, 1.0F);
+	private static final com.elementalweapons.fx.FxOptions WHITE = Fx.dust(0xFFFFFF, 1.2F);
+	private static final com.elementalweapons.fx.FxOptions SKIN = Fx.dust(0xFFF1E0, 1.2F);
+	private static final com.elementalweapons.fx.FxOptions HALO = Fx.dust(0xFFD84A, 1.0F);
+	private static final com.elementalweapons.fx.FxOptions FEATHER_TIP = Fx.dust(0xFFE38A, 1.0F);
+	private static final com.elementalweapons.fx.FxOptions SPEAR = Fx.dust(0xFFE070, 1.6F);
 
 	private static final double GATE_HALF_WIDTH = 3.2;
 	private static final double ANGEL_SCALE = 1.4;
@@ -87,12 +87,12 @@ public class HeavenGateSpell extends Spell {
 		if (open > 0 && age % 2 == 0) drawGate(open, r);
 		// 내려오는 동안 문 뒤로 빛 꼬리
 		if (age < DESCEND_TICKS) {
-			Fx.burst(level, ParticleTypes.END_ROD, gateNow.add(0, 3, 0), 4, 1.5, 0.02);
+			Fx.burst(level, com.elementalweapons.fx.P.END_ROD, gateNow.add(0, 3, 0), 4, 1.5, 0.02);
 			Fx.burst(level, PALE_GOLD, gateNow.add(0, 5, 0), 8, 2.0, 0.0);
 		}
 		if (age == DESCEND_TICKS) {
 			// 도착 순간: 빛이 터지며 종소리
-			Fx.burst(level, ParticleTypes.END_ROD, gate, 80, 2.5, 0.2);
+			Fx.burst(level, com.elementalweapons.fx.P.END_ROD, gate, 80, 2.5, 0.2);
 			Fx.sound(level, gate, SoundEvents.BELL_BLOCK, 3.0F, 0.7F);
 		}
 
@@ -101,7 +101,7 @@ public class HeavenGateSpell extends Spell {
 			for (int i = 0; i < 6; i++) {
 				double a = (r.nextDouble() - 0.5) * GATE_HALF_WIDTH * 1.6 * open;
 				double y = -4.5 - r.nextDouble() * 9;
-				Fx.burst(level, ParticleTypes.END_ROD, plane(gate, a, y, 0), 1, 0.05, 0.01);
+				Fx.burst(level, com.elementalweapons.fx.P.END_ROD, plane(gate, a, y, 0), 1, 0.05, 0.01);
 			}
 			Fx.ring(level, PALE_GOLD, plane(gate, 0, -11, 0).add(0, 0.1, 0), 3.5 * open, 24, age * 0.03);
 		}
@@ -109,7 +109,7 @@ public class HeavenGateSpell extends Spell {
 		// ----- 대천사 -----
 		if (age == ANGEL_APPEAR) {
 			Fx.sound(level, gate, SoundEvents.TOTEM_USE, 2.5F, 0.8F);
-			Fx.burst(level, ParticleTypes.END_ROD, gate, 60, 1.5, 0.15);
+			Fx.burst(level, com.elementalweapons.fx.P.END_ROD, gate, 60, 1.5, 0.15);
 		}
 		if (age >= ANGEL_APPEAR && age < 210) {
 			double p;
@@ -144,7 +144,7 @@ public class HeavenGateSpell extends Spell {
 		}
 		// 문 바닥 구름
 		for (double a = -w; a <= w; a += 0.6) {
-			Fx.burst(level, ParticleTypes.CLOUD, plane(gate, a, -4.7, 0), 1, 0.1, 0.0);
+			Fx.burst(level, com.elementalweapons.fx.P.CLOUD, plane(gate, a, -4.7, 0), 1, 0.1, 0.0);
 		}
 		// 문 안쪽 빛 (아른거림)
 		for (int i = 0; i < 25; i++) {
@@ -185,7 +185,7 @@ public class HeavenGateSpell extends Spell {
 		Fx.line(level, WHITE, plane(base, 0.28 * s, 1.6 * s, 0), plane(base, 0.65 * s, 1.0 * s, 0), 0.15);
 		// 오른손의 빛의 검
 		Fx.line(level, SPEAR, plane(base, 0.65 * s, 1.0 * s, 0), plane(base, 0.95 * s, 2.9 * s, 0), 0.15);
-		Fx.at(level, ParticleTypes.END_ROD, plane(base, 0.95 * s, 2.9 * s, 0));
+		Fx.at(level, com.elementalweapons.fx.P.END_ROD, plane(base, 0.95 * s, 2.9 * s, 0));
 		// 날개 (양쪽 6장씩, 펄럭임)
 		double flap = Math.sin(age * 0.25) * 12;
 		for (int side = -1; side <= 1; side += 2) {
@@ -209,8 +209,8 @@ public class HeavenGateSpell extends Spell {
 		Vec3 from = plane(angel, 0.95 * ANGEL_SCALE, 2.9 * ANGEL_SCALE, 0);
 		Vec3 to = target.position().add(0, target.getBbHeight() * 0.5, 0);
 		Fx.line(level, SPEAR, from, to, 0.3);
-		Fx.line(level, ParticleTypes.END_ROD, from, to, 0.8);
-		Fx.burst(level, ParticleTypes.END_ROD, to, 25, 0.3, 0.15);
+		Fx.line(level, com.elementalweapons.fx.P.END_ROD, from, to, 0.8);
+		Fx.burst(level, com.elementalweapons.fx.P.END_ROD, to, 25, 0.3, 0.15);
 		Fx.burst(level, PALE_GOLD, to, 20, 0.5, 0.02);
 		Fx.hurt(level, caster, target, 9.0F);
 		target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100, 0));
@@ -221,13 +221,13 @@ public class HeavenGateSpell extends Spell {
 	/** 검/대검용: 하늘에서 내리꽂히는 빛기둥 */
 	public static void lightPillar(ServerLevel level, Player caster, Vec3 pos) {
 		for (double y = 0; y <= 20; y += 0.4) {
-			Fx.burst(level, ParticleTypes.END_ROD, pos.add(0, y, 0), 1, 0.12, 0.0);
+			Fx.burst(level, com.elementalweapons.fx.P.END_ROD, pos.add(0, y, 0), 1, 0.12, 0.0);
 		}
 		for (double y = 0; y <= 6; y += 1.5) {
 			Fx.ring(level, PALE_GOLD, pos.add(0, y, 0), 0.7, 10, y);
 		}
 		Fx.ring(level, GOLD, pos.add(0, 0.1, 0), 2.5, 24, 0);
-		Fx.burst(level, ParticleTypes.END_ROD, pos.add(0, 0.5, 0), 30, 0.4, 0.2);
+		Fx.burst(level, com.elementalweapons.fx.P.END_ROD, pos.add(0, 0.5, 0), 30, 0.4, 0.2);
 		for (LivingEntity e : Fx.enemies(level, pos, 2.5)) {
 			Fx.hurt(level, caster, e, 8.0F);
 			e.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100, 0));

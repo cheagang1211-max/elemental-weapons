@@ -39,7 +39,7 @@ public class ReapSpell extends Spell {
 				Vec3 p = c.add(Math.cos(a) * r, Math.sin(a * 2) * 0.12 + (r - 3) * 0.05, Math.sin(a) * r);
 				Fx.at(level, r > 4.2 ? ElementFx.particle(element) : ElementFx.dust(element, 1.4F), p);
 			}
-			Fx.at(level, ParticleTypes.SWEEP_ATTACK, c.add(Math.cos(a) * 3.4, 0, Math.sin(a) * 3.4));
+			Fx.at(level, com.elementalweapons.fx.P.SWEEP_ATTACK, c.add(Math.cos(a) * 3.4, 0, Math.sin(a) * 3.4));
 		}
 		if (age == 2) Fx.ring(level, ElementFx.dust(element, 1.8F), c.add(0, -0.8, 0), 5.2, 48, age);
 		// 범위 안 적: 처음 닿을 때 피해 + 끌어당김

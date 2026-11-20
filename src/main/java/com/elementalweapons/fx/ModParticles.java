@@ -13,6 +13,9 @@ public final class ModParticles {
 	public static final ParticleType<ColorParticleOption> SLASH = Registry.register(BuiltInRegistries.PARTICLE_TYPE, ElementalWeaponsMod.id("slash"),
 			FabricParticleTypes.complex(true, ColorParticleOption::codec, ColorParticleOption::streamCodec));
 
+	public static final ParticleType<FxOptions> FX = Registry.register(BuiltInRegistries.PARTICLE_TYPE, ElementalWeaponsMod.id("fx"),
+			FabricParticleTypes.complex(true, FxOptions.CODEC, FxOptions.STREAM));
+
 	private ModParticles() {}
 
 	public static void initialize() {}

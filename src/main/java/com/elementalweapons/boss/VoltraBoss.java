@@ -46,8 +46,8 @@ public class VoltraBoss extends ElementalBoss implements PosedEntity {
 
 	public static final long MAX_HEALTH = 1_000_000_000L;
 
-	private static final DustParticleOptions SPARK = Fx.dust(0x9FF3FF, 1.4F);
-	private static final DustParticleOptions CORE = Fx.dust(0xF2FBFF, 1.8F);
+	private static final com.elementalweapons.fx.FxOptions SPARK = Fx.dust(0x9FF3FF, 1.4F);
+	private static final com.elementalweapons.fx.FxOptions CORE = Fx.dust(0xF2FBFF, 1.8F);
 
 	private record Strike(Vec3 pos, int fireAt, float radius, float damage) {}
 	private final List<Strike> strikes = new ArrayList<>();
@@ -98,7 +98,7 @@ public class VoltraBoss extends ElementalBoss implements PosedEntity {
 			tickStrikes(level);
 			// 몸 주변에 항상 흐르는 전기
 			if (this.tickCount % 3 == 0) {
-				Fx.burst(level, ParticleTypes.ELECTRIC_SPARK, this.position().add(0, 2.5, 0), 3, 1.2, 0.05);
+				Fx.burst(level, com.elementalweapons.fx.P.ELECTRIC_SPARK, this.position().add(0, 2.5, 0), 3, 1.2, 0.05);
 			}
 			// 3페이즈: 무작위 낙뢰 (경고 후)
 			if (getPhase() >= 3 && this.tickCount % 50 == 0 && this.getTarget() != null) {
@@ -117,7 +117,7 @@ public class VoltraBoss extends ElementalBoss implements PosedEntity {
 			if (left > 0) {
 				BossFx.warnRing(level, s.pos(), s.radius() * (0.4 + 0.6 * Math.min(1.0, left / 20.0)),
 						left < 8 ? BossFx.WARN_RED : BossFx.WARN_YELLOW, this.tickCount * 0.2);
-				if (left % 4 == 0) Fx.burst(level, ParticleTypes.ELECTRIC_SPARK, s.pos().add(0, 0.3, 0), 3, s.radius() * 0.5, 0.02);
+				if (left % 4 == 0) Fx.burst(level, com.elementalweapons.fx.P.ELECTRIC_SPARK, s.pos().add(0, 0.3, 0), 3, s.radius() * 0.5, 0.02);
 				return false;
 			}
 			ElectricStormSpell.drawBolt(level, s.pos());
@@ -137,7 +137,7 @@ public class VoltraBoss extends ElementalBoss implements PosedEntity {
 				.append(Component.literal(line).withStyle(ChatFormatting.WHITE));
 		for (Player p : BossFx.players(level, this.position(), 64)) p.sendSystemMessage(msg);
 		Fx.sound(level, this.position(), SoundEvents.LIGHTNING_BOLT_THUNDER, 4.0F, 0.6F);
-		Fx.burst(level, ParticleTypes.ELECTRIC_SPARK, this.position().add(0, 2.5, 0), 200, 3.0, 0.6);
+		Fx.burst(level, com.elementalweapons.fx.P.ELECTRIC_SPARK, this.position().add(0, 2.5, 0), 200, 3.0, 0.6);
 		Fx.sphere(level, CORE, this.position().add(0, 2.5, 0), 4.0, 120);
 		if (newPhase == 3) this.bossBar.setColor(BossEvent.BossBarColor.PURPLE);
 		// 페이즈 전환 즉시 주변에 벼락 6발
@@ -191,7 +191,7 @@ public class VoltraBoss extends ElementalBoss implements PosedEntity {
 			setAttackPose(2);
 			this.setDeltaMovement(dashDir.scale(1.7));
 			Fx.burst(level, CORE, this.position().add(0, 2.5, 0), 6, 0.8, 0.0);
-			Fx.burst(level, ParticleTypes.ELECTRIC_SPARK, this.position().add(0, 2.5, 0), 8, 1.0, 0.2);
+			Fx.burst(level, com.elementalweapons.fx.P.ELECTRIC_SPARK, this.position().add(0, 2.5, 0), 8, 1.0, 0.2);
 			if (k == 18) Fx.sound(level, this.position(), SoundEvents.LIGHTNING_BOLT_THUNDER, 2.0F, 1.6F);
 			for (Player p : BossFx.players(level, this.position().add(0, 2.5, 0), 3.2)) {
 				if (dashHit.add(p.getUUID())) {
@@ -233,7 +233,7 @@ public class VoltraBoss extends ElementalBoss implements PosedEntity {
 
 	private void shockwave(ServerLevel level, Vec3 c, double from, double to, float damage) {
 		for (double r = Math.max(1, from); r <= to; r += 1.0) {
-			Fx.ring(level, ParticleTypes.ELECTRIC_SPARK, c.add(0, 0.3, 0), r, (int) (r * 6), r);
+			Fx.ring(level, com.elementalweapons.fx.P.ELECTRIC_SPARK, c.add(0, 0.3, 0), r, (int) (r * 6), r);
 			Fx.ring(level, CORE, c.add(0, 0.2, 0), r, (int) (r * 4), -r);
 		}
 		Fx.sound(level, c, SoundEvents.LIGHTNING_BOLT_IMPACT, 3.0F, 0.8F);
@@ -297,7 +297,7 @@ public class VoltraBoss extends ElementalBoss implements PosedEntity {
 		this.spawnAtLocation(level, new ItemStack(ModItems.VOLTRA_CORE, 1 + r.nextInt(2)));
 		this.spawnAtLocation(level, new ItemStack(com.elementalweapons.world.ModBlocks.item("orichalcum_ingot"), 2 + r.nextInt(3)));
 		this.spawnAtLocation(level, new ItemStack(com.elementalweapons.world.ModBlocks.item("storm_crystal"), 8 + r.nextInt(9)));
-		Fx.burst(level, ParticleTypes.ELECTRIC_SPARK, this.position().add(0, 2, 0), 300, 4.0, 0.8);
+		Fx.burst(level, com.elementalweapons.fx.P.ELECTRIC_SPARK, this.position().add(0, 2, 0), 300, 4.0, 0.8);
 		ElectricStormSpell.drawBolt(level, this.position());
 	}
 }

@@ -123,43 +123,52 @@ public final class SlashFx {
 		return new Vec3[]{f, r, u};
 	}
 
+	/** 손으로 그린 초승달 베기 그림을 휘두르는 면(평면)에 맞춰 눕혀서, 진행한 만큼 이어 붙임 */
 	private static void draw(ClientLevel level, Arc a, double p0, double p1) {
 		Vec3[] fr = frame(a.p);
 		Vec3 f = fr[0], r = fr[1], u = fr[2];
 		Vec3 rr = r.scale(Math.cos(a.roll)).add(u.scale(Math.sin(a.roll)));
-		Vec3 c = a.p.getEyePosition().subtract(u.scale(0.45)).add(f.scale(0.15));
+		Vec3 n = f.cross(rr).normalize();                      // 휘두르는 면의 법선
+		Vec3 c = a.p.getEyePosition().subtract(u.scale(0.45)).add(f.scale(0.1));
 		double span = Math.abs(a.a1 - a.a0);
-		int steps = Math.max(2, (int) Math.ceil(span * (p1 - p0) / Math.toRadians(3.4)));
-		for (int i = 0; i <= steps; i++) {
-			double t = p0 + (p1 - p0) * i / steps;
+		int k = Math.max(1, (int) Math.ceil(span * (p1 - p0) / Math.toRadians(32)));
+		for (int i = 1; i <= k; i++) {
+			double t = p0 + (p1 - p0) * i / k;
 			double th = a.a0 + (a.a1 - a.a0) * t;
-			Vec3 dir = f.scale(Math.cos(th)).add(rr.scale(Math.sin(th)));
-			Vec3 tan = f.scale(-Math.sin(th)).add(rr.scale(Math.cos(th))).scale(Math.signum(a.a1 - a.a0));
-			double thick = a.width * Math.pow(Math.sin(Math.PI * Math.min(1, Math.max(0, t))), 0.7) + 0.08;
-			int layers = Math.max(2, (int) Math.round(thick / 0.22));
-			for (int k = 0; k <= layers; k++) {
-				double q = k / (double) layers;             // 0 = 바깥 날, 1 = 안쪽
-				double rad = a.r1 - thick * q;
-				Vec3 pos = c.add(dir.scale(rad));
-				int col = q < 0.18 ? mix(a.c2, 0xFFFFFF, 0.55) : q < 0.5 ? a.c2 : a.c1;
-				float size = (float) (q < 0.18 ? 0.42 : 0.55 - 0.3 * q);
-				Vec3 v = tan.scale(0.06).add(dir.scale(0.015));
-				level.addAlwaysVisibleParticle(ModParticles.slash(col, size), pos.x, pos.y, pos.z, v.x, v.y, v.z);
-			}
+			Vec3 m = f.scale(Math.cos(th)).add(rr.scale(Math.sin(th))).normalize();   // 이 조각이 볼록하게 향하는 쪽
+			float[] e = euler(m, n);
+			float size = (float) (a.r1 * 1.12);
+			float fade = (float) Math.pow(Math.sin(Math.PI * Math.min(1, Math.max(0.05, t))), 0.5);
+			// 바깥 빛 (속성 색) + 안쪽 심 (밝은 색) 두 겹
+			level.addAlwaysVisibleParticle(com.elementalweapons.fx.FxOptions.of(com.elementalweapons.fx.FxOptions.SLASH, a.c1, size * (0.85F + 0.15F * fade), 7).facing(e[0], e[1], e[2]), c.x, c.y, c.z, 0, 0, 0);
+			level.addAlwaysVisibleParticle(com.elementalweapons.fx.FxOptions.of(com.elementalweapons.fx.FxOptions.SLASH, mix(a.c2, 0xFFFFFF, 0.5), size * 0.93F, 5).facing(e[0], e[1], e[2]), c.x, c.y, c.z, 0, 0, 0);
+			// 칼끝 불꽃
+			Vec3 tip = c.add(m.scale(a.r1));
+			Vec3 tan = f.scale(-Math.sin(th)).add(rr.scale(Math.cos(th))).scale(Math.signum(a.a1 - a.a0) * 0.12);
+			level.addAlwaysVisibleParticle(com.elementalweapons.fx.FxOptions.of(com.elementalweapons.fx.FxOptions.SPARK, mix(a.c2, 0xFFFFFF, 0.6), 0.22F, 6), tip.x, tip.y, tip.z, tan.x, tan.y, tan.z);
 		}
+	}
+
+	/** 사각형 그림의 위쪽(+Y)을 m, 앞면(+Z)을 n 으로 맞추는 회전 (yaw, pitch, roll; 도) */
+	private static float[] euler(Vec3 m, Vec3 n) {
+		Vec3 x = m.cross(n).normalize();
+		double pitch = Math.asin(Math.max(-1, Math.min(1, -n.y)));
+		double yawA = Math.atan2(n.x, n.z);
+		double roll = Math.atan2(x.y, m.y);
+		return new float[]{(float) -Math.toDegrees(yawA), (float) Math.toDegrees(pitch), (float) Math.toDegrees(roll)};
 	}
 
 	private static void slamBurst(ClientLevel level, Arc a) {
 		Vec3[] fr = frame(a.p);
 		Vec3 f = new Vec3(fr[0].x, 0, fr[0].z).normalize();
-		Vec3 c = a.p.position().add(f.scale(2.2)).add(0, 0.15, 0);
-		for (int i = 0; i < 48; i++) {
-			double ang = i * Math.PI * 2 / 48;
-			Vec3 d = new Vec3(Math.cos(ang), 0, Math.sin(ang));
-			level.addAlwaysVisibleParticle(ModParticles.slash(i % 2 == 0 ? a.c1 : a.c2, 0.6F), c.x + d.x * 0.4, c.y, c.z + d.z * 0.4, d.x * 0.42, 0.02, d.z * 0.42);
-		}
-		for (int i = 0; i < 16; i++) {
-			level.addAlwaysVisibleParticle(ModParticles.slash(mix(a.c2, 0xFFFFFF, 0.5), 0.5F), c.x, c.y, c.z, (Math.random() - 0.5) * 0.3, 0.25 + Math.random() * 0.3, (Math.random() - 0.5) * 0.3);
+		Vec3 c = a.p.position().add(f.scale(2.2)).add(0, 0.1, 0);
+		level.addAlwaysVisibleParticle(com.elementalweapons.fx.FxOptions.of(com.elementalweapons.fx.FxOptions.RING, a.c1, 1.0F, 10).grow(2.6F).flat(), c.x, c.y, c.z, 0, 0, 0);
+		level.addAlwaysVisibleParticle(com.elementalweapons.fx.FxOptions.of(com.elementalweapons.fx.FxOptions.RING, 0xFFFFFF, 0.6F, 7).grow(3.2F).flat(), c.x, c.y + 0.02, c.z, 0, 0, 0);
+		level.addAlwaysVisibleParticle(com.elementalweapons.fx.FxOptions.of(com.elementalweapons.fx.FxOptions.STAR, mix(a.c2, 0xFFFFFF, 0.5), 0.9F, 6).grow(0.3F).spin(15F), c.x, c.y + 0.6, c.z, 0, 0, 0);
+		for (int i = 0; i < 12; i++) {
+			double ang = i * Math.PI * 2 / 12;
+			level.addAlwaysVisibleParticle(com.elementalweapons.fx.FxOptions.of(com.elementalweapons.fx.FxOptions.SHARD, i % 2 == 0 ? a.c1 : a.c2, 0.25F, 14).spin(20F).gravity(0.05F),
+					c.x, c.y + 0.2, c.z, Math.cos(ang) * 0.25, 0.3 + Math.random() * 0.15, Math.sin(ang) * 0.25);
 		}
 	}
 
