@@ -108,10 +108,14 @@ if __name__ == "__main__":
             es = extrude(img, glow, f"{el}_{wt}")
             disp = json.loads(json.dumps(DISP[wt]))
             disp["gui"] = W3.gui_transform(es, "front" if wt == "shield" else "diag")
-            fx = json.loads(json.dumps(disp["gui"])); fx["scale"] = [round(v * 1.8, 3) for v in fx["scale"]]; fx["translation"] = [round(v * 1.8, 3) for v in fx["translation"]]
+            fx = json.loads(json.dumps(disp["gui"])); fx["scale"] = [round(v * 2.3, 3) for v in fx["scale"]]; fx["translation"] = [round(v * 2.3, 3) for v in fx["translation"]]
             disp["fixed"] = fx
             json.dump({"textures": {"t": f"{NS}:item/3d/{el}_{wt}", "particle": f"{NS}:item/3d/{el}_{wt}"}, "gui_light": "front", "display": disp, "elements": es},
                       open(f"{A}/models/item/3d/{el}_{wt}.json", "w"))
             json.dump({"model": {"type": "minecraft:model", "model": f"{NS}:item/3d/{el}_{wt}"}}, open(f"{A}/items/{el}_{wt}.json", "w"), indent="\t")
             total += len(es)
+    for el in W3.EL:   # 마법서(3D)도 액자에서 크게
+        p = f"{A}/models/item/3d/{el}_book.json"; m = json.load(open(p))
+        fx = json.loads(json.dumps(m["display"]["gui"])); fx["scale"] = [round(v * 2.0, 3) for v in fx["scale"]]; fx["translation"] = [round(v * 2.0, 3) for v in fx["translation"]]
+        m["display"]["fixed"] = fx; json.dump(m, open(p, "w"))
     print("weapons5 ok, elements total", total)
