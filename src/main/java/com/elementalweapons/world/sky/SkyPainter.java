@@ -209,17 +209,9 @@ public final class SkyPainter implements Feature {
 				}
 			}
 		}
-		// 9개 구역: 가운데는 왕성, 나머지는 시가지
-		BoundingBox box = new BoundingBox(minX, -64, minZ, maxX, 319, maxZ);
-		ChunkPos cp = new ChunkPos(minX >> 4, minZ >> 4);
-		for (int i = -1; i <= 1; i++) for (int j = -1; j <= 1; j++) {
-			int x0 = -168 + (i + 1) * 112, z0 = -168 + (j + 1) * 112;
-			if (x0 > maxX || x0 + 111 < minX || z0 > maxZ || z0 + 111 < minZ) continue;
-			if (i == 0 && j == 0) { castle(); continue; }
-			int flags = (i == -1 ? 1 : 0) | (i == 1 ? 2 : 0) | (j == -1 ? 4 : 0) | (j == 1 ? 8 : 0)
-					| (i == 1 && j == -1 ? 16 : 0) | (i == 0 && j == 1 ? 32 : 0);
-			new TownPiece(x0, G + 1, z0, 777L + i * 31 + j * 97, flags).postProcess(lv, null, null, random, box, cp, BlockPos.ZERO);
-		}
+		// 가운데 왕성 + 손으로 설계한 시가지 (기능 건물 8채, 집 12채)
+		if (maxX >= -60 && minX <= 60 && maxZ >= -60 && minZ <= 60) castle();
+		new Capital(lv, minX, minZ).paint();
 		fantasy();
 	}
 

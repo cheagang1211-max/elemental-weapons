@@ -41,7 +41,7 @@ public final class ModSky {
 			ServerLevel ow = server.overworld();
 			if (!active(ow)) return;
 			ow.setRespawnData(LevelData.RespawnData.of(Level.OVERWORLD, SkyLayout.SPAWN, 0F, 0F));
-			if (ow.getAttached(ModGrowth.SAGE_POS) == null) ow.setAttached(ModGrowth.SAGE_POS, SkyLayout.SAGE);
+			if (ow.getAttached(ModGrowth.SAGE_POS) == null) ow.setAttached(ModGrowth.SAGE_POS, Capital.SAGE_POS);
 			ElementalWeaponsMod.LOGGER.info("공중 세계: 섬 {}개, 다리 {}개", SkyLayout.ISLANDS.size(), SkyLayout.BRIDGES.size());
 		});
 		// 낙하·공허 피해 없음
@@ -51,6 +51,21 @@ public final class ModSky {
 			return true;
 		});
 		// 공허로 떨어지면 마지막으로 서 있던 곳으로 복귀
+		// 시장·대장간 상인이 늘 자리에 있도록
+		ServerTickEvents.END_SERVER_TICK.register(server -> {
+			if (server.getTickCount() % 200 != 50) return;
+			net.minecraft.server.level.ServerLevel ow = server.overworld();
+			if (!active(ow)) return;
+			for (net.minecraft.core.BlockPos pos : Capital.MERCHANTS) {
+				if (!ow.isLoaded(pos)) continue;
+				if (!ow.getEntitiesOfClass(com.elementalweapons.mob.ElementalMerchant.class, new net.minecraft.world.phys.AABB(pos).inflate(16)).isEmpty()) continue;
+				var m = com.elementalweapons.mob.ModMobs.MERCHANT.create(ow, net.minecraft.world.entity.EntitySpawnReason.STRUCTURE);
+				if (m == null) continue;
+				m.snapTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
+				m.setPersistenceRequired();
+				ow.addFreshEntity(m);
+			}
+		});
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
 			ServerLevel ow = server.overworld();
 			if (!active(ow)) return;

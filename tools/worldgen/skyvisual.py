@@ -31,6 +31,6 @@ for m in t["placement"]:
     if m.get("type") == "minecraft:count": m["count"] = 1
 json.dump(t, open(f"{P}/capital_trees.json", "w", encoding="utf-8"), ensure_ascii=False, indent="\t")
 p = f"{W}/capital_gardens.json"; b = json.load(open(p, encoding="utf-8"))
-b["features"][9] = ["elementalweapons:capital_trees"]
+b["features"][9] = []   # 수도 나무는 페인터가 손으로 심음
 json.dump(b, open(p, "w", encoding="utf-8"), ensure_ascii=False, indent="\t")
 print("capital trees ok")
