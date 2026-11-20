@@ -50,7 +50,7 @@ public final class SlashFx {
 			int[] st = STATE.computeIfAbsent(p.getId(), k -> new int[]{0, 0, -100});
 			int prog = p.isSwinging() ? Math.round(p.getSwingAnimation(1.0F) * 1000) : 0;
 			var sw = p.getCurrentSwing();
-			boolean start = p.isSwinging() && (sw == null || sw.hand() == InteractionHand.MAIN_HAND) && (st[0] == 0 || prog < st[0] - 50);
+			boolean start = p.isSwinging() && (sw == null || sw.hand() == InteractionHand.MAIN_HAND) && prog > 0 && (st[0] == 0 || prog < st[0] - 50);
 			st[0] = prog;
 			if (!start) continue;
 			if (!(p.getMainHandItem().getItem() instanceof ElementalWeaponItem w)) continue;

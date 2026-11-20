@@ -270,12 +270,30 @@ public final class ShotHarness {
 		}
 		if (tt == 244) shot(mc, "67_bow_volley");
 		if (tt == 250) shot(mc, "67b_bow_volley");
-		if (tt == 270) { mc.options.setCameraType(CameraType.FIRST_PERSON); armorSet(server, "orichalcum"); }
+		// 무기 동작 + 베기 궤적
+		Object[][] seq = {{280, Element.FIRE, WeaponType.GREATSWORD, 3}, {330, Element.ELECTRIC, WeaponType.SWORD, 3}, {370, Element.WIND, WeaponType.HAMMER, 1},
+				{390, Element.DARK, WeaponType.SCYTHE, 2}, {415, Element.LIGHT, WeaponType.DAGGER, 1}};
+		for (Object[] q : seq) {
+			int t0 = (Integer) q[0], n = (Integer) q[3];
+			Element el = (Element) q[1]; WeaponType wt = (WeaponType) q[2];
+			if (tt == t0) {
+				server.execute(() -> { ServerPlayer p = sp(server); p.teleportTo(0.5, 172, 50.5);
+					p.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(el).get(wt))); });
+				mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+			}
+			if (tt > t0 && tt < t0 + 8 + n * 10) look(mc, 20, 12);
+			for (int i = 0; i < n; i++) {
+				int ts = t0 + 6 + i * 10;
+				if (tt == ts) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+				if (tt == ts + (wt == WeaponType.SCYTHE ? 3 : 2)) shot(mc, String.format("68_%s_%d", wt.id, i));
+			}
+		}
+		if (tt == 432) { mc.options.setCameraType(CameraType.FIRST_PERSON); armorSet(server, "orichalcum"); }
 	}
 
 	private static void townScenes(Minecraft mc, IntegratedServer server, int tt) {
-		if (tt < 280) { demo(mc, server, tt); return; }
-		tt -= 280;
+		if (tt < 440) { demo(mc, server, tt); return; }
+		tt -= 440;
 		double[][] sc = scenes();
 		int per = 420;
 		int idx = tt / per, k = tt % per;
