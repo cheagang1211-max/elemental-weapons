@@ -53,11 +53,12 @@ public final class GrowthHud {
 		g.fill(barX - 1, barY - 1, barX + barW + 1, barY + barH + 1, 0xFF000000);
 		g.fill(barX, barY, barX + barW, barY + barH, 0xFF0B0B16);
 		boolean max = gr.level() >= Growth.MAX_LEVEL;
-		double ratio = max ? 1.0 : Math.min(1.0, gr.xp() / (double) Growth.need(gr.level()));
+		com.elementalweapons.growth.Paragon pg = mcPlayerParagon();
+		double ratio = max ? Math.min(1.0, pg.xp() / (double) com.elementalweapons.growth.Paragon.need(pg.level())) : Math.min(1.0, gr.xp() / (double) Growth.need(gr.level()));
 		int fw = (int) (barW * ratio);
 		for (int i = 0; i < fw; i++) g.fill(barX + i, barY, barX + i + 1, barY + barH, grad(i / (double) Math.max(1, barW)));
 		if (fw > 0) g.fill(barX + fw - 1, barY, barX + fw, barY + barH, 0xFFFFFFFF);
-		String xpText = max ? "MAX" : fmt(gr.xp()) + " / " + fmt(Growth.need(gr.level()));
+		String xpText = max ? "✧ 초월 " + pg.level() + "  " + fmt(pg.xp()) + " / " + fmt(com.elementalweapons.growth.Paragon.need(pg.level())) : fmt(gr.xp()) + " / " + fmt(Growth.need(gr.level()));
 		g.pose().pushMatrix();
 		g.pose().translate(barX + barW / 2F, barY);
 		g.pose().scale(0.75F, 0.75F);
@@ -122,4 +123,9 @@ public final class GrowthHud {
 	}
 
 	static String fmt(long v) { return String.format("%,d", v); }
+
+	private static com.elementalweapons.growth.Paragon mcPlayerParagon() {
+		var mc = net.minecraft.client.Minecraft.getInstance();
+		return mc.player == null ? com.elementalweapons.growth.Paragon.DEFAULT : com.elementalweapons.growth.ModGrowth.paragon(mc.player);
+	}
 }

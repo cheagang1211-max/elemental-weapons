@@ -16,6 +16,9 @@ public class GrowthScreen extends Screen {
 	private static final String[] NAMES = {"⚔ 힘", "✦ 마력", "❤ 체력", "➶ 민첩"};
 	private static final String[] DESCS = {"보스 피해 +3%, 근접 공격력 +0.2", "지팡이 피해 +3%, 쿨타임 -0.6%", "최대 체력 +1 (하트 반 칸)", "이동 속도 +0.4%, 공격 속도 +0.6%"};
 	private static final int[] COLORS = {0xFFFF8A6A, 0xFFB0A2FF, 0xFFFF6A84, 0xFF6AFFBA};
+	private static final String[] PDESCS = {"모든 피해 +1% (상한 없음)", "마법 피해 +1%, 쿨타임 감소 (최대 35%)", "최대 체력 +1, 방어 강도 (최대 16)", "이동 속도·공격 속도 (최대 30%/50%)"};
+	private static final int[] PCOLORS = {0xFFFF5A5A, 0xFFC27AFF, 0xFFFFD34D, 0xFF6AE8FF};
+	static boolean paragonMode = false;
 	private int left, top;
 
 	public GrowthScreen() { super(Component.literal("원소 성장")); }
@@ -26,11 +29,14 @@ public class GrowthScreen extends Screen {
 		top = (height - H) / 2;
 		for (int i = 0; i < 4; i++) {
 			final int stat = i;
-			addRenderableWidget(Button.builder(Component.literal("+"), b ->
-					ClientPlayNetworking.send(new GrowthPayloads.Spend(stat, minecraft.hasShiftDown() ? 5 : 1)))
+			addRenderableWidget(Button.builder(Component.literal("+"), b -> {
+					int n = minecraft.hasShiftDown() ? 5 : 1;
+					if (paragonMode) ClientPlayNetworking.send(new GrowthPayloads.SpendParagon(stat, n));
+					else ClientPlayNetworking.send(new GrowthPayloads.Spend(stat, n)); })
 					.bounds(left + W - 28, top + 32 + i * 34 + 6, 20, 20).build());
 		}
-
+		addRenderableWidget(Button.builder(Component.literal("✧ 초월"), b -> paragonMode = !paragonMode)
+				.bounds(left + W - 104, top + 4, 50, 16).build());
 	}
 
 	@Override
@@ -55,6 +61,7 @@ public class GrowthScreen extends Screen {
 	public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float pt) {
 		super.extractRenderState(g, mx, my, pt);
 		Growth gr = GrowthClient.current();
+		if (paragonMode) { renderParagon(g, gr, mx, my); return; }
 		g.text(font, "원소 성장", left + 8, top + 8, 0xFFFFFFFF, true);
 		g.text(font, "Lv " + gr.level(), left + 62, top + 8, 0xFFFFD34D, true);
 		g.text(font, gr.playerClass().koName, left + 100, top + 8, gr.playerClass().color, true);
@@ -110,6 +117,59 @@ public class GrowthScreen extends Screen {
 		g.pose().translate(left + 98, top + H - 8);
 		g.pose().scale(0.6F, 0.6F);
 		g.text(font, "Shift+클릭: 5포인트씩 · 스탯 최대 " + Growth.MAX_STAT, 0, 0, 0xFF8A83A8, false);
+		g.pose().popMatrix();
+	}
+
+	private void renderParagon(GuiGraphicsExtractor g, Growth gr, int mx, int my) {
+		com.elementalweapons.growth.Paragon pg = minecraft.player == null ? com.elementalweapons.growth.Paragon.DEFAULT : com.elementalweapons.growth.ModGrowth.paragon(minecraft.player);
+		boolean open = gr.level() >= Growth.MAX_LEVEL;
+		g.text(font, "✧ 초월", left + 8, top + 8, 0xFFE0B0FF, true);
+		g.text(font, "초월 " + pg.level(), left + 54, top + 8, 0xFFFFD34D, true);
+		g.text(font, "[K] 닫기", left + W - 46, top + 8, 0xFF9A93B8, false);
+		if (minecraft.player != null) {
+			InventoryScreen.extractEntityInInventoryFollowsMouse(g, left + 10, top + 32, left + 90, top + 112, 32, 0.0625F, mx, my, minecraft.player);
+		}
+		int sy = top + 118;
+		line(g, "모든 피해", "+" + pct(pg.damageMult() - 1), sy);
+		line(g, "마법 피해", "+" + pct(pg.spellMult() - 1), sy + 10);
+		line(g, "쿨타임 감소", "-" + pct(pg.cooldownCut()), sy + 20);
+		line(g, "체력/방어", "+" + (int) pg.health() + " / " + String.format("%.1f", pg.toughness()), sy + 30);
+		line(g, "균열 최고", pg.best() + "단계", sy + 40);
+		for (int i = 0; i < 4; i++) {
+			int ry = top + 32 + i * 34;
+			int v = pg.stat(i);
+			g.text(font, com.elementalweapons.growth.Paragon.NAMES[i], left + 104, ry + 4, PCOLORS[i], true);
+			g.pose().pushMatrix();
+			g.pose().translate(left + 104, ry + 15);
+			g.pose().scale(0.75F, 0.75F);
+			g.text(font, PDESCS[i], 0, 0, 0xFFC9C2E6, false);
+			g.pose().popMatrix();
+			int bx = left + 104, bw = 140, by = ry + 24;
+			g.fill(bx, by, bx + bw, by + 3, 0xFF0B0B16);
+			g.fill(bx, by, bx + (int) (bw * (1 - Math.exp(-v / 100.0))), by + 3, PCOLORS[i]);
+			String vs = String.valueOf(v);
+			g.pose().pushMatrix();
+			g.pose().translate(left + W - 36 - font.width(vs) * 1.5F, ry + 9);
+			g.pose().scale(1.5F, 1.5F);
+			g.text(font, vs, 0, 0, 0xFFFFFFFF, true);
+			g.pose().popMatrix();
+		}
+		int barX = left + 98, barY = top + H - 38, barW = W - 104;
+		g.fill(barX, barY, barX + barW, barY + 8, 0xFF0B0B16);
+		int fw = (int) (barW * Math.min(1.0, pg.xp() / (double) com.elementalweapons.growth.Paragon.need(pg.level())));
+		for (int i = 0; i < fw; i++) g.fill(barX + i, barY, barX + i + 1, barY + 8, 0xFF000000 | (0x8A4AE0 + (i * 0x000100) % 0x4000));
+		String xt = open ? "다음 초월까지 " + GrowthHud.fmt(pg.xp()) + " / " + GrowthHud.fmt(com.elementalweapons.growth.Paragon.need(pg.level())) + " XP" : "100레벨에 도달하면 초월이 열립니다";
+		g.pose().pushMatrix();
+		g.pose().translate(barX + barW / 2F, barY + 1);
+		g.pose().scale(0.75F, 0.75F);
+		g.centeredText(font, xt, 0, 0, 0xFFFFFFFF);
+		g.pose().popMatrix();
+		g.text(font, "초월 포인트", left + 98, top + H - 18, 0xFFFFFFFF, true);
+		g.text(font, String.valueOf(pg.points()), left + 98 + font.width("초월 포인트 "), top + H - 18, 0xFFE0B0FF, true);
+		g.pose().pushMatrix();
+		g.pose().translate(left + 98, top + H - 8);
+		g.pose().scale(0.6F, 0.6F);
+		g.text(font, "초월 스탯은 상한 없음 · 균열의 열쇠로 무한 균열 도전", 0, 0, 0xFF8A83A8, false);
 		g.pose().popMatrix();
 	}
 
