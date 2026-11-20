@@ -33,7 +33,7 @@ public class ArmorDecoLayer<S extends HumanoidRenderState, M extends EntityModel
 		if (s.isInvisible) return;
 		for (int i = 0; i < TIERS.length; i++) {
 			if (!models[i].wears(s)) continue;
-			c.submitModel(models[i], s, ps, RenderTypes.entityCutoutNoCull(tex[i]), light, OverlayTexture.NO_OVERLAY, 0);
+			c.submitModel(models[i], s, ps, RenderTypes.armorCutoutNoCull(tex[i]), light, OverlayTexture.NO_OVERLAY, 0);
 			c.submitModel(models[i], s, ps, RenderTypes.eyes(glow[i]), light, OverlayTexture.NO_OVERLAY, 0);
 		}
 	}
