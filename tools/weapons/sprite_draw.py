@@ -3,7 +3,8 @@ import math, colorsys
 from PIL import Image, ImageDraw
 
 SS = 4
-N = 64
+N = 96
+K = N / 64   # 디자인 좌표(64 기준) → 실제 픽셀 배율
 
 def hexc(h): return ((h >> 16) & 255, (h >> 8) & 255, h & 255)
 def tone(c, dl, dh=0.0, ds=0.0):
@@ -25,18 +26,18 @@ class Canvas:
         self.col = Image.new("RGBA", (N * SS, N * SS), (0, 0, 0, 0))
         self.glw = Image.new("L", (N * SS, N * SS), 0)
         self.d = ImageDraw.Draw(self.col); self.g = ImageDraw.Draw(self.glw)
-    def P(self, pts): return [(x * SS, y * SS) for x, y in pts]
+    def P(self, pts): return [(x * SS * K, y * SS * K) for x, y in pts]
     def poly(self, pts, c, glow=False):
         self.d.polygon(self.P(pts), fill=c + (255,))
         if glow: self.g.polygon(self.P(pts), fill=255)
         else: self.g.polygon(self.P(pts), fill=0)
     def rect(self, x0, y0, x1, y1, c, glow=False): self.poly([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], c, glow)
     def circ(self, cx, cy, r, c, glow=False):
-        b = [(cx - r) * SS, (cy - r) * SS, (cx + r) * SS, (cy + r) * SS]
+        b = [(cx - r) * SS * K, (cy - r) * SS * K, (cx + r) * SS * K, (cy + r) * SS * K]
         self.d.ellipse(b, fill=c + (255,)); self.g.ellipse(b, fill=255 if glow else 0)
     def line(self, pts, w, c, glow=False):
-        self.d.line(self.P(pts), fill=c + (255,), width=int(w * SS), joint="curve")
-        self.g.line(self.P(pts), fill=255 if glow else 0, width=int(w * SS))
+        self.d.line(self.P(pts), fill=c + (255,), width=max(1, int(w * SS * K)), joint="curve")
+        self.g.line(self.P(pts), fill=255 if glow else 0, width=max(1, int(w * SS * K)))
     def arc(self, cx, cy, r, a0, a1, w, c, glow=False, steps=24):
         pts = [(cx + math.cos(math.radians(a0 + (a1 - a0) * i / steps)) * r, cy + math.sin(math.radians(a0 + (a1 - a0) * i / steps)) * r) for i in range(steps + 1)]
         self.line(pts, w, c, glow)

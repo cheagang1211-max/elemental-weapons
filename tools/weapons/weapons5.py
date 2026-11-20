@@ -7,8 +7,9 @@ from sprite_designs import design
 from PIL import Image
 ROOT = sys.argv[1]; NS = "elementalweapons"
 A = f"{ROOT}/src/main/resources/assets/{NS}"
-U = 0.5            # 1픽셀 = 0.5 모델 단위
-LEVELS = [(0, 1.0), (2, 1.9), (4, 2.8)]   # (가장자리에서 거리, 두께)
+from sprite_draw import N as SPR_N
+U = 32 / SPR_N      # 스프라이트 전체 = 32 모델 단위
+LEVELS = [(0, 1.0), (3, 1.9), (6, 2.8)]   # (가장자리에서 거리, 두께)
 
 def dist_map(solid):
     N = len(solid); INF = 99
