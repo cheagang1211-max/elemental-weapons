@@ -62,9 +62,10 @@ public final class Skills {
 		SkillInfo.Info[] infos = wood ? SkillInfo.WOOD : SkillInfo.of(type);
 		if (wood && slot > 0) { p.sendOverlayMessage(Component.literal("X·C 스킬은 10레벨 속성 진화 후에 열립니다").withStyle(ChatFormatting.GOLD)); return; }
 		long now = level.getGameTime();
-		long[] ready = READY.computeIfAbsent(p.getUUID(), k -> new long[3]);
-		if (ready[slot] > now) {
-			p.sendOverlayMessage(Component.literal(infos[slot].name() + " 대기 " + String.format("%.1f", (ready[slot] - now) / 20.0) + "초").withStyle(ChatFormatting.GRAY));
+		long[] ready = READY.computeIfAbsent(p.getUUID(), k -> new long[WeaponType.values().length * 3 + 3]);
+		int key = wood ? WeaponType.values().length * 3 + slot : type.ordinal() * 3 + slot;   // 무기 종류마다 따로
+		if (ready[key] > now) {
+			p.sendOverlayMessage(Component.literal(infos[slot].name() + " 대기 " + String.format("%.1f", (ready[key] - now) / 20.0) + "초").withStyle(ChatFormatting.GRAY));
 			return;
 		}
 		int tier = SkillInfo.tier(ModGrowth.get(p).level());
@@ -78,7 +79,7 @@ public final class Skills {
 		}
 		if (!ok) return;
 		int cd = (int) Math.round(infos[slot].cooldown() * (1 - ModGrowth.paragon(p).cooldownCut()));
-		ready[slot] = now + cd;
+		ready[key] = now + cd;
 		SkillNet.sendCooldown(p, slot, cd);
 		Tutorial.skillUsed(p, slot);
 	}

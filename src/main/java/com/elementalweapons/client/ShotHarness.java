@@ -140,7 +140,10 @@ public final class ShotHarness {
 			if (t == WEAP_START + 80) shot(mc, "07_showcase_wall");
 			if (t == WEAP_START + 85) server.execute(() -> sp(server).teleportTo(baseX, baseY + 2, baseZ + 5.5));
 			if (t == WEAP_START + 110) shot(mc, "07b_showcase_close");
-			if (t == WEAP_START + 112) { server.execute(() -> { sp(server).teleportTo(baseX, baseY, baseZ); for (Entity e : gallery) e.discard(); gallery.clear(); }); }
+			if (t == WEAP_START + 111) server.execute(() -> sp(server).teleportTo(baseX + 12.5, baseY + 1.5, baseZ + 5.5));
+			if (t > WEAP_START + 111 && t < WEAP_START + 130) look(mc, 0, -8);
+			if (t == WEAP_START + 128) shot(mc, "07c_tier_wall");
+			if (t == WEAP_START + 131) { server.execute(() -> { sp(server).teleportTo(baseX, baseY, baseZ); for (Entity e : gallery) e.discard(); gallery.clear(); }); }
 			if (t >= 1020 && t < 1020 + 7 * 25) {
 				int k = (t - 1020) / 25, ph = (t - 1020) % 25;
 				Element el = Element.values()[k];
@@ -172,6 +175,15 @@ public final class ShotHarness {
 
 	private static void tp(IntegratedServer server, double x, double y, double z) { server.execute(() -> sp(server).teleportTo(x, y, z)); }
 
+	private static double[] lotScene(com.elementalweapons.world.sky.Capital.Kind kind) {
+		for (var l : com.elementalweapons.world.sky.Capital.LOTS) if (l.kind() == kind) {
+			double d = Math.hypot(l.x(), l.z()), ux = -l.x() / d, uz = -l.z() / d;
+			double off = kind == com.elementalweapons.world.sky.Capital.Kind.HOUSE ? 16 : 26;
+			return new double[]{l.x() + ux * off - uz * 6, 171 + (kind == com.elementalweapons.world.sky.Capital.Kind.HOUSE ? 6 : 10), l.z() + uz * off + ux * 6, l.x(), 174, l.z(), 6000};
+		}
+		return new double[]{0, 200, 100, 0, 171, 0, 6000};
+	}
+
 	/** 공중 세계 장면: {x, y, z, 바라볼 x, y, z} */
 	private static double[][] scenes() {
 		double a0 = com.elementalweapons.world.sky.SkyLayout.regionAngle(0);
@@ -182,6 +194,9 @@ public final class ShotHarness {
 		return new double[][]{
 				{0, 250, 360, 0, 215, 0, 6000},                              // 수도 전경 + 하늘 수정
 				{0, 192, 112, 0, 238, -6, 6000},                             // 왕성 정면 + 마법진
+				lotScene(com.elementalweapons.world.sky.Capital.Kind.INN), lotScene(com.elementalweapons.world.sky.Capital.Kind.SMITH),
+				lotScene(com.elementalweapons.world.sky.Capital.Kind.MARKET), lotScene(com.elementalweapons.world.sky.Capital.Kind.SAGE_HALL),
+				lotScene(com.elementalweapons.world.sky.Capital.Kind.RIFT_GATE), lotScene(com.elementalweapons.world.sky.Capital.Kind.HOUSE),
 				{tx * 0.78 + tz * 0.12, 200, tz * 0.78 - tx * 0.12, tx, 210, tz, 6000},   // 원소 마법탑
 				{330, 236, 60, 300, 222, -60, 6000},                          // 떠 있는 섬과 사슬
 				{0, 230, 300, 0, 300, -150, 18000},                           // 밤의 수도와 별
@@ -339,9 +354,57 @@ public final class ShotHarness {
 			if (tt == 915) server.execute(() -> { if (bossRef != null) bossRef.discard(); bossRef = null; ServerPlayer p = sp(server);
 				server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "gamemode survival " + p.getScoreboardName()); });
 		}
+		// 나무 무기 1인칭 + 스킬바 / 속성 진화 창 / 스킬 연출
+		if (tt == 932) server.execute(() -> { ServerPlayer p = sp(server); p.teleportTo(0.5, 172, 48.5);
+			ModGrowth.set(p, ModGrowth.get(p).withClass(com.elementalweapons.item.PlayerClass.KNIGHT.ordinal()));
+			p.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WOODEN.get(WeaponType.SWORD)));
+			p.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(ModItems.WOODEN.get(WeaponType.SHIELD))); });
+		if (tt == 933) mc.options.setCameraType(CameraType.FIRST_PERSON);
+		if (tt > 933 && tt < 960) look(mc, 0, 4);
+		if (tt == 955) shot(mc, "75_wooden_firstperson");
+		if (tt == 958) server.execute(() -> sp(server).setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY));
+		if (tt == 960) mc.gui.setScreen(new com.elementalweapons.client.skill.EvolveScreen());
+		if (tt == 975) shot(mc, "76_evolve_screen");
+		if (tt == 977) mc.gui.setScreen(null);
+		if (tt >= 980 && tt < 980 + SKILL_SHOTS.length * 40) skillDemo(mc, server, tt - 980);
+		if (tt == 1310) { mc.options.setCameraType(CameraType.FIRST_PERSON); armorSet(server, "orichalcum"); }
+	}
 	}
 
 	private static com.elementalweapons.boss.ElementalBoss bossRef;
+
+	/** 스킬 연출 촬영: {무기 종류, 속성, 슬롯, 직업} */
+	private static final Object[][] SKILL_SHOTS = {
+			{WeaponType.GREATSWORD, Element.FIRE, 1, com.elementalweapons.item.PlayerClass.WARRIOR},
+			{WeaponType.SCYTHE, Element.DARK, 2, com.elementalweapons.item.PlayerClass.REAPER},
+			{WeaponType.STAFF, Element.LIGHT, 2, com.elementalweapons.item.PlayerClass.MAGE},
+			{WeaponType.HAMMER, Element.WIND, 0, com.elementalweapons.item.PlayerClass.WARRIOR},
+			{WeaponType.SWORD, Element.WATER, 1, com.elementalweapons.item.PlayerClass.KNIGHT},
+			{WeaponType.BOW, Element.ELECTRIC, 2, com.elementalweapons.item.PlayerClass.RANGER},
+			{WeaponType.BOOK, Element.GRASS, 2, com.elementalweapons.item.PlayerClass.SUPPORT},
+			{WeaponType.DAGGER, Element.FIRE, 1, com.elementalweapons.item.PlayerClass.ASSASSIN},
+	};
+
+	private static void skillDemo(Minecraft mc, IntegratedServer server, int tt) {
+		int idx = tt / 40, k = tt % 40;
+		if (idx >= SKILL_SHOTS.length) return;
+		Object[] q = SKILL_SHOTS[idx];
+		WeaponType wt = (WeaponType) q[0]; Element el = (Element) q[1]; int slot = (Integer) q[2];
+		var cls = (com.elementalweapons.item.PlayerClass) q[3];
+		if (k == 0) {
+			server.execute(() -> { ServerPlayer p = sp(server);
+				ModGrowth.set(p, ModGrowth.get(p).withClass(cls.ordinal()));
+				ItemStack st = new ItemStack(ModItems.WEAPONS.get(el).get(wt));
+				com.elementalweapons.growth.Evolution.setTier(st, 4);
+				p.setItemSlot(EquipmentSlot.MAINHAND, st);
+				p.teleportTo(0.5, 172, 48.5); });
+			mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+		}
+		if (k > 0) look(mc, 0, 22);
+		if (k == 8) com.elementalweapons.client.skill.SkillClient.press(slot);
+		if (k == 15) shot(mc, String.format("8%d_skill_%s_%d", idx, wt.id, slot));
+		if (k == 26 && (wt == WeaponType.STAFF || wt == WeaponType.BOOK || wt == WeaponType.SCYTHE)) shot(mc, String.format("8%d_skill_%s_%d_b", idx, wt.id, slot));
+	}
 
 	private static void lookAt(Minecraft mc, double x, double y, double z) {
 		double ddx = x + 0.5 - mc.player.getX(), ddz = z + 0.5 - mc.player.getZ(), ddy = y - mc.player.getEyeY();
@@ -349,8 +412,8 @@ public final class ShotHarness {
 	}
 
 	private static void townScenes(Minecraft mc, IntegratedServer server, int tt) {
-		if (tt < 930) { demo(mc, server, tt); return; }
-		tt -= 930;
+		if (tt < 1320) { demo(mc, server, tt); return; }
+		tt -= 1320;
 		double[][] sc = scenes();
 		int per = 420;
 		int idx = tt / per, k = tt % per;
@@ -372,7 +435,7 @@ public final class ShotHarness {
 			look(mc, yaw, pitch);
 			mc.player.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
 		}
-		if (k == per - 10) shot(mc, String.format("5%d_sky_scene", idx));
+		if (k == per - 10) shot(mc, String.format("5%02d_sky_scene", idx));
 		if (k == per - 12) server.execute(() -> { ServerPlayer p = sp(server);
 			int n = p.level().getEntitiesOfClass(com.elementalweapons.mob.ElementalMob.class, p.getBoundingBox().inflate(64)).size();
 			int cc = p.level().getEntitiesOfClass(com.elementalweapons.mob.ElementalCreature.class, p.getBoundingBox().inflate(64)).size();
@@ -422,8 +485,28 @@ public final class ShotHarness {
 		int wz = (int) Math.floor(baseZ) + 9, by = (int) Math.floor(baseY);
 		WeaponType[] order = {WeaponType.STAFF, WeaponType.GREATSWORD, WeaponType.HAMMER, WeaponType.SWORD, WeaponType.SHIELD, WeaponType.DAGGER, WeaponType.BOOK, WeaponType.SCYTHE, WeaponType.BOW};
 		BlockState wall = Blocks.POLISHED_DEEPSLATE.defaultBlockState();
-		for (int dx = -5; dx <= 5; dx++) for (int dy = -1; dy <= 9; dy++)
-			level.setBlock(new BlockPos((int) Math.floor(baseX) + dx, by + dy, wz), dx == -5 || dx == 5 || dy == -1 || dy == 9 ? Blocks.GILDED_BLACKSTONE.defaultBlockState() : wall, 3);
+		for (int dx = -5; dx <= 5; dx++) for (int dy = -2; dy <= 9; dy++)
+			level.setBlock(new BlockPos((int) Math.floor(baseX) + dx, by + dy, wz), dx == -5 || dx == 5 || dy == -2 || dy == 9 ? Blocks.GILDED_BLACKSTONE.defaultBlockState() : wall, 3);
+		for (int c = 0; c < 9; c++) {   // 맨 아래 줄: 나무 무기
+			BlockPos pos = new BlockPos((int) Math.floor(baseX) - 4 + c, by - 1, wz - 1);
+			net.minecraft.world.entity.decoration.GlowItemFrame f = new net.minecraft.world.entity.decoration.GlowItemFrame(level, pos, net.minecraft.core.Direction.NORTH);
+			f.setItem(new ItemStack(ModItems.WOODEN.get(WeaponType.values()[c])));
+			level.addFreshEntity(f); gallery.add(f);
+		}
+		// 단계 벽: 1~4단계 (가로) × 대검·지팡이·낫·활 (세로)
+		int tx = (int) Math.floor(baseX) + 12;
+		WeaponType[] tw = {WeaponType.GREATSWORD, WeaponType.STAFF, WeaponType.SCYTHE, WeaponType.BOW};
+		Element[] te = {Element.FIRE, Element.WATER, Element.DARK, Element.ELECTRIC};
+		for (int dx = -3; dx <= 4; dx++) for (int dy = -1; dy <= 5; dy++)
+			level.setBlock(new BlockPos(tx + dx, by + dy, wz), dx == -3 || dx == 4 || dy == -1 || dy == 5 ? Blocks.GILDED_BLACKSTONE.defaultBlockState() : wall, 3);
+		for (int r = 0; r < 4; r++) for (int t = 0; t < 4; t++) {
+			BlockPos pos = new BlockPos(tx - 2 + t * 2 - (t > 1 ? 1 : 0), by + 4 - r, wz - 1);
+			net.minecraft.world.entity.decoration.GlowItemFrame f = new net.minecraft.world.entity.decoration.GlowItemFrame(level, pos, net.minecraft.core.Direction.NORTH);
+			ItemStack st = new ItemStack(ModItems.WEAPONS.get(te[r]).get(tw[r]));
+			com.elementalweapons.growth.Evolution.setTier(st, t + 1);
+			f.setItem(st);
+			level.addFreshEntity(f); gallery.add(f);
+		}
 		for (int r = 0; r < order.length; r++) {
 			for (int c = 0; c < 7; c++) {
 				BlockPos pos = new BlockPos((int) Math.floor(baseX) - 3 + c, by + 8 - r, wz - 1);
