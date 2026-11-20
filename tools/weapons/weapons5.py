@@ -108,7 +108,8 @@ if __name__ == "__main__":
             es = extrude(img, glow, f"{el}_{wt}")
             disp = json.loads(json.dumps(DISP[wt]))
             disp["gui"] = W3.gui_transform(es, "front" if wt == "shield" else "diag")
-            disp["fixed"] = disp["gui"]
+            fx = json.loads(json.dumps(disp["gui"])); fx["scale"] = [round(v * 1.8, 3) for v in fx["scale"]]; fx["translation"] = [round(v * 1.8, 3) for v in fx["translation"]]
+            disp["fixed"] = fx
             json.dump({"textures": {"t": f"{NS}:item/3d/{el}_{wt}", "particle": f"{NS}:item/3d/{el}_{wt}"}, "gui_light": "front", "display": disp, "elements": es},
                       open(f"{A}/models/item/3d/{el}_{wt}.json", "w"))
             json.dump({"model": {"type": "minecraft:model", "model": f"{NS}:item/3d/{el}_{wt}"}}, open(f"{A}/items/{el}_{wt}.json", "w"), indent="\t")

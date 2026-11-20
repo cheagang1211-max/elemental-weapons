@@ -134,16 +134,13 @@ public final class ShotHarness {
 				p.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
 				p.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(Element.WATER).get(WeaponType.BOOK))); });
 			if (t == 543) shot(mc, "06c_firstperson_book");
-			if (t >= WEAP_START && t < WEAP_START + 7 * 70) {
-				int k = (t - WEAP_START) / 70, ph = (t - WEAP_START) % 70;
-				if (k < 7) {
-					WeaponType wt = WeaponType.values()[k];
-					if (ph == 0) server.execute(() -> gallery(server, wt));
-					if (ph > 0) look(mc, 0, 18);
-					if (ph == 45) shot(mc, "07_weapons_" + wt.name().toLowerCase());
-					if (ph == 55) server.execute(() -> { for (Entity e : gallery) e.discard(); gallery.clear(); });
-				}
-			}
+			if (t == WEAP_START) server.execute(() -> showcase(server));
+			if (t > WEAP_START && t < WEAP_START + 120) look(mc, 0, -14);
+			if (t == WEAP_START + 60) { mc.options.hideGui = true; }
+			if (t == WEAP_START + 80) shot(mc, "07_showcase_wall");
+			if (t == WEAP_START + 85) server.execute(() -> sp(server).teleportTo(baseX, baseY + 2, baseZ + 5.5));
+			if (t == WEAP_START + 110) shot(mc, "07b_showcase_close");
+			if (t == WEAP_START + 112) { mc.options.hideGui = false; server.execute(() -> { sp(server).teleportTo(baseX, baseY, baseZ); for (Entity e : gallery) e.discard(); gallery.clear(); }); }
 			if (t >= 1020 && t < 1020 + 7 * 25) {
 				int k = (t - 1020) / 25, ph = (t - 1020) % 25;
 				Element el = Element.values()[k];
@@ -203,6 +200,25 @@ public final class ShotHarness {
 		ModGrowth.set(p, new Growth(23, xp, 3, 18, 10, 14, 10, 3));
 		ModGrowth.applyStats(p);
 		log("setup at " + baseX + "," + baseY + "," + baseZ);
+	}
+
+	/** 무기 진열 벽: 액자 7열 × 7행 (위에서부터 종류, 가로는 속성) */
+	private static void showcase(IntegratedServer server) {
+		ServerLevel level = (ServerLevel) sp(server).level();
+		int wz = (int) Math.floor(baseZ) + 9, by = (int) Math.floor(baseY);
+		WeaponType[] order = {WeaponType.STAFF, WeaponType.GREATSWORD, WeaponType.HAMMER, WeaponType.SWORD, WeaponType.SHIELD, WeaponType.DAGGER, WeaponType.BOOK};
+		BlockState wall = Blocks.POLISHED_DEEPSLATE.defaultBlockState();
+		for (int dx = -5; dx <= 5; dx++) for (int dy = -1; dy <= 9; dy++)
+			level.setBlock(new BlockPos((int) Math.floor(baseX) + dx, by + dy, wz), dx == -5 || dx == 5 || dy == -1 || dy == 9 ? Blocks.GILDED_BLACKSTONE.defaultBlockState() : wall, 3);
+		for (int r = 0; r < order.length; r++) {
+			for (int c = 0; c < 7; c++) {
+				BlockPos pos = new BlockPos((int) Math.floor(baseX) - 3 + c, by + 8 - r, wz - 1);
+				net.minecraft.world.entity.decoration.GlowItemFrame f = new net.minecraft.world.entity.decoration.GlowItemFrame(level, pos, net.minecraft.core.Direction.NORTH);
+				f.setItem(new ItemStack(ModItems.WEAPONS.get(Element.values()[c]).get(order[r])));
+				level.addFreshEntity(f);
+				gallery.add(f);
+			}
+		}
 	}
 
 	private static void gallery(IntegratedServer server, WeaponType wt) {
