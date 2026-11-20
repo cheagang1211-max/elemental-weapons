@@ -47,7 +47,7 @@ public final class ShotHarness {
 	private static double baseX, baseY, baseZ;
 	private static final List<EntityType<?>> SUBJECTS = new ArrayList<>();
 	private static Entity current;
-	private static final int WEAP_START = 520, ENT_START = 800, ENT_STEP = 70;
+	private static final int WEAP_START = 520, ENT_START = 980, ENT_STEP = 70;
 	private static final List<Entity> gallery = new ArrayList<>();
 
 	public static void initialize() {
@@ -131,6 +131,13 @@ public final class ShotHarness {
 					if (ph == 45) shot(mc, "07_weapons_" + wt.name().toLowerCase());
 					if (ph == 55) server.execute(() -> { for (Entity e : gallery) e.discard(); gallery.clear(); });
 				}
+			}
+			if (t >= 800 && t < 800 + 7 * 25) {
+				int k = (t - 800) / 25, ph = (t - 800) % 25;
+				Element el = Element.values()[k];
+				if (ph == 0) server.execute(() -> sp(server).setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(el).get(k % 2 == 0 ? WeaponType.SWORD : WeaponType.GREATSWORD))));
+				if (ph > 0) look(mc, 0, 25);
+				if (ph == 22) shot(mc, "08_aura_" + el.name().toLowerCase());
 			}
 			if (t >= ENT_START) {
 				int idx = (t - ENT_START) / ENT_STEP, k = (t - ENT_START) % ENT_STEP;
