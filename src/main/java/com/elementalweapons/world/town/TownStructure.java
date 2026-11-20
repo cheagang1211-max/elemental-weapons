@@ -22,10 +22,9 @@ public class TownStructure extends Structure {
 		int y = getMeanFirstOccupiedHeight(ctx, x0, TownPiece.SIZE, z0, TownPiece.SIZE);
 		int sea = ctx.chunkGenerator().getSeaLevel();
 		if (y <= sea + 1) return Optional.empty();
-		long seed = ctx.seed() ^ ctx.chunkPos().toLong() * 31L;
+		long seed = ctx.seed() ^ ((long) (ctx.chunkPos().getMinBlockX() >> 4) * 341873128712L + (long) (ctx.chunkPos().getMinBlockZ() >> 4) * 132897987541L);
 		BlockPos center = new BlockPos(x0 + TownPiece.SIZE / 2, y, z0 + TownPiece.SIZE / 2);
-		if (!ctx.validBiome().test(ctx.chunkGenerator().getBiomeSource().getNoiseBiome(center.getX() >> 2, y >> 2, center.getZ() >> 2, ctx.randomState().sampler())))
-			return Optional.empty();
+
 		return Optional.of(new GenerationStub(center, b -> b.addPiece(new TownPiece(x0, y, z0, seed))));
 	}
 
