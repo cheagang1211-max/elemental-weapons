@@ -41,10 +41,9 @@ public final class ModSky {
 			ServerLevel ow = server.overworld();
 			if (!active(ow)) return;
 			ow.setRespawnData(LevelData.RespawnData.of(Level.OVERWORLD, SkyLayout.SPAWN, 0F, 0F));
-			// 죽어도 아이템 유지 (인벤세이브) — 게임 규칙 이름이 버전마다 달라 두 가지 다 시도
+			// 죽어도 아이템 유지 (인벤세이브)
 			var src = server.createCommandSourceStack();
 			try { server.getCommands().performPrefixedCommand(src, "gamerule keep_inventory true"); } catch (Throwable ignored) {}
-			try { server.getCommands().performPrefixedCommand(src, "gamerule keepInventory true"); } catch (Throwable ignored) {}
 			if (ow.getAttached(ModGrowth.SAGE_POS) == null) ow.setAttached(ModGrowth.SAGE_POS, Capital.SAGE_POS);
 			ElementalWeaponsMod.LOGGER.info("공중 세계: 섬 {}개, 다리 {}개", SkyLayout.ISLANDS.size(), SkyLayout.BRIDGES.size());
 		});
