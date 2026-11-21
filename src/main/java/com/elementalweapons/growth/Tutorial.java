@@ -169,6 +169,31 @@ public final class Tutorial {
 
 	public static void evolved(ServerPlayer p) { if (get(p).step == 7) advance(p); }
 
+	private static final int ARMOR_BIT = 1 << 30;
+
+	/** 철 방어구 한 벌 (플레이어마다 한 번) */
+	private static int armor(ServerPlayer p, int kits) {
+		if ((kits & ARMOR_BIT) == 0) {
+			kits |= ARMOR_BIT;
+			net.minecraft.world.item.Item[] set = {net.minecraft.world.item.Items.IRON_HELMET, net.minecraft.world.item.Items.IRON_CHESTPLATE, net.minecraft.world.item.Items.IRON_LEGGINGS, net.minecraft.world.item.Items.IRON_BOOTS};
+			net.minecraft.world.entity.EquipmentSlot[] slots = {net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET};
+			for (int i = 0; i < 4; i++) {
+				ItemStack s = new ItemStack(set[i]);
+				if (p.getItemBySlot(slots[i]).isEmpty()) p.setItemSlot(slots[i], s);
+				else if (!p.getInventory().add(s)) p.spawnAtLocation((ServerLevel) p.level(), s);
+			}
+			p.sendSystemMessage(Component.literal("✦ 모험을 위한 철 방어구 한 벌을 받았습니다!").withStyle(ChatFormatting.AQUA));
+		}
+		return kits;
+	}
+
+	/** 이미 직업을 고른 채로 접속한 사람도 방어구를 받게 */
+	public static void grantArmorIfMissing(ServerPlayer p) {
+		Data d = get(p);
+		if (ModGrowth.get(p).playerClass() == PlayerClass.of(0) || (d.kits & ARMOR_BIT) != 0) return;
+		p.setAttached(DATA, new Data(d.step, d.count, armor(p, d.kits)));
+	}
+
 	public static void onClassChosen(ServerPlayer p, int cls) {
 		Data d = get(p);
 		PlayerClass c = PlayerClass.of(cls);
@@ -179,6 +204,7 @@ public final class Tutorial {
 			for (ItemStack s : kit(c)) if (!p.getInventory().add(s)) p.spawnAtLocation((ServerLevel) p.level(), s);
 			p.sendSystemMessage(Component.literal("✦ " + c.koName + "의 나무 무기를 받았습니다! 10레벨에 속성 진화를 하면 속성 무기로 바뀝니다.").withStyle(ChatFormatting.AQUA));
 		}
+		kits = armor(p, kits);
 		p.setAttached(DATA, new Data(d.step >= DONE ? DONE : Math.max(d.step, 1), 0, kits));
 		Evolution.check(p);
 	}

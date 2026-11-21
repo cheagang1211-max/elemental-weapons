@@ -294,8 +294,14 @@ public final class ShotHarness {
 		f -= 80;
 		// --- 지역 마을 · 야영지 · 망루 · 유적 · 용의 둥지 ---
 		java.util.List<double[]> rs = new java.util.ArrayList<>();
-		for (int region : new int[]{0, 4}) {
+		for (int region = 0; region < 7; region++) for (int[] q : com.elementalweapons.world.sky.Outposts.pois(region)) if (q[0] == 0) {
+			rs.add(new double[]{q[1] + 46, q[2] + 30, q[3] + 30, q[1], q[2] + 4, q[3], 6000});
+			rs.add(new double[]{q[1] + 8, q[2] + 6, q[3] + 30, q[1], q[2] + 6, q[3], 6000});
+			break;
+		}
+		for (int region : new int[]{4}) {
 			boolean[] seen = new boolean[9];
+			seen[0] = true;
 			for (int[] q : com.elementalweapons.world.sky.Outposts.pois(region)) {
 				if (seen[q[0]]) continue;
 				seen[q[0]] = true;

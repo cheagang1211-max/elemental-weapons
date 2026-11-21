@@ -72,6 +72,7 @@ public final class ModSky {
 			try {
 				sweepStrays(ow);
 				for (Capital.Npc n : Capital.NPCS) keepNpc(ow, n);
+				for (Capital.Npc n : Outposts.NPCS) keepNpc(ow, n);
 				for (net.minecraft.core.BlockPos pad : Capital.DRAGON_PADS) keepDragon(ow, pad);
 				for (net.minecraft.core.BlockPos pad : Outposts.PADS) keepDragon(ow, pad);
 			} catch (Throwable t) { ElementalWeaponsMod.LOGGER.error("[SKY] 주민 유지 오류", t); }

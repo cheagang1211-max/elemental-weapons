@@ -33,7 +33,9 @@ public final class Outposts {
 	private static final Map<Integer, Plan> PLANS = new ConcurrentHashMap<>();
 	/** 지역마다 용 발판 (천공성으로 돌아가는 용) */
 	public static final List<BlockPos> PADS = new ArrayList<>();
-	private static final List<int[]> ROOSTS = new ArrayList<>();   // {x, y, z, ux*1000, uz*1000, region}
+	private static final List<int[]> ROOSTS = new ArrayList<>();
+	/** 지역 도시의 가게 주인 자리 */
+	public static final List<Capital.Npc> NPCS = new ArrayList<>();   // {x, y, z, ux*1000, uz*1000, region}
 
 	private static final String[] REGION_KO = {"꽃의 숲", "푸른 숲", "뇌운 고원", "질풍 고원", "화산 평원", "광휘 평원", "그림자 숲", "원소의 심연"};
 	// 나무, 판자, 돌, 지붕 계단, 양털 색
@@ -62,6 +64,11 @@ public final class Outposts {
 			PADS.add(new BlockPos((int) Math.round(x + px * 5), y + 1, (int) Math.round(z + pz * 5)));
 			PADS.add(new BlockPos((int) Math.round(x - px * 5), y + 1, (int) Math.round(z - pz * 5)));
 		}
+		for (SkyLayout.Island is : SkyLayout.ISLANDS) {
+			if (is.kind != 1 && is.kind != 5) continue;
+			Plan p = plan(is);
+			if (!p.pois.isEmpty() && p.pois.get(0).type == VILLAGE) Towns.npcs(p.pois.get(0), NPCS);
+		}
 	}
 
 	// ---------------- 배치 계획 (섬마다 한 번) ----------------
@@ -79,13 +86,13 @@ public final class Outposts {
 			if (main && out.isEmpty()) { a = Math.atan2(-is.z, -is.x) + 0.9; rr = is.r * 0.38; }   // 마을은 천공성 쪽에 가깝게
 			int x = (int) Math.round(is.x + Math.cos(a) * rr), z = (int) Math.round(is.z + Math.sin(a) * rr);
 			int type = main && out.isEmpty() ? VILLAGE : pick(SkyLayout.hash(is.seed, t, 13));
-			int need = type == VILLAGE ? 26 : type == FARM || type == GRAVEYARD ? 12 : 10;
+			int need = type == VILLAGE ? 44 : type == FARM || type == GRAVEYARD ? 12 : 10;
 			if (!free(x, z, need, out)) continue;
 			int y = SkyLayout.surfaceTop(x, z);
 			if (y == Integer.MIN_VALUE || y < 60) continue;
 			// 경사가 심한 곳은 피함
 			int y1 = SkyLayout.surfaceTop(x + need / 2, z), y2 = SkyLayout.surfaceTop(x - need / 2, z), y3 = SkyLayout.surfaceTop(x, z + need / 2), y4 = SkyLayout.surfaceTop(x, z - need / 2);
-			if (Math.max(Math.max(Math.abs(y1 - y), Math.abs(y2 - y)), Math.max(Math.abs(y3 - y), Math.abs(y4 - y))) > (type == VILLAGE ? 7 : 5)) continue;
+			if (Math.max(Math.max(Math.abs(y1 - y), Math.abs(y2 - y)), Math.max(Math.abs(y3 - y), Math.abs(y4 - y))) > (type == VILLAGE ? (t > want * 4 ? 20 : 11) : 5)) continue;
 			out.add(new Poi(type, x, y, z, is.seed * 31 + t, Math.max(0, SkyLayout.regionAt(x, z))));
 		}
 		if (main && !out.isEmpty() && out.get(0).type == VILLAGE) {
@@ -94,12 +101,13 @@ public final class Outposts {
 				for (int e = 0; e < 2; e++) {
 					double ex = e == 0 ? b.ax : b.bx, ez = e == 0 ? b.az : b.bz;
 					if (Math.hypot(ex - is.x, ez - is.z) > is.r * 0.85 || b.style == 2 && e == 0) continue;
-					roads.add(new Road((int) ex, (int) ez, v.x, v.z));
+					double dx = ex - v.x, dz = ez - v.z, L = Math.hypot(dx, dz);
+					if (L > Towns.R + 4) roads.add(new Road((int) ex, (int) ez, (int) (v.x + dx / L * (Towns.R + 1)), (int) (v.z + dz / L * (Towns.R + 1))));
 				}
 			}
 			for (Arenas.Arena ar : Arenas.all()) if (Math.hypot(ar.x() - is.x, ar.z() - is.z) < is.r) {
 				double dx = v.x - ar.x(), dz = v.z - ar.z(), L = Math.hypot(dx, dz);
-				roads.add(new Road((int) (ar.x() + dx / L * (Arenas.R + 4)), (int) (ar.z() + dz / L * (Arenas.R + 4)), v.x, v.z));
+				roads.add(new Road((int) (ar.x() + dx / L * (Arenas.R + 4)), (int) (ar.z() + dz / L * (Arenas.R + 4)), (int) (v.x - dx / L * (Towns.R + 1)), (int) (v.z - dz / L * (Towns.R + 1))));
 			}
 		}
 		return new Plan(out, roads);
@@ -109,7 +117,7 @@ public final class Outposts {
 
 	private static boolean free(int x, int z, int need, List<Poi> out) {
 		if (Arenas.near(x, z, Arenas.R + need + 8) != null) return false;
-		for (Poi p : out) if (Math.hypot(p.x - x, p.z - z) < need + (p.type == VILLAGE ? 26 : 12)) return false;
+		for (Poi p : out) if (Math.hypot(p.x - x, p.z - z) < need + (p.type == VILLAGE ? 44 : 12)) return false;
 		for (SkyLayout.Bridge b : SkyLayout.BRIDGES) {
 			if (Math.min(Math.hypot(b.ax - x, b.az - z), Math.hypot(b.bx - x, b.bz - z)) < need + 12) return false;
 			if (SkyLayout.segDist(x, z, b) < need + b.width) return false;
@@ -131,7 +139,7 @@ public final class Outposts {
 	public static int[] roost(int i) { return i < ROOSTS.size() ? ROOSTS.get(i) : null; }
 
 	// ---------------- 그리기 ----------------
-	private static final class W {
+	static final class W {
 		final WorldGenLevel lv; final int minX, minZ, maxX, maxZ;
 		W(WorldGenLevel lv, int minX, int minZ) { this.lv = lv; this.minX = minX; this.minZ = minZ; this.maxX = minX + 15; this.maxZ = minZ + 15; }
 		boolean in(int x, int z) { return x >= minX && x <= maxX && z >= minZ && z <= maxZ; }
@@ -160,7 +168,7 @@ public final class Outposts {
 
 	static BlockState st(String id) { return BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("minecraft", id)).defaultBlockState(); }
 	private static int h(int x, int y, int z) { int n = x * 73856093 ^ y * 19349663 ^ z * 83492791; n ^= n >>> 13; n *= 0x5bd1e995; return (n ^ n >>> 15) & 0x7fffffff; }
-	private static String log(String w) { return w.equals("crimson") ? "crimson_stem" : w + "_log"; }
+	static String log(String w) { return w.equals("crimson") ? "crimson_stem" : w + "_log"; }
 
 	public static void paint(WorldGenLevel lv, int minX, int minZ, SkyLayout.Island is) {
 		if (minX + 15 < is.x - is.r * 1.2 || minX > is.x + is.r * 1.2 || minZ + 15 < is.z - is.r * 1.2 || minZ > is.z + is.r * 1.2) return;
@@ -169,11 +177,11 @@ public final class Outposts {
 		nature(w, is, p);
 		for (Road r : p.roads) road(w, r);
 		for (Poi o : p.pois) {
-			int R = o.type == VILLAGE ? 24 : 13;
+			int R = o.type == VILLAGE ? Towns.R + 2 : 13;
 			if (o.x + R < minX || o.x - R > w.maxX || o.z + R < minZ || o.z - R > w.maxZ) continue;
 			String[] pal = PAL[Math.min(7, o.region)];
 			switch (o.type) {
-				case VILLAGE -> village(w, o, pal);
+				case VILLAGE -> Towns.paint(w, o, pal);
 				case CAMP -> camp(w, o, pal);
 				case TOWER -> tower(w, o, pal);
 				case RUIN -> ruin(w, o, pal);
@@ -255,7 +263,7 @@ public final class Outposts {
 	}
 
 	/** 오두막: 돌 기단 + 판자 벽 + 통나무 기둥 + 박공 지붕 + 굴뚝 + 창문 + 화분. facing 0:+z 1:-x 2:-z 3:+x (문 방향) */
-	private static void cottage(W w, int cx, int Y, int cz, int facing, String[] pal, int seed) {
+	static void cottage(W w, int cx, int Y, int cz, int facing, String[] pal, int seed) {
 		int hw = 3, hd = 3;
 		java.util.function.IntBinaryOperator X = (lx, lz) -> switch (facing) { case 1 -> cx - lz; case 2 -> cx - lx; case 3 -> cx + lz; default -> cx + lx; };
 		java.util.function.IntBinaryOperator Z = (lx, lz) -> switch (facing) { case 1 -> cz + lx; case 2 -> cz - lz; case 3 -> cz - lx; default -> cz + lz; };
@@ -411,7 +419,7 @@ public final class Outposts {
 
 	// ---------------- 자연: 바위 · 쓰러진 통나무 · 덤불 · 꽃무리 · 연못 · 풀 · 절벽 덩굴 ----------------
 	private static boolean nearPoi(Plan p, int x, int z, int pad) {
-		for (Poi o : p.pois) if (Math.abs(o.x - x) < (o.type == VILLAGE ? 26 : 13) + pad && Math.abs(o.z - z) < (o.type == VILLAGE ? 26 : 13) + pad) return true;
+		for (Poi o : p.pois) if (Math.abs(o.x - x) < (o.type == VILLAGE ? Towns.R + 2 : 13) + pad && Math.abs(o.z - z) < (o.type == VILLAGE ? Towns.R + 2 : 13) + pad) return true;
 		for (int[] r : ROOSTS) if (Math.abs(r[0] - x) < 14 + pad && Math.abs(r[2] - z) < 14 + pad) return true;
 		return false;
 	}
@@ -439,6 +447,7 @@ public final class Outposts {
 				else if (k < 44) bush(w, x, y, z, s);
 				else if (k < 60) flowers(w, x, y, z, s);
 				else if (k < 63) pond(w, x, y, z, s);
+				else if (k < 75) themed(w, x, y, z, s, Math.max(0, SkyLayout.regionAt(x, z)));
 			}
 		// 2) 풀 · 고사리 · 덩굴
 		for (int x = w.minX; x <= w.maxX; x++) for (int z = w.minZ; z <= w.maxZ; z++) {
@@ -531,6 +540,56 @@ public final class Outposts {
 				w.set(px, y, pz, h(px, 9, pz) % 3 == 0 ? st("mud") : st("grass_block"));
 				if (h(px, 10, pz) % 3 == 0) { w.clear(px, y, pz, 2); w.set(px, y + 1, pz, st("sugar_cane")); if (h(px, 11, pz) % 2 == 0) w.set(px, y + 2, pz, st("sugar_cane")); }
 				else if (h(px, 10, pz) % 4 == 1) w.set(px, y + 1, pz, st("fern"));
+			}
+		}
+	}
+
+	/** 원소마다 다른 지형 장식 */
+	private static void themed(W w, int x, int y, int z, int s, int rg) {
+		switch (rg) {
+			case 0 -> {   // 꽃의 숲: 큰 버섯 + 꽃 덩굴
+				w.set(x, y + 1, z, st("mushroom_stem")); w.set(x, y + 2, z, st("mushroom_stem"));
+				for (int dx = -1; dx <= 1; dx++) for (int dz = -1; dz <= 1; dz++) w.set(x + dx, y + 3, z + dz, s % 2 == 0 ? st("red_mushroom_block") : st("brown_mushroom_block"));
+			}
+			case 1 -> {   // 푸른 숲: 이끼 바위 + 연못
+				pond(w, x, y, z, s);
+				w.set(x + 4, y + 1, z, st("mossy_cobblestone")); w.set(x + 4, y + 2, z, st("moss_carpet"));
+			}
+			case 2 -> {   // 뇌운 고원: 구리 피뢰 첨탑 + 자수정
+				int H = 3 + s % 4;
+				for (int k = 1; k <= H; k++) w.set(x, y + k, z, k % 2 == 0 ? st("waxed_cut_copper") : st("deepslate_bricks"));
+				w.set(x, y + H + 1, z, st("lightning_rod"));
+				w.set(x + 1, y + 1, z, st("amethyst_cluster")); w.set(x - 1, y + 1, z + 1, st("budding_amethyst"));
+			}
+			case 3 -> {   // 질풍 고원: 깃발 장대 + 건초
+				for (int k = 1; k <= 6; k++) w.set(x, y + k, z, st("birch_fence"));
+				for (int k = 1; k <= 3; k++) w.set(x + k, y + 5, z, st(k % 2 == 0 ? "white_wool" : "light_blue_wool"));
+				w.set(x - 1, y + 1, z + 1, st("hay_block"));
+			}
+			case 4 -> {   // 화산 평원: 용암 웅덩이 + 현무암 기둥
+				for (int dx = -2; dx <= 2; dx++) for (int dz = -2; dz <= 2; dz++) {
+					double d = Math.hypot(dx, dz);
+					if (d <= 1.5) { w.set(x + dx, y, z + dz, st("lava")); w.set(x + dx, y - 1, z + dz, st("magma_block")); w.clear(x + dx, y, z + dz, 3); }
+					else if (d <= 2.6) w.set(x + dx, y, z + dz, st("magma_block"));
+				}
+				int H = 3 + s % 5;
+				for (int k = 1; k <= H; k++) w.set(x + 4, y + k, z + 1, st("basalt"));
+				w.set(x + 4, y + H + 1, z + 1, st("campfire"));
+			}
+			case 5 -> {   // 광휘 평원: 석영 기둥 유적 + 등불
+				int H = 3 + s % 4;
+				for (int k = 1; k <= H; k++) w.set(x, y + k, z, st("quartz_pillar"));
+				w.set(x, y + H + 1, z, st("chiseled_quartz_block")); w.set(x, y + H + 2, z, st("lantern"));
+				w.set(x + 2, y + 1, z, st("smooth_quartz_slab"));
+			}
+			default -> {   // 그림자 숲 · 심연: 마른 나무 + 거미줄 + 영혼 등불
+				BlockState lg = st("stripped_dark_oak_log");
+				int H = 5 + s % 3;
+				for (int k = 1; k <= H; k++) w.set(x, y + k, z, lg);
+				w.set(x + 1, y + H - 1, z, lg.setValue(BlockStateProperties.AXIS, Direction.Axis.X)); w.set(x + 2, y + H, z, lg);
+				w.set(x - 1, y + H - 2, z, lg.setValue(BlockStateProperties.AXIS, Direction.Axis.X));
+				w.set(x + 2, y + H - 1, z, st("cobweb"));
+				w.set(x - 1, y + H - 3, z, st("soul_lantern").setValue(BlockStateProperties.HANGING, true));
 			}
 		}
 	}
