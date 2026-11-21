@@ -90,6 +90,10 @@ public final class ShotHarness {
 		}
 		IntegratedServer server = mc.getSingleplayerServer();
 		t++;
+		if (FOCUS && t > 60) {
+			try { focus(mc, server, t - 60); } catch (Throwable e) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 오류 f=" + (t - 60), e); }
+			return;
+		}
 		try {
 			if (t == 40) {
 				SUBJECTS.addAll(ModMobs.MOBS.values());
@@ -168,6 +172,156 @@ public final class ShotHarness {
 			ElementalWeaponsMod.LOGGER.error("[SHOTS] 오류 t=" + t, e);
 		}
 	}
+
+	// ================= v4.1: 천공성 · 용 · 가게 주인 · 지역 마을 =================
+	private static final boolean FOCUS = true;
+	private static SkyDragon_ ride;
+	private record SkyDragon_(net.minecraft.world.entity.Entity e) {}
+
+	private static double[] lotView(com.elementalweapons.world.sky.Capital.Kind kind, int floor, double off, double up) {
+		for (var l : com.elementalweapons.world.sky.Capital.LOTS) if (l.kind() == kind && l.floor() == floor) {
+			double d = Math.hypot(l.x(), l.z()), ux = -l.x() / d, uz = -l.z() / d;
+			return new double[]{l.x() + ux * off - uz * 5, l.y() + up, l.z() + uz * off + ux * 5, l.x(), l.y() + 3, l.z(), 6000};
+		}
+		return new double[]{0, 200, 100, 0, 171, 0, 6000};
+	}
+
+	private static double[][] focusScenes() {
+		var C = com.elementalweapons.world.sky.Capital.class;
+		int[] FY = com.elementalweapons.world.sky.Capital.FY;
+		java.util.List<double[]> L = new java.util.ArrayList<>();
+		L.add(new double[]{230, 235, 250, 0, 215, 0, 6000});                        // 0 천공성 전경
+		L.add(new double[]{0, 205, 300, 0, 212, 0, 6000});                          // 1 남쪽 정면
+		L.add(new double[]{14, FY[0] + 6, 46, 0, FY[0] + 8, 0, 6000});              // 2 1층 광장과 탑
+		L.add(new double[]{0, FY[0] + 14, 66, 0, FY[0] + 1, 108, 6000});            // 3 용의 둥지
+		L.add(lotView(com.elementalweapons.world.sky.Capital.Kind.MARKET, 0, 24, 8));  // 4
+		L.add(lotView(com.elementalweapons.world.sky.Capital.Kind.SMITH, 0, 22, 7));   // 5
+		L.add(new double[]{70, FY[0] + 4, 20, 20, FY[1] - 6, 0, 6000});             // 6 윗층 밑면 (매달린 등불)
+		L.add(new double[]{0, FY[1] + 10, 84, 0, FY[1] + 2, 0, 6000});              // 7 2층 전경
+		L.add(lotView(com.elementalweapons.world.sky.Capital.Kind.FORGE, 1, 22, 6));   // 8
+		L.add(lotView(com.elementalweapons.world.sky.Capital.Kind.ALCHEMY, 1, 16, 5)); // 9
+		L.add(lotView(com.elementalweapons.world.sky.Capital.Kind.ENCHANT, 2, 18, 8)); // 10
+		L.add(new double[]{0, FY[2] + 9, 68, 0, FY[2] + 2, 0, 6000});               // 11 3층
+		L.add(lotView(com.elementalweapons.world.sky.Capital.Kind.RIFT_GATE, 3, 14, 6)); // 12 4층
+		L.add(new double[]{0, FY[4] + 12, 58, 0, FY[4] + 10, 0, 6000});             // 13 5층 왕성
+		L.add(new double[]{260, 240, -200, 0, 220, 0, 18000});                      // 14 밤의 천공성
+		return L.toArray(new double[0][]);
+	}
+
+	private static int scene = -1;
+
+	private static void focus(Minecraft mc, IntegratedServer server, int f) {
+		double[][] sc = focusScenes();
+		int per = 300;
+		if (f < sc.length * per) {
+			int idx = f / per, k = f % per;
+			double[] c = sc[idx];
+			if (k == 0) {
+				mc.options.setCameraType(CameraType.FIRST_PERSON);
+				server.execute(() -> { ServerPlayer p = sp(server);
+					p.getAbilities().flying = true; p.getAbilities().mayfly = true; p.onUpdateAbilities();
+					p.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+					p.teleportTo(c[0] + 0.5, c[1], c[2] + 0.5);
+					server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set " + (long) c[6]); });
+			}
+			if (k > 0) { lookAt(mc, c[3], c[4], c[5]); mc.player.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO); }
+			if (k == per - 40) server.execute(() -> server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set " + (long) c[6]));
+			if (k == per - 10) shot(mc, String.format("9%02d_citadel", idx));
+			if (k == per - 12) server.execute(() -> { ServerPlayer p = sp(server);
+				log("장면 " + idx + " 상인 " + p.level().getEntitiesOfClass(com.elementalweapons.mob.ElementalMerchant.class, p.getBoundingBox().inflate(80)).size()
+						+ " 용 " + p.level().getEntitiesOfClass(com.elementalweapons.mob.SkyDragon.class, p.getBoundingBox().inflate(120)).size()); });
+			return;
+		}
+		f -= sc.length * per;
+		// --- 가게 주인 · 천공룡 근접 사진 ---
+		EntityType<?>[] who = {ModMobs.BLACKSMITH, ModMobs.ENCHANTER, ModMobs.ALCHEMIST, ModMobs.MERCHANT, ModMobs.SKY_DRAGON};
+		int per2 = 60;
+		if (f < who.length * per2) {
+			int idx = f / per2, k = f % per2;
+			if (k == 0) server.execute(() -> { ServerPlayer p = sp(server);
+				p.getAbilities().flying = false; p.onUpdateAbilities();
+				p.teleportTo(0.5, com.elementalweapons.world.sky.Capital.FY[0] + 1, 30.5);
+				if (current != null) current.discard();
+				Entity e = who[idx].create(p.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+				double dist = idx == 4 ? 9 : 3.2;
+				e.snapTo(0.5, com.elementalweapons.world.sky.Capital.FY[0] + 1, 30.5 + dist, 180, 0);
+				p.level().addFreshEntity(e); current = e; });
+			if (k > 2 && current != null) { mc.options.setCameraType(CameraType.FIRST_PERSON); lookAt(mc, current.getX() - 0.5, current.getY() + current.getBbHeight() * 0.55, current.getZ() - 0.5); }
+			if (k == 40) shot(mc, String.format("95%d_%s", idx, BuiltInRegistries.ENTITY_TYPE.getKey(who[idx]).getPath()));
+			if (k == 50 && idx < who.length - 1) server.execute(() -> { if (current != null) current.discard(); current = null; });
+			return;
+		}
+		f -= who.length * per2;
+		// --- 용 타고 날기 (W 누르기) ---
+		if (f < 260) {
+			if (f == 0) server.execute(() -> { ServerPlayer p = sp(server);
+				if (current != null) { current.teleportTo(0.5, 200, 60.5); p.teleportTo(0.5, 202, 60.5); p.startRiding(current); } });
+			if (f == 5) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+			if (f > 5 && f < 250) { look(mc, 180, -8); mc.options.keyUp.setDown(f > 20); }
+			if (f == 60) log("용 비행 시작 y=" + String.format("%.1f", mc.player.getY()) + " z=" + String.format("%.1f", mc.player.getZ()));
+			if (f == 120) shot(mc, "960_dragon_flight");
+			if (f == 150) log("용 비행 중 y=" + String.format("%.1f", mc.player.getY()) + " z=" + String.format("%.1f", mc.player.getZ()) + " 탑승=" + mc.player.isPassenger());
+			if (f == 160) { look(mc, 150, 10); }
+			if (f == 175) shot(mc, "961_dragon_flight_side");
+			if (f == 250) { mc.options.keyUp.setDown(false); server.execute(() -> { sp(server).stopRiding(); if (current != null) current.discard(); current = null; }); }
+			return;
+		}
+		f -= 260;
+		// --- 승강기 시험 ---
+		if (f < 300) {
+			if (f == 0) server.execute(() -> { ServerPlayer p = sp(server); p.getAbilities().flying = false; p.getAbilities().mayfly = false; p.onUpdateAbilities();
+				p.teleportTo(0.5, com.elementalweapons.world.sky.Capital.FY[0] + 1, 0.5); });
+			if (f == 2) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+			if (f > 2) look(mc, 0, -20);
+			if (f % 40 == 0) log("승강기 f=" + f + " y=" + String.format("%.1f", mc.player.getY()));
+			if (f == 150) shot(mc, "962_lift");
+			return;
+		}
+		f -= 300;
+		// --- 스킬 이동 동기화 시험 (나무 단검 구르기) ---
+		if (f < 80) {
+			if (f == 0) server.execute(() -> { ServerPlayer p = sp(server);
+				p.teleportTo(0.5, com.elementalweapons.world.sky.Capital.FY[0] + 1, 26.5);
+				ModGrowth.set(p, ModGrowth.get(p).withClass(com.elementalweapons.item.PlayerClass.ASSASSIN.ordinal()));
+				p.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WOODEN.get(WeaponType.DAGGER))); });
+			if (f > 0) look(mc, 0, 0);
+			if (f == 30) { dodgeZ = mc.player.getZ(); com.elementalweapons.client.skill.SkillClient.press(0); }
+			if (f == 40) log("구르기 이동 거리 = " + String.format("%.2f", mc.player.getZ() - dodgeZ) + " (0이면 동기화 실패)");
+			return;
+		}
+		f -= 80;
+		// --- 지역 마을 · 야영지 · 망루 · 유적 · 용의 둥지 ---
+		java.util.List<double[]> rs = new java.util.ArrayList<>();
+		for (int region : new int[]{0, 4}) {
+			boolean[] seen = new boolean[5];
+			for (int[] q : com.elementalweapons.world.sky.Outposts.pois(region)) {
+				if (seen[q[0]]) continue;
+				seen[q[0]] = true;
+				double off = q[0] == 0 ? 30 : 14;
+				rs.add(new double[]{q[1] + off, q[2] + (q[0] == 0 ? 16 : 9), q[3] + off * 0.6, q[1], q[2] + 3, q[3], 6000});
+			}
+		}
+		int[] ro = com.elementalweapons.world.sky.Outposts.roost(0);
+		if (ro != null) rs.add(new double[]{ro[0] + 16, ro[1] + 10, ro[2] + 10, ro[0], ro[1] + 1, ro[2], 6000});
+		double[] rc = com.elementalweapons.world.sky.SkyLayout.REGION_CENTER[0];
+		rs.add(new double[]{rc[0] * 0.55, 240, rc[1] * 0.55, rc[0], 170, rc[1], 6000});
+		int per3 = 320;
+		if (f < rs.size() * per3) {
+			int idx = f / per3, k = f % per3;
+			double[] c = rs.get(idx);
+			if (k == 0) server.execute(() -> { ServerPlayer p = sp(server);
+				p.getAbilities().flying = true; p.getAbilities().mayfly = true; p.onUpdateAbilities();
+				p.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+				p.teleportTo(c[0] + 0.5, c[1], c[2] + 0.5); });
+			if (k == 1) mc.options.setCameraType(CameraType.FIRST_PERSON);
+			if (k > 0) { lookAt(mc, c[3], c[4], c[5]); mc.player.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO); }
+			if (k == per3 - 10) shot(mc, String.format("97%02d_region", idx));
+			return;
+		}
+		if (f == rs.size() * per3 + 5) { log("DONE"); mc.stop(); }
+	}
+
+	private static double dodgeZ;
 
 	private static BlockPos town;
 

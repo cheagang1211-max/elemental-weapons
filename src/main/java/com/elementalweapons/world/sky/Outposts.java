@@ -118,6 +118,18 @@ public final class Outposts {
 		return true;
 	}
 
+	/** 스크린샷용: 지역 본섬 k의 시설 목록 {종류, x, y, z} */
+	public static List<int[]> pois(int region) {
+		List<int[]> out = new ArrayList<>();
+		for (SkyLayout.Island is : SkyLayout.ISLANDS) {
+			if (is.kind != 1 || SkyLayout.regionAt(is.x, is.z) != region) continue;
+			for (Poi p : plan(is).pois) out.add(new int[]{p.type, p.x, p.y, p.z});
+		}
+		return out;
+	}
+
+	public static int[] roost(int i) { return i < ROOSTS.size() ? ROOSTS.get(i) : null; }
+
 	// ---------------- 그리기 ----------------
 	private static final class W {
 		final WorldGenLevel lv; final int minX, minZ, maxX, maxZ;
