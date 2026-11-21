@@ -40,6 +40,10 @@ public final class ModSky {
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
 			ServerLevel ow = server.overworld();
 			if (!active(ow)) return;
+			// 천공성(v4.1) 이전에 만들어진 세계인지 확인: 새 세계에만 표시를 남김
+			if (ow.getAttached(LAYOUT) == null && ow.getGameTime() < 2400) ow.setAttached(LAYOUT, 41);
+			OLD_WORLD = ow.getAttached(LAYOUT) == null;
+			if (OLD_WORLD) ElementalWeaponsMod.LOGGER.warn("[SKY] 이 세계는 천공성 이전 버전에서 만들어졌습니다. 서버를 끄고 world 폴더를 지운 뒤 다시 켜야 천공성이 나타납니다.");
 			ow.setRespawnData(LevelData.RespawnData.of(Level.OVERWORLD, SkyLayout.SPAWN, 0F, 0F));
 			// 죽어도 아이템 유지 (인벤세이브)
 			var src = server.createCommandSourceStack();
@@ -54,11 +58,17 @@ public final class ModSky {
 			return true;
 		});
 		// 공허로 떨어지면 마지막으로 서 있던 곳으로 복귀
+		// 옛 세계로 접속하면 알려 줌
+		net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> server.execute(() -> {
+			if (!OLD_WORLD) return;
+			ServerPlayer p = handler.getPlayer();
+			p.sendSystemMessage(Component.literal("⚠ 이 세계는 옛 버전 지형이라 천공성이 보이지 않아요. 서버를 끄고 world 폴더를 지운 뒤 다시 켜 주세요.").withStyle(ChatFormatting.GOLD));
+		}));
 		// 층마다 가게 주인이 늘 자리에 있도록 + 용의 둥지마다 천공룡
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
 			if (server.getTickCount() % 100 != 50) return;
 			ServerLevel ow = server.overworld();
-			if (!active(ow)) return;
+			if (!active(ow) || OLD_WORLD) return;
 			try {
 				sweepStrays(ow);
 				for (Capital.Npc n : Capital.NPCS) keepNpc(ow, n);
@@ -177,6 +187,10 @@ public final class ModSky {
 		d.setHome(pad);
 		ow.addFreshEntity(d);
 	}
+
+	public static final net.fabricmc.fabric.api.attachment.v1.AttachmentType<Integer> LAYOUT = net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry.<Integer>builder()
+			.persistent(com.mojang.serialization.Codec.INT).buildAndRegister(ElementalWeaponsMod.id("sky_layout_version"));
+	private static boolean OLD_WORLD;
 
 	private static Boolean cached;
 
