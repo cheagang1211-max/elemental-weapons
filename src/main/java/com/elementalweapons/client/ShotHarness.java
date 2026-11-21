@@ -324,6 +324,33 @@ public final class ShotHarness {
 			return;
 		}
 		f -= 80;
+		// --- 큰 계단 검사: 구간마다 가서 걷는 칸이 막힘 없이 이어지는지 ---
+		if (f < 4 * 80) {
+			int k = 4 - f / 80, kk = f % 80;
+			var C = com.elementalweapons.world.sky.Capital.class;
+			double Rs = com.elementalweapons.world.sky.Capital.STAIR_R[k];
+			double a0 = Math.toRadians(com.elementalweapons.world.sky.Capital.STAIR_START[k]);
+			int[] FY = com.elementalweapons.world.sky.Capital.FY;
+			int L = 2 * (FY[k] - FY[k - 1]);
+			if (kk == 0) server.execute(() -> { ServerPlayer p = sp(server);
+				p.getAbilities().flying = true; p.getAbilities().mayfly = true; p.onUpdateAbilities();
+				double am = a0 + (L / 2.0) / Rs;
+				p.teleportTo(Math.cos(am) * (Rs + 8), FY[k] + 6, Math.sin(am) * (Rs + 8)); });
+			if (kk == 60) server.execute(() -> { ServerPlayer p = sp(server);
+				var lv = p.level(); int bad = 0, first = -1;
+				for (int si = 0; si <= L; si++) {
+					double a = a0 + (si + 0.5) / Rs;
+					int x = (int) Math.floor(Math.cos(a) * Rs), z = (int) Math.floor(Math.sin(a) * Rs), y = FY[k] - si / 2;
+					var bp = new BlockPos(x, y, z);
+					boolean ok = !lv.getBlockState(bp).isAir() && lv.getBlockState(bp.above()).getCollisionShape(lv, bp.above()).isEmpty() && lv.getBlockState(bp.above(2)).getCollisionShape(lv, bp.above(2)).isEmpty();
+					if (!ok) { bad++; if (first < 0) first = si; }
+				}
+				log("큰 계단 " + k + "층→" + (k - 1) + "층: 칸 " + (L + 1) + "개 중 막힘/빈칸 " + bad + (first >= 0 ? " (처음 " + first + "번째)" : "")); });
+			if (kk == 62 && k == 2) { lookAt(mc, 0, FY[2] - 10, 0); }
+			if (kk == 70 && k == 2) shot(mc, "965_grand_stairs");
+			return;
+		}
+		f -= 4 * 80;
 		// --- 지역 마을 · 야영지 · 망루 · 유적 · 용의 둥지 ---
 		java.util.List<double[]> rs = new java.util.ArrayList<>();
 		for (int region = 0; region < 7; region++) for (int[] q : com.elementalweapons.world.sky.Outposts.pois(region)) if (q[0] == 0) {
