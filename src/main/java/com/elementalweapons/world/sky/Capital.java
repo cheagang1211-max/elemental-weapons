@@ -134,7 +134,7 @@ public final class Capital {
 
 	private boolean in(int x, int z) { return x >= minX && x <= maxX && z >= minZ && z <= maxZ; }
 	private void set(int x, int y, int z, BlockState s) { if (in(x, z) && y > -60 && y < 319) lv.setBlock(new BlockPos(x, y, z), s, 2); }
-	private BlockState get(int x, int y, int z) { return lv.getBlockState(new BlockPos(x, y, z)); }
+	private BlockState get(int x, int y, int z) { return in(x, z) ? lv.getBlockState(new BlockPos(x, y, z)) : Blocks.AIR.defaultBlockState(); }   // 이 청크 밖은 읽지 않음
 	private boolean air(int x, int y, int z) { return get(x, y, z).isAir(); }
 	private static BlockState st(Block b) { return b.defaultBlockState(); }
 	private static BlockState b(String id) { return BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("minecraft", id)).defaultBlockState(); }

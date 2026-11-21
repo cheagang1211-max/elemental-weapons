@@ -124,7 +124,7 @@ public final class Outposts {
 		W(WorldGenLevel lv, int minX, int minZ) { this.lv = lv; this.minX = minX; this.minZ = minZ; this.maxX = minX + 15; this.maxZ = minZ + 15; }
 		boolean in(int x, int z) { return x >= minX && x <= maxX && z >= minZ && z <= maxZ; }
 		void set(int x, int y, int z, BlockState s) { if (in(x, z) && y > -60 && y < 318) lv.setBlock(new BlockPos(x, y, z), s, 2); }
-		BlockState get(int x, int y, int z) { return lv.getBlockState(new BlockPos(x, y, z)); }
+		BlockState get(int x, int y, int z) { return in(x, z) ? lv.getBlockState(new BlockPos(x, y, z)) : Blocks.AIR.defaultBlockState(); }
 		boolean air(int x, int y, int z) { return get(x, y, z).isAir(); }
 		void clear(int x, int y, int z, int n) { for (int k = 1; k <= n; k++) if (!air(x, y + k, z)) set(x, y + k, z, st("air")); }
 		/** 바닥을 y로 평평하게 (아래 빈 곳은 흙으로 채움) */
