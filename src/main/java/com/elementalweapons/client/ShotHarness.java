@@ -297,7 +297,7 @@ public final class ShotHarness {
 			if (f == 0) server.execute(() -> { ServerPlayer p = sp(server);
 				p.teleportTo(0.5, com.elementalweapons.world.sky.Capital.FY[4] + 1, 22.5);
 				if (current != null) current.discard();
-				Entity z = EntityType.ZOMBIE.create(p.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+				Entity z = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(p.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
 				z.snapTo(0.5, com.elementalweapons.world.sky.Capital.FY[4] + 1, 24.5, 0, 0);
 				((net.minecraft.world.entity.Mob) z).setNoAi(true);
 				p.level().addFreshEntity(z); current = z; });
