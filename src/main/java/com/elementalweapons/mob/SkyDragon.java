@@ -38,6 +38,9 @@ import com.elementalweapons.spell.Fx;
 public class SkyDragon extends PathfinderMob implements PosedEntity {
 	private BlockPos home;
 	private int idle;
+	/** 마지막으로 탄 플레이어. 내린 뒤에도 그 자리에 남아 기다리다가, 이 플레이어가 죽으면 둥지로 돌아감 */
+	private java.util.UUID owner;
+	private int ownerDeaths;
 	private int boost;   // 앞으로 계속 날수록 빨라짐 (조종하는 쪽에서 계산)
 
 	public SkyDragon(EntityType<? extends SkyDragon> type, Level level) {
@@ -65,6 +68,7 @@ public class SkyDragon extends PathfinderMob implements PosedEntity {
 	protected InteractionResult mobInteract(Player player, InteractionHand hand) {
 		if (this.isVehicle() || player.isSecondaryUseActive()) return InteractionResult.PASS;
 		if (!this.level().isClientSide()) {
+			if (player instanceof net.minecraft.server.level.ServerPlayer sp) claim(sp);
 			player.startRiding(this);
 			player.sendSystemMessage(Component.literal("🐉 천공룡에 올라탔습니다!  W: 바라보는 방향으로 비행 · Space: 상승 · 아래를 보고 W: 하강 · Shift: 내리기")
 					.withStyle(ChatFormatting.AQUA));
@@ -125,6 +129,33 @@ public class SkyDragon extends PathfinderMob implements PosedEntity {
 		return this.position().add(side).add(0, 0.2, 0);
 	}
 
+	public java.util.UUID owner() { return owner; }
+
+	private static int deaths(net.minecraft.server.level.ServerPlayer p) {
+		return p.getStats().getValue(net.minecraft.stats.Stats.CUSTOM.get(net.minecraft.stats.Stats.DEATHS));
+	}
+
+	/** 이 용을 내 용으로: 예전에 타던 다른 용은 둥지로 돌려보냄 (한 사람당 한 마리) */
+	private void claim(net.minecraft.server.level.ServerPlayer p) {
+		ServerLevel sl = (ServerLevel) this.level();
+		for (net.minecraft.world.entity.Entity e : sl.getAllEntities())
+			if (e instanceof SkyDragon d && d != this && p.getUUID().equals(d.owner)) d.goHome();
+		owner = p.getUUID();
+		ownerDeaths = deaths(p);
+	}
+
+	/** 둥지로 순간 이동 (이미 다른 용이 있으면 사라짐) */
+	public void goHome() {
+		if (!(this.level() instanceof ServerLevel sl) || this.isVehicle()) return;
+		owner = null;
+		if (home == null) { this.discard(); return; }
+		Fx.burst(sl, FxOptions.of(FxOptions.SMOKE, 0xD8F0E8, 0.8F, 18).grow(1.8F), this.position().add(0, 1, 0), 12, 1.2, 0.03);
+		final BlockPos hp = home;
+		if (!sl.getEntitiesOfClass(SkyDragon.class, new net.minecraft.world.phys.AABB(hp).inflate(4), d -> d != this && hp.equals(d.home()) && d.owner == null).isEmpty()) { this.discard(); return; }
+		this.teleportTo(hp.getX() + 0.5, hp.getY(), hp.getZ() + 0.5);
+		this.setDeltaMovement(Vec3.ZERO);
+	}
+
 	// ---------------- 둥지로 돌아가기 ----------------
 	@Override
 	public void tick() {
@@ -134,12 +165,19 @@ public class SkyDragon extends PathfinderMob implements PosedEntity {
 				idle = 0;
 				if (this.tickCount % 3 == 0 && this.getDeltaMovement().lengthSqr() > 0.4)
 					Fx.at(sl, FxOptions.of(FxOptions.SWIRL, 0xBFF6E6, 0.5F, 14).spin(14F), this.position().add(0, 1.2, 0).subtract(this.getDeltaMovement().scale(2)));
+			} else if (owner != null) {
+				// 주인을 기다림: 공중에 있으면 땅으로 천천히 내려앉음, 섬 밖으로 떨어지면 둥지로
+				if (!this.onGround()) this.move(net.minecraft.world.entity.MoverType.SELF, new Vec3(0, -0.45, 0));
+				if (this.getY() < 40) { goHome(); return; }
+				if (this.tickCount % 40 == 0) {
+					var p = sl.getServer().getPlayerList().getPlayer(owner);
+					if (p != null && (p.isDeadOrDying() || deaths(p) > ownerDeaths)) {   // 주인이 죽으면 원래 둥지로
+						goHome();
+						if (p.isAlive()) p.sendSystemMessage(Component.literal("🐉 타던 천공룡이 둥지로 돌아갔습니다.").withStyle(ChatFormatting.GRAY));
+					}
+				}
 			} else if (home != null && ++idle > 400 && this.distanceToSqr(Vec3.atBottomCenterOf(home)) > 16) {
-				Fx.burst(sl, FxOptions.of(FxOptions.SMOKE, 0xD8F0E8, 0.8F, 18).grow(1.8F), this.position().add(0, 1, 0), 12, 1.2, 0.03);
-				final BlockPos hp = home;
-				if (!sl.getEntitiesOfClass(SkyDragon.class, new net.minecraft.world.phys.AABB(hp).inflate(4), d -> d != this && hp.equals(d.home())).isEmpty()) { this.discard(); return; }
-				this.teleportTo(home.getX() + 0.5, home.getY(), home.getZ() + 0.5);
-				this.setDeltaMovement(Vec3.ZERO);
+				goHome();
 				idle = 0;
 			}
 		}
@@ -149,6 +187,7 @@ public class SkyDragon extends PathfinderMob implements PosedEntity {
 	protected void addAdditionalSaveData(ValueOutput output) {
 		super.addAdditionalSaveData(output);
 		if (home != null) output.putLong("Home", home.asLong());
+		if (owner != null) { output.putString("Owner", owner.toString()); output.putInt("OwnerDeaths", ownerDeaths); }
 	}
 
 	@Override
@@ -156,10 +195,13 @@ public class SkyDragon extends PathfinderMob implements PosedEntity {
 		super.readAdditionalSaveData(input);
 		long h = input.getLongOr("Home", Long.MIN_VALUE);
 		home = h == Long.MIN_VALUE ? null : BlockPos.of(h);
+		String o = input.getStringOr("Owner", "");
+		try { owner = o.isEmpty() ? null : java.util.UUID.fromString(o); } catch (IllegalArgumentException ex) { owner = null; }
+		ownerDeaths = input.getIntOr("OwnerDeaths", 0);
 	}
 
 	@Override public boolean isInvulnerableTo(ServerLevel level, DamageSource source) { return !source.isCreativePlayer(); }
-	@Override public boolean shouldBeSaved() { return this.isVehicle() && super.shouldBeSaved(); }   // 둥지 용은 서버가 늘 다시 세움
+	@Override public boolean shouldBeSaved() { return (this.isVehicle() || owner != null) && super.shouldBeSaved(); }   // 주인 있는 용은 저장, 둥지에서 쉬는 용은 서버가 늘 다시 세움
 	@Override public boolean isPushable() { return false; }
 	@Override protected void doPush(Entity e) {}
 	@Override public boolean removeWhenFarAway(double d) { return false; }

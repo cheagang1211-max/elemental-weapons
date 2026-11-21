@@ -177,11 +177,11 @@ public final class ModSky {
 		if (!ow.isLoaded(pad) || ow.getNearestPlayer(pad.getX(), pad.getY(), pad.getZ(), 96, false) == null) return;
 		var all = ow.getEntities(com.elementalweapons.mob.ModMobs.SKY_DRAGON, new net.minecraft.world.phys.AABB(pad).inflate(96), d -> pad.equals(d.home()));
 		boolean kept = false;
-		for (var d : all) {   // 둥지 근처에 쉬고 있는 용은 하나만
-			if (d.isVehicle() || d.distanceToSqr(pad.getX() + 0.5, pad.getY(), pad.getZ() + 0.5) > 64) { kept = true; continue; }
+		for (var d : all) {   // 둥지 근처에 쉬고 있는 (주인 없는) 용은 하나만
+			if (d.isVehicle() || d.owner() != null || d.distanceToSqr(pad.getX() + 0.5, pad.getY(), pad.getZ() + 0.5) > 64) { kept = true; continue; }
 			if (kept) d.discard(); else kept = true;
 		}
-		if (!all.isEmpty()) return;
+		if (all.stream().anyMatch(d -> d.owner() == null && !d.isVehicle())) return;
 		var d = com.elementalweapons.mob.ModMobs.SKY_DRAGON.create(ow, net.minecraft.world.entity.EntitySpawnReason.STRUCTURE);
 		if (d == null) return;
 		double yaw = Math.toDegrees(Math.atan2(-pad.getX(), pad.getZ()));
