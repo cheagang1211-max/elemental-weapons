@@ -159,6 +159,7 @@ public class SkyDragon extends PathfinderMob implements PosedEntity {
 	}
 
 	@Override public boolean isInvulnerableTo(ServerLevel level, DamageSource source) { return !source.isCreativePlayer(); }
+	@Override public boolean shouldBeSaved() { return this.isVehicle() && super.shouldBeSaved(); }   // 둥지 용은 서버가 늘 다시 세움
 	@Override public boolean isPushable() { return false; }
 	@Override protected void doPush(Entity e) {}
 	@Override public boolean removeWhenFarAway(double d) { return false; }

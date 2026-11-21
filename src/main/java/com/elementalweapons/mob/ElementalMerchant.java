@@ -68,6 +68,23 @@ public class ElementalMerchant extends WanderingTrader implements PosedEntity {
 		this.goalSelector.addGoal(3, new net.minecraft.world.entity.ai.goal.RandomLookAroundGoal(this));
 	}
 
+	/** 천공성 가게 자리 (null이면 자유 상인). 자리가 있는 주인은 저장하지 않고 서버가 늘 다시 세움 → 중복·뭉침 없음 */
+	private net.minecraft.core.BlockPos post;
+	public void setPost(net.minecraft.core.BlockPos p) { this.post = p; }
+	public net.minecraft.core.BlockPos post() { return post; }
+	@Override public boolean shouldBeSaved() { return post == null && super.shouldBeSaved(); }
+
+	@Override
+	public void tick() {
+		super.tick();
+		// 밀리거나 떨어져도 자기 자리로 돌아감
+		if (post != null && !this.level().isClientSide() && this.tickCount % 20 == 0
+				&& this.distanceToSqr(post.getX() + 0.5, post.getY(), post.getZ() + 0.5) > 2.25) {
+			this.teleportTo(post.getX() + 0.5, post.getY(), post.getZ() + 0.5);
+			this.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+		}
+	}
+
 	@Override public boolean isPushable() { return false; }
 	@Override public boolean removeWhenFarAway(double d) { return false; }
 	@Override public boolean isInvulnerableTo(ServerLevel level, net.minecraft.world.damagesource.DamageSource source) { return !source.isCreativePlayer() || super.isInvulnerableTo(level, source); }
