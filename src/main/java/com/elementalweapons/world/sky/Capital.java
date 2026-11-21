@@ -189,6 +189,10 @@ public final class Capital {
 				case GARDEN -> garden(o);
 				default -> { }
 			}
+			switch (l.kind) {
+				case INN, HOUSE, STORAGE, SMITH, FORGE, ALCHEMY, MAGE_LAB -> windowDecor(l);
+				default -> { }
+			}
 		}
 		for (int f = 0; f < FY.length; f++) decor(f);
 		for (Pillar p : PILLARS) if (p.x + 5 >= minX && p.x - 5 <= maxX && p.z + 5 >= minZ && p.z - 5 <= maxZ) pillar(p);
@@ -197,6 +201,38 @@ public final class Capital {
 		if (maxX >= ROOST_X - ROOST_R - 3 && minX <= ROOST_X + ROOST_R + 3 && maxZ >= ROOST_Z - ROOST_R - 3 && minZ <= ROOST_Z + ROOST_R + 3) roost();
 		if (maxX >= -40 && minX <= 40 && maxZ >= -40 && minZ <= 40) castle();
 		if (maxX >= -12 && minX <= 12 && maxZ >= -12 && minZ <= 12) core();
+	}
+
+	/** 창문마다 바깥에 덧문 두 짝 + 창틀 화단 (손으로 꾸민 느낌) */
+	private void windowDecor(Lot l) {
+		int r = l.half();
+		String[] pots = {"potted_red_tulip", "potted_azure_bluet", "potted_cornflower", "potted_oxeye_daisy", "potted_allium"};
+		for (int x = l.x - r; x <= l.x + r; x++) for (int z = l.z - r; z <= l.z + r; z++) {
+			if (!in(x, z)) continue;
+			for (int y = l.y() + 2; y <= l.y() + 12; y++) {
+				BlockState g = get(x, y, z);
+				if (!(g.is(Blocks.GLASS_PANE) || g.is(Blocks.GLASS) || g.getBlock().getDescriptionId().contains("stained_glass"))) continue;
+				Direction out = null; double best = 0;
+				for (Direction d : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST}) {
+					double dot = (x - l.x) * d.getStepX() + (z - l.z) * d.getStepZ();
+					if (dot > best && air(x + d.getStepX(), y, z + d.getStepZ())) { best = dot; out = d; }
+				}
+				if (out == null) continue;
+				int ox = x + out.getStepX(), oz = z + out.getStepZ();
+				if (!in(ox, oz)) continue;
+				// 이미 창이 위아래로 이어지면 맨 아래 칸에만 화단
+				if (!get(x, y - 1, z).is(g.getBlock()) && air(ox, y - 1, oz) && air(ox, y, oz)) {
+					set(ox, y - 1, oz, b("spruce_trapdoor").setValue(BlockStateProperties.HALF, Half.TOP).setValue(BlockStateProperties.HORIZONTAL_FACING, out));
+					set(ox, y, oz, b(pots[h(x, y, z) % pots.length]));
+				}
+				Direction side = out.getClockWise();
+				for (int sgn = -1; sgn <= 1; sgn += 2) {
+					int sx = ox + side.getStepX() * sgn, sz = oz + side.getStepZ() * sgn;
+					if (in(sx, sz) && air(sx, y, sz) && !get(x + side.getStepX() * sgn, y, z + side.getStepZ() * sgn).is(g.getBlock()))
+						set(sx, y, sz, b("spruce_trapdoor").setValue(BlockStateProperties.OPEN, true).setValue(BlockStateProperties.HORIZONTAL_FACING, out));
+				}
+			}
+		}
 	}
 
 	// ---------------- 층 바닥: 광장 · 큰길 · 가장자리 성벽 ----------------

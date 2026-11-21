@@ -25,7 +25,7 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 public final class Outposts {
 	private Outposts() {}
 
-	static final int VILLAGE = 0, CAMP = 1, TOWER = 2, RUIN = 3, SHRINE = 4;
+	static final int VILLAGE = 0, CAMP = 1, TOWER = 2, RUIN = 3, SHRINE = 4, FARM = 5, WINDMILL = 6, GRAVEYARD = 7, HUT = 8;
 	record Poi(int type, int x, int y, int z, int seed, int region) {}
 	record Road(int ax, int az, int bx, int bz) {}
 	private record Plan(List<Poi> pois, List<Road> roads) {}
@@ -73,13 +73,13 @@ public final class Outposts {
 		List<Poi> out = new ArrayList<>();
 		List<Road> roads = new ArrayList<>();
 		boolean main = is.kind != 2;
-		int want = main ? 16 : (is.r > 130 ? 4 : 2);
+		int want = main ? 24 : (is.r > 130 ? 5 : 3);
 		for (int t = 0; t < want * 8 && out.size() < want; t++) {
 			double a = SkyLayout.hash(is.seed, t, 11) * Math.PI * 2, rr = Math.sqrt(SkyLayout.hash(is.seed, t, 12)) * is.r * (main ? 0.7 : 0.6);
 			if (main && out.isEmpty()) { a = Math.atan2(-is.z, -is.x) + 0.9; rr = is.r * 0.38; }   // 마을은 천공성 쪽에 가깝게
 			int x = (int) Math.round(is.x + Math.cos(a) * rr), z = (int) Math.round(is.z + Math.sin(a) * rr);
 			int type = main && out.isEmpty() ? VILLAGE : pick(SkyLayout.hash(is.seed, t, 13));
-			int need = type == VILLAGE ? 26 : 10;
+			int need = type == VILLAGE ? 26 : type == FARM || type == GRAVEYARD ? 12 : 10;
 			if (!free(x, z, need, out)) continue;
 			int y = SkyLayout.surfaceTop(x, z);
 			if (y == Integer.MIN_VALUE || y < 60) continue;
@@ -105,7 +105,7 @@ public final class Outposts {
 		return new Plan(out, roads);
 	}
 
-	private static int pick(double h) { return h < 0.34 ? CAMP : h < 0.56 ? TOWER : h < 0.8 ? RUIN : SHRINE; }
+	private static int pick(double h) { return h < 0.18 ? CAMP : h < 0.32 ? TOWER : h < 0.46 ? RUIN : h < 0.56 ? SHRINE : h < 0.72 ? FARM : h < 0.82 ? WINDMILL : h < 0.9 ? GRAVEYARD : HUT; }
 
 	private static boolean free(int x, int z, int need, List<Poi> out) {
 		if (Arenas.near(x, z, Arenas.R + need + 8) != null) return false;
@@ -166,9 +166,10 @@ public final class Outposts {
 		if (minX + 15 < is.x - is.r * 1.2 || minX > is.x + is.r * 1.2 || minZ + 15 < is.z - is.r * 1.2 || minZ > is.z + is.r * 1.2) return;
 		Plan p = plan(is);
 		W w = new W(lv, minX, minZ);
+		nature(w, is, p);
 		for (Road r : p.roads) road(w, r);
 		for (Poi o : p.pois) {
-			int R = o.type == VILLAGE ? 24 : 9;
+			int R = o.type == VILLAGE ? 24 : 13;
 			if (o.x + R < minX || o.x - R > w.maxX || o.z + R < minZ || o.z - R > w.maxZ) continue;
 			String[] pal = PAL[Math.min(7, o.region)];
 			switch (o.type) {
@@ -176,6 +177,10 @@ public final class Outposts {
 				case CAMP -> camp(w, o, pal);
 				case TOWER -> tower(w, o, pal);
 				case RUIN -> ruin(w, o, pal);
+				case FARM -> farm(w, o, pal);
+				case WINDMILL -> windmill(w, o, pal);
+				case GRAVEYARD -> graveyard(w, o);
+				case HUT -> hut(w, o, pal);
 				default -> shrine(w, o);
 			}
 		}
@@ -286,6 +291,21 @@ public final class Outposts {
 			}
 			if (s > 0 && Math.abs(lz) == hd) for (int lx = a + 1; lx < c; lx++) w.set(X.applyAsInt(lx, lz), Y + 4 + s, Z.applyAsInt(lx, lz), plank);
 		}
+		// 창 덧문 + 창틀 화단 (옆 창 바깥)
+		for (int sx = -1; sx <= 1; sx += 2) {
+			int lx = sx * (hw + 1);
+			Direction out = switch (facing) { case 1 -> sx > 0 ? Direction.SOUTH : Direction.NORTH; case 2 -> sx > 0 ? Direction.WEST : Direction.EAST; case 3 -> sx > 0 ? Direction.NORTH : Direction.SOUTH; default -> sx > 0 ? Direction.EAST : Direction.WEST; };
+			w.set(X.applyAsInt(lx, 0), Y + 1, Z.applyAsInt(lx, 0), st(pal[0] + "_trapdoor").setValue(BlockStateProperties.HALF, net.minecraft.world.level.block.state.properties.Half.TOP).setValue(BlockStateProperties.HORIZONTAL_FACING, out));
+			w.set(X.applyAsInt(lx, 0), Y + 2, Z.applyAsInt(lx, 0), (seed + sx) % 3 == 0 ? st("potted_azure_bluet") : st("potted_red_tulip"));
+			for (int dz = -1; dz <= 1; dz += 2)
+				w.set(X.applyAsInt(lx, dz), Y + 2, Z.applyAsInt(lx, dz), st(pal[0] + "_trapdoor").setValue(BlockStateProperties.OPEN, true).setValue(BlockStateProperties.HORIZONTAL_FACING, out));
+		}
+		// 침대 + 식탁
+		Direction back = front.getOpposite();
+		w.set(X.applyAsInt(hw - 1, 0), Y + 1, Z.applyAsInt(hw - 1, 0), st(pal[4] + "_bed").setValue(BlockStateProperties.HORIZONTAL_FACING, back).setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.FOOT));
+		w.set(X.applyAsInt(hw - 1, -1), Y + 1, Z.applyAsInt(hw - 1, -1), st(pal[4] + "_bed").setValue(BlockStateProperties.HORIZONTAL_FACING, back).setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
+		w.set(X.applyAsInt(-1, 1), Y + 1, Z.applyAsInt(-1, 1), st(pal[0] + "_fence"));
+		w.set(X.applyAsInt(-1, 1), Y + 2, Z.applyAsInt(-1, 1), st(pal[1] + "_pressure_plate"));
 		// 굴뚝 + 실내 + 화분 + 앞 등불
 		int chx = X.applyAsInt(hw - 1, -hd + 1), chz = Z.applyAsInt(hw - 1, -hd + 1);
 		for (int y = Y + 1; y <= Y + 9; y++) w.set(chx, y, chz, st("bricks"));
@@ -387,6 +407,219 @@ public final class Outposts {
 			int x = o.x + (q < 2 ? -3 : 3), z = o.z + (q % 2 == 0 ? -3 : 3);
 			w.set(x, Y + 1, z, st("stone_brick_wall")); w.set(x, Y + 2, z, st("lantern"));
 		}
+	}
+
+	// ---------------- 자연: 바위 · 쓰러진 통나무 · 덤불 · 꽃무리 · 연못 · 풀 · 절벽 덩굴 ----------------
+	private static boolean nearPoi(Plan p, int x, int z, int pad) {
+		for (Poi o : p.pois) if (Math.abs(o.x - x) < (o.type == VILLAGE ? 26 : 13) + pad && Math.abs(o.z - z) < (o.type == VILLAGE ? 26 : 13) + pad) return true;
+		for (int[] r : ROOSTS) if (Math.abs(r[0] - x) < 14 + pad && Math.abs(r[2] - z) < 14 + pad) return true;
+		return false;
+	}
+
+	private static boolean soil(W w, int x, int y, int z) {
+		return w.get(x, y, z).is(net.minecraft.tags.BlockTags.DIRT) && w.air(x, y + 1, z);
+	}
+
+	private static void nature(W w, SkyLayout.Island is, Plan p) {
+		// 1) 칸마다 하나씩: 바위, 쓰러진 통나무, 덤불, 꽃무리, 연못
+		int cell = 11;
+		for (int cx = Math.floorDiv(w.minX, cell) - 1; cx <= Math.floorDiv(w.maxX, cell) + 1; cx++)
+			for (int cz = Math.floorDiv(w.minZ, cell) - 1; cz <= Math.floorDiv(w.maxZ, cell) + 1; cz++) {
+				int s = h(cx, 913, cz);
+				int x = cx * cell + 2 + s % 7, z = cz * cell + 2 + (s / 7) % 7;
+				if (Math.hypot(x - is.x, z - is.z) > is.r * 0.85) continue;
+				int y = SkyLayout.surfaceTop(x, z);
+				if (y == Integer.MIN_VALUE || nearPoi(p, x, z, 4) || Arenas.near(x, z, Arenas.R + 6) != null) continue;
+				boolean bridge = false;
+				for (SkyLayout.Bridge b : SkyLayout.BRIDGES) if (SkyLayout.segDist(x, z, b) < b.width + 5 || Math.hypot(b.bx - x, b.bz - z) < 12 || Math.hypot(b.ax - x, b.az - z) < 12) { bridge = true; break; }
+				if (bridge) continue;
+				int k = (s / 49) % 100;
+				if (k < 16) boulder(w, x, y, z, s);
+				else if (k < 24) fallenLog(w, x, y, z, s, is);
+				else if (k < 44) bush(w, x, y, z, s);
+				else if (k < 60) flowers(w, x, y, z, s);
+				else if (k < 63) pond(w, x, y, z, s);
+			}
+		// 2) 풀 · 고사리 · 덩굴
+		for (int x = w.minX; x <= w.maxX; x++) for (int z = w.minZ; z <= w.maxZ; z++) {
+			int y = SkyLayout.surfaceTop(x, z);
+			if (y == Integer.MIN_VALUE) continue;
+			int k = h(x, 77, z) % 100;
+			if (k < 9 && soil(w, x, y, z)) w.set(x, y + 1, z, k < 6 ? st("short_grass") : k < 8 ? st("fern") : st("dandelion"));
+			// 섬 가장자리 절벽에 늘어진 덩굴 (계산된 지형으로 옆 칸이 비었는지 판단)
+			if (h(x, 78, z) % 3 == 0) for (Direction d : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST}) {
+				int nx = x + d.getStepX(), nz = z + d.getStepZ();
+				int ny = SkyLayout.surfaceTop(nx, nz);
+				if (ny != Integer.MIN_VALUE && ny > y - 6) continue;
+				if (!w.in(nx, nz)) continue;
+				int len = 3 + h(x, 79, z) % 7;
+				var prop = switch (d) { case NORTH -> BlockStateProperties.SOUTH; case SOUTH -> BlockStateProperties.NORTH; case EAST -> BlockStateProperties.WEST; default -> BlockStateProperties.EAST; };
+				for (int dy = 0; dy < len; dy++) {
+					if (!w.air(nx, y - dy, nz) || w.air(x, y - dy, z)) break;
+					w.set(nx, y - dy, nz, st("vine").setValue(prop, true));
+				}
+				break;
+			}
+		}
+	}
+
+	private static void boulder(W w, int x, int y, int z, int s) {
+		double R = 1.4 + (s % 5) * 0.35;
+		String[] mat = {"stone", "andesite", "cobblestone", "mossy_cobblestone", "stone"};
+		for (int dx = -3; dx <= 3; dx++) for (int dz = -3; dz <= 3; dz++) for (int dy = -1; dy <= 3; dy++) {
+			double d = Math.sqrt(dx * dx + dz * dz + dy * dy * 1.6) + (h(x + dx, dy, z + dz) % 3) * 0.25;
+			if (d <= R) w.set(x + dx, y + dy, z + dz, st(mat[h(x + dx, dy + 5, z + dz) % mat.length]));
+		}
+		for (int dx = -2; dx <= 2; dx++) for (int dz = -2; dz <= 2; dz++) {
+			int top = y + 3;
+			while (top > y - 1 && w.air(x + dx, top, z + dz)) top--;
+			if (top >= y && w.air(x + dx, top + 1, z + dz) && h(x + dx, 9, z + dz) % 3 == 0) w.set(x + dx, top + 1, z + dz, st("moss_carpet"));
+		}
+	}
+
+	private static void fallenLog(W w, int x, int y, int z, int s, SkyLayout.Island is) {
+		boolean ex = s % 2 == 0;
+		String[] logs = {"oak_log", "spruce_log", "birch_log", "dark_oak_log"};
+		BlockState l = st(logs[s % 4]).setValue(BlockStateProperties.AXIS, ex ? Direction.Axis.X : Direction.Axis.Z);
+		int len = 4 + s % 3;
+		for (int i = 0; i < len; i++) {
+			int px = ex ? x + i : x, pz = ex ? z : z + i;
+			int py = SkyLayout.surfaceTop(px, pz);
+			if (py == Integer.MIN_VALUE || Math.abs(py - y) > 1) break;
+			w.set(px, y + 1, pz, l);
+			if (h(px, 4, pz) % 2 == 0) w.set(px, y + 2, pz, st("moss_carpet"));
+			else if (h(px, 5, pz) % 3 == 0) w.set(px, y + 2, pz, h(px, 6, pz) % 2 == 0 ? st("brown_mushroom") : st("red_mushroom"));
+		}
+	}
+
+	private static void bush(W w, int x, int y, int z, int s) {
+		if (!soil(w, x, y, z)) return;
+		BlockState leaf = (s % 3 == 0 ? st("flowering_azalea_leaves") : s % 3 == 1 ? st("azalea_leaves") : st("oak_leaves")).setValue(BlockStateProperties.PERSISTENT, true);
+		for (int dx = -1; dx <= 1; dx++) for (int dz = -1; dz <= 1; dz++) {
+			if (Math.abs(dx) + Math.abs(dz) == 2 && h(x + dx, 1, z + dz) % 2 == 0) continue;
+			if (w.air(x + dx, y + 1, z + dz)) w.set(x + dx, y + 1, z + dz, leaf);
+		}
+		if (s % 4 == 0) w.set(x, y + 2, z, leaf);
+	}
+
+	private static void flowers(W w, int x, int y, int z, int s) {
+		String[][] sets = {{"poppy", "oxeye_daisy", "cornflower"}, {"allium", "azure_bluet", "lily_of_the_valley"}, {"dandelion", "orange_tulip", "red_tulip"}, {"pink_tulip", "white_tulip", "cornflower"}};
+		String[] f = sets[s % sets.length];
+		for (int dx = -3; dx <= 3; dx++) for (int dz = -3; dz <= 3; dz++) {
+			if (dx * dx + dz * dz > 9 || h(x + dx, 2, z + dz) % 3 == 0) continue;
+			int py = SkyLayout.surfaceTop(x + dx, z + dz);
+			if (py != Integer.MIN_VALUE && soil(w, x + dx, py, z + dz)) w.set(x + dx, py + 1, z + dz, st(f[h(x + dx, 3, z + dz) % f.length]));
+		}
+		if (s % 5 == 0 && soil(w, x, y, z)) { w.set(x, y + 1, z, st("rose_bush").setValue(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.LOWER)); w.set(x, y + 2, z, st("rose_bush").setValue(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER)); }
+	}
+
+	private static void pond(W w, int x, int y, int z, int s) {
+		double R = 2.6 + (s % 3) * 0.6;
+		for (int dx = -4; dx <= 4; dx++) for (int dz = -4; dz <= 4; dz++) {
+			double d = Math.hypot(dx, dz) + (h(x + dx, 7, z + dz) % 3) * 0.2;
+			int py = SkyLayout.surfaceTop(x + dx, z + dz);
+			if (py != y) { if (d <= R + 0.5) return; else continue; }   // 평평한 곳만
+		}
+		for (int dx = -4; dx <= 4; dx++) for (int dz = -4; dz <= 4; dz++) {
+			double d = Math.hypot(dx, dz) + (h(x + dx, 7, z + dz) % 3) * 0.2;
+			int px = x + dx, pz = z + dz;
+			if (d <= R) {
+				w.clear(px, y, pz, 3);
+				w.set(px, y, pz, st("water")); w.set(px, y - 1, pz, d < R - 1.2 ? st("water") : st("clay")); w.set(px, y - 2, pz, st("clay"));
+				if (d < R - 1 && h(px, 8, pz) % 6 == 0) w.set(px, y + 1, pz, st("lily_pad"));
+			} else if (d <= R + 1.1) {
+				w.set(px, y, pz, h(px, 9, pz) % 3 == 0 ? st("mud") : st("grass_block"));
+				if (h(px, 10, pz) % 3 == 0) { w.clear(px, y, pz, 2); w.set(px, y + 1, pz, st("sugar_cane")); if (h(px, 11, pz) % 2 == 0) w.set(px, y + 2, pz, st("sugar_cane")); }
+				else if (h(px, 10, pz) % 4 == 1) w.set(px, y + 1, pz, st("fern"));
+			}
+		}
+	}
+
+	// ---------------- 새 시설: 밭 · 풍차 · 묘지 · 은둔자의 오두막 ----------------
+	private static void farm(W w, Poi o, String[] pal) {
+		int Y = o.y;
+		String[] crop = {"wheat", "carrots", "potatoes", "beetroots"};
+		for (int dx = -7; dx <= 7; dx++) for (int dz = -6; dz <= 6; dz++) {
+			int x = o.x + dx, z = o.z + dz;
+			boolean edge = Math.abs(dx) == 7 || Math.abs(dz) == 6;
+			if (edge) {
+				w.pad(x, Y, z, st("dirt_path"), 4);
+				if (!(dz == 6 && Math.abs(dx) <= 1)) w.set(x, Y + 1, z, st(pal[0] + "_fence"));
+				if (Math.abs(dx) == 7 && Math.abs(dz) == 6) { w.set(x, Y + 1, z, st(pal[0] + "_fence")); w.set(x, Y + 2, z, st("lantern")); }
+			} else if (dx == 0) { w.pad(x, Y, z, st("water"), 4); w.set(x, Y - 1, z, st("dirt")); }
+			else {
+				w.pad(x, Y, z, st("farmland").setValue(BlockStateProperties.MOISTURE, 7), 4);
+				String c = crop[(Math.abs(dx) / 2 + (dz < 0 ? 1 : 0) + o.seed) % 4];
+				int age = c.equals("beetroots") ? 3 : 7;
+				var cs = st(c);
+				cs = cs.hasProperty(BlockStateProperties.AGE_7) ? cs.setValue(BlockStateProperties.AGE_7, Math.min(7, 4 + h(x, 1, z) % 4)) : cs.hasProperty(BlockStateProperties.AGE_3) ? cs.setValue(BlockStateProperties.AGE_3, 3) : cs;
+				w.set(x, Y + 1, z, cs);
+			}
+		}
+		// 허수아비
+		int sx = o.x + 4, sz = o.z - 3;
+		w.set(sx, Y + 1, sz, st(pal[0] + "_fence")); w.set(sx, Y + 2, sz, st(pal[0] + "_fence"));
+		w.set(sx - 1, Y + 2, sz, st(pal[0] + "_fence")); w.set(sx + 1, Y + 2, sz, st(pal[0] + "_fence"));
+		w.set(sx, Y + 3, sz, st("carved_pumpkin").setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH));
+		w.set(o.x - 5, Y + 1, o.z + 7, st("hay_block")); w.set(o.x - 4, Y + 1, o.z + 7, st("composter"));
+	}
+
+	private static void windmill(W w, Poi o, String[] pal) {
+		int Y = o.y;
+		BlockState stone = st(pal[2]), plank = st(pal[1] + "_planks"), logS = st(log(pal[0]));
+		for (int dx = -4; dx <= 4; dx++) for (int dz = -4; dz <= 4; dz++) {
+			double r = Math.hypot(dx, dz);
+			if (r > 4.4) continue;
+			w.pad(o.x + dx, Y, o.z + dz, st("cobblestone"), 18);
+			for (int y = 1; y <= 13; y++) {
+				double rr = 3.6 - y * 0.12;
+				if (r <= rr + 0.5 && r > rr - 0.7) {
+					boolean door = dz > 0 && dx == 0 && y <= 2;
+					boolean win = (y == 6 || y == 10) && (dx == 0 || dz == 0);
+					w.set(o.x + dx, Y + y, o.z + dz, door ? st("air") : win ? st("glass_pane") : y <= 4 ? stone : plank);
+				}
+			}
+			for (int k = 0; k < 5; k++) {   // 원뿔 지붕
+				double rr = 3.4 - k * 0.8;
+				if (r <= rr + 0.5 && r > rr - 0.9) w.set(o.x + dx, Y + 14 + k, o.z + dz, st(pal[3] + "_slab").setValue(BlockStateProperties.SLAB_TYPE, net.minecraft.world.level.block.state.properties.SlabType.DOUBLE));
+			}
+		}
+		// 날개 (남쪽 면, X자)
+		int hx = o.x, hy = Y + 11, hz = o.z + 4;
+		w.set(hx, hy, hz, logS.setValue(BlockStateProperties.AXIS, Direction.Axis.Z));
+		for (int i = 1; i <= 7; i++) {
+			int[][] arms = {{i, i}, {-i, i}, {i, -i}, {-i, -i}};
+			for (int[] a : arms) {
+				w.set(hx + a[0], hy + a[1], hz + 1, st(pal[0] + "_fence"));
+				if (i >= 3) w.set(hx + a[0] + (a[0] > 0 ? -1 : 1), hy + a[1], hz + 1, st("white_wool"));
+			}
+		}
+		w.set(o.x + 4, Y + 1, o.z + 4, st("hay_block")); w.set(o.x + 5, Y + 1, o.z + 4, st("barrel"));
+	}
+
+	private static void graveyard(W w, Poi o) {
+		int Y = o.y;
+		for (int dx = -7; dx <= 7; dx++) for (int dz = -6; dz <= 6; dz++) {
+			int x = o.x + dx, z = o.z + dz;
+			w.pad(x, Y, z, h(x, 1, z) % 4 == 0 ? st("coarse_dirt") : h(x, 1, z) % 5 == 0 ? st("podzol") : st("grass_block"), 4);
+			boolean edge = Math.abs(dx) == 7 || Math.abs(dz) == 6;
+			if (edge && !(dz == 6 && Math.abs(dx) <= 1)) w.set(x, Y + 1, z, Math.abs(dx) == 7 && Math.abs(dz) == 6 ? st("stone_bricks") : st("dark_oak_fence"));
+			else if (!edge && dx % 3 == 0 && dz % 3 == 0 && dx != 0) {   // 묘비
+				w.set(x, Y + 1, z, h(x, 2, z) % 3 == 0 ? st("mossy_stone_brick_wall") : st("cobblestone_wall"));
+				if (h(x, 3, z) % 2 == 0) w.set(x, Y + 2, z, st("stone_button").setValue(BlockStateProperties.ATTACH_FACE, net.minecraft.world.level.block.state.properties.AttachFace.FLOOR));
+				w.set(x, Y, z + 1, st("coarse_dirt"));
+				if (h(x, 4, z) % 3 == 0) w.set(x + 1, Y + 1, z, st("dead_bush"));
+			}
+		}
+		for (int y = 1; y <= 5; y++) w.set(o.x, Y + y, o.z - 4, y == 4 ? st("soul_lantern") : st("stone_brick_wall"));
+		w.set(o.x - 1, Y + 4, o.z - 4, st("stone_brick_wall")); w.set(o.x + 1, Y + 4, o.z - 4, st("stone_brick_wall"));
+		w.set(o.x + 6, Y + 1, o.z - 5, st("soul_campfire"));
+	}
+
+	private static void hut(W w, Poi o, String[] pal) {
+		cottage(w, o.x, o.y, o.z, o.seed % 4, pal, o.seed);
+		w.set(o.x + 5, o.y + 1, o.z + 5, st("campfire"));
+		w.set(o.x + 6, o.y + 1, o.z + 4, st("barrel")); w.set(o.x - 5, o.y + 1, o.z + 5, st("chest"));
 	}
 
 	// ---------------- 지역 용의 둥지 ----------------
