@@ -201,6 +201,7 @@ public final class Capital {
 		if (maxX >= ROOST_X - ROOST_R - 3 && minX <= ROOST_X + ROOST_R + 3 && maxZ >= ROOST_Z - ROOST_R - 3 && minZ <= ROOST_Z + ROOST_R + 3) roost();
 		if (maxX >= -40 && minX <= 40 && maxZ >= -40 && minZ <= 40) castle();
 		if (maxX >= -12 && minX <= 12 && maxZ >= -12 && minZ <= 12) core();
+		grandStairs();
 	}
 
 	/** 창문마다 바깥에 덧문 두 짝 + 창틀 화단 (손으로 꾸민 느낌) */
@@ -233,6 +234,67 @@ public final class Capital {
 				}
 			}
 		}
+	}
+
+	// ---------------- 바깥을 크게 도는 큰 계단 (5층 → 1층) ----------------
+	/** 구간 k: k층 가장자리 밖에서 시작해 반지름 RS[k]를 따라 돌며 k-1층으로 내려감 (2칸에 1칸씩) */
+	public static final double[] STAIR_R = {0, 106, 86, 68, 51};
+	public static final double[] STAIR_START = {0, 274, 228, 163, 98};   // 시작 각도(도)
+
+	static double stairEnd(int k) { return STAIR_START[k] + Math.toDegrees(2.0 * (FY[k] - FY[k - 1]) / STAIR_R[k]); }
+
+	private void grandStairs() {
+		BlockState brick = st(Blocks.STONE_BRICKS), rail = st(Blocks.STONE_BRICK_WALL);
+		for (int k = 4; k >= 1; k--) {
+			double Rs = STAIR_R[k], a0 = Math.toRadians(STAIR_START[k]), a1 = Math.toRadians(stairEnd(k));
+			double reach = Rs + 4;
+			if (maxX < -reach || minX > reach || maxZ < -reach || minZ > reach) continue;
+			for (int x = minX; x <= maxX; x++) for (int z = minZ; z <= maxZ; z++) {
+				double cx = x + 0.5, cz = z + 0.5, r = Math.hypot(cx, cz);
+				double th = Math.atan2(cz, cx);
+				// 각도를 시작 각도 기준으로 맞춤
+				double rel = th - a0;
+				while (rel < -Math.PI) rel += 2 * Math.PI;
+				while (rel > Math.PI) rel -= 2 * Math.PI;
+				double s = rel * Rs;   // 계단을 따라 간 거리
+				// 꼭대기 다리: k층 가장자리에서 계단 시작점까지
+				double ang0 = a0 - 1.0 / Rs;
+				double dl = Math.abs(Math.atan2(Math.sin(th - ang0), Math.cos(th - ang0))) * r;
+				if (dl <= 1.6 && r >= FR[k] - 4 && r <= Rs + 1.6 && s < 0.5) {
+					set(x, FY[k], z, brick);
+					for (int y = FY[k] + 1; y <= FY[k] + 4; y++) set(x, y, z, st(Blocks.AIR));
+					if (dl > 1.0 && r > FR[k]) set(x, FY[k] + 1, z, rail);
+					continue;
+				}
+				if (s < 0 || rel > a1 - a0) continue;
+				double dr = Math.abs(r - Rs);
+				if (dr > 2.6) continue;
+				int si = (int) Math.floor(s);
+				int y = FY[k] - si / 2;   // 평평 → 계단(같은 높이, 반 칸 내려감) → 한 칸 아래 평평 …
+				if (y < FY[k - 1]) continue;
+				if (dr <= 1.5) {
+					// 걷는 칸: 홀수 칸은 계단(높은 쪽이 시작 방향), 짝수 칸은 평평한 돌
+					Direction back = cardinal(Math.sin(th), -Math.cos(th));
+					BlockState step = si % 2 == 1 ? b("stone_brick_stairs").setValue(BlockStateProperties.HORIZONTAL_FACING, back) : brick;
+					if (y == FY[k - 1]) step = brick;
+					set(x, y, z, step);
+					set(x, y - 1, z, brick);
+					for (int yy = y + 1; yy <= y + 4; yy++) set(x, yy, z, st(Blocks.AIR));
+					// 8칸마다 아래층 바닥까지 받침 기둥
+					if (si % 10 == 5 && dr < 0.6) for (int yy = y - 2; yy > FY[k - 1] && air(x, yy, z); yy--) set(x, yy, z, brick(x, yy, z));
+				} else if (y > FY[k - 1] + 1) {
+					// 양쪽 난간 + 등불
+					set(x, y, z, brick);
+					set(x, y + 1, z, si % 12 == 0 ? st(Blocks.CHISELED_STONE_BRICKS) : rail);
+					if (si % 12 == 0) set(x, y + 2, z, st(Blocks.LANTERN));
+				}
+			}
+		}
+	}
+
+	private static Direction cardinal(double dx, double dz) {
+		if (Math.abs(dx) > Math.abs(dz)) return dx > 0 ? Direction.EAST : Direction.WEST;
+		return dz > 0 ? Direction.SOUTH : Direction.NORTH;
 	}
 
 	// ---------------- 층 바닥: 광장 · 큰길 · 가장자리 성벽 ----------------
@@ -557,7 +619,7 @@ public final class Capital {
 		set(x, y, z, b("dark_oak_wall_sign").setValue(BlockStateProperties.HORIZONTAL_FACING, d));
 		try {
 			if (lv.getBlockEntity(new BlockPos(x, y, z)) instanceof SignBlockEntity sb) {
-				List<Component> lines = List.of(Component.literal(FLOOR_NAME[f]), Component.literal("빛 기둥: 상승"), Component.literal("Shift: 하강"), Component.empty());
+				List<Component> lines = List.of(Component.literal(FLOOR_NAME[f]), Component.literal("빛 기둥: 상승"), Component.literal("아래를 보면 하강"), Component.empty());
 				sb.setText(new SignText(lines, lines, net.minecraft.world.item.DyeColor.WHITE, true), net.minecraft.world.level.block.entity.SignTextSlot.FRONT);
 			}
 		} catch (Throwable ignored) {}

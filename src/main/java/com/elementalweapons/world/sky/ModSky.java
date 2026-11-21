@@ -111,7 +111,8 @@ public final class ModSky {
 		}
 		var lev = net.minecraft.world.effect.MobEffects.LEVITATION;
 		int floor = Capital.floorAt(p.getY());
-		if (p.isShiftKeyDown()) {
+		// 내려가기: Shift를 누르거나 발밑(아래)을 바라보기 — 웅크리면 구멍 가장자리에서 못 떨어지므로 아래 보기로도 됨
+		if (p.isShiftKeyDown() || p.getXRot() > 50) {
 			p.removeEffect(lev);
 			if (!p.onGround()) {   // 일정한 속도로 내려감 (층당 약 3초)
 				Vec3 v = p.getDeltaMovement();
@@ -119,7 +120,7 @@ public final class ModSky {
 				p.syncVelocity = true;
 				p.resetFallDistance();
 			}
-			if (p.tickCount % 10 == 0) p.sendOverlayMessage(Component.literal("▼ 내려가는 중 · " + Capital.FLOOR_NAME[floor] + "  (원하는 층에서 Shift를 떼고 옆으로)").withStyle(ChatFormatting.AQUA));
+			if (p.tickCount % 10 == 0) p.sendOverlayMessage(Component.literal("▼ 내려가는 중 · " + Capital.FLOOR_NAME[floor] + "  (원하는 층에서 앞을 보고 옆으로 나가세요)").withStyle(ChatFormatting.AQUA));
 			return;
 		}
 		// 1층 바닥(빛 발판)에 서 있으면 1초 기다린 뒤 출발 (내려온 사람이 바로 다시 뜨지 않게)
@@ -129,7 +130,7 @@ public final class ModSky {
 		}
 		p.addEffect(new net.minecraft.world.effect.MobEffectInstance(lev, 6, 6, false, false));
 		p.resetFallDistance();
-		if (p.tickCount % 10 == 0) p.sendOverlayMessage(Component.literal("▲ 올라가는 중 · " + Capital.FLOOR_NAME[floor] + "  (원하는 층에서 옆으로 나가세요 · Shift: 내려가기)").withStyle(ChatFormatting.AQUA));
+		if (p.tickCount % 10 == 0) p.sendOverlayMessage(Component.literal("▲ 올라가는 중 · " + Capital.FLOOR_NAME[floor] + "  (원하는 층에서 옆으로 나가세요 · 아래를 보면 내려가기)").withStyle(ChatFormatting.AQUA));
 	}
 
 	private static net.minecraft.world.entity.EntityType<? extends com.elementalweapons.mob.ElementalMerchant> npcType(String t) {

@@ -204,7 +204,7 @@ public final class ShotHarness {
 		L.add(new double[]{0, FY[2] + 9, 68, 0, FY[2] + 2, 0, 6000});               // 11 3층
 		L.add(lotView(com.elementalweapons.world.sky.Capital.Kind.RIFT_GATE, 3, 14, 6)); // 12 4층
 		L.add(new double[]{0, FY[4] + 12, 58, 0, FY[4] + 10, 0, 6000});             // 13 5층 왕성
-		L.add(new double[]{110, 235, -95, 0, 220, 0, 6000});                        // 14 북동쪽 전경
+		L.add(new double[]{-30, 262, -130, -20, 230, -55, 6000});                   // 14 서북쪽: 바깥 큰 계단
 		L.add(new double[]{120, 225, 120, 0, 215, 0, 18000});                       // 15 밤의 천공성
 		return L.toArray(new double[0][]);
 	}
