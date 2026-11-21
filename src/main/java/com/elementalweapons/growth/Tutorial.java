@@ -70,7 +70,7 @@ public final class Tutorial {
 			case 0 -> "직업 고르기";
 			case 1 -> weapon(c) + " 기술 써 보기";
 			case 2 -> "[Z] 구르기로 피하기";
-			case 3 -> "대교를 건너 원소 지역으로";
+			case 3 -> "용을 타고(또는 대교로) 원소 지역으로";
 			case 4 -> "지역 몹 처치";
 			case 5 -> "[K] 성장 창에서 스탯 찍기";
 			case 6 -> "섬에서 원소 광석 캐기";
@@ -95,7 +95,7 @@ public final class Tutorial {
 				default -> "무기를 들고 우클릭";
 			};
 			case 2 -> "Z: 바라보는 쪽으로 구르며 잠깐 무적";
-			case 3 -> "수도 가장자리의 대교로 걸어가세요. 떨어져도 안전해요";
+			case 3 -> "1층 남쪽 용의 둥지에서 용을 우클릭해 타세요 (대교로 걸어가도 돼요)";
 			case 4 -> switch (c) {
 				case MAGE, SUPPORT, RANGER -> "거리를 벌리고 싸우세요 · 밤에 몹이 더 많아요";
 				default -> "좌클릭을 이어 치면 콤보 · 밤에 몹이 더 많아요";

@@ -48,7 +48,7 @@ public class SkyDragon extends PathfinderMob implements PosedEntity {
 
 	public static AttributeSupplier.Builder attributes() {
 		return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 200).add(Attributes.MOVEMENT_SPEED, 0.0)
-				.add(Attributes.FLYING_SPEED, 0.12).add(Attributes.KNOCKBACK_RESISTANCE, 1.0);
+				.add(Attributes.FLYING_SPEED, 0.12).add(Attributes.KNOCKBACK_RESISTANCE, 1.0).add(Attributes.CAMERA_DISTANCE, 9.0);   // 타면 카메라가 멀리서 봄
 	}
 
 	public void setHome(BlockPos pos) { this.home = pos; }

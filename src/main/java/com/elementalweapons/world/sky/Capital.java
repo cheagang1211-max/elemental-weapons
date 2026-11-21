@@ -193,6 +193,7 @@ public final class Capital {
 		for (int f = 0; f < FY.length; f++) decor(f);
 		for (Pillar p : PILLARS) if (p.x + 5 >= minX && p.x - 5 <= maxX && p.z + 5 >= minZ && p.z - 5 <= maxZ) pillar(p);
 		underside();
+		lights();
 		if (maxX >= ROOST_X - ROOST_R - 3 && minX <= ROOST_X + ROOST_R + 3 && maxZ >= ROOST_Z - ROOST_R - 3 && minZ <= ROOST_Z + ROOST_R + 3) roost();
 		if (maxX >= -40 && minX <= 40 && maxZ >= -40 && minZ <= 40) castle();
 		if (maxX >= -12 && minX <= 12 && maxZ >= -12 && minZ <= 12) core();
@@ -441,15 +442,30 @@ public final class Capital {
 				if (r > FR[f] - 2) continue;
 				int bottom = ceiling(x, z, FY[f - 1] + 1);
 				if (bottom >= 399 || bottom > FY[f]) continue;
-				int k = h(x, f * 7, z) % 260;
-				if (k == 0) {   // 사슬 + 등불
+				int k = h(x, f * 7, z) % 420;
+				if (k < 3) {   // 사슬 + 등불
 					int n = 2 + h(x, 1, z) % 4;
 					for (int y = bottom - 1; y >= bottom - n; y--) if (air(x, y, z)) set(x, y, z, st(Blocks.IRON_CHAIN));
 					if (air(x, bottom - n - 1, z)) set(x, bottom - n - 1, z, (h(x, 2, z) % 3 == 0 ? st(Blocks.SOUL_LANTERN) : st(Blocks.LANTERN)).setValue(BlockStateProperties.HANGING, true));
-				} else if (k < 4) {   // 종유석 + 빛나는 끝
+				} else if (k < 4) {   // 종유석 + 빛나는 끝 (드물게)
 					int n = 2 + h(x, 3, z) % 5;
 					for (int y = bottom - 1; y >= bottom - n; y--) if (air(x, y, z)) set(x, y, z, y == bottom - n ? st(Blocks.SHROOMLIGHT) : y > bottom - 2 ? st(Blocks.STONE) : st(Blocks.ANDESITE));
-				} else if (k < 7 && air(x, bottom - 1, z)) set(x, bottom - 1, z, st(Blocks.GLOW_LICHEN).setValue(BlockStateProperties.UP, true));
+				} else if (k < 9 && air(x, bottom - 1, z)) set(x, bottom - 1, z, st(Blocks.GLOW_LICHEN).setValue(BlockStateProperties.UP, true));
+				else if (Math.floorMod(x, 8) == 4 && Math.floorMod(z, 8) == 4 && !air(x, bottom, z)) set(x, bottom, z, h(x, 9, z) % 2 == 0 ? st(Blocks.SHROOMLIGHT) : b("pearlescent_froglight"));   // 천장 빛
+			}
+		}
+	}
+
+	/** 윗층 그늘 아래를 밝히는 보이지 않는 빛 (빛 블록, 7칸 간격) */
+	private void lights() {
+		BlockState light = b("light");
+		for (int x = minX; x <= maxX; x++) for (int z = minZ; z <= maxZ; z++) {
+			for (int f = 0; f < 4; f++) {
+				if (Math.floorMod(x + f * 3, 7) != 0 || Math.floorMod(z + f * 2, 7) != 0) continue;
+				int Y = FY[f];
+				if (!hasFloor(x, z, Y) || Math.hypot(x, z) <= CORE_R + 1) continue;
+				if (ceiling(x, z, Y) - Y > 45) continue;
+				for (int y = Y + 4; y <= Y + 6; y++) if (air(x, y, z)) { set(x, y, z, light); break; }
 			}
 		}
 	}
@@ -672,7 +688,7 @@ public final class Capital {
 				if (r > R - 0.8) {
 					boolean win = y % 5 >= 2 && y % 5 <= 3 && (Math.abs(x) <= 0 || Math.abs(z) <= 0);
 					boolean door = z > 0 && Math.abs(x) <= 1 && y <= 3;
-					o.p(x, y, z, door ? st(Blocks.AIR) : win ? b("purple_stained_glass") : y % 7 == 0 ? st(Blocks.CHISELED_POLISHED_BLACKSTONE) : st(Blocks.POLISHED_BLACKSTONE_BRICKS));
+					o.p(x, y, z, door ? st(Blocks.AIR) : win ? b("magenta_stained_glass") : y % 7 == 0 ? st(Blocks.AMETHYST_BLOCK) : y % 7 == 6 ? st(Blocks.CHISELED_QUARTZ_BLOCK) : st(Blocks.CALCITE));
 				} else if (y == 7 && r > 2.5) o.p(x, y, z, st(Blocks.DARK_OAK_PLANKS));
 				else if (r > R - 2 && y <= 2 && !(z > 0 && Math.abs(x) <= 1)) o.p(x, y, z, st(Blocks.BOOKSHELF));
 				else o.p(x, y, z, st(Blocks.AIR));
@@ -683,6 +699,7 @@ public final class Capital {
 			}
 		}
 		o.p(0, 1, 0, st(Blocks.ENCHANTING_TABLE));
+		for (int q = 0; q < 4; q++) o.p(q < 2 ? -R - 1 : R + 1, 4, q % 2 == 0 ? -2 : 2, st(Blocks.LANTERN));
 		o.p(0, H + 10, 0, st(Blocks.AMETHYST_CLUSTER));
 		o.p(0, 6, 0, st(Blocks.SOUL_LANTERN).setValue(BlockStateProperties.HANGING, true));
 		o.p(-2, 1, 3, b("purple_candle")); o.p(2, 1, 3, b("purple_candle"));

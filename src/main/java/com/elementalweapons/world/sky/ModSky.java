@@ -95,11 +95,15 @@ public final class ModSky {
 			return;
 		}
 		var lev = net.minecraft.world.effect.MobEffects.LEVITATION;
-		var slow = net.minecraft.world.effect.MobEffects.SLOW_FALLING;
 		int floor = Capital.floorAt(p.getY());
 		if (p.isShiftKeyDown()) {
 			p.removeEffect(lev);
-			p.addEffect(new net.minecraft.world.effect.MobEffectInstance(slow, 10, 0, false, false));
+			if (!p.onGround()) {   // 일정한 속도로 내려감 (층당 약 3초)
+				Vec3 v = p.getDeltaMovement();
+				p.setDeltaMovement(v.x * 0.5, -0.55, v.z * 0.5);
+				p.syncVelocity = true;
+				p.resetFallDistance();
+			}
 			if (p.tickCount % 10 == 0) p.sendOverlayMessage(Component.literal("▼ 내려가는 중 · " + Capital.FLOOR_NAME[floor] + "  (원하는 층에서 Shift를 떼고 옆으로)").withStyle(ChatFormatting.AQUA));
 			return;
 		}

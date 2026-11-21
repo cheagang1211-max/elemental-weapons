@@ -190,8 +190,8 @@ public final class ShotHarness {
 		var C = com.elementalweapons.world.sky.Capital.class;
 		int[] FY = com.elementalweapons.world.sky.Capital.FY;
 		java.util.List<double[]> L = new java.util.ArrayList<>();
-		L.add(new double[]{230, 235, 250, 0, 215, 0, 6000});                        // 0 천공성 전경
-		L.add(new double[]{0, 205, 300, 0, 212, 0, 6000});                          // 1 남쪽 정면
+		L.add(new double[]{100, 225, 115, 0, 212, 0, 6000});                        // 0 천공성 전경 (지형 불러오기용)
+		L.add(new double[]{0, 200, 165, 0, 220, 0, 6000});                          // 1 남쪽 정면
 		L.add(new double[]{14, FY[0] + 6, 46, 0, FY[0] + 8, 0, 6000});              // 2 1층 광장과 탑
 		L.add(new double[]{0, FY[0] + 14, 66, 0, FY[0] + 1, 108, 6000});            // 3 용의 둥지
 		L.add(lotView(com.elementalweapons.world.sky.Capital.Kind.MARKET, 0, 24, 8));  // 4
@@ -204,7 +204,8 @@ public final class ShotHarness {
 		L.add(new double[]{0, FY[2] + 9, 68, 0, FY[2] + 2, 0, 6000});               // 11 3층
 		L.add(lotView(com.elementalweapons.world.sky.Capital.Kind.RIFT_GATE, 3, 14, 6)); // 12 4층
 		L.add(new double[]{0, FY[4] + 12, 58, 0, FY[4] + 10, 0, 6000});             // 13 5층 왕성
-		L.add(new double[]{260, 240, -200, 0, 220, 0, 18000});                      // 14 밤의 천공성
+		L.add(new double[]{110, 235, -95, 0, 220, 0, 6000});                        // 14 북동쪽 전경
+		L.add(new double[]{120, 225, 120, 0, 215, 0, 18000});                       // 15 밤의 천공성
 		return L.toArray(new double[0][]);
 	}
 
@@ -240,11 +241,12 @@ public final class ShotHarness {
 			int idx = f / per2, k = f % per2;
 			if (k == 0) server.execute(() -> { ServerPlayer p = sp(server);
 				p.getAbilities().flying = false; p.onUpdateAbilities();
-				p.teleportTo(0.5, com.elementalweapons.world.sky.Capital.FY[0] + 1, 30.5);
+				server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set 6000");
+				p.teleportTo(0.5, com.elementalweapons.world.sky.Capital.FY[4] + 1, 22.5);
 				if (current != null) current.discard();
 				Entity e = who[idx].create(p.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
 				double dist = idx == 4 ? 9 : 3.2;
-				e.snapTo(0.5, com.elementalweapons.world.sky.Capital.FY[0] + 1, 30.5 + dist, 180, 0);
+				e.snapTo(0.5, com.elementalweapons.world.sky.Capital.FY[4] + 1, 22.5 + dist, 180, 0);
 				p.level().addFreshEntity(e); current = e; });
 			if (k > 2 && current != null) { mc.options.setCameraType(CameraType.FIRST_PERSON); lookAt(mc, current.getX() - 0.5, current.getY() + current.getBbHeight() * 0.55, current.getZ() - 0.5); }
 			if (k == 40) shot(mc, String.format("95%d_%s", idx, BuiltInRegistries.ENTITY_TYPE.getKey(who[idx]).getPath()));
@@ -257,13 +259,13 @@ public final class ShotHarness {
 			if (f == 0) server.execute(() -> { ServerPlayer p = sp(server);
 				if (current != null) { current.teleportTo(0.5, 200, 60.5); p.teleportTo(0.5, 202, 60.5); p.startRiding(current); } });
 			if (f == 5) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
-			if (f > 5 && f < 250) { look(mc, 180, -8); mc.options.keyUp.setDown(f > 20); }
+			if (f == 20) { savedInput = mc.player.input; mc.player.input = new net.minecraft.client.player.ClientInput() { @Override public void tick() { this.moveVector = new net.minecraft.world.phys.Vec2(0, 1); } }; }
+			if (f > 5 && f < 250) look(mc, f < 160 ? 180 : 150, f < 160 ? -8 : 10);
 			if (f == 60) log("용 비행 시작 y=" + String.format("%.1f", mc.player.getY()) + " z=" + String.format("%.1f", mc.player.getZ()));
 			if (f == 120) shot(mc, "960_dragon_flight");
 			if (f == 150) log("용 비행 중 y=" + String.format("%.1f", mc.player.getY()) + " z=" + String.format("%.1f", mc.player.getZ()) + " 탑승=" + mc.player.isPassenger());
-			if (f == 160) { look(mc, 150, 10); }
 			if (f == 175) shot(mc, "961_dragon_flight_side");
-			if (f == 250) { mc.options.keyUp.setDown(false); server.execute(() -> { sp(server).stopRiding(); if (current != null) current.discard(); current = null; }); }
+			if (f == 250) { if (savedInput != null) mc.player.input = savedInput; server.execute(() -> { sp(server).stopRiding(); if (current != null) current.discard(); current = null; }); }
 			return;
 		}
 		f -= 260;
@@ -312,7 +314,8 @@ public final class ShotHarness {
 			if (k == 0) server.execute(() -> { ServerPlayer p = sp(server);
 				p.getAbilities().flying = true; p.getAbilities().mayfly = true; p.onUpdateAbilities();
 				p.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-				p.teleportTo(c[0] + 0.5, c[1], c[2] + 0.5); });
+				p.teleportTo(c[0] + 0.5, c[1], c[2] + 0.5);
+				server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set 6000"); });
 			if (k == 1) mc.options.setCameraType(CameraType.FIRST_PERSON);
 			if (k > 0) { lookAt(mc, c[3], c[4], c[5]); mc.player.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO); }
 			if (k == per3 - 10) shot(mc, String.format("97%02d_region", idx));
@@ -322,6 +325,7 @@ public final class ShotHarness {
 	}
 
 	private static double dodgeZ;
+	private static net.minecraft.client.player.ClientInput savedInput;
 
 	private static BlockPos town;
 
