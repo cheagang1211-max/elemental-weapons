@@ -465,9 +465,9 @@ public final class Capital {
 				int f = floorAt(y), Yf = FY[f], dy = y - Yf;
 				if (y > TOP) {   // 왕성 첨탑 지붕
 					double rr = (CORE_R + 2) * (1 - (y - TOP) / 22.0);
-					if (r <= rr + 0.5 && r > rr - 1.4) set(x, y, z, st(Blocks.WAXED_OXIDIZED_CUT_COPPER));
+					if (r <= rr + 0.5 && r > rr - 1.4) set(x, y, z, b("waxed_oxidized_cut_copper"));
 					else if (r <= rr - 1.4) set(x, y, z, st(Blocks.AIR));
-					if (r < 0.8 && y >= TOP + 20) set(x, y, z, y == TOP + 22 ? st(Blocks.LIGHTNING_ROD) : st(Blocks.GOLD_BLOCK));
+					if (r < 0.8 && y >= TOP + 20) set(x, y, z, y == TOP + 22 ? b("lightning_rod") : st(Blocks.GOLD_BLOCK));
 					continue;
 				}
 				if (r <= SHAFT_R + 0.5) {   // 빛 기둥 (승강기 통로)
@@ -590,7 +590,7 @@ public final class Capital {
 					for (int y = Y + 1; y <= Y + 16; y++) set(x, y, z, tr > 4.3 ? ((y - Y) % 6 >= 2 && (y - Y) % 6 <= 3 && (Math.abs(x - Math.round(tx)) < 1 || Math.abs(z - Math.round(tz)) < 1) ? b("glass_pane") : brick(x, y, z)) : ((y - Y) % 8 == 0 ? st(Blocks.SPRUCE_PLANKS) : st(Blocks.AIR)));
 					for (int k = 0; k < 14; k++) {
 						double rr = 6.5 * (1 - k / 14.0);
-						if (tr <= rr + 0.5 && tr > rr - 1.2) set(x, Y + 17 + k, z, st(Blocks.WAXED_OXIDIZED_CUT_COPPER));
+						if (tr <= rr + 0.5 && tr > rr - 1.2) set(x, Y + 17 + k, z, b("waxed_oxidized_cut_copper"));
 					}
 					if (tr < 0.7) { set(x, Y + 31, z, st(Blocks.GOLD_BLOCK)); set(x, Y + 32, z, b("lightning_rod")); }
 				}

@@ -79,16 +79,16 @@ public final class Shopkeepers {
 			MerchantOffers o = getOffers();
 			Item ae = ModBlocks.item("aether_ingot"), ori = ModBlocks.item("orichalcum_ingot");
 			Item lightC = ModBlocks.item("radiant_crystal"), darkC = ModBlocks.item("umbral_crystal");
-			offer(o, ori, 4, new ItemStack(Items.BOOK), book(level, Enchantments.SHARPNESS, 5));
-			offer(o, ori, 3, new ItemStack(Items.BOOK), book(level, Enchantments.SMITE, 5));
-			offer(o, ori, 4, new ItemStack(Items.BOOK), book(level, Enchantments.LOOTING, 3));
-			offer(o, ori, 3, new ItemStack(Items.BOOK), book(level, Enchantments.SWEEPING_EDGE, 3));
-			offer(o, ori, 4, new ItemStack(Items.BOOK), book(level, Enchantments.PROTECTION, 4));
-			offer(o, ori, 2, new ItemStack(Items.BOOK), book(level, Enchantments.FEATHER_FALLING, 4));
-			offer(o, ori, 3, new ItemStack(Items.BOOK), book(level, Enchantments.EFFICIENCY, 5));
-			offer(o, ori, 4, new ItemStack(Items.BOOK), book(level, Enchantments.FORTUNE, 3));
-			offer(o, ori, 4, new ItemStack(Items.BOOK), book(level, Enchantments.POWER, 5));
-			offer(o, ori, 6, new ItemStack(Items.BOOK), book(level, Enchantments.MENDING, 1));
+			offerBook(o, ori, 4, new ItemStack(Items.BOOK), book(level, Enchantments.SHARPNESS, 5));
+			offerBook(o, ori, 3, new ItemStack(Items.BOOK), book(level, Enchantments.SMITE, 5));
+			offerBook(o, ori, 4, new ItemStack(Items.BOOK), book(level, Enchantments.LOOTING, 3));
+			offerBook(o, ori, 3, new ItemStack(Items.BOOK), book(level, Enchantments.SWEEPING_EDGE, 3));
+			offerBook(o, ori, 4, new ItemStack(Items.BOOK), book(level, Enchantments.PROTECTION, 4));
+			offerBook(o, ori, 2, new ItemStack(Items.BOOK), book(level, Enchantments.FEATHER_FALLING, 4));
+			offerBook(o, ori, 3, new ItemStack(Items.BOOK), book(level, Enchantments.EFFICIENCY, 5));
+			offerBook(o, ori, 4, new ItemStack(Items.BOOK), book(level, Enchantments.FORTUNE, 3));
+			offerBook(o, ori, 4, new ItemStack(Items.BOOK), book(level, Enchantments.POWER, 5));
+			offerBook(o, ori, 6, new ItemStack(Items.BOOK), book(level, Enchantments.MENDING, 1));
 			offer(o, ae, 2, new ItemStack(Items.LAPIS_LAZULI, 8));
 			offer(o, lightC == Items.AIR ? ae : lightC, 2, new ItemStack(Items.EXPERIENCE_BOTTLE, 6));
 			offer(o, ae, 6, new ItemStack(Items.ENCHANTING_TABLE));
@@ -96,7 +96,7 @@ public final class Shopkeepers {
 			if (darkC != Items.AIR) offer(o, darkC, 3, new ItemStack(Items.ENDER_PEARL, 2));
 		}
 
-		private void offer(MerchantOffers o, Item cost, int n, ItemStack cost2, ItemStack result) {
+		private void offerBook(MerchantOffers o, Item cost, int n, ItemStack cost2, ItemStack result) {
 			o.add(new MerchantOffer(new ItemCost(cost, n), java.util.Optional.of(new ItemCost(cost2.getItem(), cost2.getCount())), result, 16, 5, 0.05F));
 		}
 	}
