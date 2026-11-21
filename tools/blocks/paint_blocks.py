@@ -451,3 +451,90 @@ img, a = leaves_gray(74, 0.14, 4, colored=[0x2E4A1E, 0x3E6226, 0x507A30, 0x64903
 save("azalea_leaves", img, a)
 
 print(len(MADE), "textures:", " ".join(MADE))
+
+
+# ================= 원소 지역 전용 블록 (모드 텍스처) =================
+import colorsys
+MOD = os.path.join(sys.argv[1] if len(sys.argv) > 1 else ".", "src/main/resources/assets/elementalweapons/textures/block")
+ORIG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "orig")   # 처음 그림의 색만 참고 (한 번 복사해 둠)
+os.makedirs(ORIG, exist_ok=True)
+
+
+def src(name):
+    p = os.path.join(ORIG, name + ".png")
+    if not os.path.exists(p):
+        Image.open(os.path.join(MOD, name + ".png")).save(p)
+    return Image.open(p).convert("RGBA")
+
+
+def tones(name, n=5, lo=0.62, hi=1.28, sat=1.0):
+    a = np.asarray(src(name)).astype(float)
+    m = a[..., 3] > 0
+    c = a[..., :3][m].mean(axis=0) / 255
+    hh, ll, ss = colorsys.rgb_to_hls(*c)
+    out = []
+    for i in range(n):
+        f = lo + (hi - lo) * i / (n - 1)
+        l2 = min(0.95, ll * f)
+        r, g, b = colorsys.hls_to_rgb(hh + (i - n // 2) * 0.008, l2, min(1, ss * sat * (1.1 - 0.15 * i / n)))
+        out.append((int(r * 255) << 16) | (int(g * 255) << 8) | int(b * 255))
+    return out
+
+
+def save_mod(name, img, alpha=None):
+    global OUT
+    o = OUT; OUT = MOD
+    save(name, img, alpha)
+    OUT = o
+
+
+DIRT_M = tones("elemental_dirt", 4)
+for reg, top, side, kind in (("blossom", "blossom_grass_top", "blossom_grass_side", "grass"), ("azure", "azure_grass_top", "azure_grass_side", "grass"),
+                             ("gale", "gale_grass_top", "gale_grass_side", "grass"), ("radiant", "radiant_grass_top", "radiant_grass_side", "grass"),
+                             ("shadow", "shadow_grass_top", "shadow_grass_side", "grass"), ("storm", "storm_grass_top", "storm_grass_side", "grass"),
+                             ("ember", "ember_soil_top", "ember_soil_side", "soil")):
+    gp = tones(top, 5, 0.6, 1.3)
+    seed = sum(map(ord, reg))
+    if kind == "grass":
+        g = grass_top_gray(seed) / 200.0
+        t = g.mean(axis=2); t = np.clip((t - t.min()) / (t.max() - t.min() + 1e-9) * 1.15 - 0.08, 0, 0.999)
+        img = bands(t, gp)
+        rng = np.random.default_rng(seed)
+        img = dabs(img, rng, 14, gp[3:], w=(1, 1), h=(1, 1))
+    else:
+        rng = np.random.default_rng(seed)
+        img = bands(noise(rng, 4, 3), gp)
+        img = dabs(img, rng, 40, gp, w=(1, 3), h=(1, 1))
+        for _ in range(6):   # 빛나는 갈라진 틈
+            x, y = rng.integers(0, N), rng.integers(0, N)
+            for k in range(rng.integers(3, 7)):
+                img[y % N, x % N] = hexc(0xFFB040); x += rng.integers(-1, 2); y += 1
+    save_mod(top, img)
+    sd = dirt(seed=seed + 1, pal=DIRT_M)
+    rng = np.random.default_rng(seed + 2)
+    for x in range(N):
+        hgt = 5 + int(3 * math.sin(x * 0.8 + seed) + 2 * rng.random())
+        for y in range(hgt):
+            sd[y, x] = hexc(gp[min(4, 3 - y // 3 + (1 if y == 0 else 0))]) if y < hgt - 1 else hexc(gp[0]) * 0.8
+    save_mod(side, sd)
+    if reg != "ember" or True:
+        lp = tones(reg + "_leaves", 5, 0.55, 1.35)
+        li, la = leaves_gray(seed + 3, 0.16, 4, colored=lp)
+        save_mod(reg + "_leaves", li, la)
+        bp = tones(reg + "_log", 4, 0.6, 1.25)
+        log_side(reg + "_log", bp, seed + 4)
+        os.replace(os.path.join(OUT, reg + "_log.png"), os.path.join(MOD, reg + "_log.png")); MADE.append(reg + "_log*")
+        pp = tones(reg + "_planks", 5, 0.55, 1.3)
+        planks(reg + "_planks", pp, seed + 5)
+        os.replace(os.path.join(OUT, reg + "_planks.png"), os.path.join(MOD, reg + "_planks.png"))
+        rp = tones(reg + "_log_top", 3, 0.75, 1.25)
+        log_top(reg + "_log_top", bp[1:3][::-1], rp, seed + 6)
+        os.replace(os.path.join(OUT, reg + "_log_top.png"), os.path.join(MOD, reg + "_log_top.png"))
+
+save_mod("elemental_dirt", dirt(seed=900, pal=DIRT_M))
+for nm, sd_ in (("aether_stone", 901), ("abyss_stone", 902), ("elemental_sand", 903)):
+    pal = tones(nm, 5, 0.65, 1.25)
+    o = OUT; OUT = MOD
+    stone(nm, pal, sd_)
+    OUT = o
+print("mod textures done")
