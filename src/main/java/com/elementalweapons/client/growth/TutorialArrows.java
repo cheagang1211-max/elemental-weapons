@@ -59,16 +59,16 @@ public final class TutorialArrows {
 		Vec3 side = new Vec3(-dir.z, 0, dir.x);
 		double phase = (tick % 20) / 20.0 * 2.2;
 		boolean air = p.isPassenger() || p.getAbilities().flying;
-		FxOptions dot = FxOptions.of(FxOptions.ORB, 0xFFD860, 0.13F, 9);
-		for (int k = 0; k < 4; k++) {
+		FxOptions dot = FxOptions.of(FxOptions.ORB, 0xFFE070, 0.22F, 10);
+		for (int k = 0; k < 5; k++) {
 			double d = 2.0 + k * 2.2 + phase;
 			if (d > dist - 1) break;
 			Vec3 c = p.position().add(dir.scale(d));
 			double y = air ? p.getY() - 0.6 : ground(mc, c);
 			if (Double.isNaN(y)) continue;
 			// > 모양 (꼭짓점이 목표 쪽)
-			for (int i = -3; i <= 3; i++) {
-				double back = Math.abs(i) * 0.28, off = i * 0.22;
+			for (int i = -5; i <= 5; i++) {
+				double back = Math.abs(i) * 0.3, off = i * 0.24;
 				Vec3 q = c.add(dir.scale(-back)).add(side.scale(off));
 				mc.level.addParticle(dot, q.x, y + 0.08, q.z, 0, 0, 0);
 			}
