@@ -80,7 +80,7 @@ public class GenericBossRenderer<T extends Mob & PosedEntity> extends MobRendere
 		// 이름표 위치를 기준으로 1.7배 크게, 조금 위로
 		var a = state.nameTagAttachment;
 		pose.pushPose();
-		pose.translate(a.x, a.y + 0.35, a.z);
+		pose.translate(a.x, a.y + 0.1, a.z);
 		pose.scale(1.7F, 1.7F, 1.7F);
 		pose.translate(-a.x, -a.y, -a.z);
 		super.submitNameDisplay(state, pose, nodes, cam);
