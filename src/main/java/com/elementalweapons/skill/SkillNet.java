@@ -22,6 +22,13 @@ public final class SkillNet {
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
 
+	/** 좌클릭 휘두름 (콤보) */
+	public record Swing() implements CustomPacketPayload {
+		public static final Type<Swing> TYPE = new Type<>(ElementalWeaponsMod.id("combo_swing"));
+		public static final StreamCodec<ByteBuf, Swing> CODEC = StreamCodec.unit(new Swing());
+		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+	}
+
 	public record Cooldown(int slot, int ticks) implements CustomPacketPayload {
 		public static final Type<Cooldown> TYPE = new Type<>(ElementalWeaponsMod.id("skill_cooldown"));
 		public static final StreamCodec<ByteBuf, Cooldown> CODEC = StreamCodec.composite(ByteBufCodecs.VAR_INT, Cooldown::slot, ByteBufCodecs.VAR_INT, Cooldown::ticks, Cooldown::new);
@@ -43,12 +50,14 @@ public final class SkillNet {
 
 	public static void initialize() {
 		PayloadTypeRegistry.serverboundPlay().register(Cast.TYPE, Cast.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(Swing.TYPE, Swing.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(Cooldown.TYPE, Cooldown.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(OpenEvolve.TYPE, OpenEvolve.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(ChooseElement.TYPE, ChooseElement.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(Cast.TYPE, (p, ctx) -> Skills.cast(ctx.player(), p.slot()));
+		ServerPlayNetworking.registerGlobalReceiver(Swing.TYPE, (p, ctx) -> Combo.swing(ctx.player()));
 		ServerPlayNetworking.registerGlobalReceiver(ChooseElement.TYPE, (p, ctx) -> Evolution.choose(ctx.player(), p.element()));
-		ServerPlayConnectionEvents.DISCONNECT.register((h, server) -> Skills.forget(h.getPlayer().getUUID()));
+		ServerPlayConnectionEvents.DISCONNECT.register((h, server) -> { Skills.forget(h.getPlayer().getUUID()); Combo.forget(h.getPlayer().getUUID()); });
 	}
 
 	public static void sendCooldown(ServerPlayer p, int slot, int ticks) {

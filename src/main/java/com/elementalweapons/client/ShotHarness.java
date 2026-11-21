@@ -292,6 +292,24 @@ public final class ShotHarness {
 			return;
 		}
 		f -= 80;
+		// --- 좌클릭 콤보 시험 (나무 단검 3연타 → 급소 찌르기) ---
+		if (f < 90) {
+			if (f == 0) server.execute(() -> { ServerPlayer p = sp(server);
+				p.teleportTo(0.5, com.elementalweapons.world.sky.Capital.FY[4] + 1, 22.5);
+				if (current != null) current.discard();
+				Entity z = EntityType.ZOMBIE.create(p.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+				z.snapTo(0.5, com.elementalweapons.world.sky.Capital.FY[4] + 1, 24.5, 0, 0);
+				((net.minecraft.world.entity.Mob) z).setNoAi(true);
+				p.level().addFreshEntity(z); current = z; });
+			if (f > 2 && current != null) lookAt(mc, current.getX() - 0.5, current.getY() + 1, current.getZ() - 0.5);
+			if (f == 10) comboHp = current instanceof net.minecraft.world.entity.LivingEntity le ? le.getHealth() : -1;
+			if (f == 20 || f == 35 || f == 50) net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new com.elementalweapons.skill.SkillNet.Swing());
+			if (f == 52) shot(mc, "963_combo_finisher");
+			if (f == 70) { float hp = current instanceof net.minecraft.world.entity.LivingEntity le ? le.getHealth() : -1; log("콤보 시험: 좀비 체력 " + comboHp + " → " + hp); }
+			if (f == 85) server.execute(() -> { if (current != null) current.discard(); current = null; });
+			return;
+		}
+		f -= 90;
 		// --- 지역 마을 · 야영지 · 망루 · 유적 · 용의 둥지 ---
 		java.util.List<double[]> rs = new java.util.ArrayList<>();
 		for (int region = 0; region < 7; region++) for (int[] q : com.elementalweapons.world.sky.Outposts.pois(region)) if (q[0] == 0) {
@@ -331,6 +349,7 @@ public final class ShotHarness {
 	}
 
 	private static double dodgeZ;
+	private static float comboHp;
 	private static net.minecraft.client.player.ClientInput savedInput;
 
 	private static BlockPos town;

@@ -31,6 +31,15 @@ public final class SkillClient {
 	private static long clock;
 
 	public static void initialize() {
+		// 좌클릭 콤보: 직업 무기를 들고 공격 키를 누를 때마다 서버에 알림
+		net.fabricmc.fabric.api.event.client.player.ClientPreAttackCallback.EVENT.register((client, player, clicks) -> {
+			if (clicks > 0 && client.screen == null && !player.isSpectator()) {
+				var it = player.getMainHandItem().getItem();
+				if (it instanceof com.elementalweapons.item.ElementalWeaponItem || it instanceof com.elementalweapons.item.TrainingWeaponItem)
+					net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new com.elementalweapons.skill.SkillNet.Swing());
+			}
+			return false;
+		});
 		int[] codes = {InputConstants.KEY_Z, InputConstants.KEY_X, InputConstants.KEY_C};
 		for (int i = 0; i < 3; i++)
 			KEYS[i] = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.elementalweapons.skill" + (i + 1), codes[i], KeyMapping.Category.GAMEPLAY));

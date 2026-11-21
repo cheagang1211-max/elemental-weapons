@@ -203,6 +203,7 @@ public final class Tutorial {
 			kits |= bit;
 			for (ItemStack s : kit(c)) if (!p.getInventory().add(s)) p.spawnAtLocation((ServerLevel) p.level(), s);
 			p.sendSystemMessage(Component.literal("✦ " + c.koName + "의 나무 무기를 받았습니다! 10레벨에 속성 진화를 하면 속성 무기로 바뀝니다.").withStyle(ChatFormatting.AQUA));
+			p.sendSystemMessage(Component.literal("⚔ 좌클릭을 연달아 3번 하면 무기마다 다른 마무리 기술이 나갑니다 (지팡이·마법서·활은 좌클릭으로 원거리 공격)").withStyle(ChatFormatting.YELLOW));
 		}
 		kits = armor(p, kits);
 		p.setAttached(DATA, new Data(d.step >= DONE ? DONE : Math.max(d.step, 1), 0, kits));
