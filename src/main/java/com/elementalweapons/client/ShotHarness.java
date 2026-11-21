@@ -249,6 +249,7 @@ public final class ShotHarness {
 				e.snapTo(0.5, com.elementalweapons.world.sky.Capital.FY[4] + 1, 22.5 + dist, 180, 0);
 				p.level().addFreshEntity(e); current = e; });
 			if (k > 2 && current != null) { mc.options.setCameraType(CameraType.FIRST_PERSON); lookAt(mc, current.getX() - 0.5, current.getY() + current.getBbHeight() * 0.55, current.getZ() - 0.5); }
+			if (k == 39 && idx == 0) { mc.options.setCameraType(CameraType.FIRST_PERSON); }
 			if (k == 40) shot(mc, String.format("95%d_%s", idx, BuiltInRegistries.ENTITY_TYPE.getKey(who[idx]).getPath()));
 			if (k == 50 && idx < who.length - 1) server.execute(() -> { if (current != null) current.discard(); current = null; });
 			return;

@@ -6,4 +6,6 @@ import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 public class BossRenderState extends LivingEntityRenderState {
 	public int attackPose;
 	public boolean floating;
+	/** 가게 주인·현자: 머리 위 큰 이름표 */
+	public boolean bigLabel;
 }
