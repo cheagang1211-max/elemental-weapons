@@ -2,7 +2,7 @@ hash-format = "sha256"
 
 [[files]]
 file = "mods/elementalweapons.pw.toml"
-hash = "7f1a0b18fc97f7f1656a402a4bbc0feab4ebd30abb5f1a1a8a0a17d59726b645"
+hash = "85a3e7d04f5114f4363b27bfd73bd2281d628acbd3ba833146dc74122166935c"
 metafile = true
 
 [[files]]
