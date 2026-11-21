@@ -1,12 +1,12 @@
 name = "Elemental Weapons"
 author = "cheagang1211-max"
-version = "4.1.2"
+version = "4.2.0"
 pack-format = "packwiz:1.1.0"
 
 [index]
 file = "index.toml"
 hash-format = "sha256"
-hash = "d36c6d8c385f76d7ed4979148574c539a4a00cd52e15aacab1240909b56c22fe"
+hash = "92c93098cfe80b413b213061e41656978edf431b216848f420e8545ede3525d2"
 
 [versions]
 fabric = "0.20.1"
