@@ -263,20 +263,21 @@ public final class Capital {
 				if (dl <= 1.6 && r >= FR[k] - 4 && r <= Rs + 1.6 && s < 0.5) {
 					set(x, FY[k], z, brick);
 					for (int y = FY[k] + 1; y <= FY[k] + 4; y++) set(x, y, z, st(Blocks.AIR));
-					if (dl > 1.0 && r > FR[k]) set(x, FY[k] + 1, z, rail);
+					double side = Math.atan2(Math.sin(th - ang0), Math.cos(th - ang0));
+					if (dl > 1.0 && side < 0 && r > FR[k]) set(x, FY[k] + 1, z, rail);   // 난간은 바깥쪽에만 (계단 입구는 트임)
 					continue;
 				}
-				if (s < 0 || rel > a1 - a0) continue;
+				if (s < 0 || rel > a1 - a0 + 3.0 / Rs) continue;   // 끝은 아래층 바닥까지 몇 칸 더
 				double dr = Math.abs(r - Rs);
 				if (dr > 2.6) continue;
 				int si = (int) Math.floor(s);
 				int y = FY[k] - si / 2;   // 평평 → 계단(같은 높이, 반 칸 내려감) → 한 칸 아래 평평 …
-				if (y < FY[k - 1]) continue;
+				if (y < FY[k - 1]) y = FY[k - 1];
 				if (dr <= 1.5) {
 					// 걷는 칸: 홀수 칸은 계단(높은 쪽이 시작 방향), 짝수 칸은 평평한 돌
 					Direction back = cardinal(Math.sin(th), -Math.cos(th));
 					BlockState step = si % 2 == 1 ? b("stone_brick_stairs").setValue(BlockStateProperties.HORIZONTAL_FACING, back) : brick;
-					if (y == FY[k - 1]) step = brick;
+					if (y <= FY[k - 1]) { step = st(Blocks.POLISHED_ANDESITE); }
 					set(x, y, z, step);
 					set(x, y - 1, z, brick);
 					for (int yy = y + 1; yy <= y + 4; yy++) set(x, yy, z, st(Blocks.AIR));
