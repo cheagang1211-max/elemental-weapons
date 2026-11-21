@@ -25,11 +25,13 @@ public final class TutorialHud {
 		int goal = Tutorial.goal(d.step(), c);
 		if (goal > 1) title += "  (" + d.count() + "/" + goal + ")";
 		String hint = Tutorial.hint(d.step(), c);
-		if (d.step() == 7) {
+		if (d.step() == 9) {
 			Arenas.Arena best = null; double bd = Double.MAX_VALUE;
 			for (Arenas.Arena a : Arenas.all()) { double dd = mc.player.distanceToSqr(a.x(), mc.player.getY(), a.z()); if (dd < bd) { bd = dd; best = a; } }
 			if (best != null) hint = "가장 가까운 보스방: X " + best.x() + ", Z " + best.z() + " (" + (int) Math.sqrt(bd) + "칸)";
 		}
+		TutorialArrows.Target tg = TutorialArrows.target(mc);
+		if (tg != null && d.step() != 9) hint = "바닥 화살표를 따라가세요 → " + tg.name() + " (" + (int) Math.hypot(tg.pos().x - mc.player.getX(), tg.pos().z - mc.player.getZ()) + "칸)";
 		int w = Math.max(font.width(title), (int) (font.width(hint) * 0.75F)) + 16;
 		w = Math.max(w, 150);
 		int x = g.guiWidth() - w - 6, y = 6, h = 42;

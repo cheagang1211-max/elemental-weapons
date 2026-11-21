@@ -310,6 +310,20 @@ public final class ShotHarness {
 			return;
 		}
 		f -= 90;
+		// --- 튜토리얼 바닥 화살표 (3단계: 용의 둥지로) ---
+		if (f < 80) {
+			if (f == 0) server.execute(() -> { ServerPlayer p = sp(server);
+				p.getAbilities().flying = false; p.onUpdateAbilities();
+				var d = com.elementalweapons.growth.Tutorial.get(p);
+				p.setAttached(com.elementalweapons.growth.Tutorial.DATA, new com.elementalweapons.growth.Tutorial.Data(3, 0, d.kits()));
+				p.teleportTo(-14.5, com.elementalweapons.world.sky.Capital.FY[0] + 1, 40.5);
+				server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set 13000"); });
+			if (f == 3) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+			if (f > 3) look(mc, -60, 35);
+			if (f == 70) shot(mc, "964_tutorial_arrows");
+			return;
+		}
+		f -= 80;
 		// --- 지역 마을 · 야영지 · 망루 · 유적 · 용의 둥지 ---
 		java.util.List<double[]> rs = new java.util.ArrayList<>();
 		for (int region = 0; region < 7; region++) for (int[] q : com.elementalweapons.world.sky.Outposts.pois(region)) if (q[0] == 0) {
