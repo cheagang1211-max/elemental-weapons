@@ -46,6 +46,8 @@ public final class SkyPainter implements Feature {
 			capital(random);
 			for (SkyLayout.Bridge b : SkyLayout.BRIDGES) bridge(b);
 			for (SkyLayout.Island is : SkyLayout.ISLANDS) if (is.kind == 3) pavilion(is);
+			for (SkyLayout.Island is : SkyLayout.ISLANDS) if (is.kind == 1 || is.kind == 2 || is.kind == 5) Outposts.paint(lv, minX, minZ, is);
+			Outposts.roosts(lv, minX, minZ);
 			waterfalls();
 			for (Arenas.Arena a : Arenas.all()) if (maxX >= a.x() - 32 && minX <= a.x() + 32 && maxZ >= a.z() - 32 && minZ <= a.z() + 32) arena(a);
 		} catch (Throwable t) {
@@ -164,7 +166,7 @@ public final class SkyPainter implements Feature {
 		if (FALLS != null) return FALLS;
 		List<int[]> out = new ArrayList<>();
 		for (SkyLayout.Island is : SkyLayout.ISLANDS) {
-			if (is.kind != 1 && is.kind != 5 && is.kind != 0) continue;
+			if (is.kind != 1 && is.kind != 5) continue;
 			int n = is.kind == 0 ? 4 : 7;
 			for (int i = 0; i < n; i++) {
 				double a = (i + 0.3 + 0.4 * SkyLayout.hash(is.seed, i, 77)) * Math.PI * 2 / n;
@@ -196,23 +198,19 @@ public final class SkyPainter implements Feature {
 	private static final int G = 170;   // 수도 바닥 높이
 
 	private void capital(RandomSource random) {
-		if (maxX < -400 || minX > 400 || maxZ < -400 || minZ > 400) return;
-		// 외곽 순환로
-		for (int x = minX; x <= maxX; x++) for (int z = minZ; z <= maxZ; z++) {
-			double r = Math.hypot(x + 0.5, z + 0.5);
-			if (Math.abs(r - 200) < 3.6) {
-				if (SkyLayout.surfaceTop(x, z) < G - 2) continue;
-				set(x, G, z, Math.abs(r - 200) > 2.6 ? st(Blocks.STONE_BRICKS) : st(Blocks.POLISHED_ANDESITE));
-				for (int y = G + 1; y <= G + 6; y++) if (!air(x, y, z)) set(x, y, z, st(Blocks.AIR));
-				if (Math.abs(r - 203.3) < 0.5 && h((int) Math.round(Math.atan2(z, x) * 40), 0, 0) % 2 == 0 && Math.floorMod((int) (Math.atan2(z, x) * 200 / Math.PI), 11) == 0) {
-					set(x, G + 1, z, st(Blocks.POLISHED_BLACKSTONE_WALL)); set(x, G + 2, z, st(Blocks.POLISHED_BLACKSTONE_WALL)); set(x, G + 3, z, st(Blocks.LANTERN));
-				}
-			}
-		}
-		// 가운데 왕성 + 손으로 설계한 시가지 (기능 건물 8채, 집 12채)
-		if (maxX >= -60 && minX <= 60 && maxZ >= -60 && minZ <= 60) castle();
+		if (maxX < -260 || minX > 260 || maxZ < -260 || minZ > 260) return;
 		new Capital(lv, minX, minZ).paint();
-		fantasy();
+		// 천공성 둘레를 떠다니는 작은 섬들
+		for (int i = 0; i < 9; i++) {
+			double a = Math.toRadians(i * 40 + 17);
+			boolean nearBridge = false;
+			for (int k = 0; k < 7; k++) { double d = Math.abs(Math.atan2(Math.sin(a - SkyLayout.regionAngle(k)), Math.cos(a - SkyLayout.regionAngle(k)))); if (d < Math.toRadians(12)) nearBridge = true; }
+			if (nearBridge || Math.abs(Math.toDegrees(a) - 90) < 25) continue;
+			int rad = 160 + (i % 3) * 22;
+			int cx = (int) Math.round(Math.cos(a) * rad), cz = (int) Math.round(Math.sin(a) * rad);
+			int R = 6 + (i * 7) % 6, top = 175 + (i * 23) % 80;
+			if (maxX >= cx - R - 2 && minX <= cx + R + 2 && maxZ >= cz - R - 2 && minZ <= cz + R + 2) floatIslet(cx, cz, R, top, i);
+		}
 	}
 
 	// ---------------- 보스방 ----------------
@@ -397,15 +395,6 @@ public final class SkyPainter implements Feature {
 				for (int y = top - depth; y <= top; y++) set(x, y, z, y == top ? st(Blocks.GRASS_BLOCK) : y > top - 3 ? st(Blocks.DIRT) : (h(x, y, z) % 5 == 0 ? st(Blocks.ANDESITE) : st(Blocks.STONE)));
 				if (r < R - 1.5 && h(x, 2, z) % 6 == 0) set(x, top + 1, z, st(h(x, 3, z) % 2 == 0 ? Blocks.ALLIUM : Blocks.CORNFLOWER));
 				if (r < 1) { set(x, top + 1, z, st(Blocks.FLOWERING_AZALEA)); }
-			}
-			// 사슬: 섬 아래에서 수도 땅까지
-			for (int c = 0; c < 3; c++) {
-				double a = c * Math.PI * 2 / 3 + seed;
-				int px = cx + (int) Math.round(Math.cos(a) * R * 0.45), pz = cz + (int) Math.round(Math.sin(a) * R * 0.45);
-				if (x == px && z == pz) {
-					int bottom = top - (int) (R * 0.55 * 1.6) - 2;
-					for (int y = G + 1; y < bottom; y++) setIfAir(x, y, z, st(blk("iron_chain")));
-				}
 			}
 			// 섬 아래 빛나는 뿌리 수정
 			if (x == cx && z == cz) for (int y = top - (int) (R * 1.6) - 6; y < top - (int) (R * 1.6) - 1; y++) set(x, y, z, st(blk(GLOW[seed % 7])));

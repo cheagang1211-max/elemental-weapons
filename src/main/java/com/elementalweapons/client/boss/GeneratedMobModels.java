@@ -18,6 +18,10 @@ import com.elementalweapons.client.boss.gen.FluffleModel;
 import com.elementalweapons.client.boss.gen.HornedDeerModel;
 import com.elementalweapons.client.boss.gen.ElementalMerchantModel;
 import com.elementalweapons.client.boss.gen.FateSageModel;
+import com.elementalweapons.client.boss.gen.BlacksmithModel;
+import com.elementalweapons.client.boss.gen.EnchanterModel;
+import com.elementalweapons.client.boss.gen.AlchemistModel;
+import com.elementalweapons.client.boss.gen.SkyDragonModel;
 
 public final class GeneratedMobModels {
 	private GeneratedMobModels() {}
@@ -68,5 +72,21 @@ public final class GeneratedMobModels {
 		ModelLayerRegistry.registerModelLayer(layer, FateSageModel::createBodyLayer);
 		final ModelLayerLocation l_fate_sage = layer;
 		EntityRenderers.register(ModMobs.SAGE, ctx -> new GenericBossRenderer<>(ctx, l_fate_sage, FateSageModel::new, "fate_sage", 0.5F, 0.5F));
+		layer = new ModelLayerLocation(ElementalWeaponsMod.id("blacksmith"), "main");
+		ModelLayerRegistry.registerModelLayer(layer, BlacksmithModel::createBodyLayer);
+		final ModelLayerLocation l_blacksmith = layer;
+		EntityRenderers.register(ModMobs.BLACKSMITH, ctx -> new GenericBossRenderer<>(ctx, l_blacksmith, BlacksmithModel::new, "blacksmith", 0.5F, 0.5F));
+		layer = new ModelLayerLocation(ElementalWeaponsMod.id("enchanter"), "main");
+		ModelLayerRegistry.registerModelLayer(layer, EnchanterModel::createBodyLayer);
+		final ModelLayerLocation l_enchanter = layer;
+		EntityRenderers.register(ModMobs.ENCHANTER, ctx -> new GenericBossRenderer<>(ctx, l_enchanter, EnchanterModel::new, "enchanter", 0.5F, 0.5F));
+		layer = new ModelLayerLocation(ElementalWeaponsMod.id("alchemist"), "main");
+		ModelLayerRegistry.registerModelLayer(layer, AlchemistModel::createBodyLayer);
+		final ModelLayerLocation l_alchemist = layer;
+		EntityRenderers.register(ModMobs.ALCHEMIST, ctx -> new GenericBossRenderer<>(ctx, l_alchemist, AlchemistModel::new, "alchemist", 0.5F, 0.5F));
+		layer = new ModelLayerLocation(ElementalWeaponsMod.id("sky_dragon"), "main");
+		ModelLayerRegistry.registerModelLayer(layer, SkyDragonModel::createBodyLayer);
+		final ModelLayerLocation l_sky_dragon = layer;
+		EntityRenderers.register(ModMobs.SKY_DRAGON, ctx -> new GenericBossRenderer<>(ctx, l_sky_dragon, SkyDragonModel::new, "sky_dragon", 1.0F, 0.5F));
 	}
 }

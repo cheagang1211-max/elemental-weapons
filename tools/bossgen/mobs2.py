@@ -150,14 +150,93 @@ def fate_sage():
              C(0, 11, 0, 9, 2, 7, "gold"), C(0, 11, -4, 2, 2, 1, "rune"), C(4.6, 14, -1, 1, 4, 3, "wood")], [head, ra, la, ring])
     return [body], m
 
-SCALE = {"magma_brute": 1.2}
+@spec
+def blacksmith():
+    m = {"skin": M(0xC88A60, "flesh"), "apron": M(0x5A3A22, "bark"), "shirt": M(0x8A5A3A, "cloth"), "beard": M(0x6A3A1A, "fur"),
+         "iron": M(0x8A8E96, "metal"), "wood": M(0x4A3020, "bark"), "band": M(0xA02A1A, "cloth"), "boot": M(0x2A1E16, "plain"), "ember": M(0xFF9A30, glow_all=True)}
+    m["face"] = FACE(m["skin"], 0x2A1A10, mode="two", brow=True)
+    beard = chain("swayB", 2, (0, -1, -4.5), 3, 6, 4, "beard", axis="y", h0=3, h1=2)
+    head = P("head", (0, 0, 0), (0, 0, 0), [C(0, -4.5, 0, 8, 9, 8, "skin", {"front": m["face"]}), C(0, -8.6, 0, 8.6, 1.5, 8.6, "band"),
+             C(0, -1.5, -4.3, 7, 3, 1, "beard"), C(3.4, -8.2, 4.2, 2, 3, 1, "band")], [beard])
+    hammer = [C(0, 12, -2, 1, 9, 1, "wood"), C(0, 16, -2, 5, 3, 3, "iron"), C(-2.6, 16, -2, 1, 2, 2, "ember")]
+    ra = arm("right", (-6, 2, 0), (4, 6), (4, 6), "skin", "skin", shoulder="shirt", extra_fore=hammer)
+    la = arm("left", (6, 2, 0), (4, 6), (4, 6), "skin", "skin", shoulder="shirt", extra_fore=[C(0, 3, 0, 4.6, 2, 4.6, "iron")])
+    body = P("body", (0, 0, 0), (0, 0, 0), [C(0, 6, 0, 10, 12, 6, "shirt"), C(0, 7, -3.4, 9, 13, 1, "apron"), C(0, 12, 0, 10.4, 1.6, 6.4, "boot"),
+             C(-3.6, 12.2, -3.8, 2, 2, 1, "iron"), C(3, 9, -4, 3, 3, 1, "apron")], [head, ra, la])
+    legs = [leg("right_leg", (-2.5, 12, 0), (4, 6), (4, 6), "shirt", "boot"), leg("left_leg", (2.5, 12, 0), (4, 6), (4, 6), "shirt", "boot")]
+    return [body] + legs, m
+
+@spec
+def enchanter():
+    m = {"robe": M(0x1E2A6A, "cloth"), "robe2": M(0x3A4A9A, "cloth"), "star": M(0xFFE890, glow_all=True), "skin": M(0xE0C0A0, "flesh"),
+         "beard": M(0xD8DCE8, "fur"), "book": M(0x6A1E2A, "bark"), "page": M(0xF4ECD0, "plain"), "rune": M(0x9FD0FF, glow_all=True), "gold": M(0xE8C060, "metal")}
+    m["face"] = FACE(m["skin"], 0x80C0FF, mode="two")
+    hat = [C(0, -9, 0, 12, 1, 12, "robe"), C(0, -11, 0.5, 7, 3, 7, "robe"), C(0, -14, 1.5, 5, 3, 5, "robe"), C(0, -16.5, 2.5, 3, 2, 3, "robe2"),
+           C(0, -18, 3.5, 1, 2, 1, "star"), C(-2, -12, -3.2, 1, 1, 1, "star"), C(2, -10.5, -3.6, 1, 1, 1, "star"), C(0, -9.6, -5, 7, 1, 1, "gold")]
+    beard = chain("swayB", 3, (0, -1, -4.5), 3, 5, 2, "beard", axis="y", h0=2, h1=1)
+    head = P("head", (0, 0, 0), (0, 0, 0), [C(0, -4.5, 0, 8, 9, 8, "skin", {"front": m["face"]}), *hat], [beard])
+    ra = arm("right", (-5, 2, 0), (3, 6), (3, 6), "robe2", "skin", shoulder="gold", extra_fore=[C(0, 12, -2, 1, 6, 1, "gold"), C(0, 9, -2, 2, 2, 2, "rune")])
+    la = arm("left", (5, 2, 0), (3, 6), (3, 6), "robe2", "skin", shoulder="gold")
+    book = P("bob_book", (8, 4, -8), (R(-20), R(-30), 0), [C(0, 0, 0, 6, 1, 8, "book"), C(0, -0.8, 0, 5.4, 1, 7.4, "page"), C(0, -1.4, 0, 1, 1, 7, "rune")])
+    ring = P("ring", (0, -2, 0), (0, 0, 0), [], ring_of("er", 6, 9, 1, "rune", y=0))
+    body = P("body", (0, 0, 0), (0, 0, 0), [C(0, 6, 0, 8, 12, 6, "robe2"), C(0, 17.5, 0, 11, 13, 8, "robe"), C(0, 12, -3.6, 2, 22, 1, "gold"),
+             C(-3, 17, -4.2, 1, 1, 1, "star"), C(3, 20, -4.2, 1, 1, 1, "star"), C(-2, 22, -4.2, 1, 1, 1, "star"), C(0, 11, 0, 9, 2, 7, "gold")], [head, ra, la, book, ring])
+    return [body], m
+
+@spec
+def alchemist():
+    m = {"robe": M(0x2E5A2E, "cloth"), "robe2": M(0x6A4A2A, "bark"), "skin": M(0xD8B090, "flesh"), "glass": M(0xC8F0FF, "gem", glow=0xE0FFFF),
+         "red": M(0xFF4A5A, glow_all=True), "blue": M(0x5AA0FF, glow_all=True), "lime": M(0xA0FF5A, glow_all=True), "brass": M(0xD8A040, "metal"), "hair": M(0xB0B0B0, "fur")}
+    m["face"] = FACE(m["skin"], 0x40FF80, mode="two")
+    goggles = [C(-2, -5, -4.4, 3, 3, 1, "glass"), C(2, -5, -4.4, 3, 3, 1, "glass"), C(0, -5, -4.2, 8.6, 1, 1, "brass")]
+    head = P("head", (0, 0, 0), (0, 0, 0), [C(0, -4.5, 0, 8, 9, 8, "skin", {"front": m["face"]}), C(0, -8.5, 1, 9, 2, 8, "hair"), C(0, -5, 3, 9, 6, 4, "hair"), *goggles])
+    flask = [C(0, 13, -2, 3, 4, 3, "glass"), C(0, 13.5, -2, 2, 2, 2, "lime"), C(0, 10.5, -2, 1, 2, 1, "brass")]
+    ra = arm("right", (-5, 2, 0), (3, 6), (3, 6), "robe", "skin", shoulder="brass", extra_fore=flask)
+    la = arm("left", (5, 2, 0), (3, 6), (3, 6), "robe", "skin", shoulder="brass")
+    belt = [C(0, 11, 0, 9, 2, 7, "robe2")] + [C(x, 13, -4, 2, 3, 2, c) for x, c in ((-3, "red"), (0, "blue"), (3, "lime"))]
+    body = P("body", (0, 0, 0), (0, 0, 0), [C(0, 6, 0, 8, 12, 6, "robe"), C(0, 17.5, 0, 10, 13, 8, "robe"), C(0, 18, -4.1, 6, 10, 1, "robe2"), *belt], [head, ra, la])
+    return [body], m
+
+@spec
+def sky_dragon():
+    m = {"scale": M(0x2A6A5A, "scale", accent=0x1A4A3E), "belly": M(0xE0C890, "plate"), "horn": M(0xF0E8D0, "bone"),
+         "wing": M(0x1E4A5A, "veins", glow=0x9FF0D0), "claw": M(0x1A1A20, "metal"), "saddle": M(0x7A3A1E, "bark"), "gold": M(0xE8B848, "metal"),
+         "cloth": M(0xA02A2A, "cloth"), "gem": M(0x9FF0D0, glow_all=True)}
+    m["face"] = FACE(m["scale"], 0xFFD860, mode="two", brow=True)
+    jaw = P("jaw", (0, 2, -3), (0, 0, 0), [C(0, 1, -5, 6, 2, 10, "scale"), *teeth(-2.5, 2.5, 0, -9.5, "horn", up=True)])
+    head = P("head", (0, 0, -5), (0, 0, 0), [C(0, -1, -3, 8, 6, 8, "scale", {"front": m["face"]}), C(0, 0, -10, 6, 4, 7, "scale"),
+             *teeth(-2.5, 2.5, 2, -13, "horn"), C(0, -4.5, -2, 2, 1, 6, "gem"), C(-4.4, 0, -2, 1, 2, 4, "horn"), C(4.4, 0, -2, 1, 2, 4, "horn")], [jaw,
+             bend_chain("hornDL", (3, -3, 1), [(5, 2), (4, 1)], "horn", bend=(R(-30), 0, 0)), bend_chain("hornDR", (-3, -3, 1), [(5, 2), (4, 1)], "horn", bend=(R(-30), 0, 0))])
+    for h in head.children[1:]: h.rot = (R(-60), 0, 0)
+    neck = chain("neck", 3, (0, -2, -9), 5, 6, 5, "scale", axis="z", direction=-1, decor=lambda i, w, h, L: [C(0, -h / 2 - 1, -L / 2, 1, 2, 2, "horn")])
+    n = neck
+    while n.children: n = n.children[0]
+    n.children.append(head)
+    neck.rot = (R(-30), 0, 0)
+    tail = chain("tail", 6, (0, -1, 9), 6, 6, 2, "scale", axis="z", decor=lambda i, w, h, L: [C(0, -h / 2 - 0.5, L / 2, 1, 1, 3, "horn")])
+    t = tail
+    while t.children: t = t.children[0]
+    t.boxes += [C(0, 0, 5, 7, 1, 5, "horn"), C(0, -2, 5, 1, 4, 5, "horn")]
+    rw = wing("right", (-5, -4, -3), "horn", "wing", span=40, depth=20, fingers=4, mat_claw="claw", rot=(0, R(10), R(-20)))
+    lw = wing("left", (5, -4, -3), "horn", "wing", span=40, depth=20, fingers=4, mat_claw="claw", rot=(0, R(-10), R(20)))
+    saddle = [C(0, -6.2, -1, 9, 1.5, 9, "saddle"), C(0, -7.8, 3.2, 8, 2, 2, "saddle"), C(0, -7.6, -5.2, 2, 2.4, 1.4, "gold"),
+              C(-6.2, -1.5, -1, 0.6, 9, 3, "saddle"), C(6.2, -1.5, -1, 0.6, 9, 3, "saddle"), C(-6.6, 3, -1, 1, 2, 2, "gold"), C(6.6, 3, -1, 1, 2, 2, "gold"),
+              C(-5, -5.4, -1, 1.6, 4, 8, "cloth"), C(5, -5.4, -1, 1.6, 4, 8, "cloth")]
+    body = P("body", (0, 8, 0), (0, 0, 0), [C(0, 0, 0, 12, 11, 20, "scale"), C(0, 5, 0, 9, 2, 16, "belly"), *spikes(3, 0, 0, -5.5, 6, 9, 2, 3, "horn", w=1), *saddle],
+             [neck, tail, rw, lw])
+    legs = [leg("right_leg", (-5, 12, 6), (5, 6), (3, 6), "scale", "claw", "claw"), leg("left_leg", (5, 12, 6), (5, 6), (3, 6), "scale", "claw", "claw"),
+            leg("front_right_leg", (-5, 12, -6), (4, 6), (3, 6), "scale", "claw", "claw", knee_name="front_right_leg2"),
+            leg("front_left_leg", (5, 12, -6), (4, 6), (3, 6), "scale", "claw", "claw", knee_name="front_left_leg2")]
+    return [body] + legs, m
+
+SCALE = {"magma_brute": 1.2, "sky_dragon": 2.0, "blacksmith": 1.0}
 
 if __name__ == "__main__":
     from bosses import java_model, camel
     root_dir = sys.argv[1]
     jdir = f"{root_dir}/src/main/java/com/elementalweapons/client/boss/gen"; tdir = f"{root_dir}/src/main/resources/assets/elementalweapons/textures/entity"
     reg = []
-    sheet = Image.new("RGBA", (5 * 260, 2 * 260), (34, 34, 46, 255))
+    sheet = Image.new("RGBA", (5 * 260, 3 * 260), (34, 34, 46, 255))
     for i, (mid, fn) in enumerate(SPECS.items()):
         roots, mats = fn(); check_unique(roots); hdify(roots, HD)
         root = Part("root", children=roots, field=False)
@@ -173,7 +252,8 @@ if __name__ == "__main__":
     sheet.save("/tmp/mobs2_sheet.png")
     lines = []
     for mid, cls in reg:
-        typ = {"fluffle": "ModMobs.FLUFFLE", "horned_deer": "ModMobs.HORNED_DEER", "elemental_merchant": "ModMobs.MERCHANT", "fate_sage": "ModMobs.SAGE"}.get(mid, f'ModMobs.MOBS.get("{mid}")')
+        typ = {"fluffle": "ModMobs.FLUFFLE", "horned_deer": "ModMobs.HORNED_DEER", "elemental_merchant": "ModMobs.MERCHANT", "fate_sage": "ModMobs.SAGE",
+               "blacksmith": "ModMobs.BLACKSMITH", "enchanter": "ModMobs.ENCHANTER", "alchemist": "ModMobs.ALCHEMIST", "sky_dragon": "ModMobs.SKY_DRAGON"}.get(mid, f'ModMobs.MOBS.get("{mid}")')
         lines.append(f'		layer = new ModelLayerLocation(ElementalWeaponsMod.id("{mid}"), "main");\n		ModelLayerRegistry.registerModelLayer(layer, {cls}::createBodyLayer);\n		final ModelLayerLocation l_{mid} = layer;\n		EntityRenderers.register({typ}, ctx -> new GenericBossRenderer<>(ctx, l_{mid}, {cls}::new, "{mid}", {SCALE.get(mid, 1.0) / HD}F, 0.5F));')
     imports = "\n".join(f"import com.elementalweapons.client.boss.gen.{c};" for _, c in reg)
     open(f"{root_dir}/src/main/java/com/elementalweapons/client/boss/GeneratedMobModels.java", "w").write(f"""// 자동 생성 파일 (tools/bossgen/mobs2.py)

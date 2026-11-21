@@ -51,20 +51,22 @@ public final class ModSky {
 			return true;
 		});
 		// 공허로 떨어지면 마지막으로 서 있던 곳으로 복귀
-		// 시장·대장간 상인이 늘 자리에 있도록
+		// 층마다 가게 주인이 늘 자리에 있도록 + 용의 둥지마다 천공룡
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
-			if (server.getTickCount() % 200 != 50) return;
-			net.minecraft.server.level.ServerLevel ow = server.overworld();
+			if (server.getTickCount() % 100 != 50) return;
+			ServerLevel ow = server.overworld();
 			if (!active(ow)) return;
-			for (net.minecraft.core.BlockPos pos : Capital.MERCHANTS) {
-				if (!ow.isLoaded(pos)) continue;
-				if (!ow.getEntitiesOfClass(com.elementalweapons.mob.ElementalMerchant.class, new net.minecraft.world.phys.AABB(pos).inflate(16)).isEmpty()) continue;
-				var m = com.elementalweapons.mob.ModMobs.MERCHANT.create(ow, net.minecraft.world.entity.EntitySpawnReason.STRUCTURE);
-				if (m == null) continue;
-				m.snapTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
-				m.setPersistenceRequired();
-				ow.addFreshEntity(m);
-			}
+			try {
+				for (Capital.Npc n : Capital.NPCS) keepNpc(ow, n);
+				for (net.minecraft.core.BlockPos pad : Capital.DRAGON_PADS) keepDragon(ow, pad);
+				for (net.minecraft.core.BlockPos pad : Outposts.PADS) keepDragon(ow, pad);
+			} catch (Throwable t) { ElementalWeaponsMod.LOGGER.error("[SKY] 주민 유지 오류", t); }
+		});
+		// 가운데 탑 승강기: 빛 기둥 안에서 위로 떠오름, Shift를 누르면 천천히 내려감
+		ServerTickEvents.END_SERVER_TICK.register(server -> {
+			ServerLevel ow = server.overworld();
+			if (!active(ow)) return;
+			for (ServerPlayer p : ow.players()) lift(p);
 		});
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
 			ServerLevel ow = server.overworld();
@@ -82,6 +84,63 @@ public final class ModSky {
 				}
 			}
 		});
+	}
+
+	private static final Map<UUID, Integer> PAD_WAIT = new HashMap<>();
+
+	private static void lift(ServerPlayer p) {
+		double r2 = p.getX() * p.getX() + p.getZ() * p.getZ();
+		if (r2 > (Capital.SHAFT_R + 0.3) * (Capital.SHAFT_R + 0.3) || p.getY() < Capital.FY[0] || p.getY() > Capital.TOP + 1 || p.isPassenger() || p.isSpectator()) {
+			PAD_WAIT.remove(p.getUUID());
+			return;
+		}
+		var lev = net.minecraft.world.effect.MobEffects.LEVITATION;
+		var slow = net.minecraft.world.effect.MobEffects.SLOW_FALLING;
+		int floor = Capital.floorAt(p.getY());
+		if (p.isShiftKeyDown()) {
+			p.removeEffect(lev);
+			p.addEffect(new net.minecraft.world.effect.MobEffectInstance(slow, 10, 0, false, false));
+			if (p.tickCount % 10 == 0) p.sendOverlayMessage(Component.literal("▼ 내려가는 중 · " + Capital.FLOOR_NAME[floor] + "  (원하는 층에서 Shift를 떼고 옆으로)").withStyle(ChatFormatting.AQUA));
+			return;
+		}
+		// 1층 바닥(빛 발판)에 서 있으면 1초 기다린 뒤 출발 (내려온 사람이 바로 다시 뜨지 않게)
+		if (p.onGround() && p.getY() < Capital.FY[0] + 1.5) {
+			int w = PAD_WAIT.merge(p.getUUID(), 1, Integer::sum);
+			if (w < 20) { if (w == 1) p.sendOverlayMessage(Component.literal("✦ 천공의 승강기 — 잠시 뒤 위로 떠오릅니다 (Shift: 그대로 머물기)").withStyle(ChatFormatting.AQUA)); return; }
+		}
+		p.addEffect(new net.minecraft.world.effect.MobEffectInstance(lev, 6, 6, false, false));
+		p.resetFallDistance();
+		if (p.tickCount % 10 == 0) p.sendOverlayMessage(Component.literal("▲ 올라가는 중 · " + Capital.FLOOR_NAME[floor] + "  (원하는 층에서 옆으로 나가세요 · Shift: 내려가기)").withStyle(ChatFormatting.AQUA));
+	}
+
+	private static void keepNpc(ServerLevel ow, Capital.Npc n) {
+		net.minecraft.core.BlockPos pos = n.pos();
+		if (!ow.isLoaded(pos) || ow.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), 96, false) == null) return;
+		net.minecraft.world.entity.EntityType<? extends com.elementalweapons.mob.ElementalMerchant> type = switch (n.type()) {
+			case "blacksmith" -> com.elementalweapons.mob.ModMobs.BLACKSMITH;
+			case "enchanter" -> com.elementalweapons.mob.ModMobs.ENCHANTER;
+			case "alchemist" -> com.elementalweapons.mob.ModMobs.ALCHEMIST;
+			default -> com.elementalweapons.mob.ModMobs.MERCHANT;
+		};
+		var near = ow.getEntities(type, new net.minecraft.world.phys.AABB(pos).inflate(2.5, 2, 2.5), e -> true);
+		if (!near.isEmpty()) return;
+		var m = type.create(ow, net.minecraft.world.entity.EntitySpawnReason.STRUCTURE);
+		if (m == null) return;
+		m.snapTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 180, 0);
+		m.setPersistenceRequired();
+		ow.addFreshEntity(m);
+	}
+
+	private static void keepDragon(ServerLevel ow, net.minecraft.core.BlockPos pad) {
+		if (!ow.isLoaded(pad) || ow.getNearestPlayer(pad.getX(), pad.getY(), pad.getZ(), 96, false) == null) return;
+		var all = ow.getEntities(com.elementalweapons.mob.ModMobs.SKY_DRAGON, new net.minecraft.world.phys.AABB(pad).inflate(96), d -> pad.equals(d.home()));
+		if (!all.isEmpty()) return;
+		var d = com.elementalweapons.mob.ModMobs.SKY_DRAGON.create(ow, net.minecraft.world.entity.EntitySpawnReason.STRUCTURE);
+		if (d == null) return;
+		double yaw = Math.toDegrees(Math.atan2(-(pad.getX() - 0.0), pad.getZ() - 0.0));
+		d.snapTo(pad.getX() + 0.5, pad.getY(), pad.getZ() + 0.5, (float) yaw, 0);
+		d.setHome(pad);
+		ow.addFreshEntity(d);
 	}
 
 	private static Boolean cached;

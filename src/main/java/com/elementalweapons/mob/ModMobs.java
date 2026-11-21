@@ -41,6 +41,10 @@ public final class ModMobs {
 	public static EntityType<ElementalCreature> HORNED_DEER;
 	public static EntityType<ElementalMerchant> MERCHANT;
 	public static EntityType<FateSage> SAGE;
+	public static EntityType<Shopkeepers.Blacksmith> BLACKSMITH;
+	public static EntityType<Shopkeepers.Enchanter> ENCHANTER;
+	public static EntityType<Shopkeepers.Alchemist> ALCHEMIST;
+	public static EntityType<SkyDragon> SKY_DRAGON;
 
 	public static Item ELEMENTAL_MEAT, COOKED_ELEMENTAL_MEAT, FLUFF;
 
@@ -79,6 +83,15 @@ public final class ModMobs {
 		SAGE = register("fate_sage", FabricEntityType.Builder.<FateSage>createMob(FateSage::new, MobCategory.MISC,
 				mob -> mob.defaultAttributes(FateSage::attributes))
 				.sized(0.7F, 2.1F).clientTrackingRange(10));
+
+		BLACKSMITH = register("blacksmith", FabricEntityType.Builder.<Shopkeepers.Blacksmith>createMob(Shopkeepers.Blacksmith::new, MobCategory.MISC,
+				mob -> mob.defaultAttributes(ElementalMerchant::attributes)).sized(0.7F, 2.0F).clientTrackingRange(10));
+		ENCHANTER = register("enchanter", FabricEntityType.Builder.<Shopkeepers.Enchanter>createMob(Shopkeepers.Enchanter::new, MobCategory.MISC,
+				mob -> mob.defaultAttributes(ElementalMerchant::attributes)).sized(0.6F, 2.1F).clientTrackingRange(10));
+		ALCHEMIST = register("alchemist", FabricEntityType.Builder.<Shopkeepers.Alchemist>createMob(Shopkeepers.Alchemist::new, MobCategory.MISC,
+				mob -> mob.defaultAttributes(ElementalMerchant::attributes)).sized(0.6F, 1.95F).clientTrackingRange(10));
+		SKY_DRAGON = register("sky_dragon", FabricEntityType.Builder.<SkyDragon>createMob(SkyDragon::new, MobCategory.MISC,
+				mob -> mob.defaultAttributes(SkyDragon::attributes)).sized(2.6F, 2.4F).clientTrackingRange(16));
 
 		ELEMENTAL_MEAT = item("elemental_meat", new Item.Properties().food(new FoodProperties.Builder().nutrition(3).saturationModifier(0.3F).build()));
 		COOKED_ELEMENTAL_MEAT = item("cooked_elemental_meat", new Item.Properties().food(new FoodProperties.Builder().nutrition(8).saturationModifier(0.8F).build()));

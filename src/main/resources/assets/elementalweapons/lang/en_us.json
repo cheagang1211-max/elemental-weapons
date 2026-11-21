@@ -221,5 +221,9 @@
 	"item.elementalweapons.wooden_bow": "Wooden Bow",
 	"key.elementalweapons.skill1": "Skill 1 (Z)",
 	"key.elementalweapons.skill2": "Skill 2 (X)",
-	"key.elementalweapons.skill3": "Skill 3 (C)"
+	"key.elementalweapons.skill3": "Skill 3 (C)",
+	"entity.elementalweapons.blacksmith": "Blacksmith",
+	"entity.elementalweapons.enchanter": "Enchanter",
+	"entity.elementalweapons.alchemist": "Alchemist",
+	"entity.elementalweapons.sky_dragon": "Sky Dragon"
 }

@@ -221,5 +221,9 @@
 	"item.elementalweapons.wooden_bow": "나무 활",
 	"key.elementalweapons.skill1": "스킬 1 (Z)",
 	"key.elementalweapons.skill2": "스킬 2 (X)",
-	"key.elementalweapons.skill3": "스킬 3 (C)"
+	"key.elementalweapons.skill3": "스킬 3 (C)",
+	"entity.elementalweapons.blacksmith": "대장장이",
+	"entity.elementalweapons.enchanter": "마법부여사",
+	"entity.elementalweapons.alchemist": "연금술사",
+	"entity.elementalweapons.sky_dragon": "천공룡"
 }

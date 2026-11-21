@@ -17,7 +17,7 @@ public final class SkyLayout {
 	// ---------------- 데이터 ----------------
 	public static final class Island {
 		public final double x, z, r, top, depth, amp, peak;
-		public final int seed, kind;   // kind: 0 수도, 1 지역 본섬, 2 위성섬, 3 기착섬, 4 장식섬, 5 심연 본섬
+		public final int seed, kind;   // kind: 0 수도 1층, 1 지역 본섬, 2 위성섬, 3 기착섬, 4 장식섬, 5 심연 본섬, 6 천공성 위층
 		Island(double x, double z, double r, double top, double depth, double amp, double peak, int seed, int kind) {
 			this.x = x; this.z = z; this.r = r; this.top = top; this.depth = depth; this.amp = amp; this.peak = peak; this.seed = seed; this.kind = kind;
 		}
@@ -35,15 +35,14 @@ public final class SkyLayout {
 	/** 지역 순서 (바이옴 소스의 regions 목록 순서와 같음) */
 	public static final String[] REGION_NAMES = {"grass", "water", "electric", "wind", "fire", "light", "dark"};
 	public static final double[] REGION_TOP = {166, 176, 186, 201, 161, 191, 171};
-	public static final double RING = 1350, MAIN_R = 480, CAPITAL_R = 380, CAPITAL_TOP = 171;
-	public static final double ABYSS_DIST = 2480, ABYSS_R = 560, ABYSS_TOP = 151;
+	public static final double RING = 950, MAIN_R = 340, CAPITAL_R = 118, CAPITAL_TOP = 150;
+	public static final double ABYSS_DIST = 1700, ABYSS_R = 440, ABYSS_TOP = 151;
 
 	public static final List<Island> ISLANDS = new ArrayList<>();
 	public static final List<Bridge> BRIDGES = new ArrayList<>();
 	public static final double[][] REGION_CENTER = new double[7][2];
 	public static double ABYSS_X, ABYSS_Z;
-	public static final BlockPos SPAWN = new BlockPos(0, 171, 52);
-	public static final BlockPos SAGE = new BlockPos(0, 171, 18);
+	public static final BlockPos SPAWN = new BlockPos(0, 151, 22);
 
 	private static final Map<Long, int[]> GRID = new HashMap<>();
 	private static final int CELL = 256;
@@ -52,7 +51,9 @@ public final class SkyLayout {
 	public static double regionAngle(int k) { return Math.toRadians(-90 + k * 360.0 / 7); }
 
 	private static void build() {
-		Island cap = add(0, 0, CAPITAL_R, CAPITAL_TOP, 130, 0, 0, 1, 0);
+		// 천공성: 1층(두꺼운 바위 섬) 위로 점점 작아지는 원반 층 4개
+		Island cap = add(0, 0, Capital.FR[0], Capital.FY[0] + 1, 110, 0, 0, 1, 0);   // 땅 맨 윗블록 = FY
+		for (int f = 1; f < Capital.FY.length; f++) add(0, 0, Capital.FR[f], Capital.FY[f] + 1, 12, 0, 0, 10 + f, 6);
 		for (int k = 0; k < 7; k++) {
 			double a = regionAngle(k);
 			REGION_CENTER[k][0] = Math.cos(a) * RING; REGION_CENTER[k][1] = Math.sin(a) * RING;
@@ -106,7 +107,7 @@ public final class SkyLayout {
 			int s = 50000 + cx * 131 + cz * 7919;
 			if (hash(s, 9, 1) > 0.42) continue;
 			double x = (cx + hash(s, 2, 3)) * 110, z = (cz + hash(s, 4, 5)) * 110;
-			if (Math.hypot(x, z) > 3300) continue;
+			if (Math.hypot(x, z) > 2500 || Math.hypot(x, z) < 200) continue;
 			double r = 6 + 22 * Math.pow(hash(s, 6, 7), 2);
 			boolean clash = false;
 			for (int i = 0; i < big && !clash; i++) { Island o = ISLANDS.get(i); if (Math.hypot(o.x - x, o.z - z) < o.r * 1.25 + r + 25) clash = true; }
@@ -146,7 +147,7 @@ public final class SkyLayout {
 		double dx = b.x - a.x, dz = b.z - a.z, L = Math.hypot(dx, dz);
 		dx /= L; dz /= L;
 		double sa = a.kind == 3 ? 0 : a.r * 0.78, sb = b.kind == 3 ? 0 : b.r * 0.72;
-		if (a.kind == 0) sa = 200;
+		if (a.kind == 0) sa = a.r * 0.9;
 		Bridge br = new Bridge(a.x + dx * sa, a.z + dz * sa, b.x - dx * sb, b.z - dz * sb, width, arch, style);
 		br.ay = Double.NaN; br.by = Double.NaN;
 		BRIDGES.add(br);
@@ -225,13 +226,13 @@ public final class SkyLayout {
 			double dist = Math.sqrt(dx * dx + dz * dz);
 			if (dist > is.r * 1.2 + 2) continue;
 			double wf = Math.max(8, is.r * 0.22);
-			double reff = is.r * (is.kind == 0 ? 0.95 + 0.1 * vnoise(x / wf, z / wf, is.seed) : 0.8 + 0.38 * vnoise(x / wf, z / wf, is.seed));
+			double reff = is.r * (is.kind == 0 || is.kind == 6 ? 0.98 + 0.04 * vnoise(x / wf, z / wf, is.seed) : 0.8 + 0.38 * vnoise(x / wf, z / wf, is.seed));
 			double r = dist / reff;
 			if (r >= 1) continue;
 			double e = 1 - r;
 			double top;
-			if (is.kind == 0) {
-				top = is.top + (r > 0.62 ? 14 * smooth(Math.min(1, (r - 0.62) / 0.2)) * (0.5 + vnoise(x / 30.0, z / 30.0, 9)) : 0) - (e < 0.08 ? (0.08 - e) * 60 : 0);
+			if (is.kind == 0 || is.kind == 6) {
+				top = is.top;   // 반듯한 층 바닥
 			} else if (is.kind == 3) {
 				top = is.top - (e < 0.15 ? (0.15 - e) * 25 : 0);
 			} else {
@@ -240,7 +241,9 @@ public final class SkyLayout {
 						+ is.peak * Math.max(0, fbm(x / 70.0, z / 70.0, is.seed + 7) - 0.55) * 3.5 * rim
 						- (e < 0.1 ? (0.1 - e) * 40 : 0);
 			}
-			double bottom = is.top - 4 - is.depth * Math.pow(e, 0.55) * (0.6 + 0.55 * vnoise(x / 18.0, z / 18.0, is.seed + 3));
+			double bottom = is.kind == 6
+					? is.top - 4 - is.depth * Math.pow(e, 1.5) - 3 * vnoise(x / 9.0, z / 9.0, is.seed + 3)       // 얇은 원반 (아래층 머리 위 공간 확보)
+					: is.top - 4 - is.depth * Math.pow(e, 0.55) * (0.6 + 0.55 * vnoise(x / 18.0, z / 18.0, is.seed + 3));
 			if (top <= bottom) continue;
 			if (buf == null) buf = new float[8];
 			if (n + 2 > buf.length) buf = java.util.Arrays.copyOf(buf, buf.length * 2);
@@ -271,7 +274,7 @@ public final class SkyLayout {
 	// ---------------- 지역 ----------------
 	/** -1 수도, 0..6 지역, 7 심연 */
 	public static int regionAt(double x, double z) {
-		if (Math.hypot(x, z) < 900) return -1;
+		if (Math.hypot(x, z) < 400) return -1;
 		double best = Math.hypot(x - ABYSS_X, z - ABYSS_Z) * 0.85; int bi = 7;
 		for (int k = 0; k < 7; k++) {
 			double d = Math.hypot(x - REGION_CENTER[k][0], z - REGION_CENTER[k][1]);

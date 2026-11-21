@@ -27,7 +27,7 @@ public class ElementalMerchant extends WanderingTrader implements PosedEntity {
 	}
 
 	public static AttributeSupplier.Builder attributes() {
-		return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 30.0).add(Attributes.MOVEMENT_SPEED, 0.45);
+		return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 30.0).add(Attributes.MOVEMENT_SPEED, 0.0).add(Attributes.KNOCKBACK_RESISTANCE, 1.0);   // 가게 자리를 지킴
 	}
 
 	@Override
@@ -58,7 +58,21 @@ public class ElementalMerchant extends WanderingTrader implements PosedEntity {
 		sell(offers, aether, 4, Items.NAME_TAG, 1);
 	}
 
-	private static void sell(MerchantOffers offers, Item cost, int costCount, Item result, int resultCount) {
+	/** 돌아다니거나 밤에 투명 물약을 마시지 않고, 가게 자리에서 손님만 바라봄 */
+	@Override
+	protected void registerGoals() {
+		this.goalSelector.addGoal(0, new net.minecraft.world.entity.ai.goal.FloatGoal(this));
+		this.goalSelector.addGoal(1, new net.minecraft.world.entity.ai.goal.TradeWithPlayerGoal(this));
+		this.goalSelector.addGoal(1, new net.minecraft.world.entity.ai.goal.LookAtTradingPlayerGoal(this));
+		this.goalSelector.addGoal(2, new net.minecraft.world.entity.ai.goal.LookAtPlayerGoal(this, net.minecraft.world.entity.player.Player.class, 8.0F));
+		this.goalSelector.addGoal(3, new net.minecraft.world.entity.ai.goal.RandomLookAroundGoal(this));
+	}
+
+	@Override public boolean isPushable() { return false; }
+	@Override public boolean removeWhenFarAway(double d) { return false; }
+	@Override public boolean isInvulnerableTo(ServerLevel level, net.minecraft.world.damagesource.DamageSource source) { return !source.isCreativePlayer() || super.isInvulnerableTo(level, source); }
+
+	protected static void sell(MerchantOffers offers, Item cost, int costCount, Item result, int resultCount) {
 		offers.add(new MerchantOffer(new ItemCost(cost, costCount), new ItemStack(result, resultCount), 16, 2, 0.05F));
 	}
 
