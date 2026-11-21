@@ -319,7 +319,7 @@ public final class ShotHarness {
 				p.teleportTo(-14.5, com.elementalweapons.world.sky.Capital.FY[0] + 1, 40.5);
 				server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set 13000"); });
 			if (f == 3) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
-			if (f > 3) look(mc, -60, 35);
+			if (f > 3) look(mc, -13, 30);
 			if (f == 70) shot(mc, "964_tutorial_arrows");
 			return;
 		}
