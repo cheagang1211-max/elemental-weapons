@@ -97,6 +97,9 @@ public final class ShotHarness {
 			StringBuilder inv = new StringBuilder();
 			for (int i = 20; i <= 24; i++) { var st = p.getInventory().getItem(i); inv.append(BuiltInRegistries.ITEM.getKey(st.getItem()).getPath()).append('x').append(st.getCount()).append(' '); }
 			log("V48 남은 바닐라 몹=" + vanilla + " | 바닥 아이템: " + drops + "| 가방: " + inv); });
+		if (f == 34) { mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT); server.execute(() -> sp(server).setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY)); }
+		if (f == 36) mc.player.setXRot(10);
+		if (f == 55) shot(mc, "885_aether_armor_start");
 	}
 
 	private static long lastXp;
