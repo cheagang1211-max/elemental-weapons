@@ -152,7 +152,7 @@ public final class ModGrowth {
 	}
 
 	/** 성장 속도 배율 (얻는 경험치) */
-	public static final double XP_MULT = 1.5;
+	public static final double XP_MULT = 1.0;
 
 	public static void addXp(ServerPlayer p, long amount) {
 		Growth g = get(p);
@@ -182,7 +182,7 @@ public final class ModGrowth {
 		}
 	}
 
-	/** 100레벨 이후: 초월 경험치 (끝없이 오름) */
+	/** 최대 레벨(200) 이후: 초월 경험치 (끝없이 오름) */
 	public static void addParagonXp(ServerPlayer p, long amount) {
 		Paragon g = paragon(p);
 		int level = g.level(), points = g.points(), gained = 0;

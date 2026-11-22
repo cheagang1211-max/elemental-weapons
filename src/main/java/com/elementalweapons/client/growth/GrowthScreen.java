@@ -167,7 +167,7 @@ public class GrowthScreen extends Screen {
 		g.fill(barX, barY, barX + barW, barY + 8, 0xFF0B0B16);
 		int fw = (int) (barW * Math.min(1.0, pg.xp() / (double) com.elementalweapons.growth.Paragon.need(pg.level())));
 		for (int i = 0; i < fw; i++) g.fill(barX + i, barY, barX + i + 1, barY + 8, 0xFF000000 | (0x8A4AE0 + (i * 0x000100) % 0x4000));
-		String xt = open ? "다음 초월까지 " + GrowthHud.fmt(pg.xp()) + " / " + GrowthHud.fmt(com.elementalweapons.growth.Paragon.need(pg.level())) + " XP" : "100레벨에 도달하면 초월이 열립니다";
+		String xt = open ? "다음 초월까지 " + GrowthHud.fmt(pg.xp()) + " / " + GrowthHud.fmt(com.elementalweapons.growth.Paragon.need(pg.level())) + " XP" : Growth.MAX_LEVEL + "레벨에 도달하면 초월이 열립니다";
 		g.pose().pushMatrix();
 		g.pose().translate(barX + barW / 2F, barY + 1);
 		g.pose().scale(0.75F, 0.75F);

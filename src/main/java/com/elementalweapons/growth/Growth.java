@@ -9,10 +9,11 @@ import net.minecraft.network.codec.StreamCodec;
 
 /** 플레이어의 원소 성장 데이터 (레벨·경험치·스탯) */
 public record Growth(int level, long xp, int points, int str, int mag, int vit, int agi, int cls) {
-	public static final int MAX_LEVEL = 100;
-	public static final int MAX_STAT = 50;
+	/** 최대 레벨 (이후는 초월) */
+	public static final int MAX_LEVEL = 200;
+	public static final int MAX_STAT = 100;
 	public static final int POINTS_PER_LEVEL = 2;
-	/** 그 레벨까지 받는 스탯 포인트 합계: 100레벨에 정확히 4스탯 × 최대치(200) — 남는 포인트 없음 */
+	/** 그 레벨까지 받는 스탯 포인트 합계: 최대 레벨(200)에 정확히 4스탯 × 100 = 400 — 남는 포인트 없음 */
 	public static int totalPoints(int level) { return (int) ((long) (Math.min(level, MAX_LEVEL) - 1) * MAX_STAT * 4 / (MAX_LEVEL - 1)); }
 	public static final Growth DEFAULT = new Growth(1, 0, 0, 0, 0, 0, 0, 0);
 
@@ -36,7 +37,7 @@ public record Growth(int level, long xp, int points, int str, int mag, int vit, 
 
 	/** 다음 레벨까지 필요한 경험치 */
 	public static long need(int level) {
-		return Math.round(2 * Math.pow(level, 1.5) + 40);
+		return Math.round(3.5 * Math.pow(level, 1.5) + 90);
 	}
 
 	public int stat(int i) {
@@ -57,10 +58,10 @@ public record Growth(int level, long xp, int points, int str, int mag, int vit, 
 	// ----- 스탯 효과 -----
 	public double meleeBossBonus() { return 1.0 + 0.03 * str; }
 	public double staffBossBonus() { return 1.0 + 0.03 * mag; }
-	public double staffCooldownFactor() { return 1.0 - 0.006 * mag; }
+	public double staffCooldownFactor() { return 1.0 - 0.004 * mag; }
 	public double bonusHealth() { return vit; }
-	public double speedBonus() { return 0.004 * agi; }
-	public double attackSpeedBonus() { return 0.006 * agi; }
+	public double speedBonus() { return 0.002 * agi; }
+	public double attackSpeedBonus() { return 0.004 * agi; }
 	public double attackDamageBonus() { return 0.2 * str; }
 
 	public com.elementalweapons.item.PlayerClass playerClass() { return com.elementalweapons.item.PlayerClass.of(cls); }

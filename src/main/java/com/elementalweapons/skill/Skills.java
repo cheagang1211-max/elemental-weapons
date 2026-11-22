@@ -310,7 +310,7 @@ public final class Skills {
 					Fx.sound(l, p.position(), SoundEvents.ENDERMAN_TELEPORT, 1F, 1.2F);
 				} else {   // 원소 폭풍
 					Vec3 c = Fx.lookPoint(p, 24);
-					ElementFx.rune(l, c1, c, 5, 100, 2F);
+					com.elementalweapons.spell.SpellManager.add(new com.elementalweapons.spell.MagicCircle(l, p, el, c.add(0, 0.1, 0), 6, 105, false));
 					run(l, p, a -> {
 						if (a % 10 == 0) {
 							for (LivingEntity e : Fx.enemies(l, c, 5)) Fx.hurt(l, p, e, 4 * m);

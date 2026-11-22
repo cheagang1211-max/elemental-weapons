@@ -24,6 +24,7 @@ public class GaleSpell extends Spell {
 	public GaleSpell(ServerLevel level, Player caster) {
 		super(level, caster);
 		this.center = caster.position();
+		SpellManager.add(new MagicCircle(level, caster, com.elementalweapons.item.Element.WIND, center.add(0, 0.1, 0), RADIUS * 0.8, DURATION + 6, false));
 	}
 
 	@Override

@@ -8,7 +8,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 /**
- * 초월(100레벨 이후) 성장: 끝이 없는 초월 레벨과 상한 없는 초월 스탯, 균열 최고 단계
+ * 초월(최대 레벨 200 이후) 성장: 끝이 없는 초월 레벨과 상한 없는 초월 스탯, 균열 최고 단계
  *  파괴: 모든 피해 +1%/점   비전: 마법 피해 +1%/점, 쿨타임 감소(점점 줄어듦)
  *  불멸: 최대 체력 +1/점, 방어 강도(점점 줄어듦)   신속: 이동·공격 속도(점점 줄어듦)
  */

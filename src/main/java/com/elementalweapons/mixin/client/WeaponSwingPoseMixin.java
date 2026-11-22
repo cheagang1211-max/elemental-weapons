@@ -12,12 +12,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.elementalweapons.item.ElementalWeaponItem;
+import com.elementalweapons.item.WeaponType;
 
 /**
- * 무기 종류별 휘두르기 자세 (3인칭):
- *  대검·망치 = 두 손으로 머리 위까지 들어 내려찍기 + 상체 숙이기
- *  낫 = 상체를 크게 비틀며 옆으로 쓸어 베기
- *  단검 = 앞으로 빠르게 찌르기,  검 = 사선으로 크게 베기
+ * 근접 속성 무기의 휘두르기 자세 (3인칭) — 같은 무기라도 속성마다 다름:
+ *  전기 = 두 번 빠른 찌르기 / 불 = 치켜들어 내려찍기 / 물 = 8자 흐르는 베기 / 풀 = 낮게 수평 쓸기
+ *  바람 = 한 바퀴 회전 / 어둠 = 웅크려 역수 찌르기 / 빛 = 아래에서 위로 올려 베기
+ *  대검·망치·낫은 두 손, 단검은 작게, 망치는 크게
  */
 @Mixin(HumanoidModel.class)
 public abstract class WeaponSwingPoseMixin<T extends HumanoidRenderState> {
@@ -30,39 +31,66 @@ public abstract class WeaponSwingPoseMixin<T extends HumanoidRenderState> {
 	private void elementalweapons$weaponSwing(T s, CallbackInfo ci) {
 		float t = s.swingAnimation;
 		if (t <= 0 || s.rightHandItemStack == null || !(s.rightHandItemStack.getItem() instanceof ElementalWeaponItem w)) return;
-		switch (w.type()) {
-			case GREATSWORD, HAMMER -> {
-				// 0~0.35 들어 올리기, 0.35~0.7 내려찍기, 이후 회복
-				float up = t < 0.35F ? t / 0.35F : Math.max(0, 1 - (t - 0.35F) / 0.3F);
-				float x = Mth.lerp(up, -0.35F, -2.9F);
-				rightArm.xRot = x; leftArm.xRot = x;
-				rightArm.yRot = -0.35F; leftArm.yRot = 0.35F;
-				rightArm.zRot = 0; leftArm.zRot = 0;
-				body.xRot = t < 0.35F ? -0.12F * up : 0.38F * Mth.sin((float) Math.PI * Math.min(1, (t - 0.35F) / 0.65F));
+		WeaponType type = w.type();
+		if (type != WeaponType.SWORD && type != WeaponType.GREATSWORD && type != WeaponType.HAMMER && type != WeaponType.SCYTHE && type != WeaponType.DAGGER) return;
+		boolean twoHand = type == WeaponType.GREATSWORD || type == WeaponType.HAMMER || type == WeaponType.SCYTHE;
+		float amp = type == WeaponType.DAGGER ? 0.75F : type == WeaponType.HAMMER ? 1.15F : 1.0F;
+		float PI = (float) Math.PI, k = Mth.sin(t * PI);
+		rightArm.zRot = 0; leftArm.zRot = 0;
+		switch (w.element()) {
+			case ELECTRIC -> {   // 번개: 순식간에 두 번 찌르는 직선 공격
+				float tt = (t * 2F) % 1F, kk = Mth.sin(tt * PI);
+				rightArm.xRot = (-1.65F * kk - 0.1F) * amp; rightArm.yRot = -0.1F;
+				body.yRot = -0.35F * kk;
+				if (twoHand) { leftArm.xRot = rightArm.xRot * 0.85F; leftArm.yRot = 0.5F; }
+			}
+			case FIRE -> {   // 불: 머리 위로 크게 치켜들었다가 힘껏 내려찍기
+				float up = t < 0.4F ? t / 0.4F : Math.max(0, 1 - (t - 0.4F) / 0.35F);
+				float x = Mth.lerp(up, -0.4F, -3.0F) * amp;
+				rightArm.xRot = x; rightArm.yRot = -0.3F;
+				leftArm.xRot = twoHand ? x : x * 0.5F; leftArm.yRot = 0.3F;
+				body.xRot = t < 0.4F ? -0.18F * up : 0.42F * Mth.sin(PI * Math.min(1, (t - 0.4F) / 0.6F));
 				head.xRot += body.xRot * 0.5F;
 			}
-			case SCYTHE -> {
-				float k = Mth.sin(t * (float) Math.PI);
-				float sweep = Mth.lerp(t, 1.1F, -1.3F);
-				body.yRot = sweep * 0.7F;
-				rightArm.xRot = -1.45F * k - 0.2F;
-				rightArm.yRot = sweep;
-				leftArm.xRot = -1.0F * k;
-				leftArm.yRot = sweep + 0.6F;
+			case WATER -> {   // 물: 8자로 흐르듯 이어 베기
+				float a = t * PI * 2;
+				rightArm.xRot = (-1.3F - 0.55F * Mth.sin(a)) * amp;
+				rightArm.zRot = 0.75F * Mth.sin(a + PI / 2) * k;
+				body.yRot = 0.45F * Mth.sin(a) * k;
+				leftArm.xRot = twoHand ? rightArm.xRot * 0.8F : -0.4F * k; leftArm.zRot = twoHand ? -rightArm.zRot : 0;
 			}
-			case DAGGER -> {
-				float k = Mth.sin(t * (float) Math.PI);
-				rightArm.xRot = -1.55F * k - 0.1F;
-				rightArm.yRot = -0.15F;
-				body.yRot = -0.35F * k;
+			case GRASS -> {   // 풀: 몸을 낮춰 땅을 스치듯 수평으로 쓸어 베기
+				body.xRot = 0.4F * k;
+				head.xRot -= 0.25F * k;
+				rightArm.xRot = (-0.95F * k - 0.35F) * amp;
+				rightArm.yRot = Mth.lerp(t, 1.25F, -1.25F);
+				body.yRot = Mth.lerp(t, 0.6F, -0.6F) * k;
+				if (twoHand) { leftArm.xRot = rightArm.xRot; leftArm.yRot = rightArm.yRot + 0.6F; }
 			}
-			case SWORD -> {
-				float k = Mth.sin(t * (float) Math.PI);
-				rightArm.xRot = Mth.lerp(t, -2.6F, -0.3F);
-				rightArm.zRot = Mth.lerp(t, 0.9F, -0.5F) * k;
-				body.yRot = Mth.lerp(t, 0.45F, -0.55F) * k;
+			case WIND -> {   // 바람: 팔을 뻗고 몸을 한 바퀴 돌리는 회전 베기
+				body.yRot = t * PI * 2;
+				rightArm.xRot = -0.15F; rightArm.zRot = -1.45F * k * amp;
+				leftArm.xRot = -0.15F; leftArm.zRot = (twoHand ? 1.45F : 0.9F) * k;
 			}
-			default -> {}
+			case DARK -> {   // 어둠: 몸을 웅크리고 옆구리에서 역수로 꿰찌르기
+				body.xRot = 0.5F * k;
+				head.xRot += 0.2F * k;
+				rightArm.xRot = (-0.55F * k + 0.25F) * amp;
+				rightArm.yRot = 0.95F * k;
+				rightArm.zRot = 0.45F * k;
+				leftArm.xRot = -0.8F * k; leftArm.yRot = -0.4F * k;
+			}
+			case LIGHT -> {   // 빛: 아래에서 하늘로 올려 베며 몸을 젖힘
+				rightArm.xRot = Mth.lerp(t, 0.35F, -3.05F) * amp;
+				rightArm.zRot = -0.3F * k;
+				body.xRot = -0.28F * k;
+				head.xRot -= 0.35F * k;
+				leftArm.xRot = twoHand ? rightArm.xRot : -1.3F * k;
+			}
 		}
+		// 몸통이 돌면 어깨 위치도 같이 돌아가게 (바닐라와 같은 방식)
+		float by = body.yRot;
+		rightArm.x = -Mth.cos(by) * 5.0F; rightArm.z = Mth.sin(by) * 5.0F;
+		leftArm.x = Mth.cos(by) * 5.0F; leftArm.z = -Mth.sin(by) * 5.0F;
 	}
 }

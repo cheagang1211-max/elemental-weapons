@@ -27,14 +27,16 @@ public class HeavenGateSpell extends Spell {
 	private static final com.elementalweapons.fx.FxOptions FEATHER_TIP = Fx.dust(0xFFE38A, 1.0F);
 	private static final com.elementalweapons.fx.FxOptions SPEAR = Fx.dust(0xFFE070, 1.6F);
 
-	private static final double GATE_HALF_WIDTH = 3.2;
-	private static final double ANGEL_SCALE = 1.4;
-	private static final double ATTACK_RANGE = 26;
+	/** 문·대천사 크기 배율 (v4.10: 2배) */
+	private static final double G = 2.0;
+	private static final double GATE_HALF_WIDTH = 3.2 * G;
+	private static final double ANGEL_SCALE = 1.4 * G;
+	private static final double ATTACK_RANGE = 34;
 
 	/** 문이 하늘에서 내려오는 시간 (틱) */
 	public static final int DESCEND_TICKS = 35;
 	/** 문이 처음 나타나는 높이 (최종 위치보다 몇 블록 위) */
-	public static final double DESCEND_HEIGHT = 25;
+	public static final double DESCEND_HEIGHT = 34;
 	/** 대천사가 나타나는 시점 / 공격 시작 / 귀환 시작 */
 	public static final int ANGEL_APPEAR = 40;
 	public static final int ANGEL_READY = 65;
@@ -53,11 +55,13 @@ public class HeavenGateSpell extends Spell {
 		this.gate = gateCenter(caster);
 		this.gateNow = gate.add(0, DESCEND_HEIGHT, 0);
 		this.angel = gate;
+		// 모든 것의 중심: 문이 내려올 하늘에 빛의 마법진
+		SpellManager.add(new MagicCircle(level, caster, com.elementalweapons.item.Element.LIGHT, gate.add(0, 4.5 * G + 2, 0), 9 * G * 0.6, 214, false));
 	}
 
 	/** 문 최종 위치: 시전자 앞 9블록, 위 11블록. (클라이언트 카메라도 같은 계산을 씀) */
 	public static Vec3 gateCenter(Player caster) {
-		return caster.position().add(Fx.flatLook(caster).scale(9)).add(0, 11, 0);
+		return caster.position().add(Fx.flatLook(caster).scale(9 * G)).add(0, 11 * G, 0);
 	}
 
 	/** 시전 후 age 틱일 때 문이 최종 위치보다 얼마나 위에 있는지 (부드럽게 감속하며 내려옴) */
@@ -100,10 +104,10 @@ public class HeavenGateSpell extends Spell {
 		if (age >= DESCEND_TICKS && age < 200 && age % 3 == 0) {
 			for (int i = 0; i < 6; i++) {
 				double a = (r.nextDouble() - 0.5) * GATE_HALF_WIDTH * 1.6 * open;
-				double y = -4.5 - r.nextDouble() * 9;
+				double y = (-4.5 - r.nextDouble() * 9) * G;
 				Fx.burst(level, com.elementalweapons.fx.P.END_ROD, plane(gate, a, y, 0), 1, 0.05, 0.01);
 			}
-			Fx.ring(level, PALE_GOLD, plane(gate, 0, -11, 0).add(0, 0.1, 0), 3.5 * open, 24, age * 0.03);
+			Fx.ring(level, PALE_GOLD, plane(gate, 0, -11 * G, 0).add(0, 0.1, 0), 3.5 * G * open, 36, age * 0.03);
 		}
 
 		// ----- 대천사 -----
@@ -117,11 +121,11 @@ public class HeavenGateSpell extends Spell {
 			else if (age < ANGEL_RETURN) p = 1.0;                                                      // 전투
 			else p = Math.max(0, 1.0 - (age - ANGEL_RETURN) / 25.0);                                  // 귀환
 			double bob = (age >= ANGEL_READY && age < ANGEL_RETURN) ? Math.sin(age * 0.1) * 0.3 : 0;
-			angel = gate.add(fwd.scale(-3.5 * p)).add(0, -3.0 * p - 1.0 + bob, 0);
+			angel = gate.add(fwd.scale(-3.5 * G * p)).add(0, (-3.0 * p - 1.0) * G + bob, 0);
 			if (age % 2 == 0) drawAngel(angel);
 
-			// 빛의 창 공격 (0.6초마다)
-			if (age >= ANGEL_READY && age < ANGEL_RETURN && (age - ANGEL_READY) % 12 == 0) {
+			// 빛의 창 공격 (0.3초마다 — 2배)
+			if (age >= ANGEL_READY && age < ANGEL_RETURN && (age - ANGEL_READY) % 6 == 0) {
 				attack();
 			}
 		}
@@ -132,31 +136,31 @@ public class HeavenGateSpell extends Spell {
 		Vec3 gate = this.gateNow; // 지금 위치에 그리기
 		double w = GATE_HALF_WIDTH * open;
 		// 바깥 금테 (기둥 2개 + 아치)
-		for (double b = -4.5; b <= 1.5; b += 0.35) {
+		for (double b = -4.5 * G; b <= 1.5 * G; b += 0.5) {
 			Fx.at(level, GOLD, plane(gate, -w, b, 0));
 			Fx.at(level, GOLD, plane(gate, w, b, 0));
 			Fx.at(level, PALE_GOLD, plane(gate, -w + 0.4, b, 0));
 			Fx.at(level, PALE_GOLD, plane(gate, w - 0.4, b, 0));
 		}
-		for (double t = 0; t <= Math.PI; t += 0.12) {
-			Fx.at(level, GOLD, plane(gate, Math.cos(t) * w, 1.5 + Math.sin(t) * w, 0));
-			Fx.at(level, PALE_GOLD, plane(gate, Math.cos(t) * (w - 0.4), 1.5 + Math.sin(t) * (w - 0.4), 0));
+		for (double t = 0; t <= Math.PI; t += 0.08) {
+			Fx.at(level, GOLD, plane(gate, Math.cos(t) * w, 1.5 * G + Math.sin(t) * w, 0));
+			Fx.at(level, PALE_GOLD, plane(gate, Math.cos(t) * (w - 0.4), 1.5 * G + Math.sin(t) * (w - 0.4), 0));
 		}
 		// 문 바닥 구름
 		for (double a = -w; a <= w; a += 0.6) {
-			Fx.burst(level, com.elementalweapons.fx.P.CLOUD, plane(gate, a, -4.7, 0), 1, 0.1, 0.0);
+			Fx.burst(level, com.elementalweapons.fx.P.CLOUD, plane(gate, a, -4.7 * G, 0), 1, 0.1, 0.0);
 		}
 		// 문 안쪽 빛 (아른거림)
-		for (int i = 0; i < 25; i++) {
+		for (int i = 0; i < 50; i++) {
 			double a = (r.nextDouble() * 2 - 1) * (w - 0.5);
-			double b = -4.3 + r.nextDouble() * (5.8 + Math.max(0, w - 0.5));
-			if (b > 1.5 && a * a + (b - 1.5) * (b - 1.5) > (w - 0.5) * (w - 0.5)) continue;
+			double b = -4.3 * G + r.nextDouble() * (5.8 * G + Math.max(0, w - 0.5));
+			if (b > 1.5 * G && a * a + (b - 1.5 * G) * (b - 1.5 * G) > (w - 0.5) * (w - 0.5)) continue;
 			Fx.at(level, i % 5 == 0 ? PALE_GOLD : WHITE, plane(gate, a, b, 0.1));
 		}
 		// 문 뒤에서 퍼지는 후광 (천천히 회전)
 		for (int k = 0; k < 12; k++) {
 			double ang = k * Math.PI / 6 + age * 0.02;
-			for (double d = w + 0.8; d <= w + 2.5; d += 0.45) {
+			for (double d = w + 0.8 * G; d <= w + 2.5 * G; d += 0.6) {
 				Fx.at(level, RAY, plane(gate, Math.cos(ang) * d, 0 + Math.sin(ang) * d, 0.3));
 			}
 		}
@@ -213,6 +217,7 @@ public class HeavenGateSpell extends Spell {
 		Fx.burst(level, com.elementalweapons.fx.P.END_ROD, to, 25, 0.3, 0.15);
 		Fx.burst(level, PALE_GOLD, to, 20, 0.5, 0.02);
 		Fx.hurt(level, caster, target, 9.0F);
+		target.setInvulnerableTime(0);
 		target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100, 0));
 		Fx.sound(level, to, SoundEvents.BELL_BLOCK, 1.5F, 1.6F);
 		Fx.sound(level, to, SoundEvents.AMETHYST_BLOCK_CHIME, 2.0F, 1.8F);

@@ -26,6 +26,7 @@ public class FireStormSpell extends Spell {
 	public FireStormSpell(ServerLevel level, Player caster) {
 		super(level, caster);
 		this.center = caster.position();
+		SpellManager.add(new MagicCircle(level, caster, com.elementalweapons.item.Element.FIRE, center.add(0, 0.1, 0), MAX_RADIUS + 1.5, GROW_TICKS + 30, false));
 	}
 
 	@Override

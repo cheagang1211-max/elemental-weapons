@@ -31,6 +31,9 @@ public class WaterOrbSpell extends Spell {
 		super(level, caster);
 		this.target = Fx.lookPoint(caster, 40);
 		this.sky = target.add(0, HEIGHT, 0);
+		// 땅의 마법진(떨어질 곳) + 하늘의 마법진(물이 모이는 곳)
+		SpellManager.add(new MagicCircle(level, caster, com.elementalweapons.item.Element.WATER, target.add(0, 0.1, 0), 6, GATHER + FALL + 10, false));
+		SpellManager.add(new MagicCircle(level, caster, com.elementalweapons.item.Element.WATER, sky.add(0, 2.5, 0), 4.5, GATHER + 4, true));
 		RandomSource r = level.getRandom();
 		for (int i = 0; i < streams.length; i++) {
 			Vec3 d = new Vec3(r.nextGaussian(), r.nextGaussian() * 0.5, r.nextGaussian());

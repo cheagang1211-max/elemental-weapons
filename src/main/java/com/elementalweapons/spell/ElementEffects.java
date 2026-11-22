@@ -17,6 +17,13 @@ public final class ElementEffects {
 
 	/** 지팡이 마법 생성. null이면 쓸 수 없는 상황(예: 주변에 적이 없음) */
 	public static Spell staffSpell(Element element, ServerLevel level, Player caster) {
+		// 마법진이 위치를 스스로 정하지 않는 마법은 여기서 그림 (불·물·바람·빛은 각 마법 안에서)
+		switch (element) {
+			case ELECTRIC -> SpellManager.add(new MagicCircle(level, caster, element, caster.position().add(0, 16, 0), 9, 60, false));   // 벼락이 떨어지는 하늘
+			case GRASS -> SpellManager.add(new MagicCircle(level, caster, element, caster.position().add(0, 0.1, 0), 7, 80, false));
+			case DARK -> SpellManager.add(new MagicCircle(level, caster, element, caster.position().add(0, 0.1, 0), 7, 120, false));
+			default -> {}
+		}
 		return switch (element) {
 			case ELECTRIC -> new ElectricStormSpell(level, caster);
 			case FIRE -> new FireStormSpell(level, caster);
