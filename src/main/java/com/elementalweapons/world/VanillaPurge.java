@@ -44,7 +44,7 @@ public final class VanillaPurge {
 
 	public static void initialize() {
 		ServerEntityEvents.ENTITY_LOAD.register((entity, level) -> {
-			if (entity instanceof Mob && isVanilla(entity) && !entity.getTags().contains(ALLOWED)) {
+			if (entity instanceof Mob && isVanilla(entity) && !entity.entityTags().contains(ALLOWED)) {
 				synchronized (DOOMED) { DOOMED.add(entity); }
 			} else if (entity instanceof ItemEntity ie) {
 				ItemStack c = convert(ie.getItem());

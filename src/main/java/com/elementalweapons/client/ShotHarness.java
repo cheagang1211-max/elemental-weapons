@@ -70,7 +70,7 @@ public final class ShotHarness {
 				Entity e = t.create(l, net.minecraft.world.entity.EntitySpawnReason.NATURAL);
 				e.snapTo(p.getX() + 3, p.getY(), p.getZ() + 3, 0, 0); l.addFreshEntity(e);
 			}
-			var ie = new net.minecraft.world.entity.item.ItemEntity(l, p.getX() + 1, p.getY() + 1, p.getZ(), new ItemStack(net.minecraft.world.item.Items.LIGHT_GRAY_DYE, 3));
+			var ie = new net.minecraft.world.entity.item.ItemEntity(l, p.getX() + 1, p.getY() + 1, p.getZ(), new ItemStack(BuiltInRegistries.ITEM.getValue(net.minecraft.resources.Identifier.fromNamespaceAndPath("minecraft", "light_gray_dye")), 3));
 			ie.setPickUpDelay(200); l.addFreshEntity(ie);
 			p.getInventory().setItem(20, new ItemStack(net.minecraft.world.item.Items.AZURE_BLUET, 5));
 			p.getInventory().setItem(21, new ItemStack(net.minecraft.world.item.Items.BEEF, 2));
@@ -81,7 +81,7 @@ public final class ShotHarness {
 			ServerLevel l = (ServerLevel) p.level();
 			int vanilla = 0;
 			for (var e : l.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, p.getBoundingBox().inflate(16)))
-				if (BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()).getNamespace().equals("minecraft") && !e.getTags().contains(com.elementalweapons.world.VanillaPurge.ALLOWED)) vanilla++;
+				if (BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()).getNamespace().equals("minecraft") && !e.entityTags().contains(com.elementalweapons.world.VanillaPurge.ALLOWED)) vanilla++;
 			StringBuilder drops = new StringBuilder();
 			for (var ie : l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, p.getBoundingBox().inflate(6)))
 				drops.append(BuiltInRegistries.ITEM.getKey(ie.getItem().getItem()).getPath()).append('x').append(ie.getItem().getCount()).append(' ');
