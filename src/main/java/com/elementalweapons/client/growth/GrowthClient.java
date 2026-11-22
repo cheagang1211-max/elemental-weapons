@@ -49,14 +49,9 @@ public final class GrowthClient {
 		tick++;
 		if (mc.player == null) { lastLevel = -1; return; }
 		while (OPEN_KEY.consumeClick()) {
-			if (mc.gui.screen() == null) mc.gui.setScreen(current().cls() == 0 ? new ClassSelectScreen() : new GrowthScreen());
+			if (mc.gui.screen() == null) mc.gui.setScreen(new GrowthScreen());
 		}
 		Growth g = current();
-		if (!prompted && g.cls() == 0 && tick > 200 && mc.gui.screen() == null && System.getenv("EW_SHOTS") == null) {
-			prompted = true;
-			mc.gui.setScreen(new ClassSelectScreen());
-		}
-		if (lastCls > 0 && g.cls() == 0 && mc.gui.screen() == null) mc.gui.setScreen(new ClassSelectScreen());
 		lastCls = g.cls();
 		if (lastLevel >= 0) {
 			if (g.level() > lastLevel) {

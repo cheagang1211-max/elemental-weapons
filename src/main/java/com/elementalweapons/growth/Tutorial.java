@@ -28,9 +28,10 @@ import com.elementalweapons.world.sky.Arenas;
 import com.elementalweapons.world.sky.SkyLayout;
 
 /**
- * 직업별 튜토리얼 (퀘스트가 아니라 처음 길잡이):
- *  0 직업 → 1 나무 무기 기술 → 2 Z 구르기 → 3 대교 → 4 몹 5마리 → 5 스탯 → 6 광석
- *  → 7 10레벨 속성 진화 → 8 X·C 스킬 → 9 보스방 → 10 완료(보상)
+ * 튜토리얼 (퀘스트가 아니라 처음 길잡이):
+ *  0 나무 무기 받기(자동) → 1 나무 무기 기술 → 2 Z 구르기 → 3 원소 지역 → 4 몹 5마리 → 5 스탯
+ *  → (6 광석: 없앰, 자동으로 건너뜀) → 7 10레벨 전직(직업+속성) → 8 X·C 스킬 → 9 보스방 → 10 완료(보상)
+ *  10레벨 전까지는 모든 나무 무기를 써 볼 수 있음
  *  조건으로 판정하는 단계(직업·대교·스탯·진화·보스방)는 순서가 꼬여도 이미 채웠으면 바로 넘어감
  */
 public final class Tutorial {
@@ -47,6 +48,11 @@ public final class Tutorial {
 	}
 
 	public static final int DONE = 10;
+	/** 화면에 보이는 단계 수 (광석 단계를 뺀 8단계) */
+	public static final int TOTAL = 8;
+
+	/** 내부 단계 → 화면 번호 (1~8) */
+	public static int display(int step) { return step <= 5 ? Math.max(1, step) : step - 1; }
 
 	public static final AttachmentType<Data> DATA = AttachmentRegistry.<Data>builder()
 			.persistent(Data.CODEC).copyOnDeath().initializer(() -> Data.DEFAULT)
@@ -67,14 +73,14 @@ public final class Tutorial {
 
 	public static String title(int step, PlayerClass c) {
 		return switch (step) {
-			case 0 -> "직업 고르기";
-			case 1 -> weapon(c) + " 기술 써 보기";
+			case 0 -> "나무 무기 받기";
+			case 1 -> c == PlayerClass.NONE ? "나무 무기 기술 써 보기" : weapon(c) + " 기술 써 보기";
 			case 2 -> "[Z] 구르기로 피하기";
 			case 3 -> "용을 타고(또는 대교로) 원소 지역으로";
 			case 4 -> "지역 몹 처치";
 			case 5 -> "[K] 성장 창에서 스탯 찍기";
 			case 6 -> "섬에서 원소 광석 캐기";
-			case 7 -> "10레벨 달성 → 속성 진화";
+			case 7 -> "10레벨 달성 → 전직 (직업·속성)";
 			case 8 -> "[X]·[C] 속성 스킬 써 보기";
 			case 9 -> "보스방 찾아가기";
 			default -> "튜토리얼 완료!";
@@ -83,7 +89,7 @@ public final class Tutorial {
 
 	public static String hint(int step, PlayerClass c) {
 		return switch (step) {
-			case 0 -> "K 키를 누르면 직업 선택 창이 열려요";
+			case 0 -> "곧 모든 직업의 나무 무기를 받아요";
 			case 1 -> switch (c) {
 				case MAGE -> "우클릭: 마력 구슬 (멀리 있는 적을 맞혀요)";
 				case WARRIOR -> "우클릭: 대검은 넓게 베기, 망치는 땅 내리치기";
@@ -92,7 +98,7 @@ public final class Tutorial {
 				case SUPPORT -> "우클릭: 주변 아군과 나를 치유";
 				case REAPER -> "우클릭: 주변을 한 바퀴 베기";
 				case RANGER -> "우클릭을 누르고 있다가 떼면 발사";
-				default -> "무기를 들고 우클릭";
+				default -> "아무 나무 무기나 들고 우클릭 · 10레벨 전까지 모든 무기를 써 볼 수 있어요";
 			};
 			case 2 -> "Z: 바라보는 쪽으로 구르며 잠깐 무적";
 			case 3 -> "1층 남쪽 용의 둥지에서 용을 우클릭해 타세요 (대교로 걸어가도 돼요)";
@@ -102,7 +108,7 @@ public final class Tutorial {
 			};
 			case 5 -> "레벨이 오르면 포인트 3개 · 힘/마력/체력/민첩";
 			case 6 -> "섬 땅속의 빛나는 광석 · 장비·강화 재료";
-			case 7 -> "10레벨이 되면 진화 창이 열려요 · 7속성 중 하나를 고르세요";
+			case 7 -> "10레벨이 되면 전직 창이 열려요 · 직업을 고른 뒤 7속성 중 하나를 고르세요";
 			case 8 -> {
 				var i = com.elementalweapons.skill.SkillInfo.of(firstType(c));
 				yield "X: " + i[1].name() + " · C: " + i[2].name();
@@ -132,15 +138,14 @@ public final class Tutorial {
 		Data d = get(p);
 		Growth g = ModGrowth.get(p);
 		switch (d.step) {
-			case 0 -> { if (g.cls() != 0) advance(p); }
+			case 0 -> { if ((d.kits & STARTER_BIT) != 0) advance(p); }
+			case 6 -> advance(p); // 광석 단계는 없어짐
 			case 3 -> { if (SkyLayout.regionAt(p.getX(), p.getZ()) >= 0 || !com.elementalweapons.world.sky.ModSky.active((ServerLevel) p.level())) advance(p); }
 			case 5 -> { if (totalStats(p) > 0) advance(p); }
 			case 7 -> { if (Evolution.element(p) >= 0) advance(p); }
 			case 9 -> { if (Arenas.near(p.getX(), p.getZ(), Arenas.R + 6) != null || !com.elementalweapons.world.sky.ModSky.active((ServerLevel) p.level())) advance(p); }
 			default -> {}
 		}
-		// 직업이 없는데 진행 중이면 처음으로 (현자 초기화 등)
-		if (g.cls() == 0 && d.step > 0 && d.step < DONE) p.setAttached(DATA, new Data(0, 0, d.kits));
 	}
 
 	private static int totalStats(Player p) { Growth g = ModGrowth.get(p); return g.str() + g.mag() + g.vit() + g.agi(); }
@@ -187,11 +192,31 @@ public final class Tutorial {
 		return kits;
 	}
 
-	/** 이미 직업을 고른 채로 접속한 사람도 방어구를 받게 */
+	private static final int STARTER_BIT = 1 << 29;
+
+	/** 접속할 때: 전직 전이면 모든 직업의 나무 무기 + 철 방어구 (플레이어마다 한 번) */
 	public static void grantArmorIfMissing(ServerPlayer p) {
 		Data d = get(p);
-		if (ModGrowth.get(p).playerClass() == PlayerClass.of(0) || (d.kits & ARMOR_BIT) != 0) return;
-		p.setAttached(DATA, new Data(d.step, d.count, armor(p, d.kits)));
+		int kits = d.kits;
+		if ((kits & STARTER_BIT) == 0 && Evolution.element(p) < 0) {
+			kits |= STARTER_BIT;
+			var inv = p.getInventory();
+			for (WeaponType t : WeaponType.values()) {
+				if (t.playerClass() == PlayerClass.NONE) continue;
+				net.minecraft.world.item.Item w = ModItems.WOODEN.get(t);
+				if (w == null) continue;
+				boolean has = false;
+				for (int i = 0; i < inv.getContainerSize(); i++) if (inv.getItem(i).is(w)) { has = true; break; }
+				if (has) continue;
+				ItemStack s = new ItemStack(w);
+				if (!inv.add(s)) p.spawnAtLocation((ServerLevel) p.level(), s);
+			}
+			p.sendSystemMessage(Component.literal("✦ 모든 직업의 나무 무기를 받았습니다! 10레벨 전까지 마음껏 써 보고, 10레벨 전직 때 직업과 속성을 고르세요.").withStyle(ChatFormatting.AQUA));
+			p.sendSystemMessage(Component.literal("⚔ 좌클릭을 연달아 3번 하면 무기마다 다른 마무리 기술이 나갑니다 (지팡이·마법서·활은 좌클릭으로 원거리 공격)").withStyle(ChatFormatting.YELLOW));
+		}
+		if ((kits & STARTER_BIT) == 0) kits |= STARTER_BIT; // 이미 전직한 사람
+		kits = armor(p, kits);
+		if (kits != d.kits) p.setAttached(DATA, new Data(d.step, d.count, kits));
 	}
 
 	public static void onClassChosen(ServerPlayer p, int cls) {
@@ -220,6 +245,7 @@ public final class Tutorial {
 	private static void advance(ServerPlayer p) {
 		Data d = get(p);
 		int next = d.step + 1;
+		if (next == 6) next = 7; // 광석 단계 건너뜀
 		p.setAttached(DATA, new Data(next, 0, d.kits));
 		ServerLevel level = (ServerLevel) p.level();
 		PlayerClass c = ModGrowth.get(p).playerClass();
@@ -231,7 +257,7 @@ public final class Tutorial {
 			return;
 		}
 		ModGrowth.addXp(p, 20L * next);
-		p.sendSystemMessage(Component.literal("✔ 튜토리얼 " + next + "/" + (DONE - 1) + " → " + title(next, c)).withStyle(ChatFormatting.GREEN));
+		p.sendSystemMessage(Component.literal("✔ 튜토리얼 " + display(next) + "/" + TOTAL + " → " + title(next, c)).withStyle(ChatFormatting.GREEN));
 		Fx.sound(level, p.position(), SoundEvents.PLAYER_LEVELUP, 0.6F, 1.6F);
 		Fx.burst(level, Fx.dust(0x7CFFB0, 1.2F), p.position().add(0, 1, 0), 24, 0.5, 0.05);
 	}

@@ -24,7 +24,7 @@ public final class TutorialArrows {
 		double r = Math.hypot(p.getX(), p.getZ());
 		boolean inCitadel = r < 160 && p.getY() > Capital.FY[0] - 30;
 		switch (step) {
-			case 3, 4, 6 -> {
+			case 3, 4 -> {
 				if (inCitadel && !p.isPassenger()) {
 					if (p.getY() > Capital.FY[0] + 20) return new Target(new Vec3(0.5, p.getY(), 0.5), "가운데 탑 승강기 (아래를 보면 내려가요)");
 					return new Target(new Vec3(Capital.ROOST_X + 0.5, Capital.FY[0] + 1, Capital.ROOST_Z + 0.5), "용의 둥지");

@@ -113,7 +113,7 @@ public final class SkyLayout {
 			for (int i = 0; i < big && !clash; i++) { Island o = ISLANDS.get(i); if (Math.hypot(o.x - x, o.z - z) < o.r * 1.25 + r + 25) clash = true; }
 			for (Bridge b : BRIDGES) { if (clash) break; if (segDist(x, z, b) < r + b.width + 18) clash = true; }
 			if (clash) continue;
-			add(x, z, r, 95 + 150 * hash(s, 8, 9), r * 0.9, 3, 0, s, 4);
+			add(x, z, r, 220 + 35 * hash(s, 8, 9), r * 0.9, 3, 0, s, 4); // 장식 섬은 하늘 높이에만 (밑으로 떨어지는 공허에는 없음)
 		}
 		// 다리 높이 (지형이 정해진 뒤 계산)
 		for (Bridge b : BRIDGES) {

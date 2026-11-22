@@ -38,7 +38,7 @@ public class GrowthScreen extends Screen {
 		addRenderableWidget(Button.builder(Component.literal("✧ 초월"), b -> paragonMode = !paragonMode)
 				.bounds(left + W - 104, top + 4, 50, 16).build());
 		if (minecraft.player != null && com.elementalweapons.growth.Evolution.pending(minecraft.player))
-			addRenderableWidget(Button.builder(Component.literal("✦ 속성 진화"), b -> minecraft.gui.setScreen(new com.elementalweapons.client.skill.EvolveScreen()))
+			addRenderableWidget(Button.builder(Component.literal("✦ 전직"), b -> minecraft.gui.setScreen(new com.elementalweapons.client.skill.EvolveScreen()))
 					.bounds(left + 98, top + H + 4, 90, 16).build());
 		boolean tutDone = minecraft.player != null && com.elementalweapons.growth.Tutorial.get(minecraft.player).step() >= com.elementalweapons.growth.Tutorial.DONE;
 		addRenderableWidget(Button.builder(Component.literal(tutDone ? "튜토리얼 다시" : "튜토리얼 끄기"), b -> {
@@ -71,7 +71,7 @@ public class GrowthScreen extends Screen {
 		if (paragonMode) { renderParagon(g, gr, mx, my); return; }
 		g.text(font, "원소 성장", left + 8, top + 8, 0xFFFFFFFF, true);
 		g.text(font, "Lv " + gr.level(), left + 62, top + 8, 0xFFFFD34D, true);
-		g.text(font, gr.playerClass().koName, left + 100, top + 8, gr.playerClass().color, true);
+		g.text(font, gr.playerClass() == com.elementalweapons.item.PlayerClass.NONE ? "견습" : gr.playerClass().koName, left + 100, top + 8, gr.playerClass().color, true);
 		g.text(font, "[K] 닫기", left + W - 46, top + 8, 0xFF9A93B8, false);
 		if (minecraft.player != null) {
 			InventoryScreen.extractEntityInInventoryFollowsMouse(g, left + 10, top + 32, left + 90, top + 112, 32, 0.0625F, mx, my, minecraft.player);

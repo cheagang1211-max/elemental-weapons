@@ -62,6 +62,48 @@ public final class ShotHarness {
 		Screenshot.grab(mc.gameDirectory, name + ".png", mc.gameRenderer.mainRenderTarget(), 1, msg -> log(name + " -> " + msg.getString()));
 	}
 
+	/** v4.6 확인: 시작 나무 무기 9종 · 전직 전 모든 무기 · 몹 광석 드랍 · 2단계 전직 창 */
+	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
+		if (f == 2) server.execute(() -> { ServerPlayer p = sp(server);
+			int wooden = 0;
+			for (int i = 0; i < p.getInventory().getContainerSize(); i++) if (p.getInventory().getItem(i).getItem() instanceof com.elementalweapons.item.TrainingWeaponItem) wooden++;
+			StringBuilder use = new StringBuilder();
+			for (com.elementalweapons.item.WeaponType wt : com.elementalweapons.item.WeaponType.values()) use.append(wt.name()).append('=').append(ModGrowth.canUse(p, wt)).append(' ');
+			log("CLASS 나무무기=" + wooden + " 단계=" + com.elementalweapons.growth.Tutorial.get(p).step() + " 직업=" + ModGrowth.get(p).cls() + " 사용가능: " + use); });
+		if (f == 10) server.execute(() -> { ServerPlayer p = sp(server);
+			ServerLevel l = (ServerLevel) p.level();
+			double[] c = com.elementalweapons.world.sky.SkyLayout.REGION_CENTER[2];
+			p.teleportTo(c[0] + 0.5, com.elementalweapons.world.sky.SkyLayout.REGION_TOP[2] + 30, c[1] + 0.5);
+			for (int i = 0; i < 100; i++) {
+				var z = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(l, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+				z.snapTo(c[0] + 0.5, com.elementalweapons.world.sky.SkyLayout.REGION_TOP[2] + 30, c[1] + 0.5, 0, 0);
+				l.addFreshEntity(z);
+				z.hurtServer(l, l.damageSources().playerAttack(p), 1000F);
+			} });
+		if (f == 30) server.execute(() -> { ServerPlayer p = sp(server);
+			java.util.Map<String, Integer> m = new java.util.TreeMap<>();
+			for (var ie : p.level().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, p.getBoundingBox().inflate(40)))
+				m.merge(BuiltInRegistries.ITEM.getKey(ie.getItem().getItem()).getPath(), ie.getItem().getCount(), Integer::sum);
+			log("CLASS 몹100 드랍: " + m); });
+		if (f == 40) server.execute(() -> { ServerPlayer p = sp(server); for (int i = 0; i < 12 && ModGrowth.get(p).level() < 10; i++) ModGrowth.addXp(p, Growth.need(ModGrowth.get(p).level())); });
+		if (f == 70) shot(mc, "880_hud_apprentice");
+		if (f == 80) mc.gui.setScreen(new com.elementalweapons.client.skill.EvolveScreen());
+		if (f == 100) shot(mc, "881_evolve_class");
+		if (f == 102 && mc.gui.screen() instanceof com.elementalweapons.client.skill.EvolveScreen es) es.pickForTest(3);
+		if (f == 120) shot(mc, "882_evolve_element");
+		if (f == 122 && mc.gui.screen() instanceof com.elementalweapons.client.skill.EvolveScreen es) es.pickForTest(1);
+		if (f == 150) server.execute(() -> { ServerPlayer p = sp(server);
+			int wooden = 0, el = 0;
+			for (int i = 0; i < p.getInventory().getContainerSize(); i++) {
+				var it = p.getInventory().getItem(i).getItem();
+				if (it instanceof com.elementalweapons.item.TrainingWeaponItem) wooden++;
+				if (it instanceof com.elementalweapons.item.ElementalWeaponItem) el++;
+			}
+			log("CLASS 전직후 직업=" + ModGrowth.get(p).cls() + " 속성=" + com.elementalweapons.growth.Evolution.element(p) + " 나무=" + wooden + " 속성무기=" + el
+					+ " 대검사용=" + ModGrowth.canUse(p, com.elementalweapons.item.WeaponType.GREATSWORD) + " 지팡이사용=" + ModGrowth.canUse(p, com.elementalweapons.item.WeaponType.STAFF)); });
+		if (f == 170) shot(mc, "883_after_evolve");
+	}
+
 	private static ServerPlayer sp(IntegratedServer s) { return s.getPlayerList().getPlayers().get(0); }
 
 	private static int idle = 0;
@@ -109,7 +151,7 @@ public final class ShotHarness {
 			if (t == 334) shot(mc, "02_levelup");
 			if (t == 400) mc.gui.setScreen(new GrowthScreen());
 			if (t == 425) shot(mc, "03_growth_screen");
-			if (t == 426) mc.gui.setScreen(new com.elementalweapons.client.growth.ClassSelectScreen());
+			if (t == 426) mc.gui.setScreen(new com.elementalweapons.client.skill.EvolveScreen());
 			if (t == 442) shot(mc, "03b_class_select");
 			if (t == 443) mc.gui.setScreen(new com.elementalweapons.client.growth.SageScreen());
 			if (t == 445) shot(mc, "03c_sage");
@@ -212,6 +254,8 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
+		if (f < 220) { classTest(mc, server, f); return; }
+		f -= 220;
 		double[][] sc = focusScenes();
 		int per = 300;
 		if (f < sc.length * per) {

@@ -42,9 +42,9 @@ public final class SkillNet {
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
 
-	public record ChooseElement(int element) implements CustomPacketPayload {
+	public record ChooseElement(int cls, int element) implements CustomPacketPayload {
 		public static final Type<ChooseElement> TYPE = new Type<>(ElementalWeaponsMod.id("choose_element"));
-		public static final StreamCodec<ByteBuf, ChooseElement> CODEC = StreamCodec.composite(ByteBufCodecs.VAR_INT, ChooseElement::element, ChooseElement::new);
+		public static final StreamCodec<ByteBuf, ChooseElement> CODEC = StreamCodec.composite(ByteBufCodecs.VAR_INT, ChooseElement::cls, ByteBufCodecs.VAR_INT, ChooseElement::element, ChooseElement::new);
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
 
@@ -56,7 +56,7 @@ public final class SkillNet {
 		PayloadTypeRegistry.serverboundPlay().register(ChooseElement.TYPE, ChooseElement.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(Cast.TYPE, (p, ctx) -> Skills.cast(ctx.player(), p.slot()));
 		ServerPlayNetworking.registerGlobalReceiver(Swing.TYPE, (p, ctx) -> Combo.swing(ctx.player()));
-		ServerPlayNetworking.registerGlobalReceiver(ChooseElement.TYPE, (p, ctx) -> Evolution.choose(ctx.player(), p.element()));
+		ServerPlayNetworking.registerGlobalReceiver(ChooseElement.TYPE, (p, ctx) -> Evolution.choose(ctx.player(), p.cls(), p.element()));
 		ServerPlayConnectionEvents.DISCONNECT.register((h, server) -> { Skills.forget(h.getPlayer().getUUID()); Combo.forget(h.getPlayer().getUUID()); });
 	}
 

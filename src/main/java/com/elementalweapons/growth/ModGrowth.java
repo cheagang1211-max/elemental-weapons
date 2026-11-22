@@ -113,6 +113,7 @@ public final class ModGrowth {
 			if (p == null) return;
 			if (entity instanceof net.minecraft.world.entity.monster.Enemy) {
 				Tutorial.event(p, 4);
+				oreDrop(p, entity);
 				boolean staff = p.getMainHandItem().getItem() instanceof com.elementalweapons.item.ElementalWeaponItem w && w.type() == com.elementalweapons.item.WeaponType.STAFF;
 				boolean magic = source.is(net.minecraft.world.damagesource.DamageTypes.INDIRECT_MAGIC) || source.is(net.minecraft.world.damagesource.DamageTypes.MAGIC)
 						|| source.is(net.minecraft.tags.DamageTypeTags.IS_EXPLOSION) || source.getEntity() == null;
@@ -128,11 +129,10 @@ public final class ModGrowth {
 			String path = key.getPath();
 			if (path.equals("orichalcum_ore")) addXp(sp, 30);
 			else if (path.endsWith("_ore")) addXp(sp, 8);
-			if (path.endsWith("_ore")) Tutorial.event(sp, 6);
 		});
 		Tutorial.initialize();
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.TutorialSkip.TYPE, GrowthPayloads.TutorialSkip.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.TutorialSkip.TYPE, (payload, ctx) -> Tutorial.set(ctx.player(), payload.restart() ? (get(ctx.player()).cls() == 0 ? 0 : 1) : Tutorial.DONE));
+		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.TutorialSkip.TYPE, (payload, ctx) -> Tutorial.set(ctx.player(), payload.restart() ? 1 : Tutorial.DONE));
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
 			if (server.getTickCount() % 20 != 0) return;
 			for (ServerPlayer p : server.getPlayerList().getPlayers()) applyStats(p);
@@ -205,7 +205,26 @@ public final class ModGrowth {
 
 	/** 직업이 이 무기를 쓸 수 있는가 */
 	public static boolean canUse(Player p, com.elementalweapons.item.WeaponType type) {
+		// 10레벨 전직 전에는 모든 무기를 써 볼 수 있음
+		if (Evolution.element(p) < 0) return true;
 		return get(p).playerClass() == type.playerClass();
+	}
+
+	private static final String[] REGION_CRYSTAL = {"bloom_crystal", "tide_crystal", "storm_crystal", "gale_crystal", "ember_crystal", "radiant_crystal", "umbral_crystal"};
+
+	/** 원소 지역 몹을 잡으면 일정 확률로 광석 재료 */
+	private static void oreDrop(ServerPlayer p, net.minecraft.world.entity.LivingEntity mob) {
+		if (!(mob.level() instanceof ServerLevel level)) return;
+		int region = com.elementalweapons.world.sky.SkyLayout.regionAt(mob.getX(), mob.getZ());
+		if (region < 0) return;
+		var rnd = level.getRandom();
+		java.util.List<ItemStack> drops = new java.util.ArrayList<>();
+		String crystal = region < REGION_CRYSTAL.length ? REGION_CRYSTAL[region] : REGION_CRYSTAL[rnd.nextInt(REGION_CRYSTAL.length)];
+		float bonus = region >= REGION_CRYSTAL.length ? 2F : 1F; // 심연은 더 잘 나옴
+		if (rnd.nextFloat() < 0.22F * bonus) drops.add(new ItemStack(com.elementalweapons.world.ModBlocks.item(crystal), 1 + rnd.nextInt(2)));
+		if (rnd.nextFloat() < 0.08F * bonus) drops.add(new ItemStack(com.elementalweapons.world.ModBlocks.item("raw_aether")));
+		if (rnd.nextFloat() < 0.02F * bonus) drops.add(new ItemStack(com.elementalweapons.world.ModBlocks.item("orichalcum_chunk")));
+		for (ItemStack s : drops) mob.spawnAtLocation(level, s);
 	}
 
 	public static void denyMessage(Player p, com.elementalweapons.item.WeaponType type) {
@@ -286,9 +305,10 @@ public final class ModGrowth {
 		set(p, new Growth(g.level(), g.xp(), g.points() + spent, 0, 0, 0, 0, 0));
 		Evolution.reset(p);
 		applyStats(p);
-		p.sendSystemMessage(Component.literal("✦ 운명이 초기화되었습니다. 새 직업을 고르고 스탯을 다시 찍으세요.").withStyle(ChatFormatting.LIGHT_PURPLE, ChatFormatting.BOLD));
+		p.sendSystemMessage(Component.literal("✦ 운명이 초기화되었습니다. 전직 창에서 직업과 속성을 다시 고르고 스탯을 다시 찍으세요.").withStyle(ChatFormatting.LIGHT_PURPLE, ChatFormatting.BOLD));
 		Fx.burst((ServerLevel) p.level(), Fx.dust(0xD080FF, 1.5F), p.position().add(0, 1, 0), 60, 0.8, 0.05);
 		Fx.sound((ServerLevel) p.level(), p.position(), SoundEvents.PLAYER_LEVELUP, 1.0F, 0.6F);
+		Evolution.check(p);
 	}
 
 	public static void spend(ServerPlayer p, int stat, int amount) {

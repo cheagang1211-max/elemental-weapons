@@ -38,7 +38,7 @@ public final class TutorialHud {
 		g.fillGradient(x, y, x + w, y + h, 0xD0151A33, 0xD0160E28);
 		g.outline(x, y, w, h, 0xFF7CFFB0);
 		g.fill(x + 1, y + 1, x + 3, y + h - 1, c == PlayerClass.NONE ? 0xFF7CFFB0 : c.color);
-		g.text(font, "튜토리얼 " + Math.max(1, d.step() + (d.step() == 0 ? 1 : 0)) + "/" + (Tutorial.DONE - 1)
+		g.text(font, "튜토리얼 " + Tutorial.display(d.step()) + "/" + Tutorial.TOTAL
 				+ (c != PlayerClass.NONE ? " · " + c.koName : ""), x + 8, y + 5, 0xFF7CFFB0, false);
 		g.text(font, title, x + 8, y + 16, 0xFFFFFFFF, true);
 		g.pose().pushMatrix();

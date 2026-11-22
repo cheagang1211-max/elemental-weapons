@@ -44,7 +44,7 @@ public final class Evolution {
 
 	public static boolean pending(Player p) {
 		Growth g = ModGrowth.get(p);
-		return g.cls() != 0 && g.level() >= LEVEL && element(p) < 0;
+		return g.level() >= LEVEL && element(p) < 0;
 	}
 
 	public static void initialize() {
@@ -61,10 +61,14 @@ public final class Evolution {
 	/** 레벨이 오르는 순간 / 직업을 고르는 순간 호출 */
 	public static void check(ServerPlayer p) { if (pending(p)) SkillNet.openEvolve(p); }
 
-	public static void choose(ServerPlayer p, int el) {
+	/** 10레벨 전직: 직업과 속성을 함께 정함 */
+	public static void choose(ServerPlayer p, int cls, int el) {
 		if (!pending(p) || el < 0 || el >= Element.values().length) return;
+		if (cls <= 0 || cls >= PlayerClass.values().length) cls = ModGrowth.get(p).cls();
+		if (cls <= 0) return;
 		Element e = Element.values()[el];
-		PlayerClass c = ModGrowth.get(p).playerClass();
+		ModGrowth.set(p, ModGrowth.get(p).withClass(cls));
+		PlayerClass c = PlayerClass.of(cls);
 		p.setAttached(ELEMENT, el);
 		// 나무 무기는 사라지고 속성 무기 지급
 		var inv = p.getInventory();
@@ -79,7 +83,7 @@ public final class Evolution {
 		ElementFx.rune(l, ElementFx.color(e), p.position(), 3, 40, 6F);
 		for (double y = 0; y < 8; y += 0.6) Fx.at(l, ElementFx.particle(e), p.position().add(0, y, 0));
 		Fx.sound(l, p.position(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1F, 1.2F);
-		p.sendSystemMessage(Component.literal("✦ 속성 진화! " + e.koName + " 속성의 " + c.koName + "이(가) 되었습니다. X·C 스킬이 열렸습니다.").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
+		p.sendSystemMessage(Component.literal("✦ 전직! " + e.koName + " 속성의 " + c.koName + "이(가) 되었습니다. (사용 무기: " + c.weapons + ") X·C 스킬이 열렸습니다.").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
 		Tutorial.evolved(p);
 	}
 
