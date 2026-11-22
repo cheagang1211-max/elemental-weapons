@@ -81,7 +81,12 @@ public final class ShotHarness {
 		if (f == 30) server.execute(() -> { ServerPlayer p = sp(server);
 			int stones = 0;
 			for (int i = 0; i < p.getInventory().getContainerSize(); i++) if (p.getInventory().getItem(i).getItem() instanceof com.elementalweapons.item.BossSummonItem) stones++;
-			log("V49 소환석 종류=" + stones + " 배고픔=" + p.getFoodData().getFoodLevel());
+			StringBuilder worn = new StringBuilder();
+			for (var sl : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+				var st = p.getItemBySlot(sl);
+				worn.append(BuiltInRegistries.ITEM.getKey(st.getItem()).getPath()).append(st.has(net.minecraft.core.component.DataComponents.UNBREAKABLE) ? "(무한) " : " ");
+			}
+			log("V49 소환석 종류=" + stones + " 배고픔=" + p.getFoodData().getFoodLevel() + " 입은 갑옷: " + worn + " 방어=" + p.getArmorValue());
 			ServerLevel l = (ServerLevel) p.level();
 			int vanilla = 0;
 			for (var e : l.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, p.getBoundingBox().inflate(16)))

@@ -56,14 +56,17 @@ public final class ModGear {
 		return m;
 	}
 
-	public static final ArmorMaterial AETHER_ARMOR = new ArmorMaterial(20, defense(2, 6, 7, 2, 6), 12,
-			SoundEvents.ARMOR_EQUIP_IRON, 1.0F, 0.0F, AETHER_REPAIR, asset("aether"));
+	// 에테르 갑옷: 시작 지급 갑옷. 다이아몬드(3·6·8·3, 단단함 2)보다 한 단계 위, 오리하르콘보다는 아래
+	public static final ArmorMaterial AETHER_ARMOR = new ArmorMaterial(20, defense(3, 7, 8, 3, 8), 12,
+			SoundEvents.ARMOR_EQUIP_NETHERITE, 2.5F, 0.05F, AETHER_REPAIR, asset("aether"));
 	public static final ArmorMaterial ORICHALCUM_ARMOR = new ArmorMaterial(45, defense(3, 7, 9, 4, 12), 18,
 			SoundEvents.ARMOR_EQUIP_NETHERITE, 4.0F, 0.15F, ORICHALCUM_REPAIR, asset("orichalcum"));
 
 	private static void add(String id, UnaryOperator<Item.Properties> props) {
 		ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, ElementalWeaponsMod.id(id));
-		ITEMS.put(id, Registry.register(BuiltInRegistries.ITEM, key, new Item(props.apply(new Item.Properties()).setId(key))));
+		// 장비 내구도 무한
+		ITEMS.put(id, Registry.register(BuiltInRegistries.ITEM, key, new Item(props.apply(new Item.Properties())
+				.component(net.minecraft.core.component.DataComponents.UNBREAKABLE, net.minecraft.util.Unit.INSTANCE).setId(key))));
 	}
 
 	private static void tier(String name, ToolMaterial tool, ArmorMaterial armor, boolean fireproof) {

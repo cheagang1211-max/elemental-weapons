@@ -176,19 +176,27 @@ public final class Tutorial {
 
 	private static final int ARMOR_BIT = 1 << 30;
 
-	/** 철 방어구 한 벌 (플레이어마다 한 번) */
+	private static final int AETHER_BIT = 1 << 27;
+	private static final String[] AETHER_SET = {"aether_helmet", "aether_chestplate", "aether_leggings", "aether_boots"};
+	private static final String[] IRON_SET = {"iron_helmet", "iron_chestplate", "iron_leggings", "iron_boots"};
+
+	/** 에테르 갑옷 한 벌 (플레이어마다 한 번). 예전에 받은 철 갑옷은 에테르 갑옷으로 바꿔 줌 */
 	private static int armor(ServerPlayer p, int kits) {
-		if ((kits & ARMOR_BIT) == 0) {
-			kits |= ARMOR_BIT;
-			net.minecraft.world.item.Item[] set = {net.minecraft.world.item.Items.IRON_HELMET, net.minecraft.world.item.Items.IRON_CHESTPLATE, net.minecraft.world.item.Items.IRON_LEGGINGS, net.minecraft.world.item.Items.IRON_BOOTS};
-			net.minecraft.world.entity.EquipmentSlot[] slots = {net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET};
-			for (int i = 0; i < 4; i++) {
-				ItemStack s = new ItemStack(set[i]);
-				if (p.getItemBySlot(slots[i]).isEmpty()) p.setItemSlot(slots[i], s);
-				else if (!p.getInventory().add(s)) p.spawnAtLocation((ServerLevel) p.level(), s);
-			}
-			p.sendSystemMessage(Component.literal("✦ 모험을 위한 철 방어구 한 벌을 받았습니다!").withStyle(ChatFormatting.AQUA));
+		if ((kits & AETHER_BIT) != 0) return kits;
+		kits |= AETHER_BIT | ARMOR_BIT;
+		net.minecraft.world.entity.EquipmentSlot[] slots = {net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET};
+		var inv = p.getInventory();
+		for (int i = 0; i < 4; i++) {
+			// 시작 철 갑옷 회수
+			for (int k = 0; k < inv.getContainerSize(); k++)
+				if (net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(inv.getItem(k).getItem()).getPath().equals(IRON_SET[i])) { inv.setItem(k, ItemStack.EMPTY); break; }
+			ItemStack worn = p.getItemBySlot(slots[i]);
+			if (net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(worn.getItem()).getPath().equals(IRON_SET[i])) p.setItemSlot(slots[i], ItemStack.EMPTY);
+			ItemStack s = new ItemStack(com.elementalweapons.item.ModGear.ITEMS.get(AETHER_SET[i]));
+			if (p.getItemBySlot(slots[i]).isEmpty()) p.setItemSlot(slots[i], s);
+			else if (!inv.add(s)) p.spawnAtLocation((ServerLevel) p.level(), s);
 		}
+		p.sendSystemMessage(Component.literal("✦ 에테르 갑옷 한 벌을 받았습니다! (다이아몬드보다 튼튼하고 내구도 무한)").withStyle(ChatFormatting.AQUA));
 		return kits;
 	}
 
