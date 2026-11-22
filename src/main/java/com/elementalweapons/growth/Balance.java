@@ -17,6 +17,9 @@ public final class Balance {
 	public static void initialize() {
 		// 밤에도 잘 보이게: 아이콘·입자 없는 야간 투시를 계속 유지
 		net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> {
+			// 배고픔이 닳지 않게: 1초마다 배고픔 가득 (포화도는 0이라 회복 속도는 기본과 같음)
+			if (server.getTickCount() % 20 == 3)
+				for (ServerPlayer p : server.getPlayerList().getPlayers()) if (p.getFoodData().getFoodLevel() < 20) p.getFoodData().setFoodLevel(20);
 			if (server.getTickCount() % 40 != 7) return;
 			for (ServerPlayer p : server.getPlayerList().getPlayers()) {
 				var cur = p.getEffect(net.minecraft.world.effect.MobEffects.NIGHT_VISION);

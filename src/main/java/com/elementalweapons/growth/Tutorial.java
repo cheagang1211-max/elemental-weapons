@@ -193,6 +193,7 @@ public final class Tutorial {
 	}
 
 	private static final int STARTER_BIT = 1 << 29;
+	private static final int BOSS_KIT_BIT = 1 << 28;
 
 	/** 접속할 때: 전직 전이면 모든 직업의 나무 무기 + 철 방어구 (플레이어마다 한 번) */
 	public static void grantArmorIfMissing(ServerPlayer p) {
@@ -215,6 +216,17 @@ public final class Tutorial {
 			p.sendSystemMessage(Component.literal("⚔ 좌클릭을 연달아 3번 하면 무기마다 다른 마무리 기술이 나갑니다 (지팡이·마법서·활은 좌클릭으로 원거리 공격)").withStyle(ChatFormatting.YELLOW));
 		}
 		if ((kits & STARTER_BIT) == 0) kits |= STARTER_BIT; // 이미 전직한 사람
+		if ((kits & BOSS_KIT_BIT) == 0) {
+			kits |= BOSS_KIT_BIT;
+			java.util.List<net.minecraft.world.item.Item> stones = new java.util.ArrayList<>();
+			stones.add(ModItems.VOLTRA_SUMMON);
+			stones.addAll(ModItems.BOSS_SUMMONS.values());
+			for (net.minecraft.world.item.Item it : stones) {
+				ItemStack s = new ItemStack(it);
+				if (!p.getInventory().add(s)) p.spawnAtLocation((ServerLevel) p.level(), s);
+			}
+			p.sendSystemMessage(Component.literal("✦ 보스 소환석 한 세트(" + stones.size() + "종)를 받았습니다! 각 보스방에서 우클릭하면 보스전이 시작돼요. 실패하면 돌려받아요.").withStyle(ChatFormatting.LIGHT_PURPLE));
+		}
 		kits = armor(p, kits);
 		if (kits != d.kits) p.setAttached(DATA, new Data(d.step, d.count, kits));
 	}

@@ -77,7 +77,11 @@ public final class ShotHarness {
 			p.getInventory().setItem(22, new ItemStack(net.minecraft.world.item.Items.LEATHER, 4));
 			p.getInventory().setItem(23, new ItemStack(net.minecraft.world.item.Items.STONE_BRICKS, 10));
 			p.getInventory().setItem(24, new ItemStack(net.minecraft.world.item.Items.WHEAT_SEEDS, 6)); });
+		if (f == 20) server.execute(() -> sp(server).getFoodData().setFoodLevel(3));
 		if (f == 30) server.execute(() -> { ServerPlayer p = sp(server);
+			int stones = 0;
+			for (int i = 0; i < p.getInventory().getContainerSize(); i++) if (p.getInventory().getItem(i).getItem() instanceof com.elementalweapons.item.BossSummonItem) stones++;
+			log("V49 소환석 종류=" + stones + " 배고픔=" + p.getFoodData().getFoodLevel());
 			ServerLevel l = (ServerLevel) p.level();
 			int vanilla = 0;
 			for (var e : l.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, p.getBoundingBox().inflate(16)))
