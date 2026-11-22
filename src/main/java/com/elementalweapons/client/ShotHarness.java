@@ -74,7 +74,10 @@ public final class ShotHarness {
 			ServerLevel l = (ServerLevel) p.level();
 			server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "difficulty normal");
 			double[] c = com.elementalweapons.world.sky.SkyLayout.REGION_CENTER[2];
-			p.teleportTo(c[0] + 0.5, com.elementalweapons.world.sky.SkyLayout.REGION_TOP[2] + 30, c[1] + 0.5);
+			p.teleportTo(c[0] + 0.5, com.elementalweapons.world.sky.SkyLayout.REGION_TOP[2] + 30, c[1] + 0.5); });
+		if (f == 80) server.execute(() -> { ServerPlayer p = sp(server);
+			ServerLevel l = (ServerLevel) p.level();
+			double[] c = com.elementalweapons.world.sky.SkyLayout.REGION_CENTER[2];
 			for (int i = 0; i < 100; i++) {
 				var z = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(l, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
 				z.snapTo(c[0] + 0.5, com.elementalweapons.world.sky.SkyLayout.REGION_TOP[2] + 30, c[1] + 0.5, 0, 0);
@@ -82,19 +85,19 @@ public final class ShotHarness {
 				z.hurtServer(l, l.damageSources().playerAttack(p), 1000F);
 			}
 			log("CLASS 지역=" + com.elementalweapons.world.sky.SkyLayout.regionAt(c[0], c[1]) + " 난이도=" + l.getDifficulty()); });
-		if (f == 30) server.execute(() -> { ServerPlayer p = sp(server);
+		if (f == 110) server.execute(() -> { ServerPlayer p = sp(server);
 			java.util.Map<String, Integer> m = new java.util.TreeMap<>();
 			for (var ie : p.level().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, p.getBoundingBox().inflate(40)))
 				m.merge(BuiltInRegistries.ITEM.getKey(ie.getItem().getItem()).getPath(), ie.getItem().getCount(), Integer::sum);
 			log("CLASS 몹100 드랍: " + m); });
-		if (f == 40) server.execute(() -> { ServerPlayer p = sp(server); for (int i = 0; i < 12 && ModGrowth.get(p).level() < 10; i++) ModGrowth.addXp(p, Growth.need(ModGrowth.get(p).level())); });
-		if (f == 70) shot(mc, "880_hud_apprentice");
-		if (f == 80) mc.gui.setScreen(new com.elementalweapons.client.skill.EvolveScreen());
-		if (f == 100) shot(mc, "881_evolve_class");
-		if (f == 102 && mc.gui.screen() instanceof com.elementalweapons.client.skill.EvolveScreen es) es.pickForTest(3);
-		if (f == 120) shot(mc, "882_evolve_element");
-		if (f == 122 && mc.gui.screen() instanceof com.elementalweapons.client.skill.EvolveScreen es) es.pickForTest(1);
-		if (f == 150) server.execute(() -> { ServerPlayer p = sp(server);
+		if (f == 120) server.execute(() -> { ServerPlayer p = sp(server); for (int i = 0; i < 12 && ModGrowth.get(p).level() < 10; i++) ModGrowth.addXp(p, Growth.need(ModGrowth.get(p).level())); });
+		if (f == 150) shot(mc, "880_hud_apprentice");
+		if (f == 160) mc.gui.setScreen(new com.elementalweapons.client.skill.EvolveScreen());
+		if (f == 180) shot(mc, "881_evolve_class");
+		if (f == 182 && mc.gui.screen() instanceof com.elementalweapons.client.skill.EvolveScreen es) es.pickForTest(3);
+		if (f == 200) shot(mc, "882_evolve_element");
+		if (f == 202 && mc.gui.screen() instanceof com.elementalweapons.client.skill.EvolveScreen es) es.pickForTest(1);
+		if (f == 230) server.execute(() -> { ServerPlayer p = sp(server);
 			int wooden = 0, el = 0;
 			for (int i = 0; i < p.getInventory().getContainerSize(); i++) {
 				var it = p.getInventory().getItem(i).getItem();
@@ -103,7 +106,7 @@ public final class ShotHarness {
 			}
 			log("CLASS 전직후 직업=" + ModGrowth.get(p).cls() + " 속성=" + com.elementalweapons.growth.Evolution.element(p) + " 나무=" + wooden + " 속성무기=" + el
 					+ " 대검사용=" + ModGrowth.canUse(p, com.elementalweapons.item.WeaponType.GREATSWORD) + " 지팡이사용=" + ModGrowth.canUse(p, com.elementalweapons.item.WeaponType.STAFF)); });
-		if (f == 170) shot(mc, "883_after_evolve");
+		if (f == 250) shot(mc, "883_after_evolve");
 	}
 
 	private static ServerPlayer sp(IntegratedServer s) { return s.getPlayerList().getPlayers().get(0); }
@@ -256,8 +259,8 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
-		if (f < 220) { classTest(mc, server, f); return; }
-		f -= 220;
+		if (f < 300) { classTest(mc, server, f); return; }
+		f -= 300;
 		double[][] sc = focusScenes();
 		int per = 300;
 		if (f < sc.length * per) {
