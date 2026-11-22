@@ -72,6 +72,7 @@ public final class ShotHarness {
 			log("CLASS 나무무기=" + wooden + " 단계=" + com.elementalweapons.growth.Tutorial.get(p).step() + " 직업=" + ModGrowth.get(p).cls() + " 사용가능: " + use); });
 		if (f == 10) server.execute(() -> { ServerPlayer p = sp(server);
 			ServerLevel l = (ServerLevel) p.level();
+			server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "difficulty normal");
 			double[] c = com.elementalweapons.world.sky.SkyLayout.REGION_CENTER[2];
 			p.teleportTo(c[0] + 0.5, com.elementalweapons.world.sky.SkyLayout.REGION_TOP[2] + 30, c[1] + 0.5);
 			for (int i = 0; i < 100; i++) {
@@ -79,7 +80,8 @@ public final class ShotHarness {
 				z.snapTo(c[0] + 0.5, com.elementalweapons.world.sky.SkyLayout.REGION_TOP[2] + 30, c[1] + 0.5, 0, 0);
 				l.addFreshEntity(z);
 				z.hurtServer(l, l.damageSources().playerAttack(p), 1000F);
-			} });
+			}
+			log("CLASS 지역=" + com.elementalweapons.world.sky.SkyLayout.regionAt(c[0], c[1]) + " 난이도=" + l.getDifficulty()); });
 		if (f == 30) server.execute(() -> { ServerPlayer p = sp(server);
 			java.util.Map<String, Integer> m = new java.util.TreeMap<>();
 			for (var ie : p.level().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, p.getBoundingBox().inflate(40)))

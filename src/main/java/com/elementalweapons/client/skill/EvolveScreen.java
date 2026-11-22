@@ -84,7 +84,7 @@ public class EvolveScreen extends Screen {
 		g.centeredText(font, cls == 0 ? "전직 1/2 · 직업" : "전직 2/2 · 속성", 0, 0, 0xFFFFD34D);
 		g.pose().popMatrix();
 		g.centeredText(font, cls == 0 ? "앞으로 쓸 직업을 고르세요 · 고른 직업의 무기만 쓸 수 있게 돼요"
-				: PlayerClass.of(cls).koName + "의 속성을 고르세요 · 나무 무기가 사라지고 속성 무기를 받습니다 (운명의 현자에게서만 다시 고를 수 있어요)",
+				: PlayerClass.of(cls).koName + " 선택됨 · 속성을 고르면 나무 무기 대신 속성 무기를 받아요",
 				width / 2, top - 12, 0xFFC9C2E6);
 		for (int i = 0; i < count(); i++) {
 			int x = left + i * (CW + GAP);
