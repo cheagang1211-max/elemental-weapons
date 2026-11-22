@@ -15,6 +15,16 @@ public final class Balance {
 	private static boolean reducing;
 
 	public static void initialize() {
+		// 밤에도 잘 보이게: 아이콘·입자 없는 야간 투시를 계속 유지
+		net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> {
+			if (server.getTickCount() % 40 != 7) return;
+			for (ServerPlayer p : server.getPlayerList().getPlayers()) {
+				var cur = p.getEffect(net.minecraft.world.effect.MobEffects.NIGHT_VISION);
+				if (cur == null || (!cur.isInfiniteDuration() && cur.getDuration() < 400))
+					p.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.NIGHT_VISION,
+							net.minecraft.world.effect.MobEffectInstance.INFINITE_DURATION, 0, true, false, false));
+			}
+		});
 		net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.JOIN.register((h, sender, server) -> server.execute(() -> Tutorial.grantArmorIfMissing(h.getPlayer())));
 		ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
 			if (reducing || !(entity instanceof ServerPlayer p)) return true;

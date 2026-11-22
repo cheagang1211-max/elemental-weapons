@@ -51,6 +51,8 @@ public class Rift {
 	private final ServerBossEvent bar;
 	private int age, wave = 0, pause = 60;
 	boolean finished;
+	/** 열쇠를 쓴 사람 (실패 시 열쇠 반환) */
+	UUID opener;
 
 	Rift(ServerLevel level, Vec3 c, int tier, List<ServerPlayer> who) {
 		this.level = level; this.c = c; this.tier = tier;

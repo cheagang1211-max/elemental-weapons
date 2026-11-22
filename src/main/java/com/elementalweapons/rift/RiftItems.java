@@ -37,6 +37,21 @@ public final class RiftItems {
 				if (r.finished) ACTIVE.remove(r);
 			}
 		});
+		// 도전자가 모두 쓰러지면 균열 종료 + 열쇠 반환
+		net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
+			if (!(entity instanceof ServerPlayer dead)) return;
+			for (Rift r : new ArrayList<>(ACTIVE)) {
+				if (r.finished || !r.players.contains(dead.getUUID())) continue;
+				boolean others = false;
+				for (java.util.UUID id : r.players) {
+					ServerPlayer q = r.level.getServer().getPlayerList().getPlayer(id);
+					if (q != null && q != dead && q.isAlive() && q.level() == r.level && q.position().distanceToSqr(r.c) < 48 * 48) { others = true; break; }
+				}
+				if (others) continue;
+				r.fail("도전자가 모두 쓰러졌습니다");
+				if (r.opener != null) com.elementalweapons.boss.BossFight.refundLater(r.opener, new net.minecraft.world.item.ItemStack(RIFT_KEY));
+			}
+		});
 	}
 
 	/** 균열 열기: 기본은 (최고 기록 + 1)단계, 웅크리고 쓰면 최고 기록 단계 다시 도전 */
@@ -50,7 +65,9 @@ public final class RiftItems {
 		ServerLevel level = (ServerLevel) p.level();
 		List<ServerPlayer> who = new ArrayList<>();
 		for (ServerPlayer q : level.players()) if (q.distanceToSqr(p) < Rift.R * Rift.R) who.add(q);
-		ACTIVE.add(new Rift(level, p.position(), tier, who));
+		Rift rift = new Rift(level, p.position(), tier, who);
+		if (!p.isCreative()) rift.opener = p.getUUID();
+		ACTIVE.add(rift);
 		return true;
 	}
 

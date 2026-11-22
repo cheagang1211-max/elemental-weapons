@@ -52,7 +52,9 @@ public class BossSummonItem extends Item {
 		if (arena != null) pos = new Vec3(arena.x() + 0.5, arena.floor() + 3, arena.z() + 0.5);
 		boss.snapTo(pos.x, pos.y, pos.z, user.getYRot() + 180.0F, 0.0F);
 		server.addFreshEntity(boss);
-		com.elementalweapons.boss.BossFight.start(server, boss, arena != null ? new Vec3(arena.x() + 0.5, arena.floor() + 1, arena.z() + 0.5) : pos.add(0, -1, 0), arena);
+		ItemStack refund = user.isCreative() ? ItemStack.EMPTY : user.getItemInHand(hand).copyWithCount(1);
+		com.elementalweapons.boss.BossFight.start(server, boss, arena != null ? new Vec3(arena.x() + 0.5, arena.floor() + 1, arena.z() + 0.5) : pos.add(0, -1, 0), arena,
+				user instanceof net.minecraft.server.level.ServerPlayer sp ? sp : null, refund);
 
 		// 등장 연출
 		ElectricStormSpell.drawBolt(server, pos);

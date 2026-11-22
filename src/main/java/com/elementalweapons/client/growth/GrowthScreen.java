@@ -40,6 +40,8 @@ public class GrowthScreen extends Screen {
 		if (minecraft.player != null && com.elementalweapons.growth.Evolution.pending(minecraft.player))
 			addRenderableWidget(Button.builder(Component.literal("✦ 전직"), b -> minecraft.gui.setScreen(new com.elementalweapons.client.skill.EvolveScreen()))
 					.bounds(left + 98, top + H + 4, 90, 16).build());
+		addRenderableWidget(Button.builder(Component.literal("스탯 초기화 (무료)"), b -> ClientPlayNetworking.send(GrowthPayloads.Reset.INSTANCE))
+				.bounds(left + W - 102, top + H + 4, 102, 16).build());
 		boolean tutDone = minecraft.player != null && com.elementalweapons.growth.Tutorial.get(minecraft.player).step() >= com.elementalweapons.growth.Tutorial.DONE;
 		addRenderableWidget(Button.builder(Component.literal(tutDone ? "튜토리얼 다시" : "튜토리얼 끄기"), b -> {
 					ClientPlayNetworking.send(new GrowthPayloads.TutorialSkip(tutDone)); onClose(); })
@@ -116,7 +118,7 @@ public class GrowthScreen extends Screen {
 		g.pose().pushMatrix();
 		g.pose().translate(left + W - 8, top + H - 18);
 		g.pose().scale(0.7F, 0.7F);
-		g.text(font, "직업·스탯 초기화: 운명의 현자", -font.width("직업·스탯 초기화: 운명의 현자"), 0, 0xFFD080FF, false);
+		g.text(font, "직업·속성 초기화: 운명의 현자", -font.width("직업·속성 초기화: 운명의 현자"), 0, 0xFFD080FF, false);
 		g.pose().popMatrix();
 		g.text(font, "남은 포인트", left + 98, top + H - 18, 0xFFFFFFFF, true);
 		g.text(font, String.valueOf(gr.points()), left + 98 + font.width("남은 포인트 "), top + H - 18, 0xFFFFD34D, true);

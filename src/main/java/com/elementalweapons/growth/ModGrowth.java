@@ -67,6 +67,8 @@ public final class ModGrowth {
 	public static void initialize() {
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.Spend.TYPE, GrowthPayloads.Spend.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.Reset.TYPE, GrowthPayloads.Reset.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.Reset.TYPE, (payload, ctx) -> reset(ctx.player()));
+		LevelSync.initialize();
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.Spend.TYPE, (payload, ctx) -> spend(ctx.player(), payload.stat(), payload.amount()));
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.SpendParagon.TYPE, GrowthPayloads.SpendParagon.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.SpendParagon.TYPE, (payload, ctx) -> spendParagon(ctx.player(), payload.stat(), payload.amount()));
@@ -146,9 +148,13 @@ public final class ModGrowth {
 		for (ServerPlayer p : level.players()) if (p.distanceToSqr(boss) < 64 * 64) addXp(p, xp);
 	}
 
+	/** 성장 속도 배율 (얻는 경험치) */
+	public static final double XP_MULT = 1.5;
+
 	public static void addXp(ServerPlayer p, long amount) {
 		Growth g = get(p);
 		if (g.level() >= Growth.MAX_LEVEL) { addParagonXp(p, amount); return; }
+		amount = Math.round(amount * XP_MULT);
 		int level = g.level();
 		long xp = g.xp() + amount;
 		int points = g.points();
@@ -323,19 +329,8 @@ public final class ModGrowth {
 	public static void reset(ServerPlayer p) {
 		Growth g = get(p);
 		int spent = g.str() + g.mag() + g.vit() + g.agi();
-		if (spent == 0) return;
-		if (!p.isCreative()) {
-			ItemStack found = ItemStack.EMPTY;
-			for (int i = 0; i < p.getInventory().getContainerSize(); i++) {
-				ItemStack s = p.getInventory().getItem(i);
-				if (s.is(ModItems.ELEMENT_ESSENCE)) { found = s; break; }
-			}
-			if (found.isEmpty()) {
-				p.sendOverlayMessage(Component.literal("스탯 초기화에는 원소 정수 1개가 필요합니다.").withStyle(ChatFormatting.RED));
-				return;
-			}
-			found.shrink(1);
-		}
+		if (spent == 0) { p.sendOverlayMessage(Component.literal("찍은 스탯이 없습니다.").withStyle(ChatFormatting.GRAY)); return; }
+		// 스탯 초기화는 무료 (직업·속성은 운명의 현자에게서만)
 		set(p, new Growth(g.level(), g.xp(), g.points() + spent, 0, 0, 0, 0, g.cls()));
 		applyStats(p);
 		p.sendOverlayMessage(Component.literal("스탯을 초기화했습니다.").withStyle(ChatFormatting.GOLD));

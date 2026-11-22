@@ -107,7 +107,7 @@ public class TrainingWeaponItem extends Item {
 			Vec3 to = e.position().add(0, e.getBbHeight() * 0.5, 0).subtract(eye);
 			double along = to.dot(look);
 			if (along < 0 || along > range) continue;
-			if (to.subtract(look.scale(along)).length() > 1.4 + e.getBbWidth() * 0.5) continue;
+			if (to.subtract(look.scale(along)).length() > 1.4 + Math.max(e.getBbWidth() * 0.5, e.getBbHeight() * 0.5)) continue;
 			if (along < bd) { bd = along; best = e; }
 		}
 		return best;

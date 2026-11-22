@@ -62,52 +62,51 @@ public final class ShotHarness {
 		Screenshot.grab(mc.gameDirectory, name + ".png", mc.gameRenderer.mainRenderTarget(), 1, msg -> log(name + " -> " + msg.getString()));
 	}
 
-	/** v4.6 확인: 시작 나무 무기 9종 · 전직 전 모든 무기 · 몹 광석 드랍 · 2단계 전직 창 */
+	/** v4.7 확인: 레벨 동기화 · 야간 투시 · 스탯 무료 초기화 · 몸통 판정 · 보스전 실패 시 반환 */
 	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
 		if (f == 2) server.execute(() -> { ServerPlayer p = sp(server);
-			int wooden = 0;
-			for (int i = 0; i < p.getInventory().getContainerSize(); i++) if (p.getInventory().getItem(i).getItem() instanceof com.elementalweapons.item.TrainingWeaponItem) wooden++;
-			StringBuilder use = new StringBuilder();
-			for (com.elementalweapons.item.WeaponType wt : com.elementalweapons.item.WeaponType.values()) use.append(wt.name()).append('=').append(ModGrowth.canUse(p, wt)).append(' ');
-			log("CLASS 나무무기=" + wooden + " 단계=" + com.elementalweapons.growth.Tutorial.get(p).step() + " 직업=" + ModGrowth.get(p).cls() + " 사용가능: " + use); });
-		if (f == 10) server.execute(() -> { ServerPlayer p = sp(server);
+			p.setGameMode(GameType.SURVIVAL);
+			log("V47 레벨 게임=" + ModGrowth.get(p).level() + " 바닐라=" + p.experienceLevel + " 야간투시=" + p.hasEffect(net.minecraft.world.effect.MobEffects.NIGHT_VISION));
+			long before = ModGrowth.get(p).xp() + ModGrowth.get(p).level() * 100000L;
+			p.giveExperiencePoints(40);
+			lastXp = before; });
+		if (f == 6) server.execute(() -> { ServerPlayer p = sp(server);
+			log("V47 바닐라XP40 → 게임 레벨=" + ModGrowth.get(p).level() + " xp=" + ModGrowth.get(p).xp() + " (전 " + lastXp + ") 바닐라=" + p.experienceLevel + " 바=" + p.experienceProgress);
+			Growth g = ModGrowth.get(p);
+			ModGrowth.set(p, new Growth(g.level(), g.xp(), g.points() + 6, 0, 0, 0, 0, g.cls()));
+			ModGrowth.spend(p, 0, 4); ModGrowth.spend(p, 2, 2);
+			int beforePts = ModGrowth.get(p).points();
+			ModGrowth.reset(p);
+			log("V47 스탯 초기화: 포인트 " + beforePts + " → " + ModGrowth.get(p).points() + " 힘=" + ModGrowth.get(p).str() + " 정수 필요 없음");
+			ServerLevel l = (ServerLevel) p.level();
+			var z = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(l, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+			z.snapTo(p.getX() + 6, p.getY(), p.getZ(), 0, 0); z.setNoAi(true); l.addFreshEntity(z);
+			var chest = z.position().add(0, 1.5, 0.9);
+			log("V47 몸통 판정: 가슴 높이 옆 1.1칸 → 찾음=" + com.elementalweapons.spell.Fx.enemies(l, chest, 1.1).size() + " (예전 방식 거리=" + String.format("%.2f", Math.sqrt(z.distanceToSqr(chest))) + ")");
+			z.discard(); });
+		if (f == 20) server.execute(() -> { ServerPlayer p = sp(server);
 			ServerLevel l = (ServerLevel) p.level();
 			server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "difficulty normal");
-			double[] c = com.elementalweapons.world.sky.SkyLayout.REGION_CENTER[2];
-			p.teleportTo(c[0] + 0.5, com.elementalweapons.world.sky.SkyLayout.REGION_TOP[2] + 30, c[1] + 0.5); });
+			var type = com.elementalweapons.boss.ModEntities.BOSSES.get("ignis");
+			var boss = type.create(l, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+			boss.snapTo(p.getX() + 10, p.getY(), p.getZ(), 0, 0); boss.setNoAi(true); l.addFreshEntity(boss);
+			bossRef = boss;
+			com.elementalweapons.boss.BossFight.start(l, boss, p.position(), null, p, new ItemStack(ModItems.BOSS_SUMMONS.get("ignis")));
+			p.getAbilities().invulnerable = false; p.onUpdateAbilities();
+			p.hurtServer(l, l.damageSources().genericKill(), 10000F);
+			log("V47 플레이어 사망=" + p.isDeadOrDying()); });
+		if (f == 40) { if (mc.player != null) mc.player.respawn(); }
 		if (f == 80) server.execute(() -> { ServerPlayer p = sp(server);
-			ServerLevel l = (ServerLevel) p.level();
-			double[] c = com.elementalweapons.world.sky.SkyLayout.REGION_CENTER[2];
-			for (int i = 0; i < 100; i++) {
-				var z = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(l, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
-				z.snapTo(c[0] + 0.5, com.elementalweapons.world.sky.SkyLayout.REGION_TOP[2] + 30, c[1] + 0.5, 0, 0);
-				l.addFreshEntity(z);
-				z.hurtServer(l, l.damageSources().playerAttack(p), 1000F);
-			}
-			log("CLASS 지역=" + com.elementalweapons.world.sky.SkyLayout.regionAt(c[0], c[1]) + " 난이도=" + l.getDifficulty()); });
-		if (f == 110) server.execute(() -> { ServerPlayer p = sp(server);
-			java.util.Map<String, Integer> m = new java.util.TreeMap<>();
-			for (var ie : p.level().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, p.getBoundingBox().inflate(40)))
-				m.merge(BuiltInRegistries.ITEM.getKey(ie.getItem().getItem()).getPath(), ie.getItem().getCount(), Integer::sum);
-			log("CLASS 몹100 드랍: " + m); });
-		if (f == 120) server.execute(() -> { ServerPlayer p = sp(server); for (int i = 0; i < 12 && ModGrowth.get(p).level() < 10; i++) ModGrowth.addXp(p, Growth.need(ModGrowth.get(p).level())); });
-		if (f == 150) shot(mc, "880_hud_apprentice");
-		if (f == 160) mc.gui.setScreen(new com.elementalweapons.client.skill.EvolveScreen());
-		if (f == 180) shot(mc, "881_evolve_class");
-		if (f == 182 && mc.gui.screen() instanceof com.elementalweapons.client.skill.EvolveScreen es) es.pickForTest(3);
-		if (f == 200) shot(mc, "882_evolve_element");
-		if (f == 202 && mc.gui.screen() instanceof com.elementalweapons.client.skill.EvolveScreen es) es.pickForTest(1);
-		if (f == 230) server.execute(() -> { ServerPlayer p = sp(server);
-			int wooden = 0, el = 0;
-			for (int i = 0; i < p.getInventory().getContainerSize(); i++) {
-				var it = p.getInventory().getItem(i).getItem();
-				if (it instanceof com.elementalweapons.item.TrainingWeaponItem) wooden++;
-				if (it instanceof com.elementalweapons.item.ElementalWeaponItem) el++;
-			}
-			log("CLASS 전직후 직업=" + ModGrowth.get(p).cls() + " 속성=" + com.elementalweapons.growth.Evolution.element(p) + " 나무=" + wooden + " 속성무기=" + el
-					+ " 대검사용=" + ModGrowth.canUse(p, com.elementalweapons.item.WeaponType.GREATSWORD) + " 지팡이사용=" + ModGrowth.canUse(p, com.elementalweapons.item.WeaponType.STAFF)); });
-		if (f == 250) shot(mc, "883_after_evolve");
+			int stones = 0;
+			for (int i = 0; i < p.getInventory().getContainerSize(); i++) if (p.getInventory().getItem(i).is(ModItems.BOSS_SUMMONS.get("ignis"))) stones += p.getInventory().getItem(i).getCount();
+			log("V47 보스전 실패: 보스 제거=" + (bossRef == null || bossRef.isRemoved()) + " 소환석 반환=" + stones + " 살아있음=" + p.isAlive());
+			bossRef = null;
+			p.getAbilities().invulnerable = true; p.onUpdateAbilities(); });
+		if (f == 100) server.execute(() -> server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set 18000"));
+		if (f == 120) shot(mc, "884_night_vision");
 	}
+
+	private static long lastXp;
 
 	private static ServerPlayer sp(IntegratedServer s) { return s.getPlayerList().getPlayers().get(0); }
 
@@ -259,8 +258,8 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
-		if (f < 300) { classTest(mc, server, f); return; }
-		f -= 300;
+		if (f < 140) { classTest(mc, server, f); return; }
+		f -= 140;
 		double[][] sc = focusScenes();
 		int per = 300;
 		if (f < sc.length * per) {

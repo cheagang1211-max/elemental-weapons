@@ -34,7 +34,7 @@ public record Growth(int level, long xp, int points, int str, int mag, int vit, 
 
 	/** 다음 레벨까지 필요한 경험치 */
 	public static long need(int level) {
-		return Math.round(4 * Math.pow(level, 1.5) + 96);
+		return Math.round(2 * Math.pow(level, 1.5) + 40);
 	}
 
 	public int stat(int i) {

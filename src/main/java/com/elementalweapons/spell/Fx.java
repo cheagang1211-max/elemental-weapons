@@ -86,10 +86,20 @@ public final class Fx {
 	public static List<LivingEntity> enemies(ServerLevel level, Vec3 center, double radius) {
 		AABB box = new AABB(center.x - radius, center.y - radius, center.z - radius,
 				center.x + radius, center.y + radius, center.z + radius);
-		List<LivingEntity> list = level.getEntitiesOfClass(LivingEntity.class, box,
-				e -> e instanceof Enemy && e.isAlive() && e.distanceToSqr(center) <= radius * radius);
-		list.sort(Comparator.comparingDouble(e -> e.distanceToSqr(center)));
+		// 발끝이 아니라 몸통 상자까지의 거리로 판정 (큰 몹·키 큰 몹도 맞음)
+		List<LivingEntity> list = level.getEntitiesOfClass(LivingEntity.class, box.inflate(0.4),
+				e -> e instanceof Enemy && e.isAlive() && boxDistSqr(e, center) <= radius * radius);
+		list.sort(Comparator.comparingDouble(e -> boxDistSqr(e, center)));
 		return list;
+	}
+
+	/** 점에서 엔티티 몸통 상자(조금 넉넉하게)까지의 거리² */
+	public static double boxDistSqr(Entity e, Vec3 p) {
+		AABB b = e.getBoundingBox().inflate(0.3);
+		double dx = Math.max(0, Math.max(b.minX - p.x, p.x - b.maxX));
+		double dy = Math.max(0, Math.max(b.minY - p.y, p.y - b.maxY));
+		double dz = Math.max(0, Math.max(b.minZ - p.z, p.z - b.maxZ));
+		return dx * dx + dy * dy + dz * dz;
 	}
 
 	/** 마법 피해 (시전자가 준 피해로 처리) */

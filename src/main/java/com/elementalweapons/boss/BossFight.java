@@ -50,10 +50,61 @@ public class BossFight {
 				catch (Throwable t) { ElementalWeaponsMod.LOGGER.error("[BOSS] 기믹 오류", t); f.end(); it.remove(); }
 			}
 		});
+		// 도전자가 모두 쓰러지면 보스전 종료 + 소환석 반환
+		net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
+			if (!(entity instanceof ServerPlayer dead)) return;
+			for (BossFight f : new ArrayList<>(ACTIVE)) {
+				if (f.aborted || f.level != dead.level()) continue;
+				boolean involved = dead.getUUID().equals(f.summoner) || dead.position().distanceToSqr(f.c) < 48 * 48;
+				if (!involved) continue;
+				boolean others = false;
+				for (ServerPlayer q : f.fighters()) if (q != dead) { others = true; break; }
+				if (!others) f.abort();
+			}
+		});
+		net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents.AFTER_RESPAWN.register((oldP, newP, alive) -> giveRefund(newP));
+		net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.JOIN.register((h, s, server) -> server.execute(() -> giveRefund(h.getPlayer())));
+	}
+
+	private static final java.util.Map<java.util.UUID, List<net.minecraft.world.item.ItemStack>> REFUNDS = new java.util.HashMap<>();
+
+	/** 다시 살아났을 때 돌려줄 아이템 */
+	public static void refundLater(java.util.UUID who, net.minecraft.world.item.ItemStack s) {
+		REFUNDS.computeIfAbsent(who, k -> new ArrayList<>()).add(s.copy());
+	}
+
+	private static void giveRefund(ServerPlayer p) {
+		if (p.isDeadOrDying()) return;
+		List<net.minecraft.world.item.ItemStack> list = REFUNDS.remove(p.getUUID());
+		if (list == null) return;
+		for (net.minecraft.world.item.ItemStack s : list) {
+			if (!p.getInventory().add(s)) p.spawnAtLocation((ServerLevel) p.level(), s);
+			p.sendSystemMessage(Component.literal("✦ 보스전에 실패해 ").append(s.getHoverName()).append(Component.literal("을(를) 돌려받았습니다.")).withStyle(ChatFormatting.AQUA));
+		}
 	}
 
 	public static void start(ServerLevel level, ElementalBoss boss, Vec3 center, Arenas.Arena arena) {
-		ACTIVE.add(new BossFight(level, boss, center, arena));
+		start(level, boss, center, arena, null, net.minecraft.world.item.ItemStack.EMPTY);
+	}
+
+	/** summoner: 소환한 플레이어, refund: 실패하면 돌려줄 소환석 */
+	public static void start(ServerLevel level, ElementalBoss boss, Vec3 center, Arenas.Arena arena, ServerPlayer summoner, net.minecraft.world.item.ItemStack refund) {
+		BossFight f = new BossFight(level, boss, center, arena);
+		f.summoner = summoner == null ? null : summoner.getUUID();
+		f.refund = refund == null ? net.minecraft.world.item.ItemStack.EMPTY : refund.copy();
+		ACTIVE.add(f);
+	}
+
+	private java.util.UUID summoner;
+	private net.minecraft.world.item.ItemStack refund = net.minecraft.world.item.ItemStack.EMPTY;
+	private boolean aborted;
+
+	private void abort() {
+		aborted = true;
+		announce("✖ 도전자가 모두 쓰러져 보스전이 끝났습니다." + (refund.isEmpty() ? "" : " 소환석은 돌려드립니다."), ChatFormatting.RED);
+		if (summoner != null && !refund.isEmpty()) REFUNDS.computeIfAbsent(summoner, k -> new ArrayList<>()).add(refund.copy());
+		boss.cancelFight();
+		Fx.sound(level, c, SoundEvents.BEACON_DEACTIVATE, 2F, 0.8F);
 	}
 
 	/** 수정 탑이 하나라도 살아 있으면 보스 보호 */
@@ -102,6 +153,7 @@ public class BossFight {
 	/** true = 전투 끝 */
 	private boolean tick() {
 		age++;
+		if (aborted) return true;
 		if (boss.isRemoved() || !boss.isAlive()) {
 			if (arena != null) announce("✦ 보스방 결계가 풀렸습니다.", ChatFormatting.GREEN);
 			return true;

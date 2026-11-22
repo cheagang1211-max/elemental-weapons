@@ -315,4 +315,10 @@ public abstract class ElementalBoss extends Monster {
 	public boolean causeFallDamage(double distance, float multiplier, DamageSource source) {
 		return false;
 	}
+
+	/** 도전 실패: 보상 없이 조용히 사라짐 */
+	public void cancelFight() {
+		bossBar.removeAllPlayers();
+		discard();
+	}
 }
