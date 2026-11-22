@@ -26,6 +26,14 @@ public final class GrowthPayloads {
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
 
+	/** 클라 → 서버: B키 귀환 (1초 뒤 천공성 1층 승강기 앞) */
+	public record GoHome() implements CustomPacketPayload {
+		public static final GoHome INSTANCE = new GoHome();
+		public static final Type<GoHome> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "go_home"));
+		public static final StreamCodec<ByteBuf, GoHome> CODEC = StreamCodec.unit(INSTANCE);
+		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+	}
+
 	/** 서버 → 클라: 현자 창 열기 */
 	public record OpenSage() implements CustomPacketPayload {
 		public static final OpenSage INSTANCE = new OpenSage();

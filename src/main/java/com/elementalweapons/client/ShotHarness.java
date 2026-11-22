@@ -536,7 +536,7 @@ public final class ShotHarness {
 			});
 		}
 		if (tt > 160 && tt < 200) look(mc, 0, 25);
-		if (tt == 180) server.execute(() -> { ServerPlayer p = sp(server); com.elementalweapons.spell.SpellManager.add(new com.elementalweapons.spell.ReapSpell((ServerLevel) p.level(), p, Element.DARK)); });
+		if (tt == 180) server.execute(() -> { ServerPlayer p = sp(server); com.elementalweapons.spell.SpellManager.add(new com.elementalweapons.spell.ReapSpell((ServerLevel) p.level(), p, Element.DARK, 1F)); });
 		if (tt == 183) shot(mc, "64_reap_a");
 		if (tt == 186) shot(mc, "64_reap_b");
 		if (tt == 189) shot(mc, "64_reap_c");

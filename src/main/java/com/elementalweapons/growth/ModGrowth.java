@@ -69,6 +69,9 @@ public final class ModGrowth {
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.Reset.TYPE, GrowthPayloads.Reset.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.Reset.TYPE, (payload, ctx) -> reset(ctx.player()));
 		LevelSync.initialize();
+		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.GoHome.TYPE, GrowthPayloads.GoHome.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.GoHome.TYPE, (payload, ctx) -> Recall.request(ctx.player()));
+		Recall.initialize();
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.Spend.TYPE, (payload, ctx) -> spend(ctx.player(), payload.stat(), payload.amount()));
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.SpendParagon.TYPE, GrowthPayloads.SpendParagon.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.SpendParagon.TYPE, (payload, ctx) -> spendParagon(ctx.player(), payload.stat(), payload.amount()));
@@ -162,7 +165,7 @@ public final class ModGrowth {
 		while (level < Growth.MAX_LEVEL && xp >= Growth.need(level)) {
 			xp -= Growth.need(level);
 			level++;
-			points += Growth.POINTS_PER_LEVEL;
+			points += Growth.totalPoints(level) - Growth.totalPoints(level - 1);
 			gained++;
 		}
 		if (level >= Growth.MAX_LEVEL) xp = 0;
@@ -172,7 +175,7 @@ public final class ModGrowth {
 			Fx.burst(sl, Fx.dust(0xFFD34D, 1.8F), p.position().add(0, 1.0, 0), 80, 1.0, 0.08);
 			Fx.sound(sl, p.position(), SoundEvents.PLAYER_LEVELUP, 1.0F, 0.8F);
 			Fx.sound(sl, p.position(), SoundEvents.PLAYER_LEVELUP, 0.7F, 1.4F);
-			p.sendSystemMessage(Component.literal("✦ 레벨 업! Lv " + level + "  (스탯 포인트 +" + gained * Growth.POINTS_PER_LEVEL + ", [K] 성장 창)")
+			p.sendSystemMessage(Component.literal("✦ 레벨 업! Lv " + level + "  (스탯 포인트 +" + (Growth.totalPoints(level) - Growth.totalPoints(level - gained)) + ", [K] 성장 창)")
 					.withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
 			applyStats(p);
 			if (level >= Evolution.LEVEL && level - gained < Evolution.LEVEL) Evolution.check(p);

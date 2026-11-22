@@ -21,7 +21,7 @@ import com.elementalweapons.growth.ModGrowth;
 public final class GrowthClient {
 	private GrowthClient() {}
 
-	public static KeyMapping OPEN_KEY;
+	public static KeyMapping OPEN_KEY, HOME_KEY;
 	static int lastLevel = -1;
 	static long lastXp = -1;
 	static int levelUpTicks = 0;
@@ -33,6 +33,7 @@ public final class GrowthClient {
 
 	public static void initialize() {
 		OPEN_KEY = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.elementalweapons.growth", InputConstants.KEY_K, KeyMapping.Category.GAMEPLAY));
+		HOME_KEY = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.elementalweapons.home", InputConstants.KEY_B, KeyMapping.Category.GAMEPLAY));
 		HudElementRegistry.addLast(Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "growth_hud"), GrowthHud::render);
 		HudElementRegistry.addLast(Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "tutorial_hud"), TutorialHud::render);
 		ClientTickEvents.END_CLIENT_TICK.register(GrowthClient::tick);
@@ -48,6 +49,7 @@ public final class GrowthClient {
 	private static void tick(Minecraft mc) {
 		tick++;
 		if (mc.player == null) { lastLevel = -1; return; }
+		while (HOME_KEY.consumeClick()) ClientPlayNetworking.send(com.elementalweapons.growth.GrowthPayloads.GoHome.INSTANCE);
 		while (OPEN_KEY.consumeClick()) {
 			if (mc.gui.screen() == null) mc.gui.setScreen(new GrowthScreen());
 		}

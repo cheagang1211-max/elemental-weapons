@@ -46,7 +46,7 @@ public final class Combo {
 	public static String finisherName(WeaponType t) {
 		return switch (t) {
 			case SWORD -> "회전 베기"; case DAGGER -> "급소 찌르기"; case GREATSWORD -> "대지 가르기"; case HAMMER -> "땅 울림";
-			case SCYTHE -> "흡혼 베기"; case SHIELD -> "방패 강타"; case STAFF -> "원소 폭발탄"; case BOOK -> "축복의 파동"; case BOW -> "삼연사";
+			case SCYTHE -> "사신의 원무"; case SHIELD -> "방패 강타"; case STAFF -> "원소 폭발탄"; case BOOK -> "축복의 파동"; case BOW -> "삼연사";
 		};
 	}
 
@@ -73,7 +73,13 @@ public final class Combo {
 				case STAFF -> staff(l, p, el, rgb, m, fin);
 				case BOOK -> book(l, p, el, rgb, m, fin);
 				case BOW -> bow(l, p, m, fin);
-				default -> { if (fin) melee(l, p, type, el, rgb, m); }
+				default -> {
+					if (type == WeaponType.SCYTHE && !fin) crescent(l, p, rgb, m);
+					if (fin) {
+						melee(l, p, type, el, rgb, m);
+						if (el != null) ElementMotion.finisher(l, p, el, p.position().add(Fx.flatLook(p).scale(2)));
+					}
+				}
 			}
 		} catch (Throwable t) {
 			com.elementalweapons.ElementalWeaponsMod.LOGGER.error("[COMBO] 오류", t);
@@ -128,16 +134,19 @@ public final class Combo {
 				ElementFx.groundRing(l, rgb, pos.add(0, 0.1, 0), 4.5, 2.2F, 14);
 				Fx.sound(l, pos, SoundEvents.ANVIL_LAND, 0.7F, 0.6F);
 			}
-			case SCYTHE -> {   // 흡혼 베기: 앞쪽 반원, 맞힌 수만큼 회복
+			case SCYTHE -> {   // 사신의 원무: 주변을 끌어당기며 크게 한 바퀴, 맞힌 수만큼 크게 회복
 				int n = 0;
-				for (LivingEntity e : Fx.enemies(l, pos.add(0, 1, 0), 4.2)) {
-					if (e.position().subtract(pos).normalize().dot(look) < 0) continue;
-					hurt(l, p, e, 6 * m); n++;
+				for (LivingEntity e : Fx.enemies(l, pos.add(0, 1, 0), 5.0)) {
+					Vec3 d = pos.subtract(e.position()).multiply(1, 0, 1);
+					if (d.lengthSqr() > 1) d = d.normalize().scale(0.6);
+					hurt(l, p, e, 10 * m); n++;
+					Fx.launch(e, d.x, 0.2, d.z);
 					Fx.line(l, FxOptions.of(FxOptions.SWIRL, 0x9A60FF, 0.4F, 12), e.position().add(0, 1, 0), p.position().add(0, 1, 0), 0.6);
 				}
-				if (n > 0) p.heal(Math.min(4, n));
-				Fx.ring(l, FxOptions.of(FxOptions.SLASH, 0xB080FF, 1.0F, 9).facing(p.getYRot(), 999, 0), front.add(0, 1, 0), 1.6, 8, 0);
-				Fx.sound(l, pos, SoundEvents.PLAYER_ATTACK_SWEEP, 1F, 0.6F);
+				if (n > 0) p.heal(Math.min(6, n * 1.5F));
+				for (int k = 0; k < 4; k++) Fx.ring(l, FxOptions.of(FxOptions.SLASH, k % 2 == 0 ? 0xB080FF : rgb, 1.2F, 9).facing((float) (p.getYRot() + k * 90), 999, 0), pos.add(0, 1 + k * 0.1, 0), 3.2, 12, k);
+				Fx.sound(l, pos, SoundEvents.PLAYER_ATTACK_SWEEP, 1.2F, 0.5F);
+				Fx.sound(l, pos, SoundEvents.WITHER_SHOOT, 0.3F, 1.6F);
 			}
 			case SHIELD -> {   // 방패 강타: 앞으로 크게 밀치고 잠깐 단단해짐
 				for (LivingEntity e : Fx.enemies(l, front.add(0, 1, 0), 2.6)) { hurt(l, p, e, 5 * m); Fx.launch(e, look.x * 1.5, 0.4, look.z * 1.5); }
@@ -148,6 +157,19 @@ public final class Combo {
 			default -> { }
 		}
 		if (el != null) ElementFx.impact(l, el, front.add(0, 0.6, 0), 1.6);
+	}
+
+	/** 낫 기본 휘두르기: 앞쪽 반원을 함께 베고 조금 흡혈 */
+	private static void crescent(ServerLevel l, ServerPlayer p, int rgb, float m) {
+		Vec3 pos = p.position(), look = Fx.flatLook(p);
+		int n = 0;
+		for (LivingEntity e : Fx.enemies(l, pos.add(0, 1, 0), 3.8)) {
+			Vec3 d = e.position().subtract(pos).multiply(1, 0, 1);
+			if (d.lengthSqr() > 0.01 && d.normalize().dot(look) < 0.15) continue;
+			hurt(l, p, e, 3.5F * m); n++;
+		}
+		if (n > 0) p.heal(Math.min(2, n * 0.5F));
+		Fx.at(l, FxOptions.of(FxOptions.SLASH, rgb, 1.5F, 7).facing(p.getYRot(), 90, 0), pos.add(look.scale(1.2)).add(0, 1.1, 0));
 	}
 
 	// ---------------- 원거리 좌클릭 ----------------

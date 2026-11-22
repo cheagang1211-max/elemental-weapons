@@ -72,7 +72,13 @@ public final class Evolution {
 		p.setAttached(ELEMENT, el);
 		// 나무 무기는 사라지고 속성 무기 지급
 		var inv = p.getInventory();
-		for (int i = 0; i < inv.getContainerSize(); i++) if (inv.getItem(i).getItem() instanceof TrainingWeaponItem) inv.setItem(i, ItemStack.EMPTY);
+		int taken = 0;
+		for (int i = 0; i < inv.getContainerSize(); i++) {
+			var it = inv.getItem(i).getItem();
+			if (it instanceof TrainingWeaponItem) inv.setItem(i, ItemStack.EMPTY);
+			else if (it instanceof ElementalWeaponItem w && w.type().playerClass() != c) { inv.setItem(i, ItemStack.EMPTY); taken++; }   // 예전 직업 무기 회수
+		}
+		if (taken > 0) p.sendSystemMessage(Component.literal("✦ 예전 직업의 무기 " + taken + "개를 회수했습니다.").withStyle(ChatFormatting.GRAY));
 		for (WeaponType t : WeaponType.values()) if (t.playerClass() == c) {
 			ItemStack s = new ItemStack(ModItems.get(e, t));
 			setTier(s, SkillInfo.tier(ModGrowth.get(p).level()));

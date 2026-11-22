@@ -33,7 +33,21 @@ public final class LevelSync {
 		return t;
 	}
 
+	/** 포인트 = 레벨에 맞는 합계 − 찍은 스탯 (예전 규칙으로 더 받은 포인트는 정리, 너무 많이 찍었으면 초기화) */
+	private static void fixPoints(ServerPlayer p) {
+		Growth g = ModGrowth.get(p);
+		int total = Growth.totalPoints(g.level());
+		int spent = g.str() + g.mag() + g.vit() + g.agi();
+		if (spent + g.points() == total) return;
+		if (spent > total) {
+			ModGrowth.set(p, new Growth(g.level(), g.xp(), total, 0, 0, 0, 0, g.cls()));
+			p.sendSystemMessage(net.minecraft.network.chat.Component.literal("✦ 스탯 포인트 규칙이 바뀌어 스탯을 초기화했습니다. [K]에서 다시 찍어 주세요 (100레벨에 모든 스탯 최대).").withStyle(net.minecraft.ChatFormatting.GOLD));
+		} else ModGrowth.set(p, g.withPoints(total - spent));
+		ModGrowth.applyStats(p);
+	}
+
 	private static void sync(ServerPlayer p) {
+		if (p.tickCount % 20 == 5) fixPoints(p);
 		Integer last = LAST.get(p.getUUID());
 		if (last != null && p.totalExperience > last) {
 			int gained = p.totalExperience - last;

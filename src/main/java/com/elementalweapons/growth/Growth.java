@@ -11,7 +11,9 @@ import net.minecraft.network.codec.StreamCodec;
 public record Growth(int level, long xp, int points, int str, int mag, int vit, int agi, int cls) {
 	public static final int MAX_LEVEL = 100;
 	public static final int MAX_STAT = 50;
-	public static final int POINTS_PER_LEVEL = 3;
+	public static final int POINTS_PER_LEVEL = 2;
+	/** 그 레벨까지 받는 스탯 포인트 합계: 100레벨에 정확히 4스탯 × 최대치(200) — 남는 포인트 없음 */
+	public static int totalPoints(int level) { return (int) ((long) (Math.min(level, MAX_LEVEL) - 1) * MAX_STAT * 4 / (MAX_LEVEL - 1)); }
 	public static final Growth DEFAULT = new Growth(1, 0, 0, 0, 0, 0, 0, 0);
 
 	public static final Codec<Growth> CODEC = RecordCodecBuilder.create(i -> i.group(

@@ -58,7 +58,9 @@ public class TrainingWeaponItem extends Item {
 			case GREATSWORD, SCYTHE -> {   // 넓게 베기
 				double r = type == WeaponType.SCYTHE ? 3.4 : 3.2;
 				Fx.at(sl, FxOptions.of(FxOptions.SLASH, WOOD, (float) r * 1.1F, 7).facing(user.getYRot(), 90, 0), user.position().add(0, 1.0, 0));
-				for (LivingEntity e : Fx.enemies(sl, user.position(), r)) if (type == WeaponType.SCYTHE || inFront(user, e, 0.0)) Fx.hurt(sl, user, e, 6F);
+				int hits = 0;
+				for (LivingEntity e : Fx.enemies(sl, user.position(), r)) if (type == WeaponType.SCYTHE || inFront(user, e, 0.0)) { Fx.hurt(sl, user, e, type == WeaponType.SCYTHE ? 7F : 6F); hits++; }
+				if (type == WeaponType.SCYTHE && hits > 0) user.heal(Math.min(3, hits));   // 낫은 벤 만큼 회복
 				Fx.sound(sl, user.position(), SoundEvents.PLAYER_ATTACK_SWEEP, 1F, 0.8F);
 				cooldown(user, stack, type == WeaponType.SCYTHE ? 50 : 60);
 			}

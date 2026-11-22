@@ -72,7 +72,7 @@ public class ModItems {
 			case SWORD -> props.sword(W, 3.0F, -2.4F);
 			case GREATSWORD -> props.sword(W, 5.0F, -3.0F);
 			case HAMMER -> props.sword(W, 6.0F, -3.3F);
-			case SCYTHE -> props.sword(W, 4.0F, -2.8F);
+			case SCYTHE -> props.sword(W, 5.0F, -2.5F);
 			case SHIELD -> props.durability(300).component(net.minecraft.core.component.DataComponents.BLOCKS_ATTACKS,
 					new net.minecraft.world.item.component.BlocksAttacks(0.25F, 1.0F,
 							java.util.List.of(new net.minecraft.world.item.component.BlocksAttacks.DamageReduction(90.0F, java.util.Optional.empty(), 0.0F, 1.0F)),
@@ -118,7 +118,7 @@ public class ModItems {
 			case GREATSWORD -> props.sword(ELEMENTAL_MATERIAL, 7.0F, -3.0F); // 강하지만 느림
 			case STAFF -> props.stacksTo(1);                                  // 마법 전용
 			case BOOK -> props.stacksTo(1);                                   // 지원 마법
-			case SCYTHE -> props.sword(ELEMENTAL_MATERIAL, 6.0F, -2.8F);     // 넓게 베는 낫
+			case SCYTHE -> props.sword(ELEMENTAL_MATERIAL, 7.5F, -2.5F);     // 넓게 베는 낫 (휘두를 때마다 앞쪽 반원을 함께 벰)
 			case BOW -> props.stacksTo(1);                                    // 원거리 (당겨서 발사)
 			case HAMMER -> props.sword(ELEMENTAL_MATERIAL, 9.0F, -3.3F);     // 가장 강하고 가장 느림
 			case SHIELD -> props.durability(3000).component(net.minecraft.core.component.DataComponents.BLOCKS_ATTACKS,

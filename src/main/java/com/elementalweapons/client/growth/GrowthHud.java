@@ -104,7 +104,7 @@ public final class GrowthHud {
 		g.pose().scale(1.5F, 1.5F);
 		g.centeredText(font, "Lv " + GrowthClient.levelUpFrom + " → Lv " + GrowthClient.levelUpTo, 0, 0, a << 24 | 0xFFFFFF);
 		g.pose().popMatrix();
-		g.centeredText(font, "스탯 포인트 +" + (GrowthClient.levelUpTo - GrowthClient.levelUpFrom) * Growth.POINTS_PER_LEVEL + "  ·  [K] 성장 창 열기", sw / 2, cy + 32, a << 24 | 0xFFE9A8);
+		g.centeredText(font, "스탯 포인트 +" + (Growth.totalPoints(GrowthClient.levelUpTo) - Growth.totalPoints(GrowthClient.levelUpFrom)) + "  ·  [K] 성장 창 열기", sw / 2, cy + 32, a << 24 | 0xFFE9A8);
 	}
 
 	static int grad(double t) {

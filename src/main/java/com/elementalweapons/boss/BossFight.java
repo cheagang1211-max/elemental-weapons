@@ -57,18 +57,42 @@ public class BossFight {
 				if (f.aborted || f.level != dead.level()) continue;
 				boolean involved = dead.getUUID().equals(f.summoner) || dead.position().distanceToSqr(f.c) < 48 * 48;
 				if (!involved) continue;
+				respawnAt(dead, f.c, f.arena != null ? Arenas.R + 4 : 12);
 				boolean others = false;
 				for (ServerPlayer q : f.fighters()) if (q != dead) { others = true; break; }
 				if (!others) f.abort();
 			}
 		});
-		net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents.AFTER_RESPAWN.register((oldP, newP, alive) -> giveRefund(newP));
+		net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents.AFTER_RESPAWN.register((oldP, newP, alive) -> {
+			Vec3 at = RESPAWN_AT.remove(newP.getUUID());
+			if (at != null) {
+				newP.teleportTo(at.x, at.y, at.z);
+				newP.sendSystemMessage(Component.literal("✦ 도전하던 곳 입구에서 다시 일어났습니다.").withStyle(ChatFormatting.GRAY));
+			}
+			giveRefund(newP);
+		});
 		net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.JOIN.register((h, s, server) -> server.execute(() -> giveRefund(h.getPlayer())));
 	}
 
 	private static final java.util.Map<java.util.UUID, List<net.minecraft.world.item.ItemStack>> REFUNDS = new java.util.HashMap<>();
 
 	/** 다시 살아났을 때 돌려줄 아이템 */
+	private static final java.util.Map<java.util.UUID, Vec3> RESPAWN_AT = new java.util.HashMap<>();
+
+	/** 보스방·균열에서 죽으면 그 입구(결계 바깥)에서 부활 */
+	public static void respawnAt(ServerPlayer dead, Vec3 center, double dist) {
+		ServerLevel l = (ServerLevel) dead.level();
+		Vec3 d = dead.position().subtract(center).multiply(1, 0, 1);
+		d = d.lengthSqr() < 0.01 ? new Vec3(0, 0, 1) : d.normalize();
+		for (int k = 0; k < 12; k++) {   // 바닥이 있는 방향을 찾아 돌려 봄
+			double a = Math.atan2(d.z, d.x) + k * Math.PI / 6;
+			int x = (int) Math.floor(center.x + Math.cos(a) * dist), z = (int) Math.floor(center.z + Math.sin(a) * dist);
+			int y = l.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+			if (y > l.getMinY() + 2 && Math.abs(y - center.y) < 30) { RESPAWN_AT.put(dead.getUUID(), new Vec3(x + 0.5, y, z + 0.5)); return; }
+		}
+		RESPAWN_AT.put(dead.getUUID(), center.add(0, 1, 0));
+	}
+
 	public static void refundLater(java.util.UUID who, net.minecraft.world.item.ItemStack s) {
 		REFUNDS.computeIfAbsent(who, k -> new ArrayList<>()).add(s.copy());
 	}

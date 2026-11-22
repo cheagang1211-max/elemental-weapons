@@ -87,7 +87,7 @@ public final class Skills {
 	public static void forget(UUID id) { READY.remove(id); }
 
 	// ---------------- 공통 도구 ----------------
-	private static void launchSelf(Player p, Vec3 v) { p.setDeltaMovement(v); p.syncVelocity = true; p.needsSync = true; p.resetFallDistance(); }
+	public static void launchSelf(Player p, Vec3 v) { p.setDeltaMovement(v); p.syncVelocity = true; p.needsSync = true; p.resetFallDistance(); }
 
 	private static int hit(ServerLevel l, Player p, Vec3 c, double r, float dmg, Set<LivingEntity> once) {
 		int n = 0;
@@ -110,12 +110,12 @@ public final class Skills {
 	}
 
 	/** 몸(2칸)이 들어갈 빈 공간인지 */
-	private static boolean standable(ServerLevel l, net.minecraft.core.BlockPos b) {
+	public static boolean standable(ServerLevel l, net.minecraft.core.BlockPos b) {
 		return l.getBlockState(b).getCollisionShape(l, b).isEmpty() && l.getBlockState(b.above()).getCollisionShape(l, b.above()).isEmpty();
 	}
 
 	/** 바라보는 방향으로 최대 dist칸, 벽·땅에 박히지 않는 발 위치 */
-	private static Vec3 safeBlink(ServerLevel l, ServerPlayer p, Vec3 look, double dist) {
+	public static Vec3 safeBlink(ServerLevel l, ServerPlayer p, Vec3 look, double dist) {
 		Vec3 feet = p.position();
 		Vec3 best = feet;
 		for (double d = 0.5; d <= dist; d += 0.5) {

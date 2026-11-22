@@ -42,6 +42,7 @@ public final class RiftItems {
 			if (!(entity instanceof ServerPlayer dead)) return;
 			for (Rift r : new ArrayList<>(ACTIVE)) {
 				if (r.finished || !r.players.contains(dead.getUUID())) continue;
+				com.elementalweapons.boss.BossFight.respawnAt(dead, r.c, Rift.R + 3);
 				boolean others = false;
 				for (java.util.UUID id : r.players) {
 					ServerPlayer q = r.level.getServer().getPlayerList().getPlayer(id);

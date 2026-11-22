@@ -69,11 +69,9 @@ public class ElementalWeaponItem extends Item {
 		if (type == WeaponType.SHIELD) return super.use(level, user, hand); // 방패 막기
 		if (type == WeaponType.BOW) { user.startUsingItem(hand); return InteractionResult.CONSUME; } // 활 당기기
 		if (type == WeaponType.DAGGER) {
-			// 플레이어 이동은 클라이언트가 처리하므로 양쪽에서 실행
-			Vec3 look = user.getLookAngle();
-			user.setDeltaMovement(look.x * 1.8, Math.max(look.y * 1.8, 0.25), look.z * 1.8);
-			user.fallDistance = 0;
-			if (level instanceof ServerLevel server) {
+			// 단검: 속성마다 다른 몸놀림 (서버가 움직이고 동기화)
+			if (level instanceof ServerLevel server && user instanceof net.minecraft.server.level.ServerPlayer sp) {
+				com.elementalweapons.skill.ElementMotion.opener(server, sp, element);
 				ElementEffects.dashBurst(element, server, user.position());
 				com.elementalweapons.growth.Tutorial.event(user, 1);
 			}
@@ -88,6 +86,11 @@ public class ElementalWeaponItem extends Item {
 			}
 			return InteractionResult.PASS; // 실제 능력은 서버에서만 처리
 		}
+
+		// 근접 무기: 속성마다 다른 시작 동작 (순간 이동·돌진·후퇴·속박·도약·기습·강림)
+		if ((type == WeaponType.SWORD || type == WeaponType.GREATSWORD || type == WeaponType.HAMMER || type == WeaponType.SCYTHE)
+				&& user instanceof net.minecraft.server.level.ServerPlayer sp)
+			com.elementalweapons.skill.ElementMotion.opener(server, sp, element);
 
 		switch (type) {
 			case SWORD -> {
@@ -109,8 +112,8 @@ public class ElementalWeaponItem extends Item {
 				user.getCooldowns().addCooldown(user.getItemInHand(hand), (int) Math.round(300 * (com.elementalweapons.growth.ModGrowth.get(user).staffCooldownFactor() * (1 - com.elementalweapons.growth.ModGrowth.paragon(user).cooldownCut()))));
 			}
 			case SCYTHE -> {
-				SpellManager.add(new com.elementalweapons.spell.ReapSpell(server, user, element));
-				user.getCooldowns().addCooldown(user.getItemInHand(hand), 70);
+				SpellManager.add(new com.elementalweapons.spell.ReapSpell(server, user, element, com.elementalweapons.skill.ElementMotion.mult(user)));
+				user.getCooldowns().addCooldown(user.getItemInHand(hand), 45);
 			}
 			case HAMMER -> {
 				ElementEffects.hammerSlam(element, server, user);
