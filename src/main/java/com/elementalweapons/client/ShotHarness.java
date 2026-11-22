@@ -86,7 +86,7 @@ public final class ShotHarness {
 				var st = p.getItemBySlot(sl);
 				worn.append(BuiltInRegistries.ITEM.getKey(st.getItem()).getPath()).append(st.has(net.minecraft.core.component.DataComponents.UNBREAKABLE) ? "(무한) " : " ");
 			}
-			log("V49 소환석 종류=" + stones + " 배고픔=" + p.getFoodData().getFoodLevel() + " 입은 갑옷: " + worn + " 방어=" + p.getArmorValue());
+			log("V49 배고픔=" + p.getFoodData().getFoodLevel() + " 입은 갑옷: " + worn + " 방어=" + p.getArmorValue());
 			ServerLevel l = (ServerLevel) p.level();
 			int vanilla = 0;
 			for (var e : l.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, p.getBoundingBox().inflate(16)))
