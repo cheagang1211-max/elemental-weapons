@@ -91,11 +91,36 @@ jobs:
           sed -i "s/^version = .*/version = \"$VERSION\"/" pack.toml
           "$PW" refresh
 
+      - name: 친구용 Prism 인스턴스 zip 만들어 릴리스에 첨부
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -e
+          mkdir -p prism/minecraft
+          curl -fsSL -o prism/minecraft/packwiz-installer-bootstrap.jar https://github.com/packwiz/packwiz-installer-bootstrap/releases/latest/download/packwiz-installer-bootstrap.jar
+          printf '%s\n' '[General]' 'InstanceType=OneSix' 'name=원소 무기 (Elemental Weapons)' 'iconKey=default' 'OverrideCommands=true' \
+            "PreLaunchCommand=\"\$INST_JAVA\" -jar packwiz-installer-bootstrap.jar https://raw.githubusercontent.com/$REPO/main/pack/pack.toml" > prism/instance.cfg
+          cat > prism/mmc-pack.json <<'JSON'
+          {
+            "formatVersion": 1,
+            "components": [
+              { "uid": "net.minecraft", "version": "26.3", "important": true },
+              { "uid": "net.fabricmc.fabric-loader", "version": "0.20.1" }
+            ]
+          }
+          JSON
+          (cd prism && zip -r ../ElementalWeapons-Prism.zip instance.cfg mmc-pack.json minecraft)
+          unzip -l ElementalWeapons-Prism.zip
+          cat prism/instance.cfg
+          gh release upload "v$VERSION" ElementalWeapons-Prism.zip --clobber -R "$REPO"
+
       - name: 변경 사항 커밋
         run: |
           sed -i "s/^mod_version=.*/mod_version=$VERSION/" gradle.properties
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -rf prism ElementalWeapons-Prism.zip
           git add pack gradle.properties
           git commit -m "Release v$VERSION"
           git push
