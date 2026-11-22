@@ -78,8 +78,9 @@ public class BossFight {
 		List<net.minecraft.world.item.ItemStack> list = REFUNDS.remove(p.getUUID());
 		if (list == null) return;
 		for (net.minecraft.world.item.ItemStack s : list) {
+			Component name = s.getHoverName().copy();
 			if (!p.getInventory().add(s)) p.spawnAtLocation((ServerLevel) p.level(), s);
-			p.sendSystemMessage(Component.literal("✦ 보스전에 실패해 ").append(s.getHoverName()).append(Component.literal("을(를) 돌려받았습니다.")).withStyle(ChatFormatting.AQUA));
+			p.sendSystemMessage(Component.literal("✦ 도전에 실패해 ").append(name).append(Component.literal("을(를) 돌려받았습니다.")).withStyle(ChatFormatting.AQUA));
 		}
 	}
 
