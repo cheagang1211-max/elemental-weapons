@@ -62,5 +62,6 @@ final class WorldBlockList {
 		ModBlocks.material("aether_ingot");
 		ModBlocks.material("orichalcum_chunk");
 		ModBlocks.material("orichalcum_ingot");
+		ModBlocks.material("element_dust");
 	}
 }

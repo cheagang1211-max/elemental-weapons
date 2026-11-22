@@ -136,6 +136,7 @@ public final class DevSelfTest {
 			level.addFreshEntity(boss);
 			if (dummy == null || !dummy.isAlive()) {
 				dummy = EntityTypes.HUSK.create(level, EntitySpawnReason.COMMAND);
+				if (dummy != null) dummy.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
 				dummy.setPermanentlyInvulnerable(true);
 				level.addFreshEntity(dummy);
 			}

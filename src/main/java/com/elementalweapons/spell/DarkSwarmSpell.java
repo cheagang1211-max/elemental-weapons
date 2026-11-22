@@ -44,6 +44,7 @@ public class DarkSwarmSpell extends Spell {
 		if (age == 0) {
 			for (int i = 0; i < BATS; i++) {
 				Entity bat = EntityTypes.BAT.create(level, EntitySpawnReason.MOB_SUMMONED);
+				if (bat != null) bat.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
 				if (bat == null) continue;
 				double a = i * 2 * Math.PI / BATS;
 				bat.setPos(c.x + Math.cos(a) * 2, c.y + 2 + r.nextDouble(), c.z + Math.sin(a) * 2);

@@ -484,14 +484,9 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 		if (t == 20) {
 			minions.removeIf(m -> !m.isAlive());
 			int n = Math.min(s.count() + getPhase() - 1, 8 - minions.size());
-			EntityType<?> type = switch (e) {
-				case ELECTRIC, LIGHT -> EntityTypes.VEX;
-				case FIRE -> EntityTypes.BLAZE;
-				case WATER -> EntityTypes.DROWNED;
-				case GRASS -> EntityTypes.CAVE_SPIDER;
-				case WIND -> EntityTypes.BREEZE;
-				case DARK -> EntityTypes.WITHER_SKELETON;
-			};
+			// 바닐라 몹 대신 이 세계의 속성 몹
+			EntityType<?> type = com.elementalweapons.mob.ModMobs.MOBS.get(BossFight.mobFor(e));
+			if (type == null) return;
 			for (int i = 0; i < n; i++) {
 				Entity m = type.create(level, EntitySpawnReason.MOB_SUMMONED);
 				if (m == null) continue;

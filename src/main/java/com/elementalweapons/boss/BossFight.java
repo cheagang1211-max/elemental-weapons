@@ -251,7 +251,7 @@ public class BossFight {
 		}
 	}
 
-	private static String mobFor(Element e) {
+	public static String mobFor(Element e) {
 		return switch (e) {
 			case DARK -> "shadow_stalker"; case FIRE -> "magma_brute"; case ELECTRIC -> "spark_wisp"; case LIGHT -> "light_sentinel";
 			case WIND -> "gale_hawk"; case WATER -> "tide_spirit"; case GRASS -> "thorn_beast";

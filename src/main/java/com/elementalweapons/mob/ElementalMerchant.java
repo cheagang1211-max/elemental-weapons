@@ -51,6 +51,10 @@ public class ElementalMerchant extends WanderingTrader implements PosedEntity {
 		sell(offers, aether, 2, Items.COAL, 4);
 		sell(offers, ori, 1, Items.EMERALD, 2);
 		sell(offers, ori, 2, Items.NETHERITE_SCRAP, 1);
+		// 원소 가루 (바닐라 잡동사니가 바뀐 것) 팔기
+		Item dust = ModBlocks.item("element_dust");
+		sell(offers, dust, 12, ModBlocks.item("raw_aether"), 1);
+		sell(offers, dust, 40, com.elementalweapons.item.ModItems.ELEMENT_ESSENCE, 1);
 		// 기타
 		sell(offers, ModBlocks.item("storm_crystal"), 2, Items.ENDER_PEARL, 1);
 		sell(offers, ModBlocks.item("radiant_crystal"), 2, Items.EXPERIENCE_BOTTLE, 3);

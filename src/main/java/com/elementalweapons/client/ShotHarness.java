@@ -62,48 +62,32 @@ public final class ShotHarness {
 		Screenshot.grab(mc.gameDirectory, name + ".png", mc.gameRenderer.mainRenderTarget(), 1, msg -> log(name + " -> " + msg.getString()));
 	}
 
-	/** v4.7 확인: 레벨 동기화 · 야간 투시 · 스탯 무료 초기화 · 몸통 판정 · 보스전 실패 시 반환 */
+	/** v4.8 확인: 바닐라 몹 차단 · 잡템 → 원소 가루/고기/솜털 */
 	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
 		if (f == 2) server.execute(() -> { ServerPlayer p = sp(server);
-			p.setGameMode(GameType.SURVIVAL);
-			log("V47 레벨 게임=" + ModGrowth.get(p).level() + " 바닐라=" + p.experienceLevel + " 야간투시=" + p.hasEffect(net.minecraft.world.effect.MobEffects.NIGHT_VISION));
-			long before = ModGrowth.get(p).xp() + ModGrowth.get(p).level() * 100000L;
-			p.giveExperiencePoints(40);
-			lastXp = before; });
-		if (f == 6) server.execute(() -> { ServerPlayer p = sp(server);
-			log("V47 바닐라XP40 → 게임 레벨=" + ModGrowth.get(p).level() + " xp=" + ModGrowth.get(p).xp() + " (전 " + lastXp + ") 바닐라=" + p.experienceLevel + " 바=" + p.experienceProgress);
-			Growth g = ModGrowth.get(p);
-			ModGrowth.set(p, new Growth(g.level(), g.xp(), g.points() + 6, 0, 0, 0, 0, g.cls()));
-			ModGrowth.spend(p, 0, 4); ModGrowth.spend(p, 2, 2);
-			int beforePts = ModGrowth.get(p).points();
-			ModGrowth.reset(p);
-			log("V47 스탯 초기화: 포인트 " + beforePts + " → " + ModGrowth.get(p).points() + " 힘=" + ModGrowth.get(p).str() + " 정수 필요 없음");
 			ServerLevel l = (ServerLevel) p.level();
-			var z = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(l, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
-			z.snapTo(p.getX() + 6, p.getY(), p.getZ(), 0, 0); z.setNoAi(true); l.addFreshEntity(z);
-			var chest = z.position().add(0, 1.5, 0.9);
-			log("V47 몸통 판정: 가슴 높이 옆 1.1칸 → 찾음=" + com.elementalweapons.spell.Fx.enemies(l, chest, 1.1).size() + " (예전 방식 거리=" + String.format("%.2f", Math.sqrt(z.distanceToSqr(chest))) + ")");
-			z.discard(); });
-		if (f == 20) server.execute(() -> { ServerPlayer p = sp(server);
+			for (var t : new net.minecraft.world.entity.EntityType<?>[]{net.minecraft.world.entity.EntityTypes.WANDERING_TRADER, net.minecraft.world.entity.EntityTypes.PILLAGER, net.minecraft.world.entity.EntityTypes.COW}) {
+				Entity e = t.create(l, net.minecraft.world.entity.EntitySpawnReason.NATURAL);
+				e.snapTo(p.getX() + 3, p.getY(), p.getZ() + 3, 0, 0); l.addFreshEntity(e);
+			}
+			var ie = new net.minecraft.world.entity.item.ItemEntity(l, p.getX() + 1, p.getY() + 1, p.getZ(), new ItemStack(net.minecraft.world.item.Items.LIGHT_GRAY_DYE, 3));
+			ie.setPickUpDelay(200); l.addFreshEntity(ie);
+			p.getInventory().setItem(20, new ItemStack(net.minecraft.world.item.Items.AZURE_BLUET, 5));
+			p.getInventory().setItem(21, new ItemStack(net.minecraft.world.item.Items.BEEF, 2));
+			p.getInventory().setItem(22, new ItemStack(net.minecraft.world.item.Items.LEATHER, 4));
+			p.getInventory().setItem(23, new ItemStack(net.minecraft.world.item.Items.STONE_BRICKS, 10));
+			p.getInventory().setItem(24, new ItemStack(net.minecraft.world.item.Items.WHEAT_SEEDS, 6)); });
+		if (f == 30) server.execute(() -> { ServerPlayer p = sp(server);
 			ServerLevel l = (ServerLevel) p.level();
-			server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "difficulty normal");
-			var type = com.elementalweapons.boss.ModEntities.BOSSES.get("ignis");
-			var boss = type.create(l, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
-			boss.snapTo(p.getX() + 10, p.getY(), p.getZ(), 0, 0); boss.setNoAi(true); l.addFreshEntity(boss);
-			bossRef = boss;
-			com.elementalweapons.boss.BossFight.start(l, boss, p.position(), null, p, new ItemStack(ModItems.BOSS_SUMMONS.get("ignis")));
-			p.getAbilities().invulnerable = false; p.onUpdateAbilities();
-			p.hurtServer(l, l.damageSources().genericKill(), 10000F);
-			log("V47 플레이어 사망=" + p.isDeadOrDying()); });
-		if (f == 40) { if (mc.player != null) mc.player.respawn(); }
-		if (f == 80) server.execute(() -> { ServerPlayer p = sp(server);
-			int stones = 0;
-			for (int i = 0; i < p.getInventory().getContainerSize(); i++) if (p.getInventory().getItem(i).is(ModItems.BOSS_SUMMONS.get("ignis"))) stones += p.getInventory().getItem(i).getCount();
-			log("V47 보스전 실패: 보스 제거=" + (bossRef == null || bossRef.isRemoved()) + " 소환석 반환=" + stones + " 살아있음=" + p.isAlive());
-			bossRef = null;
-			p.getAbilities().invulnerable = true; p.onUpdateAbilities(); });
-		if (f == 100) server.execute(() -> server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set 18000"));
-		if (f == 120) shot(mc, "884_night_vision");
+			int vanilla = 0;
+			for (var e : l.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, p.getBoundingBox().inflate(16)))
+				if (BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()).getNamespace().equals("minecraft") && !e.getTags().contains(com.elementalweapons.world.VanillaPurge.ALLOWED)) vanilla++;
+			StringBuilder drops = new StringBuilder();
+			for (var ie : l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, p.getBoundingBox().inflate(6)))
+				drops.append(BuiltInRegistries.ITEM.getKey(ie.getItem().getItem()).getPath()).append('x').append(ie.getItem().getCount()).append(' ');
+			StringBuilder inv = new StringBuilder();
+			for (int i = 20; i <= 24; i++) { var st = p.getInventory().getItem(i); inv.append(BuiltInRegistries.ITEM.getKey(st.getItem()).getPath()).append('x').append(st.getCount()).append(' '); }
+			log("V48 남은 바닐라 몹=" + vanilla + " | 바닥 아이템: " + drops + "| 가방: " + inv); });
 	}
 
 	private static long lastXp;
@@ -258,8 +242,8 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
-		if (f < 140) { classTest(mc, server, f); return; }
-		f -= 140;
+		if (f < 60) { classTest(mc, server, f); return; }
+		f -= 60;
 		double[][] sc = focusScenes();
 		int per = 300;
 		if (f < sc.length * per) {
@@ -347,6 +331,7 @@ public final class ShotHarness {
 				p.teleportTo(0.5, com.elementalweapons.world.sky.Capital.FY[4] + 1, 22.5);
 				if (current != null) current.discard();
 				Entity z = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(p.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+				if (z != null) z.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
 				z.snapTo(0.5, com.elementalweapons.world.sky.Capital.FY[4] + 1, 24.5, 0, 0);
 				((net.minecraft.world.entity.Mob) z).setNoAi(true);
 				p.level().addFreshEntity(z); current = z; });
@@ -529,6 +514,7 @@ public final class ShotHarness {
 				ServerLevel level = (ServerLevel) p.level();
 				for (int i = 0; i < 6; i++) {
 					Entity e = net.minecraft.world.entity.EntityTypes.HUSK.create(level, EntitySpawnReason.COMMAND);
+					if (e != null) e.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
 					if (e == null) continue;
 					double a = i * Math.PI / 3;
 					e.snapTo(p.getX() + Math.cos(a) * 3.6, p.getY(), p.getZ() + Math.sin(a) * 3.6);
@@ -795,6 +781,7 @@ public final class ShotHarness {
 		int i = 0;
 		for (Element el : Element.values()) {
 			Entity e = net.minecraft.world.entity.EntityTypes.HUSK.create(level, EntitySpawnReason.COMMAND);
+			if (e != null) e.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
 			if (e == null) continue;
 			e.snapTo(baseX + (i - 3) * 1.25, baseY, baseZ + 3.2);
 			e.setYRot(180);
