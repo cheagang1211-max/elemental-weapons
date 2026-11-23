@@ -72,12 +72,12 @@ public final class ElementEffects {
 		for (Player ally : level.getEntitiesOfClass(Player.class, caster.getBoundingBox().inflate(10.0))) {
 			switch (element) {
 				case FIRE -> { buff(ally, net.minecraft.world.effect.MobEffects.STRENGTH, dur, 1); buff(ally, net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE, dur, 0); }
-				case WATER -> { ally.heal(8.0F); buff(ally, net.minecraft.world.effect.MobEffects.REGENERATION, 20 * 8, 0); }
-				case GRASS -> { buff(ally, net.minecraft.world.effect.MobEffects.REGENERATION, dur, 1); buff(ally, net.minecraft.world.effect.MobEffects.SATURATION, 20, 0); }
+				case WATER -> { Fx.supportHeal(caster, ally, 0.20F); buff(ally, net.minecraft.world.effect.MobEffects.REGENERATION, ally == caster ? 20 * 4 : 20 * 8, 0); }
+				case GRASS -> { buff(ally, net.minecraft.world.effect.MobEffects.REGENERATION, ally == caster ? dur / 2 : dur, 1); buff(ally, net.minecraft.world.effect.MobEffects.SATURATION, 20, 0); }
 				case WIND -> { buff(ally, net.minecraft.world.effect.MobEffects.SPEED, dur, 1); buff(ally, net.minecraft.world.effect.MobEffects.JUMP_BOOST, dur, 1); }
 				case ELECTRIC -> { buff(ally, net.minecraft.world.effect.MobEffects.HASTE, dur, 1); buff(ally, net.minecraft.world.effect.MobEffects.SPEED, dur, 0); }
 				case DARK -> { buff(ally, net.minecraft.world.effect.MobEffects.RESISTANCE, dur, 1); buff(ally, net.minecraft.world.effect.MobEffects.NIGHT_VISION, 20 * 30, 0); }
-				case LIGHT -> { ally.heal(10.0F); buff(ally, net.minecraft.world.effect.MobEffects.ABSORPTION, dur, 2); ally.removeEffect(net.minecraft.world.effect.MobEffects.POISON); ally.removeEffect(net.minecraft.world.effect.MobEffects.WITHER); }
+				case LIGHT -> { Fx.supportHeal(caster, ally, 0.25F); buff(ally, net.minecraft.world.effect.MobEffects.ABSORPTION, ally == caster ? dur / 2 : dur, 2); ally.removeEffect(net.minecraft.world.effect.MobEffects.POISON); ally.removeEffect(net.minecraft.world.effect.MobEffects.WITHER); }
 			}
 			Fx.line(level, com.elementalweapons.boss.ElementFx.dust(element, 1.0F), c.add(0, 1.2, 0), ally.position().add(0, 1.0, 0), 0.4);
 			Fx.burst(level, com.elementalweapons.boss.ElementFx.particle(element), ally.position().add(0, 1.0, 0), 12, 0.5, 0.03);

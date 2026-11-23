@@ -326,8 +326,8 @@ public final class Skills {
 			case BOOK -> {
 				if (s == 0) {   // 치유의 빛
 					for (Player q : l.getEntitiesOfClass(Player.class, p.getBoundingBox().inflate(8))) {
-						q.heal(6 * m);
-						q.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 60, 1));
+						Fx.supportHeal(p, q, 0.15F);
+						q.addEffect(new MobEffectInstance(MobEffects.REGENERATION, q == p ? 30 : 60, 1));
 						for (double y = 0; y < 3; y += 0.5) Fx.at(l, FxOptions.of(FxOptions.STAR, 0xFFF4C0, 0.3F, 12).spin(10F), q.position().add(0, y, 0));
 					}
 					ElementFx.rune(l, 0xFFE27A, pos, 3, 20, 5F);

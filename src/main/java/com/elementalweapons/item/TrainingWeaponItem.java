@@ -82,7 +82,7 @@ public class TrainingWeaponItem extends Item {
 			}
 			case BOOK -> {   // 작은 치유
 				for (Player p : sl.getEntitiesOfClass(Player.class, user.getBoundingBox().inflate(6))) {
-					p.heal(4F);
+					Fx.supportHeal(user, p, 0.10F);
 					Fx.burst(sl, FxOptions.of(FxOptions.LEAF, 0x9CF08A, 0.2F, 20).spin(8F).gravity(-0.01F), p.position().add(0, 1, 0), 6, 0.4, 0.02);
 				}
 				com.elementalweapons.boss.ElementFx.rune(sl, 0x9CF08A, user.position(), 1.6, 18, 4F);

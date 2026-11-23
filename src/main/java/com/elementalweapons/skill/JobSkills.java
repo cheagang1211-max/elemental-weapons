@@ -234,8 +234,8 @@ public final class JobSkills {
 			case 51 -> {   // 사제: 대치유
 				SpellManager.add(new MagicCircle(l, p, e, pos.add(0, 0.1, 0), awake ? 8 : 6, 50, false));
 				for (Player q : l.getEntitiesOfClass(Player.class, p.getBoundingBox().inflate(10))) {
-					q.heal(16);
-					q.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200, 1));
+					Fx.supportHeal(p, q, 0.35F);
+					q.addEffect(new MobEffectInstance(MobEffects.REGENERATION, q == p ? 100 : 200, 1));
 					q.removeEffect(MobEffects.POISON); q.removeEffect(MobEffects.WITHER); q.removeEffect(MobEffects.SLOWNESS); q.removeEffect(MobEffects.WEAKNESS);
 					if (awake) q.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 400, 1));
 					for (double y = 0; y < 4; y += 0.4) Fx.at(l, ElementFx.dust(e, 1.0F), q.position().add(0, y, 0));

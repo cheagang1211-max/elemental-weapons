@@ -206,7 +206,7 @@ public final class Combo {
 
 	private static void book(ServerLevel l, ServerPlayer p, Element el, int rgb, float m, boolean fin) {
 		if (fin) {   // 축복의 파동: 나와 주변 아군 회복 + 주변 적 피해
-			for (var ally : l.getEntitiesOfClass(net.minecraft.world.entity.player.Player.class, p.getBoundingBox().inflate(6))) ally.heal(3);
+			for (var ally : l.getEntitiesOfClass(net.minecraft.world.entity.player.Player.class, p.getBoundingBox().inflate(6))) Fx.supportHeal(p, ally, 0.06F);
 			for (LivingEntity t : Fx.enemies(l, p.position(), 4.5)) hurt(l, p, t, 4 * m);
 			ElementFx.groundRing(l, 0xFFF2A0, p.position().add(0, 0.1, 0), 5, 2.4F, 16);
 			Fx.burst(l, FxOptions.of(FxOptions.PETAL, 0xFFF2A0, 0.4F, 18), p.position().add(0, 1.2, 0), 16, 1.2, 0.04);
@@ -216,7 +216,7 @@ public final class Combo {
 		Vec3[] end = new Vec3[1];
 		LivingEntity e = ray(l, p, 16, end);
 		Fx.line(l, FxOptions.of(FxOptions.STAR, 0xFFF2A0, 0.2F, 8), p.getEyePosition().add(0, -0.3, 0), end[0], 0.7);
-		if (e != null) { hurt(l, p, e, 2.5F * m); p.heal(1); }
+		if (e != null) { hurt(l, p, e, 2.5F * m); Fx.supportHeal(p, p, 0.02F); }
 		Fx.sound(l, p.position(), SoundEvents.AMETHYST_BLOCK_CHIME, 0.8F, 1.9F);
 	}
 

@@ -108,6 +108,16 @@ public final class Fx {
 		target.hurtServer(level, level.damageSources().indirectMagic(caster, caster), amount * m);
 	}
 
+	/**
+	 * 서포터 회복: 받는 사람 최대 체력의 일정 비율 (레벨 배율 대신).
+	 * 시전자 자신에게는 절반만.
+	 */
+	public static void supportHeal(Player caster, LivingEntity target, float pct) {
+		float amount = target.getMaxHealth() * pct;
+		if (target == caster) amount *= 0.5F;
+		target.heal(amount);
+	}
+
 	/** 엔티티를 날려 보내기 */
 	public static void launch(Entity e, double x, double y, double z) {
 		// 기존 속도를 지우고 push()로 새 속도를 줌 (push가 클라이언트 동기화 표시까지 처리)
