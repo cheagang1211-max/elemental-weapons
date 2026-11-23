@@ -221,10 +221,12 @@
 	"item.elementalweapons.wooden_book": "나무 마법서",
 	"item.elementalweapons.wooden_scythe": "나무 낫",
 	"item.elementalweapons.wooden_bow": "나무 활",
+	"key.elementalweapons.skill4": "전직 기술 (V)",
 	"key.elementalweapons.skill1": "스킬 1 (Z)",
 	"key.elementalweapons.skill2": "스킬 2 (X)",
 	"key.elementalweapons.skill3": "스킬 3 (C)",
 	"entity.elementalweapons.blacksmith": "대장장이",
+	"entity.elementalweapons.job_instructor": "전직 교관",
 	"entity.elementalweapons.enchanter": "마법부여사",
 	"entity.elementalweapons.alchemist": "연금술사",
 	"entity.elementalweapons.sky_dragon": "천공룡"

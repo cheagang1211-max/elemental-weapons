@@ -54,7 +54,8 @@ public class GenericBossRenderer<T extends Mob & PosedEntity> extends MobRendere
 	/** 가게 주인·현자 이름표 (멀리서도 보이게) */
 	private static net.minecraft.network.chat.Component label(Mob e) {
 		String t; int c;
-		if (e instanceof com.elementalweapons.mob.Shopkeepers.Blacksmith) { t = "⚒ 대장장이"; c = 0xFFA040; }
+		if (e instanceof com.elementalweapons.mob.Shopkeepers.Instructor) { t = "⚔ 전직 교관"; c = 0xFF6A6A; }
+		else if (e instanceof com.elementalweapons.mob.Shopkeepers.Blacksmith) { t = "⚒ 대장장이"; c = 0xFFA040; }
 		else if (e instanceof com.elementalweapons.mob.Shopkeepers.Enchanter) { t = "✦ 마법부여사"; c = 0xC890FF; }
 		else if (e instanceof com.elementalweapons.mob.Shopkeepers.Alchemist) { t = "⚗ 연금술사"; c = 0x70F090; }
 		else if (e instanceof com.elementalweapons.mob.ElementalMerchant) { t = "◆ 상인"; c = 0xFFDC40; }

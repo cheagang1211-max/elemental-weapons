@@ -37,6 +37,7 @@ public final class GrowthClient {
 		HudElementRegistry.addLast(Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "growth_hud"), GrowthHud::render);
 		HudElementRegistry.addLast(Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "tutorial_hud"), TutorialHud::render);
 		ClientTickEvents.END_CLIENT_TICK.register(GrowthClient::tick);
+		ClientPlayNetworking.registerGlobalReceiver(com.elementalweapons.growth.Jobs.Open.TYPE, (p, ctx) -> Minecraft.getInstance().gui.setScreen(new JobScreen()));
 		ClientPlayNetworking.registerGlobalReceiver(com.elementalweapons.growth.GrowthPayloads.OpenSage.TYPE,
 				(payload, ctx) -> Minecraft.getInstance().gui.setScreen(new SageScreen()));
 	}

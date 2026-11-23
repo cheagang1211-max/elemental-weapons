@@ -48,9 +48,10 @@ public final class Skills {
 		@Override protected boolean update() { return casterGone() || step.test(age); }
 	}
 
-	private static void run(ServerLevel level, Player p, IntPredicate step) { SpellManager.add(new Timed(level, p, step)); }
+	static void run(ServerLevel level, Player p, IntPredicate step) { SpellManager.add(new Timed(level, p, step)); }
 
 	public static void cast(ServerPlayer p, int slot) {
+		if (slot == JobSkills.SLOT && p.isAlive() && !p.isSpectator()) { JobSkills.cast(p); return; }
 		if (slot < 0 || slot > 2 || !p.isAlive() || p.isSpectator()) return;
 		ServerLevel level = (ServerLevel) p.level();
 		ItemStack held = p.getMainHandItem();

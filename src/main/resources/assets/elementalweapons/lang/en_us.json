@@ -221,10 +221,12 @@
 	"item.elementalweapons.wooden_book": "Wooden Grimoire",
 	"item.elementalweapons.wooden_scythe": "Wooden Scythe",
 	"item.elementalweapons.wooden_bow": "Wooden Bow",
+	"key.elementalweapons.skill4": "Job Skill (V)",
 	"key.elementalweapons.skill1": "Skill 1 (Z)",
 	"key.elementalweapons.skill2": "Skill 2 (X)",
 	"key.elementalweapons.skill3": "Skill 3 (C)",
 	"entity.elementalweapons.blacksmith": "Blacksmith",
+	"entity.elementalweapons.job_instructor": "Job Instructor",
 	"entity.elementalweapons.enchanter": "Enchanter",
 	"entity.elementalweapons.alchemist": "Alchemist",
 	"entity.elementalweapons.sky_dragon": "Sky Dragon"

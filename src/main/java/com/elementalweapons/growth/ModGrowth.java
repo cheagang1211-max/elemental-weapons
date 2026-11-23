@@ -69,6 +69,7 @@ public final class ModGrowth {
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.Reset.TYPE, GrowthPayloads.Reset.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.Reset.TYPE, (payload, ctx) -> reset(ctx.player()));
 		LevelSync.initialize();
+		Jobs.initialize();
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.GoHome.TYPE, GrowthPayloads.GoHome.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.GoHome.TYPE, (payload, ctx) -> Recall.request(ctx.player()));
 		Recall.initialize();
@@ -118,6 +119,7 @@ public final class ModGrowth {
 			if (p == null) return;
 			if (entity instanceof net.minecraft.world.entity.monster.Enemy) {
 				Tutorial.event(p, 4);
+				Jobs.onKill(p);
 				oreDrop(p, entity);
 				boolean staff = p.getMainHandItem().getItem() instanceof com.elementalweapons.item.ElementalWeaponItem w && w.type() == com.elementalweapons.item.WeaponType.STAFF;
 				boolean magic = source.is(net.minecraft.world.damagesource.DamageTypes.INDIRECT_MAGIC) || source.is(net.minecraft.world.damagesource.DamageTypes.MAGIC)
@@ -148,7 +150,7 @@ public final class ModGrowth {
 	public static void bossKilled(ServerLevel level, ElementalBoss boss) {
 		long hp = boss.maxBigHealth();
 		long xp = hp >= 5_000_000_000L ? 50_000 : hp >= 2_500_000_000L ? 12_000 : hp >= 1_500_000_000L ? 6_000 : 3_000;
-		for (ServerPlayer p : level.players()) if (p.distanceToSqr(boss) < 64 * 64) addXp(p, xp);
+		for (ServerPlayer p : level.players()) if (p.distanceToSqr(boss) < 64 * 64) { addXp(p, xp); Jobs.onBossKill(p); }
 	}
 
 	/** 성장 속도 배율 (얻는 경험치) */
@@ -178,6 +180,9 @@ public final class ModGrowth {
 			p.sendSystemMessage(Component.literal("✦ 레벨 업! Lv " + level + "  (스탯 포인트 +" + (Growth.totalPoints(level) - Growth.totalPoints(level - gained)) + ", [K] 성장 창)")
 					.withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
 			applyStats(p);
+			int before = level - gained;
+			if (before < Jobs.LV2 && level >= Jobs.LV2 || before < Jobs.LV3 && level >= Jobs.LV3)
+				p.sendSystemMessage(Component.literal("⚔ " + (level >= Jobs.LV3 ? 3 : 2) + "차 전직 시험을 받을 수 있습니다! 천공성 1층 훈련장의 '전직 교관'을 찾아가세요. (B키로 천공성 귀환)").withStyle(ChatFormatting.LIGHT_PURPLE));
 			if (level >= Evolution.LEVEL && level - gained < Evolution.LEVEL) Evolution.check(p);
 		}
 	}
@@ -313,6 +318,7 @@ public final class ModGrowth {
 		int spent = g.str() + g.mag() + g.vit() + g.agi();
 		set(p, new Growth(g.level(), g.xp(), g.points() + spent, 0, 0, 0, 0, 0));
 		Evolution.reset(p);
+		Jobs.reset(p);
 		applyStats(p);
 		p.sendSystemMessage(Component.literal("✦ 운명이 초기화되었습니다. 전직 창에서 직업과 속성을 다시 고르고 스탯을 다시 찍으세요.").withStyle(ChatFormatting.LIGHT_PURPLE, ChatFormatting.BOLD));
 		Fx.burst((ServerLevel) p.level(), Fx.dust(0xD080FF, 1.5F), p.position().add(0, 1, 0), 60, 0.8, 0.05);

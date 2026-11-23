@@ -83,6 +83,7 @@ public final class Capital {
 				case ALCHEMY -> npc("alchemist", l, 0, -1, y);
 				case STALL -> npc("merchant", l, 0, 0, y);
 				case ENCHANT -> npc("enchanter", l, 0, -3, y);
+				case TRAINING -> npc("instructor", l, 0, -4, y);
 				default -> { }
 			}
 		}

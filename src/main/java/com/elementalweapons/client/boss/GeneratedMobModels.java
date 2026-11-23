@@ -80,6 +80,7 @@ public final class GeneratedMobModels {
 		ModelLayerRegistry.registerModelLayer(layer, EnchanterModel::createBodyLayer);
 		final ModelLayerLocation l_enchanter = layer;
 		EntityRenderers.register(ModMobs.ENCHANTER, ctx -> new GenericBossRenderer<>(ctx, l_enchanter, EnchanterModel::new, "enchanter", 0.5F, 0.5F));
+		EntityRenderers.register(ModMobs.INSTRUCTOR, ctx -> new GenericBossRenderer<>(ctx, l_enchanter, EnchanterModel::new, "enchanter", 0.5F, 0.5F));
 		layer = new ModelLayerLocation(ElementalWeaponsMod.id("alchemist"), "main");
 		ModelLayerRegistry.registerModelLayer(layer, AlchemistModel::createBodyLayer);
 		final ModelLayerLocation l_alchemist = layer;

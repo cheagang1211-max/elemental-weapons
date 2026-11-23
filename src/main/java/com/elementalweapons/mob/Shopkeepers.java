@@ -127,4 +127,18 @@ public final class Shopkeepers {
 			offer(o, ae, 3, new ItemStack(Items.BREWING_STAND));
 		}
 	}
+
+	/** 전직 교관: 말을 걸면 전직 창 (거래 없음) */
+	public static class Instructor extends ElementalMerchant {
+		public Instructor(EntityType<? extends Instructor> type, Level level) { super(type, level); }
+
+		@Override
+		protected void updateTrades(ServerLevel level) {}
+
+		@Override
+		protected net.minecraft.world.InteractionResult mobInteract(net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand) {
+			if (player instanceof net.minecraft.server.level.ServerPlayer sp) com.elementalweapons.growth.Jobs.open(sp);
+			return net.minecraft.world.InteractionResult.SUCCESS;
+		}
+	}
 }

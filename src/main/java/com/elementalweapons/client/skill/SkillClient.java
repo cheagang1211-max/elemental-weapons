@@ -24,10 +24,10 @@ import com.elementalweapons.skill.SkillNet;
 public final class SkillClient {
 	private SkillClient() {}
 
-	private static final KeyMapping[] KEYS = new KeyMapping[3];
-	private static final String[] LABEL = {"Z", "X", "C"};
-	private static final long[] READY = new long[3];
-	private static final int[] TOTAL = new int[3];
+	private static final KeyMapping[] KEYS = new KeyMapping[4];
+	private static final String[] LABEL = {"Z", "X", "C", "V"};
+	private static final long[] READY = new long[4];
+	private static final int[] TOTAL = new int[4];
 	private static long clock;
 
 	public static void initialize() {
@@ -40,13 +40,13 @@ public final class SkillClient {
 			}
 			return false;
 		});
-		int[] codes = {InputConstants.KEY_Z, InputConstants.KEY_X, InputConstants.KEY_C};
-		for (int i = 0; i < 3; i++)
+		int[] codes = {InputConstants.KEY_Z, InputConstants.KEY_X, InputConstants.KEY_C, InputConstants.KEY_V};
+		for (int i = 0; i < 4; i++)
 			KEYS[i] = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.elementalweapons.skill" + (i + 1), codes[i], KeyMapping.Category.GAMEPLAY));
 		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
 			clock++;
 			if (mc.player == null) return;
-			for (int i = 0; i < 3; i++) while (KEYS[i].consumeClick()) if (mc.gui.screen() == null) ClientPlayNetworking.send(new SkillNet.Cast(i));
+			for (int i = 0; i < 4; i++) while (KEYS[i].consumeClick()) if (mc.gui.screen() == null) ClientPlayNetworking.send(new SkillNet.Cast(i));
 		});
 		ClientPlayNetworking.registerGlobalReceiver(SkillNet.Cooldown.TYPE, (p, ctx) -> { READY[p.slot()] = clock + p.ticks(); TOTAL[p.slot()] = Math.max(1, p.ticks()); });
 		ClientPlayNetworking.registerGlobalReceiver(SkillNet.OpenEvolve.TYPE, (p, ctx) -> Minecraft.getInstance().gui.setScreen(new EvolveScreen()));
@@ -67,9 +67,13 @@ public final class SkillClient {
 		Font font = mc.font;
 		int size = 22, gap = 4;
 		int x0 = g.guiWidth() / 2 + 96, y0 = g.guiHeight() - size - 4;
-		for (int i = 0; i < 3; i++) {
+		var jd = mc.player.getAttached(com.elementalweapons.growth.Jobs.DATA);
+		boolean job = jd != null && jd.stage() >= 2 && held.getItem() instanceof ElementalWeaponItem;
+		int slots = job ? 4 : 3;
+		for (int i = 0; i < slots; i++) {
 			int x = x0 + i * (size + gap);
-			boolean locked = infos[i].cooldown() == 0;
+			String nm = i < 3 ? infos[i].name() : com.elementalweapons.growth.Jobs.skill(com.elementalweapons.growth.ModGrowth.get(mc.player).cls(), jd.branch(), jd.stage());
+			boolean locked = i < 3 && infos[i].cooldown() == 0;
 			g.fillGradient(x, y0, x + size, y0 + size, 0xE0202438, 0xE0141626);
 			g.outline(x, y0, size, size, locked ? 0xFF505468 : color);
 			long left = READY[i] - clock;
@@ -84,7 +88,7 @@ public final class SkillClient {
 			g.pose().pushMatrix();
 			g.pose().translate(x + size / 2F, y0 - 7);
 			g.pose().scale(0.5F, 0.5F);
-			g.centeredText(font, infos[i].name(), 0, 0, locked ? 0xFF8A8EA0 : 0xFFE9DDFF);
+			g.centeredText(font, nm, 0, 0, locked ? 0xFF8A8EA0 : i == 3 ? 0xFFFFE08A : 0xFFE9DDFF);
 			g.pose().popMatrix();
 		}
 	}

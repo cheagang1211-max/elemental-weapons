@@ -43,6 +43,7 @@ public final class ModMobs {
 	public static EntityType<FateSage> SAGE;
 	public static EntityType<Shopkeepers.Blacksmith> BLACKSMITH;
 	public static EntityType<Shopkeepers.Enchanter> ENCHANTER;
+	public static EntityType<Shopkeepers.Instructor> INSTRUCTOR;
 	public static EntityType<Shopkeepers.Alchemist> ALCHEMIST;
 	public static EntityType<SkyDragon> SKY_DRAGON;
 
@@ -87,6 +88,8 @@ public final class ModMobs {
 		BLACKSMITH = register("blacksmith", FabricEntityType.Builder.<Shopkeepers.Blacksmith>createMob(Shopkeepers.Blacksmith::new, MobCategory.MISC,
 				mob -> mob.defaultAttributes(ElementalMerchant::attributes)).sized(0.7F, 2.0F).clientTrackingRange(10));
 		ENCHANTER = register("enchanter", FabricEntityType.Builder.<Shopkeepers.Enchanter>createMob(Shopkeepers.Enchanter::new, MobCategory.MISC,
+				mob -> mob.defaultAttributes(ElementalMerchant::attributes)).sized(0.6F, 2.1F).clientTrackingRange(10));
+		INSTRUCTOR = register("job_instructor", FabricEntityType.Builder.<Shopkeepers.Instructor>createMob(Shopkeepers.Instructor::new, MobCategory.MISC,
 				mob -> mob.defaultAttributes(ElementalMerchant::attributes)).sized(0.6F, 2.1F).clientTrackingRange(10));
 		ALCHEMIST = register("alchemist", FabricEntityType.Builder.<Shopkeepers.Alchemist>createMob(Shopkeepers.Alchemist::new, MobCategory.MISC,
 				mob -> mob.defaultAttributes(ElementalMerchant::attributes)).sized(0.6F, 1.95F).clientTrackingRange(10));

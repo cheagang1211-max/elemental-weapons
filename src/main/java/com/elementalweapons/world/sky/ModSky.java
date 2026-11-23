@@ -137,6 +137,7 @@ public final class ModSky {
 		return switch (t) {
 			case "blacksmith" -> com.elementalweapons.mob.ModMobs.BLACKSMITH;
 			case "enchanter" -> com.elementalweapons.mob.ModMobs.ENCHANTER;
+			case "instructor" -> com.elementalweapons.mob.ModMobs.INSTRUCTOR;
 			case "alchemist" -> com.elementalweapons.mob.ModMobs.ALCHEMIST;
 			default -> com.elementalweapons.mob.ModMobs.MERCHANT;
 		};

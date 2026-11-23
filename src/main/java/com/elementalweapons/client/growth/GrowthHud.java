@@ -38,7 +38,11 @@ public final class GrowthHud {
 		com.elementalweapons.item.PlayerClass pc = gr.playerClass();
 		if (pc == com.elementalweapons.item.PlayerClass.NONE) {
 			g.text(font, gr.level() >= 10 ? "전직 가능! [K]" : "견습 모험가", tx, y + 14, gr.level() >= 10 && (GrowthClient.tick / 10) % 2 == 0 ? 0xFFFFD34D : 0xFFB8B0D0, true);
-		} else g.text(font, pc.koName, tx, y + 14, pc.color, true);
+		} else {
+			var jd = mc.player.getAttached(com.elementalweapons.growth.Jobs.DATA);
+			String nm = jd != null && jd.stage() >= 2 ? com.elementalweapons.growth.Jobs.title(gr.cls(), jd.branch(), jd.stage()) : pc.koName;
+			g.text(font, nm, tx, y + 14, pc.color, true);
+		}
 		// 포인트
 		if (gr.points() > 0) {
 			String pts = "+" + gr.points();

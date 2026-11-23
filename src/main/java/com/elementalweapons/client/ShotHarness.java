@@ -62,44 +62,40 @@ public final class ShotHarness {
 		Screenshot.grab(mc.gameDirectory, name + ".png", mc.gameRenderer.mainRenderTarget(), 1, msg -> log(name + " -> " + msg.getString()));
 	}
 
-	/** v4.8 확인: 바닐라 몹 차단 · 잡템 → 원소 가루/고기/솜털 */
+	/** v4.11 확인: 전직 시험 → 2차 갈래 선택 → 전직 연출·오라 → V 기술 → 3차 각성 */
 	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
 		if (f == 2) server.execute(() -> { ServerPlayer p = sp(server);
-			ServerLevel l = (ServerLevel) p.level();
-			for (var t : new net.minecraft.world.entity.EntityType<?>[]{net.minecraft.world.entity.EntityTypes.WANDERING_TRADER, net.minecraft.world.entity.EntityTypes.PILLAGER, net.minecraft.world.entity.EntityTypes.COW}) {
-				Entity e = t.create(l, net.minecraft.world.entity.EntitySpawnReason.NATURAL);
-				e.snapTo(p.getX() + 3, p.getY(), p.getZ() + 3, 0, 0); l.addFreshEntity(e);
-			}
-			var ie = new net.minecraft.world.entity.item.ItemEntity(l, p.getX() + 1, p.getY() + 1, p.getZ(), new ItemStack(BuiltInRegistries.ITEM.getValue(net.minecraft.resources.Identifier.fromNamespaceAndPath("minecraft", "light_gray_dye")), 3));
-			ie.setPickUpDelay(200); l.addFreshEntity(ie);
-			p.getInventory().setItem(20, new ItemStack(net.minecraft.world.item.Items.AZURE_BLUET, 5));
-			p.getInventory().setItem(21, new ItemStack(net.minecraft.world.item.Items.BEEF, 2));
-			p.getInventory().setItem(22, new ItemStack(net.minecraft.world.item.Items.LEATHER, 4));
-			p.getInventory().setItem(23, new ItemStack(net.minecraft.world.item.Items.STONE_BRICKS, 10));
-			p.getInventory().setItem(24, new ItemStack(net.minecraft.world.item.Items.WHEAT_SEEDS, 6)); });
-		if (f == 20) server.execute(() -> sp(server).getFoodData().setFoodLevel(3));
-		if (f == 30) server.execute(() -> { ServerPlayer p = sp(server);
-			int stones = 0;
-			for (int i = 0; i < p.getInventory().getContainerSize(); i++) if (p.getInventory().getItem(i).getItem() instanceof com.elementalweapons.item.BossSummonItem) stones++;
-			StringBuilder worn = new StringBuilder();
-			for (var sl : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
-				var st = p.getItemBySlot(sl);
-				worn.append(BuiltInRegistries.ITEM.getKey(st.getItem()).getPath()).append(st.has(net.minecraft.core.component.DataComponents.UNBREAKABLE) ? "(무한) " : " ");
-			}
-			log("V49 배고픔=" + p.getFoodData().getFoodLevel() + " 입은 갑옷: " + worn + " 방어=" + p.getArmorValue());
-			ServerLevel l = (ServerLevel) p.level();
-			int vanilla = 0;
-			for (var e : l.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, p.getBoundingBox().inflate(16)))
-				if (BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()).getNamespace().equals("minecraft") && !e.entityTags().contains(com.elementalweapons.world.VanillaPurge.ALLOWED)) vanilla++;
-			StringBuilder drops = new StringBuilder();
-			for (var ie : l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, p.getBoundingBox().inflate(6)))
-				drops.append(BuiltInRegistries.ITEM.getKey(ie.getItem().getItem()).getPath()).append('x').append(ie.getItem().getCount()).append(' ');
-			StringBuilder inv = new StringBuilder();
-			for (int i = 20; i <= 24; i++) { var st = p.getInventory().getItem(i); inv.append(BuiltInRegistries.ITEM.getKey(st.getItem()).getPath()).append('x').append(st.getCount()).append(' '); }
-			log("V48 남은 바닐라 몹=" + vanilla + " | 바닥 아이템: " + drops + "| 가방: " + inv); });
-		if (f == 34) { mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT); server.execute(() -> sp(server).setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY)); }
-		if (f == 36) mc.player.setXRot(10);
-		if (f == 55) shot(mc, "885_aether_armor_start");
+			Growth g = ModGrowth.get(p);
+			ModGrowth.set(p, new Growth(125, 0, g.points(), g.str(), g.mag(), g.vit(), g.agi(), 3));
+			p.setAttached(com.elementalweapons.growth.Evolution.ELEMENT, 6);
+			p.getInventory().setItem(0, new ItemStack(ModItems.get(com.elementalweapons.item.Element.LIGHT, com.elementalweapons.item.WeaponType.SWORD)));
+			p.getInventory().setSelectedSlot(0);
+			com.elementalweapons.growth.Jobs.reset(p);
+			com.elementalweapons.growth.Jobs.action(p, 1, 0);
+			var d = com.elementalweapons.growth.Jobs.get(p);
+			log("V411 시험 시작 trial=" + d.trial());
+			p.setAttached(com.elementalweapons.growth.Jobs.DATA, new com.elementalweapons.growth.Jobs.Data(d.stage(), d.branch(), d.trial(), 50, 1)); });
+		if (f == 8) mc.gui.setScreen(new com.elementalweapons.client.growth.JobScreen());
+		if (f == 24) shot(mc, "886_job_branch_choice");
+		if (f == 26) { mc.gui.setScreen(null); server.execute(() -> { com.elementalweapons.growth.Jobs.action(sp(server), 2, 1);
+			var d = com.elementalweapons.growth.Jobs.get(sp(server)); log("V411 2차 전직 stage=" + d.stage() + " branch=" + d.branch() + " 이름=" + com.elementalweapons.growth.Jobs.title(3, d.branch(), d.stage())); }); }
+		if (f == 30) mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
+		if (f == 40) shot(mc, "887_job_advance_title");
+		if (f == 46) com.elementalweapons.client.skill.SkillClient.press(3);
+		if (f == 60) shot(mc, "888_job_skill_holy_barrier");
+		if (f == 70) server.execute(() -> { ServerPlayer p = sp(server); var d = com.elementalweapons.growth.Jobs.get(p);
+			p.setAttached(com.elementalweapons.growth.Jobs.DATA, new com.elementalweapons.growth.Jobs.Data(2, d.branch(), 3, 150, 3));
+			com.elementalweapons.growth.Jobs.action(p, 3, 0);
+			log("V411 3차 전직 stage=" + com.elementalweapons.growth.Jobs.get(p).stage() + " 이름=" + com.elementalweapons.growth.Jobs.title(3, d.branch(), 3)
+					+ " 팀=" + (server.getScoreboard().getPlayersTeam(p.getScoreboardName()) == null ? "없음" : server.getScoreboard().getPlayersTeam(p.getScoreboardName()).getName())); });
+		if (f == 110) shot(mc, "889_job_stage3_aura");
+		if (f == 112) server.execute(() -> com.elementalweapons.skill.JobSkills.cast(sp(server)));
+		if (f == 112) { }
+		if (f == 140) server.execute(() -> { ServerPlayer p = sp(server); var at = com.elementalweapons.world.sky.Capital.NPCS.stream().filter(n -> n.type().equals("instructor")).findFirst();
+			log("V411 교관 위치=" + at.map(n -> n.pos().toShortString()).orElse("없음"));
+			at.ifPresent(n -> p.teleportTo(n.pos().getX() + 0.5, n.pos().getY() + 1, n.pos().getZ() + 4.5)); });
+		if (f == 142) { mc.options.setCameraType(CameraType.FIRST_PERSON); mc.player.setYRot(180F); mc.player.setXRot(5F); }
+		if (f == 200) shot(mc, "890_job_instructor");
 	}
 
 	private static long lastXp;
@@ -254,8 +250,8 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
-		if (f < 60) { classTest(mc, server, f); return; }
-		f -= 60;
+		if (f < 210) { classTest(mc, server, f); return; }
+		f -= 210;
 		double[][] sc = focusScenes();
 		int per = 300;
 		if (f < sc.length * per) {
