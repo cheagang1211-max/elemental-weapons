@@ -84,6 +84,9 @@ public final class ShotHarness {
 			log("V412 방 블록: 가운데=" + BuiltInRegistries.BLOCK.getKey(p.level().getBlockState(c).getBlock()).getPath()
 					+ " 입구 아래=" + BuiltInRegistries.BLOCK.getKey(p.level().getBlockState(p.blockPosition().below()).getBlock()).getPath()
 					+ " 벽=" + BuiltInRegistries.BLOCK.getKey(p.level().getBlockState(c.offset(0, 3, -24)).getBlock()).getPath() + " y=" + p.getY()); });
+		if (f == 180 || f == 230) { var cp = mc.player.blockPosition();
+			log("V412 클라: 위치=" + cp.toShortString() + " 청크있음=" + mc.level.getChunkSource().hasChunk(cp.getX() >> 4, cp.getZ() >> 4)
+					+ " 발밑=" + BuiltInRegistries.BLOCK.getKey(mc.level.getBlockState(cp.below()).getBlock()).getPath() + " 땅=" + mc.player.onGround()); }
 		if (f == 152) { mc.options.setCameraType(CameraType.THIRD_PERSON_BACK); mc.player.setYRot(180F); mc.player.setXRot(25F); }
 		if (f == 236) shot(mc, "893_boss_room_ignis");
 		if (f == 238) server.execute(() -> { ServerPlayer p = sp(server);
