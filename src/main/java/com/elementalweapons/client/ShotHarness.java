@@ -81,11 +81,11 @@ public final class ShotHarness {
 			p.getInventory().setItem(0, new ItemStack(ModItems.get(a.el(), a.type()))); p.getInventory().setSelectedSlot(0); });
 		if (g == 2) { mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT); mc.player.setXRot(0); }
 		for (int k = 0; k < 3; k++) {
-			if (g == 6 + k * 12) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+			if (g == 6 + k * 12) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND, mc.player.getMainHandItem().getOrDefault(net.minecraft.core.component.DataComponents.ATTACK_ANIMATION, net.minecraft.world.item.component.SwingAnimation.DEFAULT), false);
 			if (g == 6 + k * 12 + 4) shot(mc, "9" + (60 + w) + "_" + a.type().id + "_" + (k + 1));
 		}
 		if (g == 44) mc.options.setCameraType(CameraType.FIRST_PERSON);
-		if (g == 50) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+		if (g == 50) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND, mc.player.getMainHandItem().getOrDefault(net.minecraft.core.component.DataComponents.ATTACK_ANIMATION, net.minecraft.world.item.component.SwingAnimation.DEFAULT), false);
 		if (g == 54) shot(mc, "9" + (60 + w) + "_" + a.type().id + "_fp");
 	}
 

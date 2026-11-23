@@ -12,19 +12,18 @@ import net.minecraft.world.entity.LivingEntity;
 public final class SwingTracker {
 	private SwingTracker() {}
 
-	private static final class S { int lastTime = -1; boolean was; long start = -999; int step = 1; }
+	private static final class S { Object last; long start = -999; int step = 1; }
 	private static final Map<Integer, S> MAP = new HashMap<>();
 
 	public static int step(LivingEntity e) {
 		S s = MAP.computeIfAbsent(e.getId(), k -> new S());
-		boolean sw = e.swinging;
 		long now = e.tickCount;
-		if (sw && (!s.was || e.swingTime < s.lastTime)) {
+		Object cur = e.isSwinging() ? e.getCurrentSwing() : null;   // 휘두를 때마다 새 기록이 생김
+		if (cur != null && cur != s.last) {
 			s.step = now - s.start > 30 ? 1 : s.step % 3 + 1;
 			s.start = now;
 		}
-		s.was = sw;
-		s.lastTime = e.swingTime;
+		s.last = cur;
 		if (MAP.size() > 400) MAP.clear();
 		return s.step;
 	}
