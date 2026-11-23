@@ -42,6 +42,8 @@ public class GrowthScreen extends Screen {
 					.bounds(left + 98, top + H + 4, 90, 16).build());
 		addRenderableWidget(Button.builder(Component.literal("스탯 초기화 (무료)"), b -> ClientPlayNetworking.send(GrowthPayloads.Reset.INSTANCE))
 				.bounds(left + W - 102, top + H + 4, 102, 16).build());
+		addRenderableWidget(Button.builder(Component.literal("⚒ 제작대 열기"), b -> ClientPlayNetworking.send(GrowthPayloads.OpenCraft.INSTANCE))
+				.bounds(left + W - 102, top + H + 22, 102, 16).build());
 		boolean tutDone = minecraft.player != null && com.elementalweapons.growth.Tutorial.get(minecraft.player).step() >= com.elementalweapons.growth.Tutorial.DONE;
 		addRenderableWidget(Button.builder(Component.literal(tutDone ? "튜토리얼 다시" : "튜토리얼 끄기"), b -> {
 					ClientPlayNetworking.send(new GrowthPayloads.TutorialSkip(tutDone)); onClose(); })

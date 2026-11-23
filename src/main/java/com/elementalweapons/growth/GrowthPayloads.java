@@ -26,6 +26,14 @@ public final class GrowthPayloads {
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
 
+	/** 클라 → 서버: 휴대 제작대 열기 (어디서든 3×3 제작) */
+	public record OpenCraft() implements CustomPacketPayload {
+		public static final OpenCraft INSTANCE = new OpenCraft();
+		public static final Type<OpenCraft> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "open_craft"));
+		public static final StreamCodec<ByteBuf, OpenCraft> CODEC = StreamCodec.unit(INSTANCE);
+		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+	}
+
 	/** 클라 → 서버: B키 귀환 (1초 뒤 천공성 1층 승강기 앞) */
 	public record GoHome() implements CustomPacketPayload {
 		public static final GoHome INSTANCE = new GoHome();

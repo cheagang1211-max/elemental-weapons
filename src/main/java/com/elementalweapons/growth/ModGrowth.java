@@ -73,6 +73,10 @@ public final class ModGrowth {
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.GoHome.TYPE, GrowthPayloads.GoHome.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.GoHome.TYPE, (payload, ctx) -> Recall.request(ctx.player()));
 		Recall.initialize();
+		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.OpenCraft.TYPE, GrowthPayloads.OpenCraft.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.OpenCraft.TYPE, (payload, ctx) -> ctx.player().openMenu(new net.minecraft.world.SimpleMenuProvider(
+				(id, inv, pl) -> new net.minecraft.world.inventory.CraftingMenu(id, inv, net.minecraft.world.inventory.ContainerLevelAccess.NULL),
+				Component.literal("휴대 제작대"))));
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.Spend.TYPE, (payload, ctx) -> spend(ctx.player(), payload.stat(), payload.amount()));
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.SpendParagon.TYPE, GrowthPayloads.SpendParagon.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.SpendParagon.TYPE, (payload, ctx) -> spendParagon(ctx.player(), payload.stat(), payload.amount()));

@@ -34,36 +34,26 @@ public class BossSummonItem extends Item {
 		if (!(level instanceof ServerLevel server)) {
 			return InteractionResult.SUCCESS;
 		}
-		Vec3 pos = user.position().add(Fx.flatLook(user).scale(8)).add(0, 1, 0);
-		ElementalBoss boss = bossType.get().create(server, EntitySpawnReason.SPAWN_ITEM_USE);
-		if (boss == null) return InteractionResult.FAIL;
-		// 공중 세계: 보스방 안에서 쓰면 제단 위에 강림 + 기믹 전투
-		com.elementalweapons.world.sky.Arenas.Arena arena = null;
-		String bid = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(boss.getType()).getPath();
+		String bid = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(bossType.get()).getPath();
+		if (!(user instanceof net.minecraft.server.level.ServerPlayer sp)) return InteractionResult.FAIL;
+		// 공중 세계: 천공성 1층 '보스 관문'에서만 → 보스 전용 방으로 이동해 싸움
 		if (com.elementalweapons.world.sky.ModSky.active(server)) {
-			com.elementalweapons.world.sky.Arenas.Arena near = com.elementalweapons.world.sky.Arenas.near(user.getX(), user.getZ(), com.elementalweapons.world.sky.Arenas.R + 6);
-			if (near != null) arena = near;
-			else {
-				com.elementalweapons.world.sky.Arenas.Arena home = com.elementalweapons.world.sky.Arenas.of(bid);
-				if (home != null) user.sendSystemMessage(Component.literal("✦ 이 보스의 보스방: (" + home.x() + ", " + home.floor() + ", " + home.z() + ") — 보스방에서 소환하면 결계·수정 탑·장판 기믹 전투가 펼쳐집니다.")
-						.withStyle(ChatFormatting.AQUA));
+			if (!com.elementalweapons.world.sky.BossGate.nearGate(sp)) {
+				sp.sendSystemMessage(Component.literal("☠ 보스 소환석은 천공성 1층 '보스 관문' 앞에서 우클릭하세요. (B키로 천공성 귀환 · 스폰 바로 동쪽)").withStyle(ChatFormatting.LIGHT_PURPLE));
+				return InteractionResult.FAIL;
 			}
-		}
-		if (arena != null) pos = new Vec3(arena.x() + 0.5, arena.floor() + 3, arena.z() + 0.5);
-		boss.snapTo(pos.x, pos.y, pos.z, user.getYRot() + 180.0F, 0.0F);
-		server.addFreshEntity(boss);
-		ItemStack refund = user.isCreative() ? ItemStack.EMPTY : user.getItemInHand(hand).copyWithCount(1);
-		com.elementalweapons.boss.BossFight.start(server, boss, arena != null ? new Vec3(arena.x() + 0.5, arena.floor() + 1, arena.z() + 0.5) : pos.add(0, -1, 0), arena,
-				user instanceof net.minecraft.server.level.ServerPlayer sp ? sp : null, refund);
-
-		// 등장 연출
-		ElectricStormSpell.drawBolt(server, pos);
-		ElectricStormSpell.drawBolt(server, pos.add(1.5, 0, 0));
-		ElectricStormSpell.drawBolt(server, pos.add(-1.5, 0, 0));
-		Fx.sound(server, pos, SoundEvents.WITHER_SPAWN, 2.0F, 1.4F);
-		Component msg = boss.bossName().copy().append(Component.literal(" 이(가) 강림했다!").withStyle(ChatFormatting.WHITE));
-		for (Player p : server.players()) {
-			if (p.distanceToSqr(user) < 96 * 96) p.sendSystemMessage(msg);
+			ItemStack refund = user.isCreative() ? ItemStack.EMPTY : user.getItemInHand(hand).copyWithCount(1);
+			if (!com.elementalweapons.world.sky.BossGate.start(sp, bid, refund)) return InteractionResult.FAIL;
+		} else {
+			Vec3 pos = user.position().add(Fx.flatLook(user).scale(8)).add(0, 1, 0);
+			ElementalBoss boss = bossType.get().create(server, EntitySpawnReason.SPAWN_ITEM_USE);
+			if (boss == null) return InteractionResult.FAIL;
+			boss.snapTo(pos.x, pos.y, pos.z, user.getYRot() + 180.0F, 0.0F);
+			server.addFreshEntity(boss);
+			ItemStack refund = user.isCreative() ? ItemStack.EMPTY : user.getItemInHand(hand).copyWithCount(1);
+			com.elementalweapons.boss.BossFight.start(server, boss, pos.add(0, -1, 0), null, sp, refund);
+			ElectricStormSpell.drawBolt(server, pos);
+			Fx.sound(server, pos, SoundEvents.WITHER_SPAWN, 2.0F, 1.4F);
 		}
 
 		ItemStack stack = user.getItemInHand(hand);

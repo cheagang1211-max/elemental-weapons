@@ -35,31 +35,35 @@ public class ElementalMerchant extends WanderingTrader implements PosedEntity {
 		MerchantOffers offers = this.getOffers();
 		Item aether = ModBlocks.item("aether_ingot");
 		Item ori = ModBlocks.item("orichalcum_ingot");
-		// 농사 시작용
-		sell(offers, aether, 1, Items.WHEAT_SEEDS, 6);
-		sell(offers, aether, 1, Items.POTATO, 3);
-		sell(offers, aether, 1, Items.CARROT, 3);
-		sell(offers, aether, 1, Items.BEETROOT_SEEDS, 6);
-		sell(offers, aether, 2, Items.SUGAR_CANE, 2);
-		sell(offers, aether, 2, Items.PUMPKIN_SEEDS, 2);
-		sell(offers, aether, 2, Items.MELON_SEEDS, 2);
-		sell(offers, aether, 1, Items.BONE_MEAL, 6);
-		// 이 세계에 없는 광물
-		sell(offers, aether, 3, Items.GOLD_INGOT, 1);
-		sell(offers, aether, 3, Items.REDSTONE, 4);
-		sell(offers, aether, 3, Items.LAPIS_LAZULI, 3);
-		sell(offers, aether, 2, Items.COAL, 4);
-		sell(offers, ori, 1, Items.EMERALD, 2);
-		sell(offers, ori, 2, Items.NETHERITE_SCRAP, 1);
-		// 원소 가루 (바닐라 잡동사니가 바뀐 것) 팔기
 		Item dust = ModBlocks.item("element_dust");
-		sell(offers, dust, 12, ModBlocks.item("raw_aether"), 1);
-		sell(offers, dust, 40, com.elementalweapons.item.ModItems.ELEMENT_ESSENCE, 1);
-		// 기타
-		sell(offers, ModBlocks.item("storm_crystal"), 2, Items.ENDER_PEARL, 1);
-		sell(offers, ModBlocks.item("radiant_crystal"), 2, Items.EXPERIENCE_BOTTLE, 3);
-		sell(offers, ModBlocks.item("bloom_crystal"), 2, Items.SADDLE, 1);
-		sell(offers, aether, 4, Items.NAME_TAG, 1);
+		// ★ 성장에 바로 쓰이는 귀한 물건
+		sell(offers, ori, 2, com.elementalweapons.rift.RiftItems.RIFT_KEY, 1);                     // 균열의 열쇠
+		sell(offers, ori, 2, com.elementalweapons.item.ModItems.ELEMENT_ESSENCE, 1);                // 원소 정수 (강화 재료)
+		sell(offers, aether, 2, Items.EXPERIENCE_BOTTLE, 6);                                          // 경험치 병 (게임 경험치로 들어감)
+		// 1단계 보스 소환석 (재료 없이 바로)
+		String[][] tier1 = {{"silva", "bloom_crystal"}, {"marina", "tide_crystal"}, {"voltra", "storm_crystal"}, {"zephyros", "gale_crystal"},
+				{"ignis", "ember_crystal"}, {"lumiel", "radiant_crystal"}, {"nox", "umbral_crystal"}};
+		for (String[] t : tier1) {
+			Item stone = com.elementalweapons.item.ModItems.BOSS_SUMMONS.get(t[0]);
+			if (stone != null) sellTwo(offers, ori, 2, ModBlocks.item(t[1]), 4, stone);
+		}
+		// 재료 바꾸기
+		sell(offers, aether, 4, ori, 1);                                                               // 에테르 주괴 4 → 오리하르콘 주괴 1
+		sell(offers, dust, 10, ModBlocks.item("raw_aether"), 1);
+		sell(offers, dust, 24, ModBlocks.item("orichalcum_chunk"), 1);
+		sell(offers, dust, 30, com.elementalweapons.item.ModItems.ELEMENT_ESSENCE, 1);
+		for (String[] t : tier1) sell(offers, dust, 6, ModBlocks.item(t[1]), 1);                     // 원소 가루 → 원하는 속성 수정
+		// 생활
+		sell(offers, aether, 1, Items.GOLDEN_CARROT, 8);
+		sell(offers, aether, 2, Items.GOLDEN_APPLE, 1);
+		sell(offers, ori, 6, Items.TOTEM_OF_UNDYING, 1);
+		sell(offers, aether, 1, Items.WHEAT_SEEDS, 8);
+		sell(offers, aether, 1, Items.BONE_MEAL, 12);
+		sell(offers, aether, 3, Items.NAME_TAG, 1);
+	}
+
+	protected static void sellTwo(MerchantOffers offers, Item cost, int n, Item cost2, int n2, Item result) {
+		offers.add(new MerchantOffer(new ItemCost(cost, n), java.util.Optional.of(new ItemCost(cost2, n2)), new ItemStack(result), 16, 4, 0.05F));
 	}
 
 	/** 돌아다니거나 밤에 투명 물약을 마시지 않고, 가게 자리에서 손님만 바라봄 */

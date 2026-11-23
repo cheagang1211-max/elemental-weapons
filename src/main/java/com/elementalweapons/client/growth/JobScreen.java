@@ -124,7 +124,7 @@ public class JobScreen extends Screen {
 			}
 			case 1 -> {
 				line(g, next + "차 전직 시험을 받을 수 있습니다!", y, 0xFFFFE08A);
-				line(g, "시험: 원소 지역 몹 " + k + "마리 + 보스(보스방 소환석) " + b + "마리 처치", y + 14, 0xFFE0D8F0);
+				line(g, "시험: 원소 지역 몹 " + k + "마리 + 보스(보스 관문에서 소환석) " + b + "마리 처치", y + 14, 0xFFE0D8F0);
 				if (next == 3) line(g, "다음 직업: " + Jobs.title(cls, d.branch(), 3), y + 28, c); else preview(g, cls, y + 34);
 			}
 			case 2 -> {

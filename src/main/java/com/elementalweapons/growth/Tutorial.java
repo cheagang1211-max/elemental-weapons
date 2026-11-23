@@ -82,7 +82,7 @@ public final class Tutorial {
 			case 6 -> "섬에서 원소 광석 캐기";
 			case 7 -> "10레벨 달성 → 전직 (직업·속성)";
 			case 8 -> "[X]·[C] 속성 스킬 써 보기";
-			case 9 -> "보스방 찾아가기";
+			case 9 -> "보스 관문 찾아가기";
 			default -> "튜토리얼 완료!";
 		};
 	}
@@ -113,7 +113,7 @@ public final class Tutorial {
 				var i = com.elementalweapons.skill.SkillInfo.of(firstType(c));
 				yield "X: " + i[1].name() + " · C: " + i[2].name();
 			}
-			case 9 -> "지역 본섬 가운데의 원형 무대";
+			case 9 -> "천공성 1층 스폰 동쪽의 보스 관문 · 소환석을 들고 우클릭";
 			default -> "이제 자유롭게 탐험하세요 · 균열의 열쇠로 무한 도전";
 		};
 	}
@@ -143,7 +143,7 @@ public final class Tutorial {
 			case 3 -> { if (SkyLayout.regionAt(p.getX(), p.getZ()) >= 0 || !com.elementalweapons.world.sky.ModSky.active((ServerLevel) p.level())) advance(p); }
 			case 5 -> { if (totalStats(p) > 0) advance(p); }
 			case 7 -> { if (Evolution.element(p) >= 0) advance(p); }
-			case 9 -> { if (Arenas.near(p.getX(), p.getZ(), Arenas.R + 6) != null || !com.elementalweapons.world.sky.ModSky.active((ServerLevel) p.level())) advance(p); }
+			case 9 -> { if (com.elementalweapons.world.sky.BossGate.nearGate(p) || !com.elementalweapons.world.sky.ModSky.active((ServerLevel) p.level())) advance(p); }
 			default -> {}
 		}
 	}

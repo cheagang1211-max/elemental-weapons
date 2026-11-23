@@ -30,6 +30,7 @@ public final class ModSky {
 	private static final Map<UUID, Vec3> SAFE = new HashMap<>();
 
 	public static void initialize() {
+		BossGate.initialize();
 		SkyMobSpawner.initialize();
 		try { ElementalWeaponsMod.LOGGER.info("[SKY] 배치 준비: 섬 {}개 다리 {}개", SkyLayout.ISLANDS.size(), SkyLayout.BRIDGES.size()); }
 		catch (Throwable t) { ElementalWeaponsMod.LOGGER.error("[SKY] 배치 오류", t); }

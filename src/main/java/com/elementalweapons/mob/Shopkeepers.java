@@ -43,19 +43,24 @@ public final class Shopkeepers {
 		protected void updateTrades(ServerLevel level) {
 			MerchantOffers o = getOffers();
 			Item ae = ModBlocks.item("aether_ingot"), ori = ModBlocks.item("orichalcum_ingot");
-			offer(o, ori, 6, new ItemStack(ModItems.ELEMENT_ESSENCE, 1));               // 강화 재료 (방패·무기 강화)
-			offer(o, ae, 2, new ItemStack(Items.IRON_INGOT, 4));
-			offer(o, ae, 6, new ItemStack(Items.IRON_CHESTPLATE));
-			offer(o, ae, 5, new ItemStack(Items.IRON_LEGGINGS));
-			offer(o, ae, 4, new ItemStack(Items.IRON_HELMET));
-			offer(o, ae, 3, new ItemStack(Items.IRON_BOOTS));
-			offer(o, ori, 3, new ItemStack(Items.DIAMOND, 1));
-			offer(o, ori, 8, new ItemStack(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE));
-			offer(o, ae, 4, new ItemStack(Items.ANVIL));
-			offer(o, ae, 2, new ItemStack(Items.GRINDSTONE));
-			offer(o, ae, 3, new ItemStack(Items.DIAMOND_PICKAXE));
-			offer(o, ae, 3, new ItemStack(Items.DIAMOND_AXE));
-			offer(o, ae, 1, new ItemStack(Items.ARROW, 16));
+			var G = com.elementalweapons.item.ModGear.ITEMS;
+			offer(o, ori, 2, new ItemStack(ModItems.ELEMENT_ESSENCE, 1));               // 강화 재료 (무기·방패 강화)
+			// 최고 등급 오리하르콘 장비 (내구도 무한)
+			offer(o, ori, 8, new ItemStack(G.get("orichalcum_chestplate")));
+			offer(o, ori, 7, new ItemStack(G.get("orichalcum_leggings")));
+			offer(o, ori, 5, new ItemStack(G.get("orichalcum_helmet")));
+			offer(o, ori, 4, new ItemStack(G.get("orichalcum_boots")));
+			offer(o, ori, 3, new ItemStack(G.get("orichalcum_pickaxe")));
+			offer(o, ori, 3, new ItemStack(G.get("orichalcum_axe")));
+			offer(o, ori, 2, new ItemStack(G.get("orichalcum_shovel")));
+			// 에테르 도구
+			offer(o, ae, 3, new ItemStack(G.get("aether_pickaxe")));
+			offer(o, ae, 3, new ItemStack(G.get("aether_axe")));
+			offer(o, ae, 2, new ItemStack(G.get("aether_shovel")));
+			// 주괴 바꾸기
+			offer(o, ae, 4, new ItemStack(ori, 1));
+			offer(o, ae, 3, new ItemStack(Items.DIAMOND, 2));
+			offer(o, ae, 1, new ItemStack(Items.ARROW, 32));
 		}
 	}
 
@@ -118,13 +123,11 @@ public final class Shopkeepers {
 			offer(o, ae, 2, potion(Potions.LONG_NIGHT_VISION));
 			offer(o, ae, 2, potion(Potions.LONG_SLOW_FALLING));
 			offer(o, ae, 2, potion(Potions.LONG_FIRE_RESISTANCE));
-			offer(o, ori, 2, new ItemStack(Items.GOLDEN_APPLE, 2));
-			offer(o, ori, 12, new ItemStack(Items.ENCHANTED_GOLDEN_APPLE));
-			offer(o, ae, 2, new ItemStack(Items.GLISTERING_MELON_SLICE, 3));
-			offer(o, ae, 2, new ItemStack(Items.NETHER_WART, 6));
-			offer(o, ae, 2, new ItemStack(Items.BLAZE_POWDER, 3));
-			offer(o, ae, 1, new ItemStack(Items.GLASS_BOTTLE, 8));
-			offer(o, ae, 3, new ItemStack(Items.BREWING_STAND));
+			offer(o, ae, 2, new ItemStack(Items.GOLDEN_APPLE, 2));
+			offer(o, ori, 6, new ItemStack(Items.ENCHANTED_GOLDEN_APPLE));
+			offer(o, ae, 1, potion(Potions.STRONG_HEALING));
+			offer(o, ori, 5, new ItemStack(Items.TOTEM_OF_UNDYING));
+			offer(o, ae, 2, new ItemStack(Items.EXPERIENCE_BOTTLE, 6));
 		}
 	}
 

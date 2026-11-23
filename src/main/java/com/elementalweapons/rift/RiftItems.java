@@ -57,6 +57,15 @@ public final class RiftItems {
 
 	/** 균열 열기: 기본은 (최고 기록 + 1)단계, 웅크리고 쓰면 최고 기록 단계 다시 도전 */
 	public static boolean open(ServerPlayer p, boolean replay) {
+		// 균열은 각 지역의 옛 보스방(균열 제단)에서만
+		com.elementalweapons.world.sky.Arenas.Arena altar = null;
+		if (com.elementalweapons.world.sky.ModSky.active((ServerLevel) p.level())) {
+			altar = com.elementalweapons.world.sky.Arenas.near(p.getX(), p.getZ(), com.elementalweapons.world.sky.Arenas.R + 6);
+			if (altar == null) {
+				p.sendSystemMessage(Component.literal("✧ 균열의 열쇠는 각 원소 지역의 '균열 제단'(옛 보스방, 본섬의 원형 무대)에서만 쓸 수 있어요.").withStyle(ChatFormatting.LIGHT_PURPLE));
+				return false;
+			}
+		}
 		for (Rift r : ACTIVE) if (r.level == p.level() && r.c.distanceToSqr(p.position()) < 60 * 60) {
 			p.sendOverlayMessage(Component.literal("근처에 이미 균열이 열려 있습니다.").withStyle(ChatFormatting.RED));
 			return false;
@@ -66,7 +75,8 @@ public final class RiftItems {
 		ServerLevel level = (ServerLevel) p.level();
 		List<ServerPlayer> who = new ArrayList<>();
 		for (ServerPlayer q : level.players()) if (q.distanceToSqr(p) < Rift.R * Rift.R) who.add(q);
-		Rift rift = new Rift(level, p.position(), tier, who);
+		net.minecraft.world.phys.Vec3 at = altar == null ? p.position() : new net.minecraft.world.phys.Vec3(altar.x() + 0.5, altar.floor() + 1, altar.z() + 0.5);
+		Rift rift = new Rift(level, at, tier, who);
 		if (!p.isCreative()) rift.opener = p.getUUID();
 		ACTIVE.add(rift);
 		return true;

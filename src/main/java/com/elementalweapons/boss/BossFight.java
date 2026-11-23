@@ -60,7 +60,10 @@ public class BossFight {
 				respawnAt(dead, f.c, f.arena != null ? Arenas.R + 4 : 12);
 				boolean others = false;
 				for (ServerPlayer q : f.fighters()) if (q != dead) { others = true; break; }
-				if (!others) f.abort();
+				if (!others) {
+					f.abort();
+					if (f.instanced) RESPAWN_AT.remove(dead.getUUID());   // 전용 방이 끝났으면 천공성에서 부활
+				}
 			}
 		});
 		net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents.AFTER_RESPAWN.register((oldP, newP, alive) -> {
@@ -97,6 +100,8 @@ public class BossFight {
 		REFUNDS.computeIfAbsent(who, k -> new ArrayList<>()).add(s.copy());
 	}
 
+	public static void giveRefundNow(ServerPlayer p) { giveRefund(p); }
+
 	private static void giveRefund(ServerPlayer p) {
 		if (p.isDeadOrDying()) return;
 		List<net.minecraft.world.item.ItemStack> list = REFUNDS.remove(p.getUUID());
@@ -114,7 +119,13 @@ public class BossFight {
 
 	/** summoner: 소환한 플레이어, refund: 실패하면 돌려줄 소환석 */
 	public static void start(ServerLevel level, ElementalBoss boss, Vec3 center, Arenas.Arena arena, ServerPlayer summoner, net.minecraft.world.item.ItemStack refund) {
+		start(level, boss, center, arena, summoner, refund, false);
+	}
+
+	/** instanced: 보스 관문 전용 방 (모두 쓰러지면 천공성에서 부활) */
+	public static void start(ServerLevel level, ElementalBoss boss, Vec3 center, Arenas.Arena arena, ServerPlayer summoner, net.minecraft.world.item.ItemStack refund, boolean instanced) {
 		BossFight f = new BossFight(level, boss, center, arena);
+		f.instanced = instanced;
 		f.summoner = summoner == null ? null : summoner.getUUID();
 		f.refund = refund == null ? net.minecraft.world.item.ItemStack.EMPTY : refund.copy();
 		ACTIVE.add(f);
@@ -123,6 +134,7 @@ public class BossFight {
 	private java.util.UUID summoner;
 	private net.minecraft.world.item.ItemStack refund = net.minecraft.world.item.ItemStack.EMPTY;
 	private boolean aborted;
+	private boolean instanced;
 
 	private void abort() {
 		aborted = true;

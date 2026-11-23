@@ -35,9 +35,9 @@ public final class TutorialArrows {
 				return best == null ? null : new Target(new Vec3(best[0], p.getY(), best[1]), "가장 가까운 원소 지역");
 			}
 			case 9 -> {
-				Arenas.Arena best = null; double bd = Double.MAX_VALUE;
-				for (Arenas.Arena a : Arenas.all()) { double d = p.distanceToSqr(a.x(), p.getY(), a.z()); if (d < bd) { bd = d; best = a; } }
-				return best == null ? null : new Target(new Vec3(best.x() + 0.5, p.getY(), best.z() + 0.5), "가장 가까운 보스방");
+				var g = com.elementalweapons.world.sky.BossGate.GATE;
+				if (!inCitadel) return new Target(new Vec3(0.5, p.getY(), 0.5), "천공성 (B키로 귀환)");
+				return new Target(new Vec3(g.getX() + 0.5, g.getY(), g.getZ() + 0.5), "보스 관문");
 			}
 			default -> { return null; }
 		}

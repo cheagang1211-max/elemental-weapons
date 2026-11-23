@@ -62,40 +62,34 @@ public final class ShotHarness {
 		Screenshot.grab(mc.gameDirectory, name + ".png", mc.gameRenderer.mainRenderTarget(), 1, msg -> log(name + " -> " + msg.getString()));
 	}
 
-	/** v4.11 확인: 전직 시험 → 2차 갈래 선택 → 전직 연출·오라 → V 기술 → 3차 각성 */
+	/** v4.12 확인: 천공성 보스 관문·제작소 → 소환석으로 전용 보스방 이동 → 균열 제단 제한 */
 	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
+		var G = com.elementalweapons.world.sky.BossGate.GATE;
 		if (f == 2) server.execute(() -> { ServerPlayer p = sp(server);
-			Growth g = ModGrowth.get(p);
-			ModGrowth.set(p, new Growth(125, 0, g.points(), g.str(), g.mag(), g.vit(), g.agi(), 3));
-			p.setAttached(com.elementalweapons.growth.Evolution.ELEMENT, 6);
-			p.getInventory().setItem(0, new ItemStack(ModItems.get(com.elementalweapons.item.Element.LIGHT, com.elementalweapons.item.WeaponType.SWORD)));
+			p.teleportTo(0.5, G.getY(), 26.5); p.setYRot(-150F); p.setXRot(-5F); });
+		if (f == 4) { mc.options.setCameraType(CameraType.FIRST_PERSON); mc.player.setYRot(-150F); mc.player.setXRot(-5F); }
+		if (f == 70) server.execute(() -> log("V412 패치=" + server.overworld().getAttached(com.elementalweapons.world.sky.BossGate.PATCH)
+				+ " 관문블록=" + BuiltInRegistries.BLOCK.getKey(server.overworld().getBlockState(G.offset(0, -1, 0)).getBlock()).getPath()
+				+ " 이름표=" + server.overworld().getEntities((Entity) null, new net.minecraft.world.phys.AABB(G).inflate(12), e -> e.entityTags().contains("ew_label_gate")).size()));
+		if (f == 110) shot(mc, "891_capital_gate_craft");
+		if (f == 112) { mc.player.setYRot(-210F); }
+		if (f == 140) shot(mc, "892_craft_hall");
+		if (f == 142) server.execute(() -> { ServerPlayer p = sp(server);
+			p.teleportTo(G.getX() + 0.5, G.getY(), G.getZ() + 3.5);
+			p.getInventory().setItem(0, new ItemStack(ModItems.BOSS_SUMMONS.get("ignis")));
 			p.getInventory().setSelectedSlot(0);
-			com.elementalweapons.growth.Jobs.reset(p);
-			com.elementalweapons.growth.Jobs.action(p, 1, 0);
-			var d = com.elementalweapons.growth.Jobs.get(p);
-			log("V411 시험 시작 trial=" + d.trial());
-			p.setAttached(com.elementalweapons.growth.Jobs.DATA, new com.elementalweapons.growth.Jobs.Data(d.stage(), d.branch(), d.trial(), 50, 1)); });
-		if (f == 8) mc.gui.setScreen(new com.elementalweapons.client.growth.JobScreen());
-		if (f == 24) shot(mc, "886_job_branch_choice");
-		if (f == 26) { mc.gui.setScreen(null); server.execute(() -> { com.elementalweapons.growth.Jobs.action(sp(server), 2, 1);
-			var d = com.elementalweapons.growth.Jobs.get(sp(server)); log("V411 2차 전직 stage=" + d.stage() + " branch=" + d.branch() + " 이름=" + com.elementalweapons.growth.Jobs.title(3, d.branch(), d.stage())); }); }
-		if (f == 30) mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
-		if (f == 40) shot(mc, "887_job_advance_title");
-		if (f == 46) com.elementalweapons.client.skill.SkillClient.press(3);
-		if (f == 60) shot(mc, "888_job_skill_holy_barrier");
-		if (f == 70) server.execute(() -> { ServerPlayer p = sp(server); var d = com.elementalweapons.growth.Jobs.get(p);
-			p.setAttached(com.elementalweapons.growth.Jobs.DATA, new com.elementalweapons.growth.Jobs.Data(2, d.branch(), 3, 150, 3));
-			com.elementalweapons.growth.Jobs.action(p, 3, 0);
-			log("V411 3차 전직 stage=" + com.elementalweapons.growth.Jobs.get(p).stage() + " 이름=" + com.elementalweapons.growth.Jobs.title(3, d.branch(), 3)
-					+ " 팀=" + (server.getScoreboard().getPlayersTeam(p.getScoreboardName()) == null ? "없음" : server.getScoreboard().getPlayersTeam(p.getScoreboardName()).getName())); });
-		if (f == 110) shot(mc, "889_job_stage3_aura");
-		if (f == 112) server.execute(() -> com.elementalweapons.skill.JobSkills.cast(sp(server)));
-		if (f == 112) { }
-		if (f == 140) server.execute(() -> { ServerPlayer p = sp(server); var at = com.elementalweapons.world.sky.Capital.NPCS.stream().filter(n -> n.type().equals("instructor")).findFirst();
-			log("V411 교관 위치=" + at.map(n -> n.pos().toShortString()).orElse("없음"));
-			at.ifPresent(n -> p.teleportTo(n.pos().getX() + 0.5, n.pos().getY() + 1, n.pos().getZ() + 4.5)); });
-		if (f == 142) { mc.options.setCameraType(CameraType.FIRST_PERSON); mc.player.setYRot(180F); mc.player.setXRot(5F); }
-		if (f == 200) shot(mc, "890_job_instructor");
+			var r = ModItems.BOSS_SUMMONS.get("ignis").use(p.level(), p, net.minecraft.world.InteractionHand.MAIN_HAND);
+			log("V412 소환석 사용=" + r + " 위치=" + p.blockPosition().toShortString()); });
+		if (f == 146) { mc.player.setYRot(180F); mc.player.setXRot(10F); }
+		if (f == 200) shot(mc, "893_boss_room_ignis");
+		if (f == 202) server.execute(() -> { ServerPlayer p = sp(server);
+			for (var b : p.level().getEntitiesOfClass(com.elementalweapons.boss.ElementalBoss.class, p.getBoundingBox().inflate(60))) b.cancelFight();
+			var a = com.elementalweapons.world.sky.Arenas.all().get(0);
+			boolean far = com.elementalweapons.rift.RiftItems.open(p, false);
+			p.teleportTo(a.x() + 0.5, a.floor() + 1, a.z() + 6.5);
+			log("V412 균열(먼 곳)=" + far); });
+		if (f == 240) server.execute(() -> { ServerPlayer p = sp(server); log("V412 균열(제단)=" + com.elementalweapons.rift.RiftItems.open(p, false)); });
+		if (f == 270) shot(mc, "894_rift_altar");
 	}
 
 	private static long lastXp;
@@ -250,8 +244,8 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
-		if (f < 210) { classTest(mc, server, f); return; }
-		f -= 210;
+		if (f < 290) { classTest(mc, server, f); return; }
+		f -= 290;
 		double[][] sc = focusScenes();
 		int per = 300;
 		if (f < sc.length * per) {
