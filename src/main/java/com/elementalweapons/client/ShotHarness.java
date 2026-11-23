@@ -80,16 +80,20 @@ public final class ShotHarness {
 			p.getInventory().setSelectedSlot(0);
 			var r = ModItems.BOSS_SUMMONS.get("ignis").use(p.level(), p, net.minecraft.world.InteractionHand.MAIN_HAND);
 			log("V412 소환석 사용=" + r + " 위치=" + p.blockPosition().toShortString()); });
-		if (f == 146) { mc.player.setYRot(180F); mc.player.setXRot(10F); }
-		if (f == 200) shot(mc, "893_boss_room_ignis");
-		if (f == 202) server.execute(() -> { ServerPlayer p = sp(server);
+		if (f == 150) server.execute(() -> { ServerPlayer p = sp(server); var c = com.elementalweapons.world.sky.BossRooms.center(8);
+			log("V412 방 블록: 가운데=" + BuiltInRegistries.BLOCK.getKey(p.level().getBlockState(c).getBlock()).getPath()
+					+ " 입구 아래=" + BuiltInRegistries.BLOCK.getKey(p.level().getBlockState(p.blockPosition().below()).getBlock()).getPath()
+					+ " 벽=" + BuiltInRegistries.BLOCK.getKey(p.level().getBlockState(c.offset(0, 3, -24)).getBlock()).getPath() + " y=" + p.getY()); });
+		if (f == 152) { mc.options.setCameraType(CameraType.THIRD_PERSON_BACK); mc.player.setYRot(180F); mc.player.setXRot(25F); }
+		if (f == 236) shot(mc, "893_boss_room_ignis");
+		if (f == 238) server.execute(() -> { ServerPlayer p = sp(server);
 			for (var b : p.level().getEntitiesOfClass(com.elementalweapons.boss.ElementalBoss.class, p.getBoundingBox().inflate(60))) b.cancelFight();
 			var a = com.elementalweapons.world.sky.Arenas.all().get(0);
 			boolean far = com.elementalweapons.rift.RiftItems.open(p, false);
 			p.teleportTo(a.x() + 0.5, a.floor() + 1, a.z() + 6.5);
 			log("V412 균열(먼 곳)=" + far); });
-		if (f == 240) server.execute(() -> { ServerPlayer p = sp(server); log("V412 균열(제단)=" + com.elementalweapons.rift.RiftItems.open(p, false)); });
-		if (f == 270) shot(mc, "894_rift_altar");
+		if (f == 262) server.execute(() -> { ServerPlayer p = sp(server); log("V412 균열(제단)=" + com.elementalweapons.rift.RiftItems.open(p, false)); });
+		if (f == 285) shot(mc, "894_rift_altar");
 	}
 
 	private static long lastXp;
