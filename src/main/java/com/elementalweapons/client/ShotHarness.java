@@ -62,41 +62,21 @@ public final class ShotHarness {
 		Screenshot.grab(mc.gameDirectory, name + ".png", mc.gameRenderer.mainRenderTarget(), 1, msg -> log(name + " -> " + msg.getString()));
 	}
 
-	/** v4.12 확인: 천공성 보스 관문·제작소 → 소환석으로 전용 보스방 이동 → 균열 제단 제한 */
+	/** v4.13 확인: 전직 단계별 피해 배율 + 기술 연출 */
 	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
-		var G = com.elementalweapons.world.sky.BossGate.GATE;
 		if (f == 2) server.execute(() -> { ServerPlayer p = sp(server);
-			p.teleportTo(0.5, G.getY(), 26.5); p.setYRot(-150F); p.setXRot(-5F); });
-		if (f == 4) { mc.options.setCameraType(CameraType.FIRST_PERSON); mc.player.setYRot(-150F); mc.player.setXRot(-5F); }
-		if (f == 70) server.execute(() -> log("V412 패치=" + server.overworld().getAttached(com.elementalweapons.world.sky.BossGate.PATCH)
-				+ " 관문블록=" + BuiltInRegistries.BLOCK.getKey(server.overworld().getBlockState(G.offset(0, -1, 0)).getBlock()).getPath()
-				+ " 이름표=" + server.overworld().getEntities((Entity) null, new net.minecraft.world.phys.AABB(G).inflate(12), e -> e.entityTags().contains("ew_label_gate")).size()));
-		if (f == 110) shot(mc, "891_capital_gate_craft");
-		if (f == 112) { mc.player.setYRot(-210F); }
-		if (f == 140) shot(mc, "892_craft_hall");
-		if (f == 142) server.execute(() -> { ServerPlayer p = sp(server);
-			p.teleportTo(G.getX() + 0.5, G.getY(), G.getZ() + 3.5);
-			p.getInventory().setItem(0, new ItemStack(ModItems.BOSS_SUMMONS.get("ignis")));
+			p.setAttached(com.elementalweapons.growth.Evolution.ELEMENT, 1);
+			p.getInventory().setItem(0, new ItemStack(ModItems.get(com.elementalweapons.item.Element.FIRE, com.elementalweapons.item.WeaponType.SWORD)));
 			p.getInventory().setSelectedSlot(0);
-			var r = ModItems.BOSS_SUMMONS.get("ignis").use(p.level(), p, net.minecraft.world.InteractionHand.MAIN_HAND);
-			log("V412 소환석 사용=" + r + " 위치=" + p.blockPosition().toShortString()); });
-		if (f == 150) server.execute(() -> { ServerPlayer p = sp(server); var c = com.elementalweapons.world.sky.BossRooms.center(8);
-			log("V412 방 블록: 가운데=" + BuiltInRegistries.BLOCK.getKey(p.level().getBlockState(c).getBlock()).getPath()
-					+ " 입구 아래=" + BuiltInRegistries.BLOCK.getKey(p.level().getBlockState(p.blockPosition().below()).getBlock()).getPath()
-					+ " 벽=" + BuiltInRegistries.BLOCK.getKey(p.level().getBlockState(c.offset(0, 3, -24)).getBlock()).getPath() + " y=" + p.getY()); });
-		if (f == 180 || f == 230) { var cp = mc.player.blockPosition();
-			log("V412 클라: 위치=" + cp.toShortString() + " 청크있음=" + mc.level.getChunkSource().hasChunk(cp.getX() >> 4, cp.getZ() >> 4)
-					+ " 발밑=" + BuiltInRegistries.BLOCK.getKey(mc.level.getBlockState(cp.below()).getBlock()).getPath() + " 땅=" + mc.player.onGround()); }
-		if (f == 152) { mc.options.setCameraType(CameraType.THIRD_PERSON_BACK); mc.player.setYRot(180F); mc.player.setXRot(25F); }
-		if (f == 236) shot(mc, "893_boss_room_ignis");
-		if (f == 238) server.execute(() -> { ServerPlayer p = sp(server);
-			for (var b : p.level().getEntitiesOfClass(com.elementalweapons.boss.ElementalBoss.class, p.getBoundingBox().inflate(60))) b.cancelFight();
-			var a = com.elementalweapons.world.sky.Arenas.all().get(0);
-			boolean far = com.elementalweapons.rift.RiftItems.open(p, false);
-			p.teleportTo(a.x() + 0.5, a.floor() + 1, a.z() + 6.5);
-			log("V412 균열(먼 곳)=" + far); });
-		if (f == 262) server.execute(() -> { ServerPlayer p = sp(server); log("V412 균열(제단)=" + com.elementalweapons.rift.RiftItems.open(p, false)); });
-		if (f == 285) shot(mc, "894_rift_altar");
+			p.setAttached(com.elementalweapons.growth.Jobs.DATA, new com.elementalweapons.growth.Jobs.Data(3, 2, 0, 0, 0));
+			ModGrowth.applyStats(p);
+			log("V413 3차 배율=" + com.elementalweapons.growth.Jobs.damageMult(p) + " 공격력=" + p.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE)); });
+		if (f == 6) mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
+		if (f == 10) server.execute(() -> com.elementalweapons.skill.Skills.cast(sp(server), 2));
+		if (f == 18) shot(mc, "895_job3_skill_flourish");
+		if (f == 40) server.execute(() -> { ServerPlayer p = sp(server);
+			p.setAttached(com.elementalweapons.growth.Jobs.DATA, com.elementalweapons.growth.Jobs.Data.DEFAULT); ModGrowth.applyStats(p);
+			log("V413 전직 전 배율=" + com.elementalweapons.growth.Jobs.damageMult(p) + " 공격력=" + p.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE)); });
 	}
 
 	private static long lastXp;
@@ -251,8 +231,8 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
-		if (f < 290) { classTest(mc, server, f); return; }
-		f -= 290;
+		if (f < 50) { classTest(mc, server, f); return; }
+		f -= 50;
 		double[][] sc = focusScenes();
 		int per = 300;
 		if (f < sc.length * per) {

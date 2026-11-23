@@ -104,7 +104,7 @@ public final class Fx {
 
 	/** 마법 피해 (시전자가 준 피해로 처리) */
 	public static void hurt(ServerLevel level, Player caster, LivingEntity target, float amount) {
-		float m = caster == null ? 1F : (float) com.elementalweapons.growth.ModGrowth.paragon(caster).spellMult();
+		float m = caster == null ? 1F : (float) com.elementalweapons.growth.ModGrowth.paragon(caster).spellMult() * com.elementalweapons.growth.Jobs.damageMult(caster);
 		target.hurtServer(level, level.damageSources().indirectMagic(caster, caster), amount * m);
 	}
 

@@ -364,6 +364,7 @@ public final class ModGrowth {
 		mod(p, Attributes.ARMOR_TOUGHNESS, id("paragon_toughness"), pg.toughness(), AttributeModifier.Operation.ADD_VALUE);
 		mod(p, Attributes.ATTACK_SPEED, PASPD, pg.attackSpeed(), AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
 		mod(p, Attributes.ATTACK_DAMAGE, PATK, pg.damageMult() - 1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+		mod(p, Attributes.ATTACK_DAMAGE, id("job_attack"), Jobs.damageMult(p) - 1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);   // 전직 단계 보너스
 		if (p.getHealth() > p.getMaxHealth()) p.setHealth(p.getMaxHealth());
 	}
 

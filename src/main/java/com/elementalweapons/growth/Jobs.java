@@ -197,6 +197,7 @@ public final class Jobs {
 	public static void reset(ServerPlayer p) {
 		p.setAttached(DATA, Data.DEFAULT);
 		updateTeam(p);
+		ModGrowth.applyStats(p);
 	}
 
 	private static void advance(ServerPlayer p, int stage, int branch) {
@@ -222,6 +223,50 @@ public final class Jobs {
 				.append(Component.literal("(으)로 " + stage + "차 전직했습니다!").withStyle(ChatFormatting.GOLD));
 		for (ServerPlayer q : l.getServer().getPlayerList().getPlayers()) q.sendSystemMessage(all);
 		updateTeam(p);
+		ModGrowth.applyStats(p);
+		p.sendSystemMessage(Component.literal("✦ 모든 기술의 피해가 " + (stage >= 3 ? "1.7" : "1.3") + "배가 되고 연출이 화려해졌습니다.").withStyle(ChatFormatting.AQUA));
+	}
+
+	/** 전직 단계 피해 배율: 기존 기술 모두(우클릭·Z·X·C·콤보·평타) — 2차 1.3배, 3차 1.7배 */
+	public static float damageMult(net.minecraft.world.entity.player.Player p) {
+		Data d = p.getAttached(DATA);
+		if (d == null) return 1F;
+		return d.stage() >= 3 ? 1.7F : d.stage() >= 2 ? 1.3F : 1F;
+	}
+
+	private static final java.util.Map<java.util.UUID, Long> LAST_FX = new java.util.HashMap<>();
+
+	/**
+	 * 전직하면 기존 기술 연출이 더 화려해짐 (모든 직업 공통).
+	 *  2차: 발밑 속성 고리 + 몸을 감아 오르는 나선 + 속성 입자 폭발
+	 *  3차: 발밑 마법진 + 하늘로 솟는 빛기둥 + 퍼져 나가는 충격파 고리 (궁극기면 더 크게)
+	 */
+	public static void flourish(ServerPlayer p, Element e, boolean ultimate) {
+		Data d = get(p);
+		if (d.stage() < 2 || e == null) return;
+		ServerLevel l = (ServerLevel) p.level();
+		long now = l.getGameTime();
+		Long last = LAST_FX.get(p.getUUID());
+		if (last != null && now - last < (ultimate ? 4 : 10)) return;
+		LAST_FX.put(p.getUUID(), now);
+		Vec3 c = p.position();
+		int rgb = ElementFx.color(e), rgb2 = ElementFx.color2(e);
+		boolean three = d.stage() >= 3;
+		double r = (three ? 3.2 : 2.2) * (ultimate ? 1.6 : 1);
+		ElementFx.groundRing(l, rgb, c.add(0, 0.1, 0), r, 2F, ultimate ? 16 : 10);
+		for (double t = 0; t < (three ? 3.0 : 2.0); t += 0.08) {   // 감아 오르는 나선
+			double a = t * Math.PI * 2 + now * 0.2;
+			Fx.at(l, ElementFx.dust(e, three ? 1.1F : 0.8F), c.add(Math.cos(a) * 0.9, t * 0.9, Math.sin(a) * 0.9));
+		}
+		Fx.burst(l, ElementFx.particle(e), c.add(0, 1, 0), three ? 30 : 16, 0.8, 0.12);
+		if (three) {
+			SpellManager.add(new MagicCircle(l, p, e, c.add(0, 0.1, 0), ultimate ? 5 : 3, ultimate ? 40 : 22, true));
+			for (double y = 0; y < (ultimate ? 14 : 8); y += 0.4) Fx.at(l, Fx.dust(rgb2, 1.3F), c.add(0, y, 0));
+			for (int k = 0; k < 2; k++)
+				Fx.at(l, com.elementalweapons.fx.FxOptions.of(com.elementalweapons.fx.FxOptions.RING, rgb, ultimate ? 2.6F : 1.6F, 14).grow(3.2F).flat(), c.add(0, 0.15 + k * 0.4, 0));
+			Fx.sound(l, c, SoundEvents.AMETHYST_BLOCK_RESONATE, ultimate ? 1.4F : 0.7F, 1.4F);
+		}
+		if (ultimate) Fx.sound(l, c, SoundEvents.BEACON_POWER_SELECT, 0.6F, 1.8F);
 	}
 
 	/** 이름 앞 칭호 (머리 위 이름표·탭 목록) */

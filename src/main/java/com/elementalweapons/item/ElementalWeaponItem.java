@@ -131,6 +131,7 @@ public class ElementalWeaponItem extends Item {
 		}
 		com.elementalweapons.growth.Tutorial.classEvent(user, "skill");
 		com.elementalweapons.growth.Tutorial.event(user, 1);
+		if (user instanceof net.minecraft.server.level.ServerPlayer jp) com.elementalweapons.growth.Jobs.flourish(jp, element, type == WeaponType.STAFF);
 		return InteractionResult.SUCCESS;
 	}
 

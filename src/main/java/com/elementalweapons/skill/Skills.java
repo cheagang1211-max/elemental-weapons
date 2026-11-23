@@ -83,6 +83,7 @@ public final class Skills {
 		ready[key] = now + cd;
 		SkillNet.sendCooldown(p, slot, cd);
 		Tutorial.skillUsed(p, slot);
+		if (!wood) com.elementalweapons.growth.Jobs.flourish(p, el, slot == 2);
 	}
 
 	public static void forget(UUID id) { READY.remove(id); }

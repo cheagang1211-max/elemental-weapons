@@ -66,6 +66,7 @@ public final class Combo {
 		s[0] = now;
 		boolean fin = s[1] >= 3;
 		if (fin) s[1] = 0;
+		if (fin && el != null) com.elementalweapons.growth.Jobs.flourish(p, el, false);
 		float m = el == null ? 0.8F : SkillInfo.tierMult(SkillInfo.tier(ModGrowth.get(p).level()));
 		int rgb = el == null ? 0xFFF2DA : ElementFx.color(el);
 		try {

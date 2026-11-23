@@ -53,7 +53,7 @@ public final class JobSkills {
 			return;
 		}
 		boolean awake = d.stage() >= 3;
-		float m = SkillInfo.tierMult(SkillInfo.tier(ModGrowth.get(p).level())) * (awake ? 1.8F : 1F);
+		float m = SkillInfo.tierMult(SkillInfo.tier(ModGrowth.get(p).level())) * (awake ? 1.1F : 1F);   // 전직 단계 보너스는 Fx.hurt에서 곱해짐
 		Element e = Element.values()[el];
 		boolean ok;
 		try { ok = run(l, p, cls, d.branch(), awake, e, m); }
