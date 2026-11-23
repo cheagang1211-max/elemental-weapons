@@ -5,7 +5,9 @@
 	"client": [
 		"EntityTurnMixin",
 		"StarFieldMixin",
-		"WeaponSwingPoseMixin"
+		"WeaponSwingPoseMixin",
+		"SwingStepStateMixin",
+		"FirstPersonSwingMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

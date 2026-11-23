@@ -44,7 +44,7 @@ public class ModItems {
 		for (Element element : Element.values()) {
 			Map<WeaponType, Item> byType = new EnumMap<>(WeaponType.class);
 			for (WeaponType type : WeaponType.values()) {
-				Item.Properties props = stats(type, new Item.Properties().rarity(Rarity.EPIC).fireResistant())
+				Item.Properties props = swing(type, stats(type, new Item.Properties().rarity(Rarity.EPIC).fireResistant()))
 						.component(net.minecraft.core.component.DataComponents.UNBREAKABLE, net.minecraft.util.Unit.INSTANCE);   // 내구도 무한
 				Item item = register(key(element.id + "_" + type.id),
 						p -> new ElementalWeaponItem(p, element, type), props);
@@ -59,10 +59,21 @@ public class ModItems {
 
 	static {
 		for (WeaponType type : WeaponType.values()) {
-			Item.Properties props = woodStats(type, new Item.Properties())
+			Item.Properties props = swing(type, woodStats(type, new Item.Properties()))
 					.component(net.minecraft.core.component.DataComponents.UNBREAKABLE, net.minecraft.util.Unit.INSTANCE);
 			WOODEN.put(type, register(key("wooden_" + type.id), p -> new TrainingWeaponItem(p, type), props));
 		}
+	}
+
+	/** 공격 동작 길이(틱): 무거운 무기일수록 길고 묵직하게 */
+	static Item.Properties swing(WeaponType type, Item.Properties props) {
+		int d = switch (type) {
+			case DAGGER -> 7; case SWORD -> 10; case GREATSWORD -> 14; case HAMMER -> 15; case SCYTHE -> 13;
+			case STAFF -> 11; case BOOK -> 11; case BOW -> 9; default -> 0;
+		};
+		if (d == 0) return props;
+		return props.component(net.minecraft.core.component.DataComponents.ATTACK_ANIMATION,
+				new net.minecraft.world.item.component.SwingAnimation(net.minecraft.world.item.SwingAnimationType.WHACK, d));
 	}
 
 	private static Item.Properties woodStats(WeaponType type, Item.Properties props) {

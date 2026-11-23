@@ -62,21 +62,31 @@ public final class ShotHarness {
 		Screenshot.grab(mc.gameDirectory, name + ".png", mc.gameRenderer.mainRenderTarget(), 1, msg -> log(name + " -> " + msg.getString()));
 	}
 
-	/** v4.13 확인: 전직 단계별 피해 배율 + 기술 연출 */
+	/** v4.14 확인: 무기별 콤보 1·2·3타 동작 (3인칭 정면 + 1인칭), 휘두르는 도중을 찍음 */
+	private static final WeaponTypeShot[] ANIM = {
+			new WeaponTypeShot(com.elementalweapons.item.WeaponType.SWORD, com.elementalweapons.item.Element.FIRE),
+			new WeaponTypeShot(com.elementalweapons.item.WeaponType.GREATSWORD, com.elementalweapons.item.Element.WATER),
+			new WeaponTypeShot(com.elementalweapons.item.WeaponType.HAMMER, com.elementalweapons.item.Element.GRASS),
+			new WeaponTypeShot(com.elementalweapons.item.WeaponType.SCYTHE, com.elementalweapons.item.Element.DARK),
+			new WeaponTypeShot(com.elementalweapons.item.WeaponType.STAFF, com.elementalweapons.item.Element.LIGHT),
+			new WeaponTypeShot(com.elementalweapons.item.WeaponType.BOW, com.elementalweapons.item.Element.WIND)};
+	private record WeaponTypeShot(com.elementalweapons.item.WeaponType type, com.elementalweapons.item.Element el) {}
+
 	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
-		if (f == 2) server.execute(() -> { ServerPlayer p = sp(server);
-			p.setAttached(com.elementalweapons.growth.Evolution.ELEMENT, 1);
-			p.getInventory().setItem(0, new ItemStack(ModItems.get(com.elementalweapons.item.Element.FIRE, com.elementalweapons.item.WeaponType.SWORD)));
-			p.getInventory().setSelectedSlot(0);
-			p.setAttached(com.elementalweapons.growth.Jobs.DATA, new com.elementalweapons.growth.Jobs.Data(3, 2, 0, 0, 0));
-			ModGrowth.applyStats(p);
-			log("V413 3차 배율=" + com.elementalweapons.growth.Jobs.damageMult(p) + " 공격력=" + p.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE)); });
-		if (f == 6) mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
-		if (f == 10) server.execute(() -> com.elementalweapons.skill.Skills.cast(sp(server), 2));
-		if (f == 18) shot(mc, "895_job3_skill_flourish");
-		if (f == 40) server.execute(() -> { ServerPlayer p = sp(server);
-			p.setAttached(com.elementalweapons.growth.Jobs.DATA, com.elementalweapons.growth.Jobs.Data.DEFAULT); ModGrowth.applyStats(p);
-			log("V413 전직 전 배율=" + com.elementalweapons.growth.Jobs.damageMult(p) + " 공격력=" + p.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE)); });
+		// 무기 하나당 60틱: 3인칭 정면에서 1·2·3타 (각 타격 중간에 사진), 마지막에 1인칭 1타
+		int w = f / 60, g = f % 60;
+		if (w >= ANIM.length) return;
+		var a = ANIM[w];
+		if (g == 0) server.execute(() -> { ServerPlayer p = sp(server);
+			p.getInventory().setItem(0, new ItemStack(ModItems.get(a.el(), a.type()))); p.getInventory().setSelectedSlot(0); });
+		if (g == 2) { mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT); mc.player.setXRot(0); }
+		for (int k = 0; k < 3; k++) {
+			if (g == 6 + k * 12) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+			if (g == 6 + k * 12 + 4) shot(mc, "9" + (60 + w) + "_" + a.type().id + "_" + (k + 1));
+		}
+		if (g == 44) mc.options.setCameraType(CameraType.FIRST_PERSON);
+		if (g == 50) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+		if (g == 54) shot(mc, "9" + (60 + w) + "_" + a.type().id + "_fp");
 	}
 
 	private static long lastXp;
@@ -231,8 +241,8 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
-		if (f < 50) { classTest(mc, server, f); return; }
-		f -= 50;
+		if (f < 370) { classTest(mc, server, f); return; }
+		f -= 370;
 		double[][] sc = focusScenes();
 		int per = 300;
 		if (f < sc.length * per) {
