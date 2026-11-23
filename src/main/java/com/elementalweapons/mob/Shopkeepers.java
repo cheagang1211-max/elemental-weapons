@@ -136,7 +136,7 @@ public final class Shopkeepers {
 		protected void updateTrades(ServerLevel level) {}
 
 		@Override
-		protected net.minecraft.world.InteractionResult mobInteract(net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand) {
+		public net.minecraft.world.InteractionResult mobInteract(net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand) {
 			if (player instanceof net.minecraft.server.level.ServerPlayer sp) com.elementalweapons.growth.Jobs.open(sp);
 			return net.minecraft.world.InteractionResult.SUCCESS;
 		}
