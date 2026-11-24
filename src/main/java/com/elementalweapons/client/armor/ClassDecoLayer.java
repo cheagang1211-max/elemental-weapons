@@ -17,12 +17,15 @@ import com.elementalweapons.item.PlayerClass;
 /** 직업 복장을 갑옷 위에 덧그림 (직업×속성 색) */
 public class ClassDecoLayer<S extends HumanoidRenderState, M extends EntityModel<? super S>> extends RenderLayer<S, M> {
 	private static final String[] EL = {"electric", "fire", "water", "grass", "wind", "dark", "light", "neutral"};
-	private final ClassDecoModel model;
+	private final ClassDecoModel[] models = new ClassDecoModel[PlayerClass.values().length];
 	private final Identifier[][] tex = new Identifier[PlayerClass.values().length][EL.length], glow = new Identifier[PlayerClass.values().length][EL.length];
 
-	public ClassDecoLayer(RenderLayerParent<S, M> parent, ModelPart root) {
+	public ClassDecoLayer(RenderLayerParent<S, M> parent, java.util.function.IntFunction<ModelPart> baker) {
 		super(parent);
-		model = new ClassDecoModel(root);
+		for (int i = 0; i < ClassArmorMesh.CLASSES.length; i++) {
+			int cls = PlayerClass.valueOf(ClassArmorMesh.CLASSES[i].toUpperCase()).ordinal();
+			models[cls] = new ClassDecoModel(baker.apply(i), i);
+		}
 		for (PlayerClass c : PlayerClass.values()) {
 			if (c == PlayerClass.NONE) continue;
 			for (int e = 0; e < EL.length; e++) {
@@ -37,7 +40,8 @@ public class ClassDecoLayer<S extends HumanoidRenderState, M extends EntityModel
 	public void submit(PoseStack ps, SubmitNodeCollector c, int light, S s, float yRot, float xRot) {
 		if (s.isInvisible) return;
 		int cls = ClassDecoModel.classOf(s);
-		if (cls <= 0) return;
+		if (cls <= 0 || models[cls] == null) return;
+		ClassDecoModel model = models[cls];
 		int el = ArmorDecoModel.elementOf(s);
 		if (el < 0) el = 7;
 		c.submitModel(model, s, ps, RenderTypes.armorCutoutNoCull(tex[cls][el]), light, OverlayTexture.NO_OVERLAY, 0);
