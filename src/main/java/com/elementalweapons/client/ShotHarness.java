@@ -65,9 +65,9 @@ public final class ShotHarness {
 	/** v4.15 확인: 속성별 갑옷 색·장식 (3인칭 정면·뒤) */
 	private static final int[] CT_EL = {0, 1, 0, 6, 4, 2, 5, 3};
 	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
-		int k = Math.max(0, f - 1) / 50 + 1, g = Math.max(0, f - 1) % 50;
-		if (f == 0) return;
-		if (k > 7) return;
+		int slot = Math.max(0, f - 1) / 50, g = Math.max(0, f - 1) % 50;
+		if (f == 0 || slot > 6) return;
+		final int k = new int[]{2, 3, 4, 5, 6, 7, 1}[slot];   // 마법사는 채팅이 사라진 뒤 마지막에
 		if (g == 0) server.execute(() -> { try { ServerPlayer p = sp(server);
 			ModGrowth.set(p, ModGrowth.get(p).withClass(k));
 			p.setAttached(com.elementalweapons.growth.Evolution.ELEMENT, CT_EL[k]);
@@ -77,13 +77,11 @@ public final class ShotHarness {
 			for (int i = 0; i < 4; i++) p.setItemSlot(slots[i], new ItemStack(com.elementalweapons.item.ModGear.ITEMS.get("aether_" + parts[i])));
 			} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 직업 갑옷 오류", ex); } });
 		if (g == 2) { mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT); mc.player.setXRot(8); }
-		if (g == 38) { mc.player.setYRot(mc.player.getYRot() + 40); mc.player.setYBodyRot(mc.player.getYRot()); }
 		if (g == 30) { shot(mc, "97" + k + "_class_front_" + com.elementalweapons.item.PlayerClass.of(k).name().toLowerCase());
 			server.execute(() -> { ServerPlayer p = sp(server); log("직업 " + k + " 방어력 " + p.getArmorValue() + " 속도 " + String.format("%.4f", p.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED))
 				+ " 모양 " + p.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST).get(net.minecraft.core.component.DataComponents.EQUIPPABLE).assetId().map(Object::toString).orElse("-")); }); }
 		if (g == 32) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
 		if (g == 46) shot(mc, "97" + k + "_class_back_" + com.elementalweapons.item.PlayerClass.of(k).name().toLowerCase());
-		if (g == 48) { mc.player.setYRot(mc.player.getYRot() - 40); }
 	}
 
 	private static long lastXp;
