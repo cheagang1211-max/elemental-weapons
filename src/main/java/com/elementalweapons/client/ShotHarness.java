@@ -64,7 +64,8 @@ public final class ShotHarness {
 
 	/** v4.15 확인: 속성별 갑옷 색·장식 (3인칭 정면·뒤) */
 	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
-		if (f == 1) server.execute(() -> { ServerPlayer p = sp(server);
+		if (f == 1) log("천국 테스트 시작 요청");
+		if (f == 1) server.execute(() -> { try { log("천국 테스트 서버 작업"); ServerPlayer p = sp(server);
 			server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "difficulty normal");
 			server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "time set noon");
 			p.setYRot(0); p.setYHeadRot(0); p.setXRot(-35);
@@ -82,7 +83,7 @@ public final class ShotHarness {
 			}
 			com.elementalweapons.spell.SpellManager.add(new com.elementalweapons.spell.HeavenGateSpell(lvl, p));
 			log("천국의 문 시전");
-		});
+		} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 천국 테스트 오류", ex); } });
 		if (f < 140) { mc.player.setYRot(0); mc.player.setXRot(f < 100 ? -38 : -25); mc.options.setCameraType(f < 100 ? CameraType.FIRST_PERSON : CameraType.THIRD_PERSON_BACK); }
 		if (f == 18) shot(mc, "98a_heaven_descend");
 		if (f == 42) shot(mc, "98b_heaven_open");
