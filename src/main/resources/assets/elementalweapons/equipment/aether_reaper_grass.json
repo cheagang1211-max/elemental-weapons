@@ -1,0 +1,14 @@
+{
+	"layers": {
+		"humanoid": [
+			{
+				"texture": "elementalweapons:cls_reaper_grass"
+			}
+		],
+		"humanoid_leggings": [
+			{
+				"texture": "elementalweapons:cls_reaper_grass"
+			}
+		]
+	}
+}

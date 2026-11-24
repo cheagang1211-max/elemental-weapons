@@ -1,0 +1,14 @@
+{
+	"layers": {
+		"humanoid": [
+			{
+				"texture": "elementalweapons:orichalcum"
+			}
+		],
+		"humanoid_leggings": [
+			{
+				"texture": "elementalweapons:orichalcum"
+			}
+		]
+	}
+}

@@ -74,8 +74,14 @@ public class ArmorDecoModel extends HumanoidModel<HumanoidRenderState> {
 		tassets.visible = l; rknee.visible = l; lknee.visible = l;
 		rboot.visible = f; lboot.visible = f;
 		int el = elementOf(s);
-		for (int i = 0; i < 7; i++) { elHelm[i].visible = h && el == i; elBack[i].visible = c && el == i; }
-		hornR.visible = el < 0 || el == 5; hornL.visible = hornR.visible;   // 굽은 뿔은 어둠(기본)만
+		int cls = ClassDecoModel.classOf(s);
+		for (int i = 0; i < 7; i++) { elHelm[i].visible = h && el == i; elBack[i].visible = c && el == i && cls != 3; }   // 기사는 망토가 등을 덮음
+		hornR.visible = el < 0 || el == 5 || cls == 2; hornL.visible = hornR.visible;   // 굽은 뿔: 어둠(기본)·전사
+		if (cls != 0 && cls != 2 && cls != 3) {   // 천·가죽 복장 직업은 판금 장식 없음
+			helm.visible = chest.visible = rpaul.visible = lpaul.visible = tassets.visible = false;
+			rknee.visible = lknee.visible = rboot.visible = lboot.visible = false;
+			for (int i = 0; i < 7; i++) { elHelm[i].visible = false; elBack[i].visible = false; }
+		}
 		hat.visible = false;
 	}
 }

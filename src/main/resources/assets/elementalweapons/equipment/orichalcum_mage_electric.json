@@ -1,0 +1,14 @@
+{
+	"layers": {
+		"humanoid": [
+			{
+				"texture": "elementalweapons:cls_mage_electric"
+			}
+		],
+		"humanoid_leggings": [
+			{
+				"texture": "elementalweapons:cls_mage_electric"
+			}
+		]
+	}
+}

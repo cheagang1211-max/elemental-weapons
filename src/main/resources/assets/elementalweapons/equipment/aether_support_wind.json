@@ -1,0 +1,14 @@
+{
+	"layers": {
+		"humanoid": [
+			{
+				"texture": "elementalweapons:cls_support_wind"
+			}
+		],
+		"humanoid_leggings": [
+			{
+				"texture": "elementalweapons:cls_support_wind"
+			}
+		]
+	}
+}
