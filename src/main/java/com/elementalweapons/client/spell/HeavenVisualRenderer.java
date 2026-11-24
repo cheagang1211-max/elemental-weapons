@@ -25,7 +25,7 @@ public class HeavenVisualRenderer extends MobRenderer<HeavenVisual, HeavenModels
 		super(ctx, model, 0);
 		this.texture = ElementalWeaponsMod.id("textures/entity/" + id + ".png");
 		this.scale = scale;
-		this.tilt = id.equals("heaven_gate") ? -32F : 0F;
+		this.tilt = id.equals("heaven_gate") ? 32F : 0F;
 		final Identifier glow = ElementalWeaponsMod.id("textures/entity/" + id + "_glow.png");
 		this.addLayer(new EyesLayer<HeavenModels.State, EntityModel<HeavenModels.State>>(this) {
 			@Override

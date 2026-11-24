@@ -128,7 +128,7 @@ public class HeavenGateSpell extends Spell {
 			else if (age < ANGEL_RETURN) p = 1.0;                                                      // 전투
 			else p = Math.max(0, 1.0 - (age - ANGEL_RETURN) / 25.0);                                  // 귀환
 			double bob = (age >= ANGEL_READY && age < ANGEL_RETURN) ? Math.sin(age * 0.1) * 0.3 : 0;
-			angel = gate.add(fwd.scale(-4.0 * G * p)).add(0, (-5.5 * p - 1.0) * G + bob, 0);
+			angel = gate.add(fwd.scale(-2.5 * G * p)).add(right.scale(6.0 * G * p)).add(0, (-4.5 * p - 1.0) * G + bob, 0);
 			if (angelEnt == null) angelEnt = spawnVisual(com.elementalweapons.mob.ModMobs.ARCHANGEL, angel);
 			Vec3 face = lastTarget != null ? lastTarget.subtract(angel) : fwd.scale(-1);
 			place(angelEnt, angel, face);
