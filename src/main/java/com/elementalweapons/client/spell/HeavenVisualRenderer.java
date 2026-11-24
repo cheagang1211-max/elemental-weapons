@@ -60,7 +60,7 @@ public class HeavenVisualRenderer extends MobRenderer<HeavenVisual, HeavenModels
 	@Override
 	protected void scale(HeavenModels.State s, PoseStack p) {
 		p.scale(scale, scale, scale);
-		if (tilt != 0) p.mulPose(com.mojang.math.Axis.XP.rotationDegrees(tilt));   // 원 중심을 축으로 시전자 쪽으로 기울임
+		if (tilt != 0) p.rotateDegrees(com.mojang.math.Axis.XP, tilt);   // 원 중심을 축으로 시전자 쪽으로 기울임
 	}
 
 	public static final ModelLayerLocation GATE = new ModelLayerLocation(ElementalWeaponsMod.id("heaven_gate"), "main");
