@@ -32,6 +32,7 @@ public final class HeavenModels {
 	}
 	private static PartPose at(float x, float y, float z, float rx, float ry, float rz) { return PartPose.offsetAndRotation(x, y, z, rx, ry, rz); }
 
+	static final float QP = (float) (Math.PI / 4);
 	static final float R = 28;   // 원 테 반지름 (모형 단위)
 	static final float RD = 25;  // 문짝 반지름
 
@@ -47,7 +48,7 @@ public final class HeavenModels {
 			ring.addOrReplaceChild("g" + i, c(GOLD, -seg / 2, -0.6F, -2.8F, seg * 0.92F, 1.2F, 5.6F), at(Mth.cos(a) * (R - 3), Mth.sin(a) * (R - 3), 0, 0, 0, a + Mth.HALF_PI));
 			ring.addOrReplaceChild("o" + i, c(GOLD, -seg / 2, -0.5F, -1.5F, seg * 1.05F, 1, 3), at(Mth.cos(a) * (R + 3), Mth.sin(a) * (R + 3), 0, 0, 0, a + Mth.HALF_PI));
 			if (i % 4 == 0)   // 테 위의 장식 돌기
-				ring.addOrReplaceChild("k" + i, c(DARKGOLD, -1.5F, -1.5F, -3.4F, 3, 3, 1), at(Mth.cos(a) * R, Mth.sin(a) * R, 0, 0, 0, a + Mth.QUARTER_PI));
+				ring.addOrReplaceChild("k" + i, c(DARKGOLD, -1.5F, -1.5F, -3.4F, 3, 3, 1), at(Mth.cos(a) * R, Mth.sin(a) * R, 0, 0, 0, a + QP));
 		}
 		// 바깥으로 뻗은 수정 첨탑 (해가 빛살을 뻗듯)
 		PartDefinition spires = root.addOrReplaceChild("spires", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
@@ -104,9 +105,9 @@ public final class HeavenModels {
 		PartDefinition crown = root.addOrReplaceChild("crown", CubeListBuilder.create(), PartPose.offset(0, 24 - R - 4, 0));
 		crown.addOrReplaceChild("base", c(GOLD, -7, -2, -2.5F, 14, 2, 5), PartPose.ZERO);
 		crown.addOrReplaceChild("t2", c(MARBLE, -5, -4, -2, 10, 2, 4), PartPose.ZERO);
-		crown.addOrReplaceChild("star1", c(CRYSTAL, -3.5F, -3.5F, -0.6F, 7, 7, 1.2F), at(0, -9, 0, 0, 0, Mth.QUARTER_PI));
+		crown.addOrReplaceChild("star1", c(CRYSTAL, -3.5F, -3.5F, -0.6F, 7, 7, 1.2F), at(0, -9, 0, 0, 0, QP));
 		crown.addOrReplaceChild("star2", c(CRYSTAL, -3.5F, -3.5F, -0.7F, 7, 7, 1.4F), at(0, -9, 0, 0, 0, 0));
-		crown.addOrReplaceChild("core", c(LIGHT, -1.5F, -1.5F, -1.2F, 3, 3, 2.4F), at(0, -9, 0, 0, 0, Mth.QUARTER_PI));
+		crown.addOrReplaceChild("core", c(LIGHT, -1.5F, -1.5F, -1.2F, 3, 3, 2.4F), at(0, -9, 0, 0, 0, QP));
 		for (int s = -1; s <= 1; s += 2) crown.addOrReplaceChild("pin" + s, c(CRYSTAL, -0.7F, -6, -0.7F, 1.4F, 6, 1.4F), at(s * 5.5F, -2, 0, 0, 0, s * 0.35F));
 		// 아래 수정 펜던트
 		PartDefinition pend = root.addOrReplaceChild("pendant", CubeListBuilder.create(), PartPose.offset(0, 24 + R + 2.5F, 0));

@@ -24,7 +24,6 @@ public class HeavenVisual extends Mob {
 		super(type, level);
 		setNoAi(true);
 		setNoGravity(true);
-		setInvulnerable(true);
 		setSilent(true);
 		noPhysics = true;
 	}
@@ -53,6 +52,7 @@ public class HeavenVisual extends Mob {
 		if (!level().isClientSide() && ++life > 40) discard();   // 마법이 갑자기 끝나면 2초 뒤 정리
 	}
 
+	@Override public boolean shouldRenderAtSqrDistance(double d) { return d < 256 * 256; }
 	@Override public boolean isPickable() { return false; }
 	@Override public boolean isPushable() { return false; }
 	@Override public boolean shouldBeSaved() { return false; }

@@ -44,7 +44,7 @@ public class HeavenVisualRenderer extends MobRenderer<HeavenVisual, HeavenModels
 	}
 
 	@Override
-	public boolean shouldRender(HeavenVisual e, Frustum f, double x, double y, double z) { return true; }
+	protected boolean affectedByCulling(HeavenVisual e) { return false; }
 
 	@Override
 	protected int getBlockLightLevel(HeavenVisual e, BlockPos pos) { return 15; }
