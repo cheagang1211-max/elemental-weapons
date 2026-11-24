@@ -47,6 +47,8 @@ public class HeavenGateSpell extends Spell {
 	private final Vec3 gate;   // 문 최종 위치 (중심)
 	private Vec3 gateNow;      // 지금 문 위치 (내려오는 중)
 	private Vec3 angel;        // 대천사 발 위치
+	private HeavenVisual gateEnt, angelEnt;   // 입체 모형
+	private Vec3 lastTarget;
 
 	public HeavenGateSpell(ServerLevel level, Player caster) {
 		super(level, caster);
@@ -88,7 +90,12 @@ public class HeavenGateSpell extends Spell {
 		if (age < DESCEND_TICKS) open = 0.35 + 0.65 * age / DESCEND_TICKS; // 내려오며 활짝 열림
 		else if (age < 190) open = 1.0;
 		else open = Math.max(0, 1.0 - (age - 190) / 25.0);
-		if (open > 0 && age % 2 == 0) drawGate(open, r);
+		if (gateEnt == null && age == 0) gateEnt = spawnVisual(com.elementalweapons.mob.ModMobs.HEAVEN_GATE, gateNow);
+		if (gateEnt != null) {
+			place(gateEnt, gateNow, fwd.scale(-1));
+			gateEnt.setOpen((float) Math.max(0, (open - 0.35) / 0.65 * (age < DESCEND_TICKS ? 0.4 : 1)));
+		}
+		if (open > 0 && age % 4 == 0) drawGateFx(open, r);
 		// 내려오는 동안 문 뒤로 빛 꼬리
 		if (age < DESCEND_TICKS) {
 			Fx.burst(level, com.elementalweapons.fx.P.END_ROD, gateNow.add(0, 3, 0), 4, 1.5, 0.02);
@@ -122,14 +129,49 @@ public class HeavenGateSpell extends Spell {
 			else p = Math.max(0, 1.0 - (age - ANGEL_RETURN) / 25.0);                                  // 귀환
 			double bob = (age >= ANGEL_READY && age < ANGEL_RETURN) ? Math.sin(age * 0.1) * 0.3 : 0;
 			angel = gate.add(fwd.scale(-3.5 * G * p)).add(0, (-3.0 * p - 1.0) * G + bob, 0);
-			if (age % 2 == 0) drawAngel(angel);
+			if (angelEnt == null) angelEnt = spawnVisual(com.elementalweapons.mob.ModMobs.ARCHANGEL, angel);
+			Vec3 face = lastTarget != null ? lastTarget.subtract(angel) : fwd.scale(-1);
+			place(angelEnt, angel, face);
+			angelEnt.setOpen((float) p);
+			if (age % 3 == 0) Fx.burst(level, com.elementalweapons.fx.P.END_ROD, angel.add(0, 4, 0), 2, 2.5, 0.01);
 
 			// 빛의 창 공격 (0.3초마다 — 2배)
 			if (age >= ANGEL_READY && age < ANGEL_RETURN && (age - ANGEL_READY) % 6 == 0) {
 				attack();
 			}
 		}
-		return age >= 216;
+		if (age >= 210 && angelEnt != null) { angelEnt.discard(); angelEnt = null; }
+		if (age >= 216) { if (gateEnt != null) gateEnt.discard(); gateEnt = null; return true; }
+		return false;
+	}
+
+	private HeavenVisual spawnVisual(net.minecraft.world.entity.EntityType<HeavenVisual> type, Vec3 pos) {
+		HeavenVisual v = type.create(level, net.minecraft.world.entity.EntitySpawnReason.MOB_SUMMONED);
+		if (v == null) return null;
+		v.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
+		v.snapTo(pos.x, pos.y, pos.z, 0, 0);
+		level.addFreshEntity(v);
+		return v;
+	}
+
+	/** 위치·방향 갱신 (dir: 모형이 바라볼 방향) */
+	private static void place(HeavenVisual v, Vec3 pos, Vec3 dir) {
+		if (v == null) return;
+		float yaw = (float) Math.toDegrees(Math.atan2(-dir.x, dir.z));
+		v.setPos(pos.x, pos.y, pos.z);
+		v.setYRot(yaw); v.setYBodyRot(yaw); v.setYHeadRot(yaw);
+		v.life = 0;
+	}
+
+	/** 모형 주변의 빛 효과 (구름 받침, 반짝임) */
+	private void drawGateFx(double open, RandomSource r) {
+		Vec3 g = this.gateNow;
+		for (double a = -8; a <= 8; a += 1.2)
+			Fx.burst(level, com.elementalweapons.fx.P.CLOUD, plane(g, a, -8.5 + Math.abs(a) * 0.25, 1.5), 1, 0.3, 0.0);
+		for (int i = 0; i < 10; i++) {
+			double t = r.nextDouble() * Math.PI * 2, d = 7 + r.nextDouble() * 6;
+			Fx.at(level, i % 2 == 0 ? PALE_GOLD : com.elementalweapons.fx.P.END_ROD, plane(g, Math.cos(t) * d, Math.sin(t) * d, 0.5));
+		}
 	}
 
 	private void drawGate(double open, RandomSource r) {
@@ -210,8 +252,11 @@ public class HeavenGateSpell extends Spell {
 		var foes = Fx.enemies(level, caster.position(), ATTACK_RANGE);
 		if (foes.isEmpty()) return;
 		LivingEntity target = foes.get(0);
-		Vec3 from = plane(angel, 0.95 * ANGEL_SCALE, 2.9 * ANGEL_SCALE, 0);
 		Vec3 to = target.position().add(0, target.getBbHeight() * 0.5, 0);
+		lastTarget = to;
+		if (angelEnt != null) angelEnt.setStrike(angelEnt.tickCount);
+		Vec3 dir = to.subtract(angel.add(0, 4.5, 0)).normalize();
+		Vec3 from = angel.add(0, 4.5, 0).add(dir.scale(6));
 		Fx.line(level, SPEAR, from, to, 0.3);
 		Fx.line(level, com.elementalweapons.fx.P.END_ROD, from, to, 0.8);
 		Fx.burst(level, com.elementalweapons.fx.P.END_ROD, to, 25, 0.3, 0.15);

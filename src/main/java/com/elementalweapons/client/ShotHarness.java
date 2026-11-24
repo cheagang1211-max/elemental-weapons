@@ -64,18 +64,32 @@ public final class ShotHarness {
 
 	/** v4.15 확인: 속성별 갑옷 색·장식 (3인칭 정면·뒤) */
 	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
-		int e = f / 40, g = f % 40;
-		if (e >= 7) return;
-		if (g == 0) server.execute(() -> { ServerPlayer p = sp(server);
-			p.setAttached(com.elementalweapons.growth.Evolution.ELEMENT, e);
-			p.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-			String[] parts = {"helmet", "chestplate", "leggings", "boots"};
-			var slots = new net.minecraft.world.entity.EquipmentSlot[]{net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET};
-			for (int k = 0; k < 4; k++) p.setItemSlot(slots[k], new ItemStack(com.elementalweapons.item.ModGear.ITEMS.get((e % 2 == 0 ? "aether_" : "orichalcum_") + parts[k]))); });
-		if (g == 2) { mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT); mc.player.setXRot(10); }
-		if (g == 26) shot(mc, "97" + e + "_armor_front_" + com.elementalweapons.item.Element.values()[e].id);
-		if (g == 28) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
-		if (g == 38) shot(mc, "97" + e + "_armor_back_" + com.elementalweapons.item.Element.values()[e].id);
+		if (f == 0) server.execute(() -> { ServerPlayer p = sp(server);
+			server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "difficulty normal");
+			server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "time set noon");
+			p.setYRot(0); p.setYHeadRot(0); p.setXRot(-35);
+			p.setAttached(com.elementalweapons.growth.Evolution.ELEMENT, com.elementalweapons.item.Element.LIGHT.ordinal());
+			var lvl = (net.minecraft.server.level.ServerLevel) p.level();
+			int k = 0;
+			for (var t : ModMobs.MOBS.values()) {
+				if (k >= 3) break;
+				var m = t.create(lvl, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+				if (m == null) continue;
+				m.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
+				m.snapTo(p.getX() - 4 + k * 4, p.getY(), p.getZ() + 12, 0, 0);
+				if (m instanceof net.minecraft.world.entity.Mob mob) mob.setNoAi(true);
+				lvl.addFreshEntity(m); k++;
+			}
+			com.elementalweapons.spell.SpellManager.add(new com.elementalweapons.spell.HeavenGateSpell(lvl, p));
+			log("천국의 문 시전");
+		});
+		if (f < 140) { mc.player.setYRot(0); mc.player.setXRot(f < 100 ? -38 : -25); mc.options.setCameraType(f < 100 ? CameraType.FIRST_PERSON : CameraType.THIRD_PERSON_BACK); }
+		if (f == 18) shot(mc, "98a_heaven_descend");
+		if (f == 42) shot(mc, "98b_heaven_open");
+		if (f == 70) shot(mc, "98c_heaven_angel");
+		if (f == 95) shot(mc, "98d_heaven_attack");
+		if (f == 125) shot(mc, "98e_heaven_back");
+		if (f == 60 || f == 100) server.execute(() -> log("문/천사 엔티티 수=" + ((net.minecraft.server.level.ServerLevel) sp(server).level()).getEntities(ModMobs.HEAVEN_GATE, e -> true).size() + "/" + ((net.minecraft.server.level.ServerLevel) sp(server).level()).getEntities(ModMobs.ARCHANGEL, e -> true).size()));
 	}
 
 	private static long lastXp;
@@ -230,8 +244,8 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
-		if (f < 290) { classTest(mc, server, f); return; }
-		f -= 290;
+		if (f < 140) { classTest(mc, server, f); return; }
+		f -= 140;
 		double[][] sc = focusScenes();
 		int per = 300;
 		if (f < sc.length * per) {
