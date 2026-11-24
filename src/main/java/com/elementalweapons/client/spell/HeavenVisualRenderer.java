@@ -19,11 +19,13 @@ import com.elementalweapons.spell.HeavenVisual;
 public class HeavenVisualRenderer extends MobRenderer<HeavenVisual, HeavenModels.State, EntityModel<HeavenModels.State>> {
 	private final Identifier texture;
 	private final float scale;
+	private final float tilt;
 
 	public HeavenVisualRenderer(EntityRendererProvider.Context ctx, EntityModel<HeavenModels.State> model, String id, float scale) {
 		super(ctx, model, 0);
 		this.texture = ElementalWeaponsMod.id("textures/entity/" + id + ".png");
 		this.scale = scale;
+		this.tilt = id.equals("heaven_gate") ? -32F : 0F;
 		final Identifier glow = ElementalWeaponsMod.id("textures/entity/" + id + "_glow.png");
 		this.addLayer(new EyesLayer<HeavenModels.State, EntityModel<HeavenModels.State>>(this) {
 			@Override
@@ -56,7 +58,10 @@ public class HeavenVisualRenderer extends MobRenderer<HeavenVisual, HeavenModels
 	public Identifier getTextureLocation(HeavenModels.State s) { return texture; }
 
 	@Override
-	protected void scale(HeavenModels.State s, PoseStack p) { p.scale(scale, scale, scale); }
+	protected void scale(HeavenModels.State s, PoseStack p) {
+		p.scale(scale, scale, scale);
+		if (tilt != 0) p.mulPose(com.mojang.math.Axis.XP.rotationDegrees(tilt));   // 원 중심을 축으로 시전자 쪽으로 기울임
+	}
 
 	public static final ModelLayerLocation GATE = new ModelLayerLocation(ElementalWeaponsMod.id("heaven_gate"), "main");
 	public static final ModelLayerLocation ANGEL = new ModelLayerLocation(ElementalWeaponsMod.id("archangel"), "main");
