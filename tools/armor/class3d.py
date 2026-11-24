@@ -77,21 +77,21 @@ def ring(o, bone, n, r, center, size, mat, slot, anim, plane="xy", phase=0.0, pa
             o.add(bone, (-w / 2, -h / 2, -d / 2, w, h, d), mat, (math.cos(a) * r, 0, math.sin(a) * r), (0, -a + math.pi / 2, 0), parent=hub, **deco)
     return hub
 
-def robe_skirt(o, mat, trim, length, open_front=False, inner=None, slot="l", width=8.8):
+def robe_skirt(o, mat, trim, length, open_front=False, inner=None, slot="l", width=9.8):
     hw = width / 2
     if open_front:
         for s in (-1, 1):
-            f = o.add("body", (-1.6, 0, -0.5, 3.2, length, 1), mat, (s * 2.9, 12, -2.4), slot=slot, anim="f", bands="bottom", side=s)
+            f = o.add("body", (-1.6, 0, -0.5, 3.2, length, 1), mat, (s * 3.2, 12, -2.95), slot=slot, anim="f", bands="bottom", side=s)
         if inner:
-            o.add("body", (-1.4, 0, -0.4, 2.8, length - 1, 0.8), inner, (0, 12, -2.3), slot=slot, anim="f", bands="bottom")
+            o.add("body", (-1.7, 0, -0.4, 3.4, length - 1, 0.8), inner, (0, 12, -2.85), slot=slot, anim="f", bands="bottom")
     else:
-        o.add("body", (-hw, 0, -0.5, width, length, 1), mat, (0, 12, -2.3), slot=slot, anim="f", bands="bottom", stripe=True)
-    o.add("body", (-hw, 0, -0.5, width, length + 0.5, 1), mat, (0, 12, 2.3), slot=slot, anim="b", bands="bottom")
+        o.add("body", (-hw, 0, -0.5, width, length, 1), mat, (0, 12, -2.95), slot=slot, anim="f", bands="bottom", stripe=True)
+    o.add("body", (-hw, 0, -0.5, width, length + 0.5, 1), mat, (0, 12, 2.95), slot=slot, anim="b", bands="bottom")
     for s in (-1, 1):
-        o.add("body", (-0.5, 0, -2.4, 1, length, 4.8), mat, (s * 4.3, 12, 0), slot=slot, anim="n", bands="bottom")
+        o.add("body", (-0.5, 0, -2.9, 1, length, 5.8), mat, (s * 4.85, 12, 0), slot=slot, anim="n", bands="bottom")
 
 def hood(o, cloth, rim, deep=0.0, peak=0.0, mat_in="dark"):
-    g = deep
+    g = deep + 0.7
     o.add("head", (-4.8 - g, -9.0 - g, -4.6 - g, 9.6 + 2 * g, 1.2, 9.6 + 2 * g), cloth, slot="h", bands="none")
     for s in (-1, 1):
         o.add("head", (-0.5, 0, -4.6 - g, 1, 8.6 + g, 9.6 + 2 * g), cloth, (s * (4.4 + g), -8.6 - g, 0), slot="h", folds=True)
@@ -108,17 +108,17 @@ def hood(o, cloth, rim, deep=0.0, peak=0.0, mat_in="dark"):
 def sleeve(o, mat, trim, flare=1.0, glow_ring=False):
     for s, bone, x0 in ((-1, "right_arm", -3.0), (1, "left_arm", -1.0)):
         cx = x0 + 2
-        o.add(bone, (cx - 2.5 - 0.3 * flare, 3.5, -2.5 - 0.3 * flare, 5 + 0.6 * flare, 4, 5 + 0.6 * flare), mat, slot="c", folds=True)
-        o.add(bone, (cx - 2.7 - 0.6 * flare, 7.3, -2.7 - 0.6 * flare, 5.4 + 1.2 * flare, 3.2, 5.4 + 1.2 * flare), mat, slot="c", bands="bottom")
+        o.add(bone, (cx - 3.3 - 0.3 * flare, 3.5, -3.3 - 0.3 * flare, 6.6 + 0.6 * flare, 4, 6.6 + 0.6 * flare), mat, slot="c", folds=True)
+        o.add(bone, (cx - 3.5 - 0.6 * flare, 7.3, -3.5 - 0.6 * flare, 7.0 + 1.2 * flare, 3.2, 7.0 + 1.2 * flare), mat, slot="c", bands="bottom")
         if glow_ring:
-            o.add(bone, (cx - 2.25, 9.6, -2.25, 4.5, 0.7, 4.5), "glow", slot="c")
+            o.add(bone, (cx - 3.15, 9.6, -3.15, 6.3, 0.7, 6.3), "glow", slot="c")
 
 def boots(o, mat, cuff, curl=False):
     for bone in ("right_leg", "left_leg"):
-        o.add(bone, (-2.4, 8.6, -2.4, 4.8, 1.4, 4.8), cuff, slot="f")
-        o.add(bone, (-2.3, 10.8, -3.4, 4.6, 1.3, 1.2), mat, slot="f")
+        o.add(bone, (-3.2, 8.4, -3.2, 6.4, 1.4, 6.4), cuff, slot="f")
+        o.add(bone, (-2.6, 10.9, -4.1, 5.2, 1.3, 1.2), mat, slot="f")
         if curl:
-            c1 = o.add(bone, (-0.9, -1.0, -1.6, 1.8, 1.0, 1.8), mat, (0, 12, -3.4), (0.5, 0, 0), slot="f")
+            c1 = o.add(bone, (-0.9, -1.0, -1.6, 1.8, 1.0, 1.8), mat, (0, 12.1, -4.1), (0.5, 0, 0), slot="f")
             o.add(bone, (-0.5, -1.2, -0.8, 1.0, 1.2, 1.0), "gold", (0, -1.0, -1.4), (0.9, 0, 0), parent=c1)
 
 def build():
@@ -126,14 +126,14 @@ def build():
 
     # ===================== 마법사: 대마도사 =====================
     o = Outfit("mage")
-    brim = o.add("head", (-6.8, -8.7, -6.8, 13.6, 1, 13.6), "cloth", slot="h", bands="edge")
+    brim = o.add("head", (-6.8, -9.4, -6.8, 13.6, 1, 13.6), "cloth", slot="h", bands="edge")
     for s in (-1, 1):
-        o.add("head", (-5.5, 0, -1.4, 11, 0.8, 1.6), "cloth", (0, -8.5, 6.6 * s), (0.28 * -s, 0, 0), parent=brim, bands="none")
-    o.add("head", (-4.7, -10.8, -4.7, 9.4, 2.2, 9.4), "trim", parent=brim)
-    o.add("head", (-1.1, -10.6, -5.2, 2.2, 1.8, 0.6), "gem", parent=brim)
+        o.add("head", (-5.5, 0, -1.4, 11, 0.8, 1.6), "cloth", (0, -9.2, 6.6 * s), (0.28 * -s, 0, 0), parent=brim, bands="none")
+    o.add("head", (-5.3, -11.4, -5.3, 10.6, 2.2, 10.6), "trim", parent=brim)
+    o.add("head", (-1.1, -11.2, -5.8, 2.2, 1.8, 0.6), "gem", parent=brim)
     for s in (-1, 1):
-        o.add("head", (-0.6, 0, -0.2, 1.2, 7, 0.4), "cloth2", (1.8 * s, -9.6, 4.8), (0.25, 0, 0.1 * s), parent=brim, anim="t", bands="bottom")
-    c1 = o.add("head", (-4.1, -4, -4.1, 8.2, 4, 8.2), "cloth", (0, -10.6, 0.3), parent=brim, folds=True)
+        o.add("head", (-0.6, 0, -0.2, 1.2, 7, 0.4), "cloth2", (1.8 * s, -9.6, 5.4), (0.25, 0, 0.1 * s), parent=brim, anim="t", bands="bottom")
+    c1 = o.add("head", (-4.1, -4, -4.1, 8.2, 4, 8.2), "cloth", (0, -11.2, 0.3), parent=brim, folds=True)
     c2 = o.add("head", (-3.1, -4, -3.1, 6.2, 4, 6.2), "cloth", (0, -4, 0), (-0.24, 0, 0), parent=c1, folds=True)
     c3 = o.add("head", (-2.1, -3.6, -2.1, 4.2, 3.6, 4.2), "cloth", (0, -3.8, 0), (-0.38, 0, 0.08), parent=c2, folds=True)
     c4 = o.add("head", (-1.2, -3.2, -1.2, 2.4, 3.2, 2.4), "cloth", (0, -3.4, 0), (-0.55, 0, 0.1), parent=c3)
@@ -143,28 +143,28 @@ def build():
     o.add("body", (-4.6, -3.4, 0, 9.2, 3.6, 1.1), "trim", (0, 0.2, 1.6), (-0.22, 0, 0))
     for s in (-1, 1):
         o.add("body", (-0.55, -2.6, -1.8, 1.1, 2.8, 3.6), "trim", (s * 4.3, 0.1, 0.2), (0, 0, 0.18 * s))
-    o.add("body", (-5.3, -0.6, -3.0, 10.6, 3.2, 6.0), "cloth", bands="bottom")
-    o.add("body", (-5.8, 2.2, -3.25, 11.6, 2.1, 6.5), "dark", bands="bottom")
+    o.add("body", (-5.6, -0.8, -3.4, 11.2, 3.4, 6.8), "cloth", bands="bottom")
+    o.add("body", (-6.0, 2.2, -3.6, 12.0, 2.1, 7.2), "dark", bands="bottom")
     for k in range(5):
-        o.add("body", (-0.8, -0.8, -0.3, 1.6, 1.6, 0.6), "trim", (-4 + k * 2, 4.4, -3.25), (0, 0, 0.785))
-    o.add("body", (-1.3, -1.3, -0.5, 2.6, 2.6, 0.8), "gold", (0, 1.4, -3.4), (0, 0, 0.785))
-    o.add("body", (-0.7, -0.7, -0.4, 1.4, 1.4, 0.6), "gem", (0, 1.4, -3.75), (0, 0, 0.785))
+        o.add("body", (-0.8, -0.8, -0.3, 1.6, 1.6, 0.6), "trim", (-4 + k * 2, 4.4, -3.6), (0, 0, 0.785))
+    o.add("body", (-1.3, -1.3, -0.5, 2.6, 2.6, 0.8), "gold", (0, 1.4, -3.7), (0, 0, 0.785))
+    o.add("body", (-0.7, -0.7, -0.4, 1.4, 1.4, 0.6), "gem", (0, 1.4, -4.1), (0, 0, 0.785))
     # 허리띠 + 마법서 + 물약
-    o.add("body", (-4.5, 9.2, -2.5, 9, 1.4, 5), "leather", stitch=True)
-    o.add("body", (-1.1, 8.9, -2.9, 2.2, 2.0, 0.6), "gold")
-    book = o.add("body", (-1.6, 0, -0.9, 3.2, 4, 1.8), "leather", (-4.6, 10.2, -0.4), (0, 0, 0.12))
+    o.add("body", (-5.2, 9.2, -3.2, 10.4, 1.4, 6.4), "leather", stitch=True)
+    o.add("body", (-1.1, 8.9, -3.6, 2.2, 2.0, 0.6), "gold")
+    book = o.add("body", (-1.6, 0, -0.9, 3.2, 4, 1.8), "leather", (-5.6, 10.2, -0.4), (0, 0, 0.12))
     o.add("body", (-1.7, 0.4, -1.0, 0.4, 3.2, 2.0), "gold", parent=book)
     o.add("body", (-0.9, 1.1, -1.0, 1.8, 1.8, 0.2), "glow", parent=book)
     for k in range(2):
-        v = o.add("body", (-0.6, 0, -0.6, 1.2, 1.8, 1.2), "gem", (3.4 + k * 1.4, 10.4, -2.4), (0, 0, 0))
+        v = o.add("body", (-0.6, 0, -0.6, 1.2, 1.8, 1.2), "gem", (3.2 + k * 1.5, 10.4, -3.5), (0, 0, 0))
         o.add("body", (-0.4, -0.5, -0.4, 0.8, 0.5, 0.8), "leather", parent=v)
     # 겉옷 자락(앞이 트임) + 속 로브 + 긴 망토
     robe_skirt(o, "cloth", "trim", 11.2, open_front=True, inner="cloth2")
-    cape = o.add("body", (-4.8, 0, 0, 9.6, 22, 0.8), "cloth", (0, 0.4, 2.6), anim="c", bands="bottom", runes=True)
+    cape = o.add("body", (-4.8, 0, 0, 9.6, 22, 0.8), "cloth", (0, 0.4, 3.2), anim="c", bands="bottom", runes=True)
     o.add("body", (-4.9, 0, -0.1, 9.8, 1.4, 1.0), "trim", parent=cape)
     # 시그니처: 등 뒤에서 도는 룬 고리 (안·바깥 두 겹)
-    hub = ring(o, "body", 16, 7.2, (0, 5, 7.5), (2.4, 0.7, 0.5), "glow", "c", "r")
-    ring(o, "body", 8, 4.6, (0, 5, 7.6), (1.2, 1.2, 0.5), "gem", "c", "R", phase=0.39)
+    hub = ring(o, "body", 16, 8.0, (0, 5, 7.0), (2.8, 0.9, 0.6), "glow", "c", "r")
+    ring(o, "body", 8, 5.2, (0, 5, 7.1), (1.4, 1.4, 0.6), "gem", "c", "R", phase=0.39)
     sleeve(o, "cloth", "trim", flare=1.3, glow_ring=True)
     boots(o, "dark", "trim", curl=True)
     outfits["mage"] = o
@@ -178,21 +178,21 @@ def build():
     o.add("head", (-0.5, -14.6, -2.5, 1, 4.8, 0.5), "glow", parent=m)
     o.add("head", (-1.8, -13.3, -2.5, 3.6, 1, 0.5), "glow", parent=m)
     o.add("head", (-0.8, -17.6, -0.8, 1.6, 1.6, 1.6), "gem", (0, 0, 0), (0.78, 0.78, 0), parent=m)
-    o.add("head", (-4.6, -8.6, -4.6, 9.2, 1.2, 9.2), "trim", slot="h")
-    veil = o.add("head", (-4.4, 0, -0.3, 8.8, 9.5, 0.5), "cloth", (0, -8.2, 4.6), (0.12, 0, 0), slot="h", anim="t", bands="bottom")
+    o.add("head", (-5.3, -8.8, -5.3, 10.6, 1.2, 10.6), "trim", slot="h")
+    veil = o.add("head", (-4.4, 0, -0.3, 8.8, 9.5, 0.5), "cloth", (0, -8.2, 5.3), (0.12, 0, 0), slot="h", anim="t", bands="bottom")
     ring(o, "head", 18, 5.6, (0, -6, 6.4), (2.0, 0.6, 0.4), "glow", "h", "r")
     # 어깨 망토(물결 테), 제의(앞·뒤), 영대, 금 날개 장식
-    o.add("body", (-5.3, -0.6, -3.0, 10.6, 4.4, 6.0), "cloth", bands="bottom")
+    o.add("body", (-5.6, -0.8, -3.4, 11.2, 4.6, 6.8), "cloth", bands="bottom")
     for k in range(6):
-        o.add("body", (-0.8, -0.8, -0.3, 1.6, 1.6, 0.6), "trim", (-4.5 + k * 1.8, 4.0, -3.1), (0, 0, 0.785))
-    ch = o.add("body", (-3.4, 0, -0.3, 6.8, 13, 0.5), "cloth2", (0, 2.6, -2.8), anim="n", bands="edge", cross=True)
-    o.add("body", (-3.4, 0, -0.3, 6.8, 15, 0.5), "cloth2", (0, 2.6, 2.8), anim="c", bands="edge", cross=True)
+        o.add("body", (-0.8, -0.8, -0.3, 1.6, 1.6, 0.6), "trim", (-4.5 + k * 1.8, 4.0, -3.5), (0, 0, 0.785))
+    ch = o.add("body", (-3.4, 0, -0.3, 6.8, 13, 0.5), "cloth2", (0, 3.0, -3.35), anim="n", bands="edge", cross=True)
+    o.add("body", (-3.4, 0, -0.3, 6.8, 15, 0.5), "cloth2", (0, 3.0, 3.35), anim="c", bands="edge", cross=True)
     for s in (-1, 1):
-        st = o.add("body", (-0.8, 0, -0.3, 1.6, 17, 0.5), "trim", (3.9 * s, 0, -3.1), anim="n")
+        st = o.add("body", (-0.8, 0, -0.3, 1.6, 17, 0.5), "trim", (4.0 * s, 0, -3.6), anim="n")
         o.add("body", (-1.2, 15.6, -0.4, 2.4, 1.6, 0.6), "gold", parent=st)
-    o.add("body", (-4.5, 9.4, -2.5, 9, 1.0, 5), "gold")
+    o.add("body", (-5.2, 9.4, -3.2, 10.4, 1.0, 6.4), "gold")
     for s in (-1, 1):
-        w = o.add("body", (-0.4, -5, 0, 0.8, 5, 2.6), "metal", (1.6 * s, 3.5, 3.2), (-0.5, 0.75 * s, 0.6 * s), deco_feather=True)
+        w = o.add("body", (-0.4, -5, 0, 0.8, 5, 2.6), "metal", (1.6 * s, 3.5, 3.6), (-0.5, 0.75 * s, 0.6 * s), deco_feather=True)
         for k in range(3):
             o.add("body", (-0.3, -4 + k, 0, 0.6, 4 - k, 1.6), "feather", (0, 0, 1.8 + k * 1.2), (0.1 * k, 0, 0), parent=w)
     robe_skirt(o, "cloth", "trim", 11.4)
@@ -203,128 +203,128 @@ def build():
     # ===================== 암살자: 그림자 처형자 =====================
     o = Outfit("assassin")
     hood(o, "cloth", "dark", deep=0.2, peak=1)
-    o.add("head", (-4.5, -4.2, -4.7, 9, 4.2, 0.6), "dark", slot="h", stitch=True)
-    o.add("head", (-3.2, -4.9, -4.75, 6.4, 0.6, 0.4), "glow", slot="h")
-    o.add("body", (-4.8, -1.2, -2.8, 9.6, 2.6, 5.6), "cloth2", folds=True)
-    t1 = o.add("body", (-1.0, 0, 0, 2.0, 14, 0.4), "cloth2", (1.6, 0.8, 2.8), (0.12, 0, 0.1), anim="t", bands="bottom")
-    o.add("body", (-1.0, 0, 0, 2.0, 10, 0.4), "cloth2", (-1.4, 0.8, 2.8), (0.12, 0, -0.08), anim="t", bands="bottom")
+    o.add("head", (-5.1, -4.6, -5.4, 10.2, 4.6, 0.6), "dark", slot="h", stitch=True)
+    o.add("head", (-3.2, -5.4, -5.45, 6.4, 0.6, 0.4), "glow", slot="h")
+    o.add("body", (-5.4, -1.4, -3.4, 10.8, 2.8, 6.8), "cloth2", folds=True)
+    t1 = o.add("body", (-1.0, 0, 0, 2.0, 14, 0.4), "cloth2", (1.6, 0.8, 3.4), (0.12, 0, 0.1), anim="t", bands="bottom")
+    o.add("body", (-1.0, 0, 0, 2.0, 10, 0.4), "cloth2", (-1.4, 0.8, 3.4), (0.12, 0, -0.08), anim="t", bands="bottom")
     for s in (-1, 1):   # 가슴 X자 벨트
-        b = o.add("body", (-0.6, -7.2, -0.25, 1.2, 14.4, 0.5), "leather", (0, 5.0, -2.55), (0, 0, 0.62 * s), stitch=True)
-    o.add("body", (-1.0, -1.0, -0.4, 2.0, 2.0, 0.6), "metal", (0, 5.0, -2.9), (0, 0, 0.785))
+        b = o.add("body", (-0.6, -7.2, -0.25, 1.2, 14.4, 0.5), "leather", (0, 5.0, -3.25), (0, 0, 0.62 * s), stitch=True)
+    o.add("body", (-1.0, -1.0, -0.4, 2.0, 2.0, 0.6), "metal", (0, 5.0, -3.6), (0, 0, 0.785))
     for k in range(3):
-        o.add("body", (-0.3, -1.4, -0.2, 0.6, 2.8, 0.3), "metal", (-2.4 + k * 0.9, 3.0 + k * 0.6, -2.95), (0, 0, 0.62))
+        o.add("body", (-0.3, -1.4, -0.2, 0.6, 2.8, 0.3), "metal", (-2.4 + k * 0.9, 3.0 + k * 0.6, -3.65), (0, 0, 0.62))
     for s in (-1, 1):   # 등의 엇갈린 단검
-        sh = o.add("body", (-0.8, -4, -0.5, 1.6, 7, 1.0), "leather", (0, 6, 3.0), (0, 0, 0.7 * s))
+        sh = o.add("body", (-0.8, -4, -0.5, 1.6, 7, 1.0), "leather", (0, 6, 3.7), (0, 0, 0.7 * s))
         o.add("body", (-1.3, -5.4, -0.7, 2.6, 0.7, 1.4), "metal", parent=sh)
         o.add("body", (-0.45, -8.5, -0.4, 0.9, 3.1, 0.8), "leather", parent=sh)
         o.add("body", (-0.15, 3, -0.55, 0.3, 3.8, 0.3), "glow", parent=sh)
-    o.add("body", (-4.6, 9.0, -2.6, 9.2, 1.6, 5.2), "leather", stitch=True)
-    o.add("body", (2.0, 9.6, -3.4, 2.2, 2.2, 1.0), "leather")
+    o.add("body", (-5.2, 9.0, -3.2, 10.4, 1.6, 6.4), "leather", stitch=True)
+    o.add("body", (2.0, 9.6, -4.0, 2.2, 2.2, 1.0), "leather")
     for x, an in ((-2.4, "f"), (2.4, "f")):
-        o.add("body", (-1.9, 0, -0.3, 3.8, 7, 0.6), "cloth", (x, 11.4, -2.6), slot="l", anim=an, bands="bottom")
-    o.add("body", (-4.2, 0, -0.3, 8.4, 8.5, 0.6), "cloth", (0, 11.4, 2.6), slot="l", anim="b", bands="bottom")
+        o.add("body", (-1.9, 0, -0.3, 3.8, 7, 0.6), "cloth", (x, 11.4, -2.95), slot="l", anim=an, bands="bottom")
+    o.add("body", (-4.6, 0, -0.3, 9.2, 8.5, 0.6), "cloth", (0, 11.4, 2.95), slot="l", anim="b", bands="bottom")
     # 왼어깨 가죽 어깨갑 + 칼깃
-    p = o.add("left_arm", (-1.4, -3.0, -3.0, 5.2, 3.2, 6.0), "leather", stitch=True)
+    p = o.add("left_arm", (-2.2, -3.8, -3.5, 6.8, 3.4, 7.0), "leather", stitch=True)
     for k in range(3):
-        o.add("left_arm", (-0.3, -3.5 + k * 0.5, -0.4, 0.6, 3.5 - k * 0.5, 0.8), "metal", (2.6 + k * 0.6, -2.8, -1.8 + k * 1.8), (0.3 - k * 0.3, 0, 0.6), parent=p)
+        o.add("left_arm", (-0.3, -3.5 + k * 0.5, -0.4, 0.6, 3.5 - k * 0.5, 0.8), "metal", (3.6 + k * 0.5, -3.6, -1.8 + k * 1.8), (0.3 - k * 0.3, 0, 0.6), parent=p)
     for bone, x0, s in (("right_arm", -3.0, -1), ("left_arm", -1.0, 1)):
-        o.add(bone, (x0 - 0.4, 5.5, -2.4, 4.8, 4.4, 4.8), "leather", stitch=True)
+        o.add(bone, (x0 - 1.3, 5.5, -3.3, 6.6, 4.4, 6.6), "leather", stitch=True)
         if bone == "right_arm":
-            o.add(bone, (x0 - 0.75, 5.0, -0.3, 0.35, 6.5, 0.6), "glow")
+            o.add(bone, (x0 - 1.7, 4.8, -0.3, 0.4, 7.0, 0.6), "glow")
     for bone in ("right_leg", "left_leg"):
-        o.add(bone, (-2.4, 2.5, -2.6, 4.8, 4, 0.6), "leather", slot="l", stitch=True)
-        o.add(bone, (-2.35, 8.0, -2.35, 4.7, 1, 4.7), "dark", slot="f")
+        o.add(bone, (-2.4, 2.5, -3.1, 4.8, 4, 0.6), "leather", slot="l", stitch=True)
+        o.add(bone, (-3.1, 7.6, -3.1, 6.2, 1, 6.2), "dark", slot="f")
     outfits["assassin"] = o
 
     # ===================== 궁수: 숲의 파수꾼 =====================
     o = Outfit("ranger")
     hood(o, "cloth", "trim", deep=0.1, peak=1)
-    f = o.add("head", (-0.4, -5, -0.2, 0.8, 5, 0.4), "feather", (3.8, -8.6, 2.0), (-0.5, 0, 0.45), slot="h")
+    f = o.add("head", (-0.4, -5, -0.2, 0.8, 5, 0.4), "feather", (4.6, -9.0, 2.0), (-0.5, 0, 0.45), slot="h")
     o.add("head", (-0.3, -1.2, -0.25, 0.6, 1.2, 0.5), "glow", (0, -5, 0), parent=f)
     # 깃털 망토 (어깨부터 겹겹이)
     for row in range(3):
         n = 7 - row
         for k in range(n):
             x = -4.2 + k * (8.4 / max(1, n - 1)) if n > 1 else 0
-            o.add("body", (-0.9, 0, -0.25, 1.8, 6 + row * 2.5, 0.5), "feather", (x, -0.2 + row * 2.6, 2.7 + row * 0.25), (0.08 + row * 0.04, 0, (x / 4.2) * 0.18), anim="c")
+            o.add("body", (-0.9, 0, -0.25, 1.8, 6 + row * 2.5, 0.5), "feather", (x, -0.2 + row * 2.6, 3.3 + row * 0.25), (0.08 + row * 0.04, 0, (x / 4.2) * 0.18), anim="c")
     for s in (-1, 1):
-        o.add("body", (-1.0, 0, -0.25, 2.0, 5, 0.5), "feather", (s * 4.6, -0.2, 0.4), (0, 0, 0.35 * s), anim="t")
-    o.add("body", (-5.0, -0.8, -2.9, 10, 2.6, 5.8), "cloth", bands="bottom")
-    o.add("body", (-1.0, 0.2, -3.3, 2.0, 2.0, 0.6), "gem")
+        o.add("body", (-1.0, 0, -0.25, 2.0, 5, 0.5), "feather", (s * 5.4, -0.4, 0.4), (0, 0, 0.35 * s), anim="t")
+    o.add("body", (-5.5, -1.0, -3.4, 11, 2.8, 6.8), "cloth", bands="bottom")
+    o.add("body", (-1.0, 0.2, -3.9, 2.0, 2.0, 0.6), "gem")
     # 잎사귀 어깨갑 (왼쪽)
     for k in range(3):
-        o.add("left_arm", (-1.6, -0.4, -2.8, 3.2, 0.8, 5.6 - k), "cloth2", (1.2 + k * 0.9, -2.2 + k * 1.3, 0), (0, 0, 0.45), stitch=True)
-    o.add("left_arm", (-0.3, -0.3, -2.0, 0.6, 0.6, 4.0), "glow", (1.8, -2.6, 0), (0, 0, 0.45))
+        o.add("left_arm", (-1.6, -0.4, -2.8, 3.2, 0.8, 5.6 - k), "cloth2", (2.6 + k * 0.9, -3.0 + k * 1.3, 0), (0, 0, 0.45), stitch=True)
+    o.add("left_arm", (-0.3, -0.3, -2.0, 0.6, 0.6, 4.0), "glow", (3.2, -3.4, 0), (0, 0, 0.45))
     # 가슴끈 + 화살통
-    o.add("body", (-0.6, -7.6, -0.25, 1.2, 15.2, 0.5), "leather", (0, 5.2, -2.6), (0, 0, 0.6), stitch=True)
-    q = o.add("body", (-1.6, 0, -1.6, 3.2, 10.5, 3.2), "leather", (2.6, 0.2, 4.8), (0.12, 0, -0.5), stitch=True)
+    o.add("body", (-0.6, -7.6, -0.25, 1.2, 15.2, 0.5), "leather", (0, 5.2, -3.25), (0, 0, 0.6), stitch=True)
+    q = o.add("body", (-1.6, 0, -1.6, 3.2, 10.5, 3.2), "leather", (2.6, 0.2, 5.6), (0.12, 0, -0.5), stitch=True)
     o.add("body", (-1.8, 0.2, -1.8, 3.6, 1.0, 3.6), "trim", parent=q)
     o.add("body", (-1.8, 8.6, -1.8, 3.6, 1.0, 3.6), "trim", parent=q)
     for k in range(4):
         a = o.add("body", (-0.25, -4.2, -0.25, 0.5, 4.2, 0.5), "dark", (-0.9 + (k % 2) * 1.6, 0.4, -0.8 + (k // 2) * 1.6), (0.05 * k, 0, 0.1 - 0.06 * k), parent=q)
         o.add("body", (-0.6, -2.6, -0.1, 1.2, 2.6, 0.2), "feather", (0, -3.6, 0), (0, 0.5 * k, 0), parent=a)
         o.add("body", (-0.35, -1.0, -0.35, 0.7, 1.0, 0.7), "glow", (0, -4.2, 0), (0.78, 0, 0), parent=a)
-    o.add("body", (-4.5, 9.0, -2.5, 9, 1.4, 5), "leather", stitch=True)
-    o.add("body", (1.6, 9.5, -3.4, 2.2, 2.4, 1.0), "leather", stitch=True)
-    hn = o.add("body", (-0.6, 0, -0.6, 1.2, 3.2, 1.2), "bone", (-3.4, 10.0, -2.6), (0, 0, -0.9))
+    o.add("body", (-5.2, 9.0, -3.2, 10.4, 1.4, 6.4), "leather", stitch=True)
+    o.add("body", (1.6, 9.5, -4.0, 2.2, 2.4, 1.0), "leather", stitch=True)
+    hn = o.add("body", (-0.6, 0, -0.6, 1.2, 3.2, 1.2), "bone", (-4.0, 10.0, -3.6), (0, 0, -0.9))
     o.add("body", (-0.8, 3.0, -0.8, 1.6, 0.6, 1.6), "gold", parent=hn)
     for x in (-2.3, 2.3):
-        o.add("body", (-2.0, 0, -0.3, 4.0, 6.5, 0.6), "cloth", (x, 11.2, -2.5), slot="l", anim="f", bands="bottom")
+        o.add("body", (-2.0, 0, -0.3, 4.0, 6.5, 0.6), "cloth", (x, 11.2, -2.95), slot="l", anim="f", bands="bottom")
     for bone, x0 in (("right_arm", -3.0), ("left_arm", -1.0)):
-        o.add(bone, (x0 - 0.4, 5.4, -2.4, 4.8, 4.6, 4.8), "leather", stitch=True)
-        o.add(bone, (x0 - 0.45, 9.6, -2.45, 4.9, 0.8, 4.9), "trim")
+        o.add(bone, (x0 - 1.3, 5.4, -3.3, 6.6, 4.6, 6.6), "leather", stitch=True)
+        o.add(bone, (x0 - 1.4, 9.6, -3.4, 6.8, 0.8, 6.8), "trim")
     for bone in ("right_leg", "left_leg"):
-        o.add(bone, (-2.5, 7.6, -2.5, 5.0, 1.8, 5.0), "fur", slot="f")
-        o.add(bone, (-1.6, 3.2, -2.7, 3.2, 2.4, 0.6), "leather", slot="l", stitch=True)
+        o.add(bone, (-3.3, 7.4, -3.3, 6.6, 1.8, 6.6), "fur", slot="f")
+        o.add(bone, (-1.6, 3.2, -3.1, 3.2, 2.4, 0.6), "leather", slot="l", stitch=True)
     outfits["ranger"] = o
 
     # ===================== 사신: 영혼 수확자 =====================
     o = Outfit("reaper")
     hood(o, "cloth", "dark", deep=0.7, peak=0)
-    o.add("head", (-5.6, 0, -2.0, 11.2, 2.4, 2.2), "cloth", (0, -10.0, -5.4), (-0.3, 0, 0), slot="h")
+    o.add("head", (-6.2, 0, -2.0, 12.4, 2.4, 2.2), "cloth", (0, -10.6, -6.0), (-0.3, 0, 0), slot="h")
     for s in (-1, 1):
-        o.add("head", (-0.7, -0.5, -0.3, 1.4, 1.0, 0.4), "glow", (1.9 * s, -4.4, -4.5), (0, 0, 0.25 * s), slot="h")
-        h1 = o.add("head", (-0.9, -3.2, -0.9, 1.8, 3.2, 1.8), "dark", (3.0 * s, -9.8, -0.6), (-0.25, 0, 0.55 * s), slot="h")
+        o.add("head", (-0.7, -0.5, -0.3, 1.4, 1.0, 0.4), "glow", (1.9 * s, -4.6, -5.4), (0, 0, 0.25 * s), slot="h")
+        h1 = o.add("head", (-0.9, -3.2, -0.9, 1.8, 3.2, 1.8), "dark", (3.2 * s, -10.6, -0.6), (-0.25, 0, 0.55 * s), slot="h")
         h2 = o.add("head", (-0.7, -3.0, -0.7, 1.4, 3.0, 1.4), "dark", (0, -3.0, 0), (-0.55, 0, -0.25 * s), parent=h1)
         h3 = o.add("head", (-0.5, -2.6, -0.5, 1.0, 2.6, 1.0), "bone", (0, -3.0, 0), (-0.6, 0, -0.2 * s), parent=h2)
         o.add("head", (-0.25, -1.4, -0.25, 0.5, 1.4, 0.5), "glow", (0, -2.6, 0), (-0.4, 0, 0), parent=h3)
     # 갈비뼈 흉갑 + 등뼈
-    o.add("body", (-0.6, 0, -0.5, 1.2, 9, 0.8), "bone", (0, 0.8, -2.6))
+    o.add("body", (-0.6, 0, -0.5, 1.2, 9, 0.8), "bone", (0, 0.8, -3.3))
     for k in range(4):
         for s in (-1, 1):
             L = 3.4 - k * 0.3
-            o.add("body", ((0 if s > 0 else -L), -0.4, -0.35, L, 0.8, 0.7), "bone", (0.4 * s, 2.0 + k * 1.9, -2.6), (0, 0, (0.28 + k * 0.05) * s))
+            o.add("body", ((0 if s > 0 else -L), -0.4, -0.35, L, 0.8, 0.7), "bone", (0.4 * s, 2.0 + k * 1.9, -3.3), (0, 0, (0.28 + k * 0.05) * s))
     for k in range(6):
-        o.add("body", (-0.6, -0.6, -0.4, 1.2, 1.2, 0.9), "bone", (0, 1.0 + k * 1.8, 2.5), (0, 0, 0.785))
+        o.add("body", (-0.6, -0.6, -0.4, 1.2, 1.2, 0.9), "bone", (0, 1.0 + k * 1.8, 3.2), (0, 0, 0.785))
     # 찢어진 망토 두 겹 + 빛나는 끝
     lens = [19, 15, 21, 16, 20, 14, 18]
     for k, L in enumerate(lens):
-        st = o.add("body", (-0.75, 0, 0, 1.5, L, 0.5), "cloth", (-4.5 + k * 1.5, 0.2, 3.1), (0.05, 0, (k - 3) * 0.04), anim="t", bands="bottom")
+        st = o.add("body", (-0.75, 0, 0, 1.5, L, 0.5), "cloth", (-4.5 + k * 1.5, 0.2, 3.6), (0.05, 0, (k - 3) * 0.04), anim="t", bands="bottom")
         o.add("body", (-0.5, L - 0.2, -0.05, 1.0, 1.0, 0.6), "glow", parent=st)
     for k, L in enumerate([12, 9, 13, 10, 12]):
-        o.add("body", (-1.0, 0, 0, 2.0, L, 0.5), "cloth2", (-4 + k * 2, 0.0, 3.7), (0.12, 0, (k - 2) * 0.06), anim="t", bands="bottom")
+        o.add("body", (-1.0, 0, 0, 2.0, L, 0.5), "cloth2", (-4 + k * 2, 0.0, 4.2), (0.12, 0, (k - 2) * 0.06), anim="t", bands="bottom")
     for s in (-1, 1):
-        o.add("body", (-0.3, 0, -2.2, 0.6, 15, 4.4), "cloth", (4.4 * s, 0.4, 0.4), (0, 0, 0.05 * s), anim="t", bands="bottom")
-    o.add("body", (-4.7, -1.0, -2.8, 9.4, 2.2, 5.6), "dark", folds=True)
+        o.add("body", (-0.3, 0, -2.2, 0.6, 15, 4.4), "cloth", (5.3 * s, 0.4, 0.4), (0, 0, 0.05 * s), anim="t", bands="bottom")
+    o.add("body", (-5.3, -1.2, -3.3, 10.6, 2.4, 6.6), "dark", folds=True)
     # 사슬 허리띠 + 영혼 등불
     for k in range(9):
-        o.add("body", (-0.55, -0.4, -0.3, 1.1, 0.8, 0.6), "metal", (-4.0 + k, 9.6 + (0.3 if k % 2 else 0), -2.7))
-    ln = o.add("body", (-0.15, 0, -0.15, 0.3, 1.6, 0.3), "metal", (-4.6, 10.2, -1.2), anim="t")
+        o.add("body", (-0.55, -0.4, -0.3, 1.1, 0.8, 0.6), "metal", (-4.0 + k, 9.6 + (0.3 if k % 2 else 0), -3.35))
+    ln = o.add("body", (-0.15, 0, -0.15, 0.3, 1.6, 0.3), "metal", (-5.6, 10.2, -1.2), anim="t")
     lb = o.add("body", (-1.0, 1.6, -1.0, 2.0, 0.5, 2.0), "metal", parent=ln)
     o.add("body", (-0.8, 2.1, -0.8, 1.6, 2.2, 1.6), "glow", parent=ln)
     o.add("body", (-1.0, 4.3, -1.0, 2.0, 0.5, 2.0), "metal", parent=ln)
     for k in range(3):
-        o.add("body", (-1.0, 0, -0.3, 2.0, 9 - k * 1.5 + (3 if k == 1 else 0), 0.6), "cloth", (-2.6 + k * 2.6, 11.6, -2.5), slot="l", anim="f", bands="bottom")
+        o.add("body", (-1.0, 0, -0.3, 2.0, 9 - k * 1.5 + (3 if k == 1 else 0), 0.6), "cloth", (-2.6 + k * 2.6, 11.6, -2.95), slot="l", anim="f", bands="bottom")
     # 해골 어깨갑 (왼쪽), 뼈 팔찌 (오른쪽), 찢어진 소매
-    sk = o.add("left_arm", (-1.4, -3.2, -3.1, 5.4, 3.0, 6.2), "dark", stitch=True)
-    skull = o.add("left_arm", (-1.9, -3.6, -1.9, 3.8, 3.6, 3.8), "bone", (1.9, -3.0, 0), (0, -0.5, 0.25), parent=sk)
+    sk = o.add("left_arm", (-2.2, -3.9, -3.5, 6.8, 3.2, 7.0), "dark", stitch=True)
+    skull = o.add("left_arm", (-1.9, -3.6, -1.9, 3.8, 3.6, 3.8), "bone", (2.2, -3.8, 0), (0, -0.5, 0.25), parent=sk)
     o.add("left_arm", (-1.4, 0, -2.0, 2.8, 1.0, 2.8), "bone", parent=skull)
     for s in (-1, 1):
         o.add("left_arm", (-0.5, -0.5, -0.2, 1.0, 1.0, 0.3), "glow", (0.85 * s, -1.9, -2.0), parent=skull)
     for bone, x0 in (("right_arm", -3.0), ("left_arm", -1.0)):
-        o.add(bone, (-1.2, 0, -0.3, 2.4, 7, 0.5), "cloth", (x0 + 2, 5.5, 2.4), anim="t", bands="bottom")
+        o.add(bone, (-1.2, 0, -0.3, 2.4, 7, 0.5), "cloth", (x0 + 2, 5.5, 3.2), anim="t", bands="bottom")
     for k in range(4):
-        o.add("right_arm", (-2.45, 6.0 + k * 1.1, -2.45, 4.9, 0.6, 4.9), "bone")
+        o.add("right_arm", (-4.3, 6.0 + k * 1.1, -3.3, 6.6, 0.6, 6.6), "bone")
     # 몸 주위를 도는 영혼불
     hub = o.add("body", (0, 0, 0, 0, 0, 0), "none", (0, 6, 0), slot="c", anim="o")
     for k in range(3):

@@ -76,12 +76,14 @@ public final class ShotHarness {
 			var slots = new net.minecraft.world.entity.EquipmentSlot[]{net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET};
 			for (int i = 0; i < 4; i++) p.setItemSlot(slots[i], new ItemStack(com.elementalweapons.item.ModGear.ITEMS.get("aether_" + parts[i])));
 			} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 직업 갑옷 오류", ex); } });
-		if (g == 2) { mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT); mc.player.setXRot(8); }
+		if (g == 2) { mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT); mc.player.setXRot(8); mc.options.hideGui = true; }
+		if (g == 38) { mc.player.setYRot(mc.player.getYRot() + 40); mc.player.setYBodyRot(mc.player.getYRot()); }
 		if (g == 30) { shot(mc, "97" + k + "_class_front_" + com.elementalweapons.item.PlayerClass.of(k).name().toLowerCase());
 			server.execute(() -> { ServerPlayer p = sp(server); log("직업 " + k + " 방어력 " + p.getArmorValue() + " 속도 " + String.format("%.4f", p.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED))
 				+ " 모양 " + p.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST).get(net.minecraft.core.component.DataComponents.EQUIPPABLE).assetId().map(Object::toString).orElse("-")); }); }
 		if (g == 32) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
 		if (g == 46) shot(mc, "97" + k + "_class_back_" + com.elementalweapons.item.PlayerClass.of(k).name().toLowerCase());
+		if (g == 48) { mc.player.setYRot(mc.player.getYRot() - 40); if (k == 7) mc.options.hideGui = false; }
 	}
 
 	private static long lastXp;
