@@ -65,7 +65,8 @@ public final class ShotHarness {
 	/** v4.15 확인: 속성별 갑옷 색·장식 (3인칭 정면·뒤) */
 	private static final int[] CT_EL = {0, 1, 0, 6, 4, 2, 5, 3};
 	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
-		int k = f / 50 + 1, g = f % 50;
+		int k = Math.max(0, f - 1) / 50 + 1, g = Math.max(0, f - 1) % 50;
+		if (f == 0) return;
 		if (k > 7) return;
 		if (g == 0) server.execute(() -> { try { ServerPlayer p = sp(server);
 			ModGrowth.set(p, ModGrowth.get(p).withClass(k));

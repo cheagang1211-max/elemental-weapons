@@ -236,7 +236,7 @@ public final class ClassArmorMesh {
 		part('h', 'n', c(rim, -4.8F - g, -9.1F - g, -4.8F - g, 9.6F + 2 * g, 1.3F, 0.8F), PartPose.ZERO);
 		if (style == 1) part('h', 'n', c(rim, -3.5F, -0.5F, -2.2F, 7, 0.8F, 2.2F), at(0, -8.6F, -4.6F, -0.25F, 0, 0));
 		if (deep) part('h', 'n', c(rim, -5.4F, 0, -1.8F, 10.8F, 2.2F, 2), at(0, -9.6F, -5.2F, -0.3F, 0, 0));
-		PartDefinition tail = part('h', 'n', c(cloth, -2.2F, -0.6F, 0, 4.4F, 1.4F, 3.5F + g * 2), at(0, -8.4F - g, 3.6F + g, 0.75F, 0, 0));
-		tail.addOrReplaceChild("t2", c(cloth, -1.2F, -0.5F, 0, 2.4F, 1.1F, 3), at(0, 0, 3.3F + g * 2, 0.5F, 0, 0));
+		PartDefinition tail = part('h', 'n', c(cloth, -2.2F, -0.6F, 0, 4.4F, 1.4F, 3.5F + g * 2), at(0, -8.4F - g, 3.6F + g, -0.85F, 0, 0));
+		tail.addOrReplaceChild("t2", c(cloth, -1.2F, -0.5F, 0, 2.4F, 1.1F, 3), at(0, 0, 3.3F + g * 2, -0.5F, 0, 0));
 	}
 }
