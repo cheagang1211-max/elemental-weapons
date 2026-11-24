@@ -64,7 +64,7 @@ public final class ShotHarness {
 
 	/** v4.15 확인: 속성별 갑옷 색·장식 (3인칭 정면·뒤) */
 	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
-		if (f == 0) server.execute(() -> { ServerPlayer p = sp(server);
+		if (f == 1) server.execute(() -> { ServerPlayer p = sp(server);
 			server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "difficulty normal");
 			server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "time set noon");
 			p.setYRot(0); p.setYHeadRot(0); p.setXRot(-35);
