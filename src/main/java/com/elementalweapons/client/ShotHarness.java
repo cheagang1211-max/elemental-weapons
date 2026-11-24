@@ -62,31 +62,20 @@ public final class ShotHarness {
 		Screenshot.grab(mc.gameDirectory, name + ".png", mc.gameRenderer.mainRenderTarget(), 1, msg -> log(name + " -> " + msg.getString()));
 	}
 
-	/** v4.14 확인: 무기별 콤보 1·2·3타 동작 (3인칭 정면 + 1인칭), 휘두르는 도중을 찍음 */
-	private static final WeaponTypeShot[] ANIM = {
-			new WeaponTypeShot(com.elementalweapons.item.WeaponType.SWORD, com.elementalweapons.item.Element.FIRE),
-			new WeaponTypeShot(com.elementalweapons.item.WeaponType.GREATSWORD, com.elementalweapons.item.Element.WATER),
-			new WeaponTypeShot(com.elementalweapons.item.WeaponType.HAMMER, com.elementalweapons.item.Element.GRASS),
-			new WeaponTypeShot(com.elementalweapons.item.WeaponType.SCYTHE, com.elementalweapons.item.Element.DARK),
-			new WeaponTypeShot(com.elementalweapons.item.WeaponType.STAFF, com.elementalweapons.item.Element.LIGHT),
-			new WeaponTypeShot(com.elementalweapons.item.WeaponType.BOW, com.elementalweapons.item.Element.WIND)};
-	private record WeaponTypeShot(com.elementalweapons.item.WeaponType type, com.elementalweapons.item.Element el) {}
-
+	/** v4.15 확인: 속성별 갑옷 색·장식 (3인칭 정면·뒤) */
 	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
-		// 무기 하나당 60틱: 3인칭 정면에서 1·2·3타 (각 타격 중간에 사진), 마지막에 1인칭 1타
-		int w = f / 60, g = f % 60;
-		if (w >= ANIM.length) return;
-		var a = ANIM[w];
+		int e = f / 40, g = f % 40;
+		if (e >= 7) return;
 		if (g == 0) server.execute(() -> { ServerPlayer p = sp(server);
-			p.getInventory().setItem(0, new ItemStack(ModItems.get(a.el(), a.type()))); p.getInventory().setSelectedSlot(0); });
-		if (g == 2) { mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT); mc.player.setXRot(0); }
-		for (int k = 0; k < 3; k++) {
-			if (g == 6 + k * 12) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND, mc.player.getMainHandItem().getOrDefault(net.minecraft.core.component.DataComponents.ATTACK_ANIMATION, net.minecraft.world.item.component.SwingAnimation.DEFAULT), false);
-			if (g == 6 + k * 12 + 4) shot(mc, "9" + (60 + w) + "_" + a.type().id + "_" + (k + 1));
-		}
-		if (g == 44) mc.options.setCameraType(CameraType.FIRST_PERSON);
-		if (g == 50) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND, mc.player.getMainHandItem().getOrDefault(net.minecraft.core.component.DataComponents.ATTACK_ANIMATION, net.minecraft.world.item.component.SwingAnimation.DEFAULT), false);
-		if (g == 54) shot(mc, "9" + (60 + w) + "_" + a.type().id + "_fp");
+			p.setAttached(com.elementalweapons.growth.Evolution.ELEMENT, e);
+			p.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+			String[] parts = {"helmet", "chestplate", "leggings", "boots"};
+			var slots = new net.minecraft.world.entity.EquipmentSlot[]{net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET};
+			for (int k = 0; k < 4; k++) p.setItemSlot(slots[k], new ItemStack(com.elementalweapons.item.ModGear.ITEMS.get((e % 2 == 0 ? "aether_" : "orichalcum_") + parts[k]))); });
+		if (g == 2) { mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT); mc.player.setXRot(10); }
+		if (g == 26) shot(mc, "97" + e + "_armor_front_" + com.elementalweapons.item.Element.values()[e].id);
+		if (g == 28) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+		if (g == 38) shot(mc, "97" + e + "_armor_back_" + com.elementalweapons.item.Element.values()[e].id);
 	}
 
 	private static long lastXp;
@@ -241,8 +230,8 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
-		if (f < 370) { classTest(mc, server, f); return; }
-		f -= 370;
+		if (f < 290) { classTest(mc, server, f); return; }
+		f -= 290;
 		double[][] sc = focusScenes();
 		int per = 300;
 		if (f < sc.length * per) {

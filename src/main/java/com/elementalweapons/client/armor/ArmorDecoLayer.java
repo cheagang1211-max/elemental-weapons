@@ -18,6 +18,7 @@ public class ArmorDecoLayer<S extends HumanoidRenderState, M extends EntityModel
 	private static final String[] TIERS = {"aether", "orichalcum"};
 	private final ArmorDecoModel[] models = new ArmorDecoModel[TIERS.length];
 	private final Identifier[] tex = new Identifier[TIERS.length], glow = new Identifier[TIERS.length];
+	private final Identifier[][] elTex = new Identifier[TIERS.length][7], elGlow = new Identifier[TIERS.length][7];
 
 	public ArmorDecoLayer(RenderLayerParent<S, M> parent, java.util.function.Supplier<ModelPart> baker) {
 		super(parent);
@@ -25,6 +26,10 @@ public class ArmorDecoLayer<S extends HumanoidRenderState, M extends EntityModel
 			models[i] = new ArmorDecoModel(baker.get(), TIERS[i]);
 			tex[i] = ElementalWeaponsMod.id("textures/entity/armor_deco/" + TIERS[i] + ".png");
 			glow[i] = ElementalWeaponsMod.id("textures/entity/armor_deco/" + TIERS[i] + "_glow.png");
+			for (int e = 0; e < 7; e++) {
+				elTex[i][e] = ElementalWeaponsMod.id("textures/entity/armor_deco/" + TIERS[i] + "_" + ElementArmorParts.IDS[e] + ".png");
+				elGlow[i][e] = ElementalWeaponsMod.id("textures/entity/armor_deco/" + TIERS[i] + "_" + ElementArmorParts.IDS[e] + "_glow.png");
+			}
 		}
 	}
 
@@ -33,8 +38,10 @@ public class ArmorDecoLayer<S extends HumanoidRenderState, M extends EntityModel
 		if (s.isInvisible) return;
 		for (int i = 0; i < TIERS.length; i++) {
 			if (!models[i].wears(s)) continue;
-			c.submitModel(models[i], s, ps, RenderTypes.armorCutoutNoCull(tex[i]), light, OverlayTexture.NO_OVERLAY, 0);
-			c.submitModel(models[i], s, ps, RenderTypes.eyes(glow[i]), light, OverlayTexture.NO_OVERLAY, 0);
+			int el = ArmorDecoModel.elementOf(s);
+			Identifier t = el < 0 ? tex[i] : elTex[i][el], g = el < 0 ? glow[i] : elGlow[i][el];
+			c.submitModel(models[i], s, ps, RenderTypes.armorCutoutNoCull(t), light, OverlayTexture.NO_OVERLAY, 0);
+			c.submitModel(models[i], s, ps, RenderTypes.eyes(g), light, OverlayTexture.NO_OVERLAY, 0);
 		}
 	}
 }

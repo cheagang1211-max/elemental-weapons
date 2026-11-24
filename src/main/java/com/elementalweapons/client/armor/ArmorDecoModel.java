@@ -12,6 +12,8 @@ import com.elementalweapons.ElementalWeaponsMod;
 public class ArmorDecoModel extends HumanoidModel<HumanoidRenderState> {
 	private final String tier;
 	private final ModelPart helm, chest, rpaul, lpaul, tassets, rknee, lknee, rboot, lboot;
+	private final ModelPart[] elHelm = new ModelPart[7], elBack = new ModelPart[7];
+	private final ModelPart hornR, hornL;
 
 	public ArmorDecoModel(ModelPart root, String tier) {
 		super(root);
@@ -25,6 +27,26 @@ public class ArmorDecoModel extends HumanoidModel<HumanoidRenderState> {
 		lknee = leftLeg.getChild("deco_lknee");
 		rboot = rightLeg.getChild("deco_rboot");
 		lboot = leftLeg.getChild("deco_lboot");
+		for (int i = 0; i < 7; i++) {
+			elHelm[i] = head.getChild("el_" + ElementArmorParts.IDS[i] + "_helm");
+			elBack[i] = body.getChild("el_" + ElementArmorParts.IDS[i] + "_back");
+		}
+		hornR = helm.getChild("horn_r"); hornL = helm.getChild("horn_l");
+	}
+
+	/** 착용한 갑옷의 속성 (서버가 착용자 속성에 맞춰 장비 모양 이름을 '_fire' 등으로 바꿔 줌). 없으면 -1 */
+	public static int elementOf(HumanoidRenderState s) {
+		for (ItemStack st : new ItemStack[]{s.chestEquipment, s.headEquipment, s.legsEquipment, s.feetEquipment}) {
+			if (st == null || st.isEmpty() || tierOf(st) == null) continue;
+			var eq = st.get(net.minecraft.core.component.DataComponents.EQUIPPABLE);
+			if (eq == null || eq.assetId().isEmpty()) continue;
+			String path = eq.assetId().get().identifier().getPath();
+			int u = path.lastIndexOf('_');
+			if (u < 0) continue;
+			String id = path.substring(u + 1);
+			for (int i = 0; i < 7; i++) if (ElementArmorParts.IDS[i].equals(id)) return i;
+		}
+		return -1;
 	}
 
 	public static String tierOf(ItemStack stack) {
@@ -51,6 +73,9 @@ public class ArmorDecoModel extends HumanoidModel<HumanoidRenderState> {
 		chest.visible = c; rpaul.visible = c; lpaul.visible = c;
 		tassets.visible = l; rknee.visible = l; lknee.visible = l;
 		rboot.visible = f; lboot.visible = f;
+		int el = elementOf(s);
+		for (int i = 0; i < 7; i++) { elHelm[i].visible = h && el == i; elBack[i].visible = c && el == i; }
+		hornR.visible = el < 0 || el == 5; hornL.visible = hornR.visible;   // 굽은 뿔은 어둠(기본)만
 		hat.visible = false;
 	}
 }

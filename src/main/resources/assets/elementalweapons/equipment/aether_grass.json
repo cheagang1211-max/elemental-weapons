@@ -1,0 +1,14 @@
+{
+	"layers": {
+		"humanoid": [
+			{
+				"texture": "elementalweapons:aether_grass"
+			}
+		],
+		"humanoid_leggings": [
+			{
+				"texture": "elementalweapons:aether_grass"
+			}
+		]
+	}
+}

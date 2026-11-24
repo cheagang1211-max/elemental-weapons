@@ -53,6 +53,7 @@ public final class ArmorDecoMesh {
 		PartDefinition p_kspike_l = p_deco_lknee.addOrReplaceChild("kspike_l", CubeListBuilder.create().texOffs(0, 67).addBox(-1F, -2F, -1F, 2F, 2F, 2F).texOffs(106, 67).addBox(-0.5F, -3.5F, -0.5F, 1F, 2F, 1F), PartPose.offsetAndRotation(0F, 5.5F, -4.2F, -1.35F, 0F, 0F));
 		PartDefinition p_deco_lboot = left_leg.addOrReplaceChild("deco_lboot", CubeListBuilder.create().texOffs(96, 35).addBox(-3.5F, 7.5F, -3.5F, 7F, 2F, 7F).texOffs(30, 58).addBox(-3F, 9.5F, -5F, 6F, 3F, 2F).texOffs(114, 71).addBox(-2F, 11F, -6F, 4F, 1F, 1F), PartPose.offsetAndRotation(0F, 0F, 0F, 0F, 0F, 0F));
 		PartDefinition p_heel_l = p_deco_lboot.addOrReplaceChild("heel_l", CubeListBuilder.create().texOffs(8, 67).addBox(-0.5F, -3F, -0.5F, 1F, 3F, 1F), PartPose.offsetAndRotation(0F, 10.5F, 3.3F, -1.4F, 0F, 0F));
+		ElementArmorParts.add(head, body);   // 속성별 장식
 		return LayerDefinition.create(mesh, 128, 128);
 	}
 }

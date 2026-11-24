@@ -70,6 +70,7 @@ public final class ModGrowth {
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.Reset.TYPE, (payload, ctx) -> reset(ctx.player()));
 		LevelSync.initialize();
 		Jobs.initialize();
+		com.elementalweapons.item.ArmorStyle.initialize();
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.GoHome.TYPE, GrowthPayloads.GoHome.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.GoHome.TYPE, (payload, ctx) -> Recall.request(ctx.player()));
 		Recall.initialize();
