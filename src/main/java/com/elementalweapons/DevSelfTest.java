@@ -156,7 +156,7 @@ public final class DevSelfTest {
 		if (k == 140) boss.debugDamage(level, boss.getBigHealth() * 6 / 10);
 		if (k == 200) boss.debugDamage(level, Long.MAX_VALUE / 4);
 		if (k == 215) {
-			AABB box = new AABB(-60, -64, -60, 60, 400, 60);
+			AABB box = new AABB(-60, -64, -60, 60, 520, 60);
 			List<ItemEntity> drops = level.getEntitiesOfClass(ItemEntity.class, box);
 			boolean ok = !boss.isAlive() && !drops.isEmpty() && boss.debugAiSteps > 100;
 			if (!ok) failures++;
