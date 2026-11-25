@@ -31,6 +31,7 @@ public final class ModSky {
 
 	public static void initialize() {
 		BossGate.initialize();
+		Annex.initialize();
 		SkyMobSpawner.initialize();
 		try { ElementalWeaponsMod.LOGGER.info("[SKY] 배치 준비: 섬 {}개 다리 {}개", SkyLayout.ISLANDS.size(), SkyLayout.BRIDGES.size()); }
 		catch (Throwable t) { ElementalWeaponsMod.LOGGER.error("[SKY] 배치 오류", t); }
@@ -106,7 +107,7 @@ public final class ModSky {
 
 	private static void lift(ServerPlayer p) {
 		double r2 = p.getX() * p.getX() + p.getZ() * p.getZ();
-		if (r2 > (Capital.SHAFT_R + 0.3) * (Capital.SHAFT_R + 0.3) || p.getY() < Capital.FY[0] || p.getY() > Capital.TOP + 1 || p.isPassenger() || p.isSpectator()) {
+		if (r2 > (Capital.SHAFT_R + 0.3) * (Capital.SHAFT_R + 0.3) || p.getY() < Annex.YB || p.getY() > (Annex.done ? Annex.LIFT_TOP : Capital.TOP + 1) || p.isPassenger() || p.isSpectator()) {
 			PAD_WAIT.remove(p.getUUID());
 			return;
 		}
@@ -121,17 +122,17 @@ public final class ModSky {
 				p.syncVelocity = true;
 				p.resetFallDistance();
 			}
-			if (p.tickCount % 10 == 0) p.sendOverlayMessage(Component.literal("▼ 내려가는 중 · " + Capital.FLOOR_NAME[floor] + "  (원하는 층에서 앞을 보고 옆으로 나가세요)").withStyle(ChatFormatting.AQUA));
+			if (p.tickCount % 10 == 0) p.sendOverlayMessage(Component.literal("▼ 내려가는 중 · " + Annex.floorName(p.getY()) + "  (원하는 층에서 앞을 보고 옆으로 나가세요)").withStyle(ChatFormatting.AQUA));
 			return;
 		}
 		// 1층 바닥(빛 발판)에 서 있으면 1초 기다린 뒤 출발 (내려온 사람이 바로 다시 뜨지 않게)
-		if (p.onGround() && p.getY() < Capital.FY[0] + 1.5) {
+		if (p.onGround() && p.getY() < (Annex.done ? Annex.YB : Capital.FY[0]) + 1.5) {
 			int w = PAD_WAIT.merge(p.getUUID(), 1, Integer::sum);
 			if (w < 20) { if (w == 1) p.sendOverlayMessage(Component.literal("✦ 천공의 승강기 — 잠시 뒤 위로 떠오릅니다 (Shift: 그대로 머물기)").withStyle(ChatFormatting.AQUA)); return; }
 		}
 		p.addEffect(new net.minecraft.world.effect.MobEffectInstance(lev, 6, 6, false, false));
 		p.resetFallDistance();
-		if (p.tickCount % 10 == 0) p.sendOverlayMessage(Component.literal("▲ 올라가는 중 · " + Capital.FLOOR_NAME[floor] + "  (원하는 층에서 옆으로 나가세요 · 아래를 보면 내려가기)").withStyle(ChatFormatting.AQUA));
+		if (p.tickCount % 10 == 0) p.sendOverlayMessage(Component.literal("▲ 올라가는 중 · " + Annex.floorName(p.getY()) + "  (원하는 층에서 옆으로 나가세요 · 아래를 보면 내려가기)").withStyle(ChatFormatting.AQUA));
 	}
 
 	private static net.minecraft.world.entity.EntityType<? extends com.elementalweapons.mob.ElementalMerchant> npcType(String t) {
@@ -194,7 +195,7 @@ public final class ModSky {
 
 	public static final net.fabricmc.fabric.api.attachment.v1.AttachmentType<Integer> LAYOUT = net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry.<Integer>builder()
 			.persistent(com.mojang.serialization.Codec.INT).buildAndRegister(ElementalWeaponsMod.id("sky_layout_version"));
-	private static boolean OLD_WORLD;
+	static boolean OLD_WORLD;
 
 	private static Boolean cached;
 

@@ -63,34 +63,31 @@ public final class ShotHarness {
 	}
 
 	/** v4.15 확인: 속성별 갑옷 색·장식 (3인칭 정면·뒤) */
+	private static final double[][] TOUR = {   // x, y, z, yaw, pitch
+			{0, com.elementalweapons.world.sky.Annex.Y6 + 14, 30, 180, 22},     // 투기장 관중석에서
+			{0, com.elementalweapons.world.sky.Annex.Y6 + 22, -80, 0, 8},      // 투기장 바깥
+			{0, com.elementalweapons.world.sky.Annex.Y7 + 6, 30, 180, 4},      // 정상: 신전과 성문
+			{0, com.elementalweapons.world.sky.Annex.Y7 + 4, -12, 180, -2},    // 정상: 성문 정면
+			{0, com.elementalweapons.world.sky.Annex.Y7 + 30, 75, 180, 22},    // 정상 전체
+			{0, com.elementalweapons.world.sky.Annex.YB + 6, 20, 180, 8},      // 지하 성소
+			{18, com.elementalweapons.world.sky.Annex.YB + 5, -12, 135, 10},   // 지하 성소 신전
+			{190, 300, 0, 90, 8},                                               // 천공성 전체 옆모습
+	};
 	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
-		if (f == 1) log("천국 테스트 시작 요청");
-		if (f == 1) server.execute(() -> { try { log("천국 테스트 서버 작업"); ServerPlayer p = sp(server);
-			server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "difficulty normal");
+		if (f == 1) server.execute(() -> { try {
 			server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "time set noon");
-			p.setYRot(0); p.setYHeadRot(0); p.setXRot(-35);
-			p.setAttached(com.elementalweapons.growth.Evolution.ELEMENT, com.elementalweapons.item.Element.LIGHT.ordinal());
-			var lvl = (net.minecraft.server.level.ServerLevel) p.level();
-			int k = 0;
-			for (var t : ModMobs.MOBS.values()) {
-				if (k >= 3) break;
-				var m = t.create(lvl, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
-				if (m == null) continue;
-				m.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
-				m.snapTo(p.getX() - 4 + k * 4, p.getY(), p.getZ() + 12, 0, 0);
-				if (m instanceof net.minecraft.world.entity.Mob mob) mob.setNoAi(true);
-				lvl.addFreshEntity(m); k++;
-			}
-			com.elementalweapons.spell.SpellManager.add(new com.elementalweapons.spell.HeavenGateSpell(lvl, p));
-			log("천국의 문 시전");
-		} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 천국 테스트 오류", ex); } });
-		if (f < 140) { mc.player.setYRot(0); mc.player.setXRot(f < 100 ? -38 : -25); mc.options.setCameraType(f < 100 ? CameraType.FIRST_PERSON : CameraType.THIRD_PERSON_BACK); }
-		if (f == 18) shot(mc, "98a_heaven_descend");
-		if (f == 42) shot(mc, "98b_heaven_open");
-		if (f == 70) shot(mc, "98c_heaven_angel");
-		if (f == 95) shot(mc, "98d_heaven_attack");
-		if (f == 125) shot(mc, "98e_heaven_back");
-		if (f == 60 || f == 100) server.execute(() -> log("문/천사 엔티티 수=" + ((net.minecraft.server.level.ServerLevel) sp(server).level()).getEntities(ModMobs.HEAVEN_GATE, e -> true).size() + "/" + ((net.minecraft.server.level.ServerLevel) sp(server).level()).getEntities(ModMobs.ARCHANGEL, e -> true).size()));
+			ServerPlayer p = sp(server); p.getAbilities().mayfly = true; p.getAbilities().flying = true; p.onUpdateAbilities();
+			log("세계 높이 " + p.level().getMaxY());
+		} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 증축 테스트 오류", ex); } });
+		if (f < 160) { if (f == 159) server.execute(() -> log("증축 완료? " + com.elementalweapons.world.sky.Annex.done)); return; }
+		int i = (f - 160) / 60, g = (f - 160) % 60;
+		if (i >= TOUR.length) return;
+		double[] t = TOUR[i];
+		if (g == 0) server.execute(() -> { ServerPlayer p = sp(server);
+			p.teleportTo(t[0], t[1], t[2]); p.setYRot((float) t[3]); p.setXRot((float) t[4]);
+			p.getAbilities().flying = true; p.onUpdateAbilities(); });
+		if (g >= 1) { mc.player.setYRot((float) t[3]); mc.player.setXRot((float) t[4]); mc.options.setCameraType(CameraType.FIRST_PERSON); }
+		if (g == 55) shot(mc, "96" + i + "_annex");
 	}
 
 	private static long lastXp;
@@ -245,8 +242,8 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
-		if (f < 140) { classTest(mc, server, f); return; }
-		f -= 140;
+		if (f < 660) { classTest(mc, server, f); return; }
+		f -= 660;
 		double[][] sc = focusScenes();
 		int per = 300;
 		if (f < sc.length * per) {

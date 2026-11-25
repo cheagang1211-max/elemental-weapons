@@ -136,7 +136,7 @@ public final class BossGate {
 		label(server, ow, CRAFT.offset(0, 7, 0), "ew_label_craft", "⚒ 제작소", "#FFD34D", "작업대 · 화로 · 모루 · 대장장이 작업대");
 	}
 
-	private static void label(MinecraftServer server, ServerLevel ow, BlockPos at, String tag, String title, String color, String sub) {
+	static void label(MinecraftServer server, ServerLevel ow, BlockPos at, String tag, String title, String color, String sub) {
 		if (!ow.isLoaded(at)) return;
 		var list = ow.getEntities((net.minecraft.world.entity.Entity) null, new AABB(at).inflate(3), e -> e.entityTags().contains(tag));
 		if (!list.isEmpty()) return;
