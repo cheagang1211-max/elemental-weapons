@@ -64,6 +64,14 @@ public final class Annex {
 					ow.setAttached(BUILT, VERSION);
 					queue = null; done = true;
 					ElementalWeaponsMod.LOGGER.info("[ANNEX] 천공성 증축 완료 (지하 성소 · 6층 투기장 · 7층 정상)");
+					if ("1".equals(System.getenv("EW_SELFTEST"))) {
+						java.util.Map<String, Integer> cnt = new java.util.TreeMap<>(); int ymin = 999, ymax = -999;
+						for (int x = -4; x <= 2; x++) for (int z = 40; z <= 70; z++) for (int y = Y6 - 30; y <= Y7 + 40; y++) {
+							var st = ow.getBlockState(new BlockPos(x, y, z));
+							if (!st.isAir()) { cnt.merge(BuiltInRegistries.BLOCK.getKey(st.getBlock()).getPath() + "@" + y, 1, Integer::sum); }
+						}
+						ElementalWeaponsMod.LOGGER.info("[ANNEX] 남쪽 공중 점검: {}", cnt);
+					}
 				}
 			} catch (Throwable t) { ElementalWeaponsMod.LOGGER.error("[ANNEX] 오류", t); }
 		});
