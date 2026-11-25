@@ -470,7 +470,7 @@ public final class Annex {
 				}
 				// 정원 벚나무 6그루
 				for (int t = 0; t < 6; t++) {
-					double ta = Math.toRadians(t * 60 + 30);
+					double ta = Math.toRadians(new int[]{35, 62, 118, 145, 210, 330}[t]);   // 길·성문 쪽은 비움
 					int tx = (int) Math.round(Math.cos(ta) * 24), tz = (int) Math.round(Math.sin(ta) * 24);
 					int dx = x - tx, dz = z - tz;
 					if (dx == 0 && dz == 0) for (int y = Y7 + 1; y <= Y7 + 5; y++) set(x, y, z, b("birch_log"));

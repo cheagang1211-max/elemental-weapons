@@ -79,7 +79,10 @@ public final class ShotHarness {
 			ServerPlayer p = sp(server); p.getAbilities().mayfly = true; p.getAbilities().flying = true; p.onUpdateAbilities();
 			log("세계 높이 " + p.level().getMaxY());
 		} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 증축 테스트 오류", ex); } });
-		if (f < 160) { if (f == 159) server.execute(() -> log("증축 완료? " + com.elementalweapons.world.sky.Annex.done)); return; }
+		if (f < 160) { if (f == 159) server.execute(() -> { log("증축 완료? " + com.elementalweapons.world.sky.Annex.done);
+			var lv = sp(server).level(); StringBuilder sb = new StringBuilder();
+			for (int z = 10; z <= 70; z += 4) for (int dy = -1; dy <= 2; dy++) { var st = lv.getBlockState(new net.minecraft.core.BlockPos(0, com.elementalweapons.world.sky.Annex.Y7 + dy, z)); if (!st.isAir()) sb.append(" z").append(z).append("/").append(dy).append("=").append(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(st.getBlock()).getPath()); }
+			log("정상 남쪽 길:" + sb); }); return; }
 		int i = (f - 160) / 60, g = (f - 160) % 60;
 		if (i >= TOUR.length) return;
 		double[] t = TOUR[i];
