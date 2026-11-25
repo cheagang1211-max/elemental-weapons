@@ -25,7 +25,7 @@ public class HeavenVisualRenderer extends MobRenderer<HeavenVisual, HeavenModels
 		super(ctx, model, 0);
 		this.texture = ElementalWeaponsMod.id("textures/entity/" + id + ".png");
 		this.scale = scale;
-		this.tilt = id.equals("heaven_gate") ? 32F : 0F;
+		this.tilt = id.equals("heaven_gate") ? 20F : 0F;
 		final Identifier glow = ElementalWeaponsMod.id("textures/entity/" + id + "_glow.png");
 		this.addLayer(new EyesLayer<HeavenModels.State, EntityModel<HeavenModels.State>>(this) {
 			@Override
@@ -70,7 +70,7 @@ public class HeavenVisualRenderer extends MobRenderer<HeavenVisual, HeavenModels
 		net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry.registerModelLayer(GATE, HeavenModels::gate);
 		net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry.registerModelLayer(ANGEL, HeavenModels::angel);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(com.elementalweapons.mob.ModMobs.HEAVEN_GATE,
-				ctx -> new HeavenVisualRenderer(ctx, new HeavenModels.GateModel(ctx.bakeLayer(GATE)), "heaven_gate", 3.6F));
+				ctx -> new HeavenVisualRenderer(ctx, new HeavenModels.GateModel(ctx.bakeLayer(GATE)), "heaven_gate", 3.0F));
 		net.minecraft.client.renderer.entity.EntityRenderers.register(com.elementalweapons.mob.ModMobs.ARCHANGEL,
 				ctx -> new HeavenVisualRenderer(ctx, new HeavenModels.AngelModel(ctx.bakeLayer(ANGEL)), "archangel", 4.0F));
 	}

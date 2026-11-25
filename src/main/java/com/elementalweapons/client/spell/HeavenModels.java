@@ -36,94 +36,132 @@ public final class HeavenModels {
 	static final float R = 28;   // 원 테 반지름 (모형 단위)
 	static final float RD = 25;  // 문짝 반지름
 
+	// 성문 치수 (모형 단위, y는 아래가 +). 문 가운데(원점) = y 24
+	static final float GW = 20;          // 문 구멍 반폭
+	static final float GB = 50;          // 문 바닥
+	static final float GA = 14;          // 아치가 시작되는 높이 (아치 중심)
+	static final float TW = 10;          // 탑 폭
+	static final float TOP = -16;        // 성벽 꼭대기
+
+	/** 문짝 윤곽: 가운데에서 xc만큼 떨어진 곳의 위쪽 끝 */
+	private static float archTop(float xc) { return GA - (float) Math.sqrt(Math.max(0, GW * GW - xc * xc)); }
+
 	public static LayerDefinition gate() {
 		MeshDefinition mesh = new MeshDefinition();
 		PartDefinition root = mesh.getRoot();
-		// 원 테 (대리석) + 안쪽 금 상감 + 바깥 금 테
-		PartDefinition ring = root.addOrReplaceChild("ring", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
-		int n = 48;
-		for (int i = 0; i < n; i++) {
-			float a = (float) (i * Math.PI * 2 / n), seg = (float) (2 * Math.PI * R / n) + 0.4F;
-			ring.addOrReplaceChild("m" + i, c(MARBLE, -seg / 2, -2.5F, -2.5F, seg, 5, 5), at(Mth.cos(a) * R, Mth.sin(a) * R, 0, 0, 0, a + Mth.HALF_PI));
-			ring.addOrReplaceChild("g" + i, c(GOLD, -seg / 2, -0.6F, -2.8F, seg * 0.92F, 1.2F, 5.6F), at(Mth.cos(a) * (R - 3), Mth.sin(a) * (R - 3), 0, 0, 0, a + Mth.HALF_PI));
-			ring.addOrReplaceChild("o" + i, c(GOLD, -seg / 2, -0.5F, -1.5F, seg * 1.05F, 1, 3), at(Mth.cos(a) * (R + 3), Mth.sin(a) * (R + 3), 0, 0, 0, a + Mth.HALF_PI));
-			if (i % 4 == 0)   // 테 위의 장식 돌기
-				ring.addOrReplaceChild("k" + i, c(DARKGOLD, -1.5F, -1.5F, -3.4F, 3, 3, 1), at(Mth.cos(a) * R, Mth.sin(a) * R, 0, 0, 0, a + QP));
-		}
-		// 바깥으로 뻗은 수정 첨탑 (해가 빛살을 뻗듯)
-		PartDefinition spires = root.addOrReplaceChild("spires", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
-		for (int i = 0; i < 12; i++) {
-			float a = (float) (i * Math.PI / 6 - Math.PI / 2);
-			float len = i % 2 == 0 ? 15 : 9;
-			PartDefinition s = spires.addOrReplaceChild("s" + i, c(CRYSTAL, -1.5F, -len, -1.5F, 3, len, 3), at(Mth.cos(a) * (R + 4), Mth.sin(a) * (R + 4), 0, 0, 0, a + Mth.HALF_PI));
-			s.addOrReplaceChild("t", c(CRYSTAL, -0.8F, -5, -0.8F, 1.6F, 5, 1.6F), at(0, -len, 0, 0, 0, 0));
-			s.addOrReplaceChild("b", c(GOLD, -2.2F, -1.5F, -2.2F, 4.4F, 1.5F, 4.4F), PartPose.ZERO);
-		}
-		// 돌아가는 룬 고리
-		PartDefinition runes = root.addOrReplaceChild("runes", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
-		for (int i = 0; i < 24; i++) {
-			float a = (float) (i * Math.PI / 12);
-			runes.addOrReplaceChild("r" + i, i % 2 == 0 ? c(CRYSTAL, -1.6F, -2.4F, -0.4F, 3.2F, 4.8F, 0.8F) : c(GOLD, -0.6F, -0.6F, -0.3F, 1.2F, 1.2F, 0.6F),
-					at(Mth.cos(a) * (R + 8), Mth.sin(a) * (R + 8), 1.5F, 0, 0, a + Mth.HALF_PI));
-		}
-		// 문짝 두 장 (반원), 경첩은 양 끝
-		for (int side = -1; side <= 1; side += 2) {
-			String nm = side < 0 ? "door_l" : "door_r";
-			PartDefinition door = root.addOrReplaceChild(nm, CubeListBuilder.create(), PartPose.offset(side * RD, 24, 0));
-			for (float x = 0; x < RD; x += 2) {   // 세로 판자 줄
-				float xc = x + 1, hh = (float) Math.sqrt(Math.max(1, RD * RD - xc * xc));
-				float lx = side < 0 ? (RD - x - 2) : (-RD + x);   // 경첩 기준 위치
-				door.addOrReplaceChild("p" + (int) x, c(MARBLE, lx, -hh, -0.8F, 2, hh * 2, 1.6F), PartPose.ZERO);
+		PartDefinition wall = root.addOrReplaceChild("wall", CubeListBuilder.create(), PartPose.ZERO);
+		// 좌우 탑 (16칸씩 쌓은 대리석 + 금 띠 + 빛나는 창)
+		for (int sd = -1; sd <= 1; sd += 2) {
+			float x0 = sd < 0 ? -GW - TW : GW;
+			int seg = 0;
+			for (float y = TOP; y < GB; y += 16, seg++) {
+				float h = Math.min(16, GB - y);
+				wall.addOrReplaceChild("t" + sd + "_" + seg, c(MARBLE, x0, y, -5, TW, h, 10), PartPose.ZERO);
+				wall.addOrReplaceChild("tb" + sd + "_" + seg, c(GOLD, x0 - 0.4F, y + h - 1.4F, -5.4F, TW + 0.8F, 1.4F, 10.8F), PartPose.ZERO);
 			}
-			// 태양 문양: 가운데 원 + 빛살 + 동심 호
-			float cx = -side * RD;   // 문짝 기준으로 본 원의 중심
-			for (int k = 0; k < 7; k++) {
-				float a = (float) (Math.PI / 2 + (k + 0.5) * Math.PI / 7) * (side < 0 ? 1 : -1) + (side < 0 ? 0 : (float) Math.PI);
-				PartDefinition ray = door.addOrReplaceChild("ray" + k, CubeListBuilder.create(), at(cx, 0, -1.1F, 0, 0, a));
-				ray.addOrReplaceChild("b", c(GOLD, 6, -0.5F, -0.3F, 17, 1, 0.6F), PartPose.ZERO);
-				ray.addOrReplaceChild("gem", c(CRYSTAL, 21, -1, -0.5F, 2, 2, 0.8F), PartPose.ZERO);
+			for (int w = 0; w < 3; w++) {   // 창
+				float wy = TOP + 8 + w * 20;
+				wall.addOrReplaceChild("win" + sd + w, c(LIGHT, x0 + TW / 2 - 1.5F, wy, -5.3F, 3, 6, 0.6F), PartPose.ZERO);
+				wall.addOrReplaceChild("winA" + sd + w, c(GOLD, x0 + TW / 2 - 2.2F, wy - 1.2F, -5.5F, 4.4F, 1.2F, 0.8F), PartPose.ZERO);
 			}
-			for (int ring2 = 0; ring2 < 3; ring2++) {
-				float rr = 6 + ring2 * 7;
-				for (int k = 0; k < 10; k++) {
-					float a = (float) (Math.PI / 2 + (k + 0.5) * Math.PI / 10);
-					if (side > 0) a = (float) (Math.PI - a);
-					float seg = (float) (Math.PI * rr / 10) + 0.3F;
-					door.addOrReplaceChild("arc" + ring2 + "_" + k, c(ring2 == 0 ? CRYSTAL : GOLD, -seg / 2, -0.4F, -0.4F, seg, 0.8F, 0.8F),
-							at(cx + Mth.cos(a) * rr, Mth.sin(a) * rr, -1.1F, 0, 0, a + Mth.HALF_PI));
-				}
-			}
-			door.addOrReplaceChild("edge", c(GOLD, side < 0 ? RD - 1.2F : -RD, -RD + 2, -1.2F, 1.2F, (RD - 2) * 2, 2.4F), PartPose.ZERO);   // 가운데 맞닿는 금 테
+			// 탑 꼭대기 흉벽 + 뾰족 지붕
+			float tx = x0 + TW / 2;
+			wall.addOrReplaceChild("tcap" + sd, c(DARKGOLD, x0 - 1.5F, TOP - 2, -6.5F, TW + 3, 2, 13), PartPose.ZERO);
+			for (int k = 0; k < 3; k++)
+				for (int zz = -1; zz <= 1; zz += 2)
+					wall.addOrReplaceChild("mer" + sd + k + zz, c(MARBLE, x0 - 1.5F + k * 4.5F, TOP - 5, zz < 0 ? -6.5F : 3.5F, 3, 3, 3), PartPose.ZERO);
+			wall.addOrReplaceChild("roof1" + sd, c(GOLD, tx - 4, TOP - 9, -4, 8, 4, 8), PartPose.ZERO);
+			wall.addOrReplaceChild("roof2" + sd, c(GOLD, tx - 2.8F, TOP - 13, -2.8F, 5.6F, 4, 5.6F), PartPose.ZERO);
+			wall.addOrReplaceChild("roof3" + sd, c(GOLD, tx - 1.6F, TOP - 17, -1.6F, 3.2F, 4, 3.2F), PartPose.ZERO);
+			wall.addOrReplaceChild("roof4" + sd, c(CRYSTAL, tx - 0.8F, TOP - 22, -0.8F, 1.6F, 5, 1.6F), PartPose.ZERO);
+			// 탑에 드리운 깃발
+			wall.addOrReplaceChild("ban" + sd, c(LIGHT, tx - 3, TOP + 2, -5.9F, 6, 22, 0.5F), PartPose.ZERO);
+			wall.addOrReplaceChild("banT" + sd, c(GOLD, tx - 3.5F, TOP + 1.2F, -6.1F, 7, 1.2F, 0.8F), PartPose.ZERO);
+			wall.addOrReplaceChild("banE" + sd, c(CRYSTAL, tx - 1.5F, TOP + 9, -6.2F, 3, 3, 0.4F), PartPose.ZERO);
+			// 받침돌
+			wall.addOrReplaceChild("base" + sd, c(DARKGOLD, x0 - 1.5F, GB - 3, -6.5F, TW + 3, 3, 13), PartPose.ZERO);
 		}
-		// 문 뒤의 빛 원판
+		// 아치 위 성벽 (아치 모양으로 비운 벽돌 줄) + 흉벽
+		for (float x = -GW; x < GW; x += 2) {
+			float xc = Math.abs(x + 1);
+			float at = archTop(xc);
+			float h = at - TOP;
+			if (h > 0.5F) wall.addOrReplaceChild("w" + (int) (x + GW), c(MARBLE, x, TOP, -4, 2, h, 8), PartPose.ZERO);
+		}
+		wall.addOrReplaceChild("wtop", c(DARKGOLD, -GW, TOP - 2, -5, GW * 2, 2, 10), PartPose.ZERO);
+		for (int k = 0; k < 7; k++) wall.addOrReplaceChild("wm" + k, c(MARBLE, -GW + 1 + k * 6, TOP - 5, -5, 3, 3, 3), PartPose.ZERO);
+		// 아치 테두리 돌 (홍예석) + 금 쐐기돌
+		int n = 15;
+		for (int i = 0; i <= n; i++) {
+			float a = (float) (Math.PI + i * Math.PI / n);
+			float rr = GW + 2;
+			wall.addOrReplaceChild("v" + i, c(i == n / 2 ? CRYSTAL : (i % 2 == 0 ? GOLD : MARBLE), -2.6F, -2.5F, -5.2F, 5.2F, 5, 1.6F),
+					at(Mth.cos(a) * rr, GA + Mth.sin(a) * rr, 0, 0, 0, a + Mth.HALF_PI));
+		}
+		for (int sd = -1; sd <= 1; sd += 2)   // 문설주 금 띠
+			wall.addOrReplaceChild("jamb" + sd, c(GOLD, sd < 0 ? -GW - 1.6F : GW, GA, -5.2F, 1.6F, GB - GA, 1.6F), PartPose.ZERO);
+		// 문 앞 계단
+		for (int k = 0; k < 3; k++)
+			wall.addOrReplaceChild("step" + k, c(k == 0 ? DARKGOLD : MARBLE, -GW - 4 + k * 3, GB + k * 2, -10 + k * 2, (GW + 4 - k * 3) * 2, 2, 14 - k * 2), PartPose.ZERO);
+		// 문짝 두 장 (경첩은 바깥쪽)
+		for (int sd = -1; sd <= 1; sd += 2) {
+			PartDefinition door = root.addOrReplaceChild(sd < 0 ? "door_l" : "door_r", CubeListBuilder.create(), PartPose.offset(sd * GW, 24, 0));
+			for (float x = 0; x < GW; x += 2) {   // x = 가운데로부터 거리
+				float xc = x + 1, top = archTop(Math.min(GW - 0.01F, xc + 1));
+				float lx = sd < 0 ? GW - x - 2 : -GW + x;
+				door.addOrReplaceChild("p" + (int) x, c(MARBLE, lx, top - 24, -0.9F, 2, GB - top, 1.8F), PartPose.ZERO);
+			}
+			// 금 띠 (가로) + 징
+			for (int k = 0; k < 4; k++) {
+				float by = GB - 6 - k * 9 - 24;
+				float half = k == 3 ? 14 : GW - 0.5F;
+				float bx0 = sd < 0 ? GW - half : -GW;
+				door.addOrReplaceChild("band" + k, c(GOLD, bx0, by, -1.4F, half, 1.4F, 0.6F), PartPose.ZERO);
+				for (int st = 0; st < 4; st++)
+					door.addOrReplaceChild("stud" + k + st, c(CRYSTAL, bx0 + 2 + st * (half - 4) / 3F, by + 0.1F, -1.8F, 1.2F, 1.2F, 0.5F), PartPose.ZERO);
+			}
+			// 가운데 맞닿는 금 테 + 반쪽 태양 문양 + 문고리
+			float cx = sd < 0 ? GW : -GW;   // 문짝 기준 가운데 선
+			door.addOrReplaceChild("edge", c(GOLD, sd < 0 ? cx - 1.2F : cx, GA - 20 - 24 + 0.5F, -1.3F, 1.2F, GB - GA + 19, 2.6F), PartPose.ZERO);
+			for (int k = 0; k < 5; k++) {
+				float a = (float) (Math.PI / 2 + (k + 0.5) * Math.PI / 5);
+				float ang = sd < 0 ? a : (float) Math.PI - a;
+				PartDefinition ray = door.addOrReplaceChild("ray" + k, CubeListBuilder.create(), at(cx, GA + 6 - 24, -1.6F, 0, 0, ang));
+				ray.addOrReplaceChild("b", c(GOLD, 3.5F, -0.5F, -0.3F, 8, 1, 0.6F), PartPose.ZERO);
+				ray.addOrReplaceChild("g", c(CRYSTAL, 11, -0.8F, -0.4F, 1.6F, 1.6F, 0.7F), PartPose.ZERO);
+			}
+			door.addOrReplaceChild("sun", c(CRYSTAL, sd < 0 ? cx - 3 : cx, GA + 3 - 24, -1.9F, 3, 6, 0.8F), PartPose.ZERO);
+			door.addOrReplaceChild("knock", c(GOLD, sd < 0 ? cx - 5.5F : cx + 2.5F, GA + 18 - 24, -2.2F, 3, 3, 0.8F), PartPose.ZERO);
+		}
+		// 문 뒤의 빛 (문 구멍 모양)
 		PartDefinition light = root.addOrReplaceChild("light", CubeListBuilder.create(), PartPose.offset(0, 24, 2.2F));
-		for (float x = -RD; x < RD; x += 2) {
-			float xc = x + 1, hh = (float) Math.sqrt(Math.max(1, RD * RD - xc * xc));
-			light.addOrReplaceChild("l" + (int) (x + RD), c(LIGHT, x, -hh, -0.2F, 2, hh * 2, 0.4F), PartPose.ZERO);
+		for (float x = -GW; x < GW; x += 2) {
+			float top = archTop(Math.abs(x + 1));
+			light.addOrReplaceChild("l" + (int) (x + GW), c(LIGHT, x, top - 24, -0.2F, 2, GB - top, 0.4F), PartPose.ZERO);
 		}
-		// 꼭대기 별 왕관
-		PartDefinition crown = root.addOrReplaceChild("crown", CubeListBuilder.create(), PartPose.offset(0, 24 - R - 4, 0));
-		crown.addOrReplaceChild("base", c(GOLD, -7, -2, -2.5F, 14, 2, 5), PartPose.ZERO);
-		crown.addOrReplaceChild("t2", c(MARBLE, -5, -4, -2, 10, 2, 4), PartPose.ZERO);
-		crown.addOrReplaceChild("star1", c(CRYSTAL, -3.5F, -3.5F, -0.6F, 7, 7, 1.2F), at(0, -9, 0, 0, 0, QP));
-		crown.addOrReplaceChild("star2", c(CRYSTAL, -3.5F, -3.5F, -0.7F, 7, 7, 1.4F), at(0, -9, 0, 0, 0, 0));
-		crown.addOrReplaceChild("core", c(LIGHT, -1.5F, -1.5F, -1.2F, 3, 3, 2.4F), at(0, -9, 0, 0, 0, QP));
-		for (int s = -1; s <= 1; s += 2) crown.addOrReplaceChild("pin" + s, c(CRYSTAL, -0.7F, -6, -0.7F, 1.4F, 6, 1.4F), at(s * 5.5F, -2, 0, 0, 0, s * 0.35F));
-		// 아래 수정 펜던트
-		PartDefinition pend = root.addOrReplaceChild("pendant", CubeListBuilder.create(), PartPose.offset(0, 24 + R + 2.5F, 0));
-		pend.addOrReplaceChild("a", c(GOLD, -3, 0, -2, 6, 2, 4), PartPose.ZERO);
-		pend.addOrReplaceChild("b", c(CRYSTAL, -2, 2, -1.5F, 4, 4, 3), PartPose.ZERO);
-		pend.addOrReplaceChild("c", c(CRYSTAL, -1.2F, 6, -1, 2.4F, 4, 2), PartPose.ZERO);
-		pend.addOrReplaceChild("d", c(CRYSTAL, -0.5F, 10, -0.5F, 1, 4, 1), PartPose.ZERO);
-		// 좌우 날개 (긴 깃 + 덮깃)
-		for (int side = -1; side <= 1; side += 2) {
-			PartDefinition wing = root.addOrReplaceChild(side < 0 ? "wing_l" : "wing_r", CubeListBuilder.create(), PartPose.offset(side * (R + 1), 20, 3));
+		// 성벽 위에 떠 있는 빛나는 문장 (위아래로 떠다님)
+		PartDefinition runes = root.addOrReplaceChild("runes", CubeListBuilder.create(), PartPose.offset(0, 24 + TOP - 9, -1));
+		runes.addOrReplaceChild("s1", c(CRYSTAL, -3, -3, -0.6F, 6, 6, 1.2F), at(0, 0, 0, 0, 0, QP));
+		runes.addOrReplaceChild("s2", c(GOLD, -2.2F, -6, -0.4F, 4.4F, 12, 0.8F), PartPose.ZERO);
+		runes.addOrReplaceChild("s3", c(GOLD, -6, -2.2F, -0.4F, 12, 4.4F, 0.8F), PartPose.ZERO);
+		runes.addOrReplaceChild("s4", c(LIGHT, -1.2F, -1.2F, -0.9F, 2.4F, 2.4F, 1.8F), PartPose.ZERO);
+		// 탑 지붕 위 빛 결정 (빙글 도는 부분)
+		PartDefinition spires = root.addOrReplaceChild("spires", CubeListBuilder.create(), PartPose.offset(0, 24, 0));
+		for (int sd = -1; sd <= 1; sd += 2)
+			spires.addOrReplaceChild("gem" + sd, c(CRYSTAL, -1.5F, -1.5F, -1.5F, 3, 3, 3), at(sd * (GW + TW / 2), TOP - 26, 0, QP, QP, 0));
+		// 가운데 꼭대기 왕관
+		PartDefinition crown = root.addOrReplaceChild("crown", CubeListBuilder.create(), PartPose.offset(0, 24 + TOP - 2, 0));
+		crown.addOrReplaceChild("base", c(GOLD, -6, -3, -3, 12, 3, 6), PartPose.ZERO);
+		for (int k = -2; k <= 2; k++) crown.addOrReplaceChild("pk" + k, c(GOLD, -0.8F, -3.5F + Math.abs(k), -0.8F, 1.6F, 3.5F - Math.abs(k), 1.6F), PartPose.offset(k * 2.6F, -3, 0));
+		// 좌우 날개 (탑 바깥에서 펼쳐짐)
+		for (int sd = -1; sd <= 1; sd += 2) {
+			PartDefinition wing = root.addOrReplaceChild(sd < 0 ? "wing_l" : "wing_r", CubeListBuilder.create(), PartPose.offset(sd * (GW + TW), 24 + TOP + 6, 3));
 			for (int k = 0; k < 9; k++) {
-				float deg = 178 + k * 10.5F;   // 옆 → 위쪽으로 펼침
-				float a = (float) Math.toRadians(side < 0 ? deg : 180 - deg);
+				float deg = 178 + k * 10.5F;
+				float a = (float) Math.toRadians(sd < 0 ? deg : 180 - deg);
 				float len = 22 + (k % 3) * 4 + (k > 3 && k < 7 ? 5 : 0);
 				wing.addOrReplaceChild("f" + k, c(FEATHER, -1.6F, -len, -0.5F, 3.2F, len, 1), at(0, 0, 0.2F * k, 0, 0, a + Mth.HALF_PI));
-				wing.addOrReplaceChild("c" + k, c(FEATHER_GOLD, -1.4F, -len * 0.55F, -0.5F, 2.8F, len * 0.55F, 1), at(0, 0, -1 + 0.1F * k, 0, 0, a + Mth.HALF_PI + side * 0.05F));
+				wing.addOrReplaceChild("c" + k, c(FEATHER_GOLD, -1.4F, -len * 0.55F, -0.5F, 2.8F, len * 0.55F, 1), at(0, 0, -1 + 0.1F * k, 0, 0, a + Mth.HALF_PI + sd * 0.05F));
 			}
 		}
 		return LayerDefinition.create(mesh, 256, 256);
@@ -198,11 +236,12 @@ public final class HeavenModels {
 			doorL.yRot = -e * 1.75F;       // 문짝이 안쪽으로 크게 열림
 			doorR.yRot = e * 1.75F;
 			light.visible = o > 0.02F;
-			runes.zRot = s.time * 0.02F;
-			spires.zRot = -s.time * 0.004F;
+			runes.y = 24 + TOP - 9 + Mth.sin(s.time * 0.08F) * 1.2F;
+			runes.zRot = Mth.sin(s.time * 0.05F) * 0.08F;
+			spires.y = 24 + Mth.sin(s.time * 0.1F) * 1.0F;
 			float flap = Mth.sin(s.time * 0.12F) * 0.08F;
 			wingL.zRot = flap; wingR.zRot = -flap;
-			crown.y = 24 - R - 4 + Mth.sin(s.time * 0.1F) * 0.8F;
+			crown.y = 24 + TOP - 2;
 		}
 	}
 
