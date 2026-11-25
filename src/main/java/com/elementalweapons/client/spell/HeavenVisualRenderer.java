@@ -70,7 +70,7 @@ public class HeavenVisualRenderer extends MobRenderer<HeavenVisual, HeavenModels
 		net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry.registerModelLayer(GATE, HeavenModels::gate);
 		net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry.registerModelLayer(ANGEL, HeavenModels::angel);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(com.elementalweapons.mob.ModMobs.HEAVEN_GATE,
-				ctx -> new HeavenVisualRenderer(ctx, new HeavenModels.GateModel(ctx.bakeLayer(GATE)), "heaven_gate", 3.0F));
+				ctx -> new HeavenVisualRenderer(ctx, new HeavenModels.GateModel(ctx.bakeLayer(GATE)), "heaven_gate", 4.0F));
 		net.minecraft.client.renderer.entity.EntityRenderers.register(com.elementalweapons.mob.ModMobs.ARCHANGEL,
 				ctx -> new HeavenVisualRenderer(ctx, new HeavenModels.AngelModel(ctx.bakeLayer(ANGEL)), "archangel", 4.0F));
 	}
