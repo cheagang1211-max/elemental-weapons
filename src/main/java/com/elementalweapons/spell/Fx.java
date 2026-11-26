@@ -88,7 +88,7 @@ public final class Fx {
 				center.x + radius, center.y + radius, center.z + radius);
 		// 발끝이 아니라 몸통 상자까지의 거리로 판정 (큰 몹·키 큰 몹도 맞음)
 		List<LivingEntity> list = level.getEntitiesOfClass(LivingEntity.class, box.inflate(0.4),
-				e -> e instanceof Enemy && e.isAlive() && boxDistSqr(e, center) <= radius * radius);
+				e -> (e instanceof Enemy || (e instanceof Player pl && com.elementalweapons.world.sky.ArenaDuel.dueling(pl))) && e.isAlive() && boxDistSqr(e, center) <= radius * radius);
 		list.sort(Comparator.comparingDouble(e -> boxDistSqr(e, center)));
 		return list;
 	}
@@ -104,6 +104,7 @@ public final class Fx {
 
 	/** 마법 피해 (시전자가 준 피해로 처리) */
 	public static void hurt(ServerLevel level, Player caster, LivingEntity target, float amount) {
+		if (target instanceof Player tp && (caster == null || !com.elementalweapons.world.sky.ArenaDuel.opponents(caster, tp))) return;   // 결투 상대만
 		float m = caster == null ? 1F : (float) com.elementalweapons.growth.ModGrowth.paragon(caster).spellMult() * com.elementalweapons.growth.Jobs.damageMult(caster);
 		target.hurtServer(level, level.damageSources().indirectMagic(caster, caster), amount * m);
 	}

@@ -38,6 +38,7 @@ public final class Annex {
 
 	private static ArrayDeque<int[]> queue;
 	public static boolean done;
+	private static boolean oldLabelsGone;
 
 	public static void initialize() {
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
@@ -83,13 +84,18 @@ public final class Annex {
 	private static final int SHRINE_R = 30;
 
 	private static void labels(MinecraftServer server, ServerLevel ow) {
-		BossGate.label(server, ow, new BlockPos(0, Y6 + 9, 31), "ew_label_arena", "⚔ 영웅의 투기장", "#FF8A4D", "6층 · 영웅들이 실력을 겨루는 곳");
+		if (!oldLabelsGone) {   // 예전 이름표(설명 없는 것) 정리
+			var box = new net.minecraft.world.phys.AABB(-60, YB - 5, -60, 60, Y7 + 40, 60);
+			for (var e : ow.getEntities((net.minecraft.world.entity.Entity) null, box, e -> e.entityTags().stream().anyMatch(t -> t.startsWith("ew_label_arena") || t.startsWith("ew_label_shrine")) && e.entityTags().stream().noneMatch(t -> t.endsWith("_v2")))) e.discard();
+			oldLabelsGone = true;
+		}
+		BossGate.label(server, ow, new BlockPos(0, Y6 + 9, 31), "ew_label_arena_v2", "⚔ 영웅의 투기장", "#FF8A4D", "6층 · 상대를 보고 Shift + 우클릭: 결투 신청");
 		BossGate.label(server, ow, new BlockPos(0, Y7 + 17, -23), "ew_label_summit", "✦ 천상의 정상", "#FFE27A", "7층 · 구름 위의 성문과 신전");
-		BossGate.label(server, ow, new BlockPos(0, YB + 9, 10), "ew_label_shrine", "◈ 원소의 성소", "#B48CFF", "지하 · 무너진 일곱 신전");
+		BossGate.label(server, ow, new BlockPos(0, YB + 9, 10), "ew_label_shrine_v2", "◈ 원소의 성소", "#B48CFF", "지하 · 신전 제단을 우클릭하면 속성의 축복");
 		for (int k = 0; k < 7; k++) {
 			Element e = Element.values()[k];
 			int x = (int) Math.round(Math.cos(SHRINE_A[k]) * SHRINE_R), z = (int) Math.round(Math.sin(SHRINE_A[k]) * SHRINE_R);
-			BossGate.label(server, ow, new BlockPos(x, YB + 8, z), "ew_label_shrine" + k, e.koName + "의 성소", String.format("#%06X", e.color), "무너진 신전");
+			BossGate.label(server, ow, new BlockPos(x, YB + 8, z), "ew_label_shrine" + k + "_v2", e.koName + "의 성소", String.format("#%06X", e.color), "제단 우클릭: 축복 (자기 속성이면 공명)");
 		}
 	}
 
