@@ -411,6 +411,8 @@ def check_unique(roots):
     assert not dup, f"duplicate part names: {dup}"
 
 if __name__ == "__main__":
+    import bosses3
+    from ao import bake
     from bosses import java_model, camel
     out, root_dir = sys.argv[1], sys.argv[2]
     os.makedirs(out, exist_ok=True)
@@ -427,6 +429,7 @@ if __name__ == "__main__":
             try: pack(root, tw, tw); break
             except SystemExit: continue
         tex, glow = paint(root, tw, tw, mats, seed=sum(map(ord, bid)))
+        tex = bake(root, tex, glow)
         tex.save(f"{tdir}/{bid}.png"); glow.save(f"{tdir}/{bid}_glow.png")
         cls = camel(bid) + "Model"
         open(f"{jdir}/{cls}.java", "w").write(java_model(cls, roots, tw, tw).replace("tools/bossgen/bosses.py", "tools/bossgen/bosses2.py"))
