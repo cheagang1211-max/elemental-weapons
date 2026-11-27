@@ -292,7 +292,7 @@ public final class ShotHarness {
 			{WeaponType.SWORD, Element.FIRE}, {WeaponType.SWORD, Element.ELECTRIC}, {WeaponType.GREATSWORD, Element.WATER}, {WeaponType.GREATSWORD, Element.DARK},
 			{WeaponType.HAMMER, Element.GRASS}, {WeaponType.HAMMER, Element.FIRE}, {WeaponType.SCYTHE, Element.DARK}, {WeaponType.SCYTHE, Element.WIND},
 			{WeaponType.BOOK, Element.LIGHT}, {WeaponType.BOOK, Element.WATER}, {WeaponType.SWORD, Element.LIGHT}, {WeaponType.GREATSWORD, Element.WIND},
-			{WeaponType.BOW, Element.ELECTRIC}, {WeaponType.HAMMER, Element.ELECTRIC}};
+			{WeaponType.BOW, Element.ELECTRIC}, {WeaponType.HAMMER, Element.ELECTRIC}, {WeaponType.SWORD, Element.WATER}, {WeaponType.GREATSWORD, Element.FIRE}};
 	private static final int RC_PER = 60, RC_T = 30 + RC.length * RC_PER;
 	private static final double RX = 3000.5, RY = 200, RZ = 300.5;
 
@@ -322,6 +322,7 @@ public final class ShotHarness {
 				if (e instanceof Mob m) { m.setNoAi(true); m.setHealth(m.getMaxHealth()); }
 				lv.addFreshEntity(e); dummies.add(e);
 			} });
+		if (k == 1) mc.options.setCameraType(idx >= 14 ? CameraType.FIRST_PERSON : CameraType.THIRD_PERSON_BACK);
 		if (k > 0 && k < 12) look(mc, 0, 12);
 		if (k == 8) server.execute(() -> { ServerPlayer p = sp(server);
 			if (wt == WeaponType.BOW) { com.elementalweapons.spell.SpellManager.add(new com.elementalweapons.spell.ElementArrowSpell((ServerLevel) p.level(), p, el, 1.0F, p.getMainHandItem()));

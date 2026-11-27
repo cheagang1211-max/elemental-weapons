@@ -22,7 +22,7 @@ public final class GrandModels {
 	/** 무기 우클릭 연출: 12 낙하 영검  13 대검 원진  14 거대 망치  15 충격 결정 고리  16 초승달 낫날  17 마도서 */
 	public static final int BLADE = 12, BLADE_RING = 13, HAMMER = 14, SHOCK = 15, CRESCENT = 16, TOME = 17, SPIRIT_BOW = 18;
 	public static final int COUNT = 19;
-	public static final float[] SCALE = {6F, 6F, 5F, 6F, 6F, 7F, 7F, 8F, 6F, 7F, 7F, 6F, 1.5F, 1.7F, 1.6F, 1.2F, 1.35F, 1.3F, 0.9F};
+	public static final float[] SCALE = {6F, 6F, 5F, 6F, 6F, 7F, 7F, 8F, 6F, 7F, 7F, 6F, 1.5F, 1.7F, 1.6F, 1.2F, 1.35F, 1.3F, 1.1F};
 
 	public static class State extends LivingEntityRenderState {
 		public int kind, elem;

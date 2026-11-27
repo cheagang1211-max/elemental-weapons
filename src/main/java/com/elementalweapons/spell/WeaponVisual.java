@@ -188,7 +188,8 @@ public class WeaponVisual extends Spell {
 	// 활(완전히 당김): 등 뒤에 거대한 영궁이 떠올라 함께 쏨
 	private boolean bow() {
 		Vec3 look = caster.getLookAngle();
-		Vec3 p = caster.getEyePosition().add(look.scale(-1.8)).add(0, 1.4, 0);
+		Vec3 side = new Vec3(-look.z, 0, look.x).normalize();
+		Vec3 p = caster.getEyePosition().add(look.scale(-1.2)).add(side.scale(2.6)).add(0, 1.6, 0);
 		if (age == 0) main = spawn(BOW, p, caster.getYRot());
 		if (main != null) {
 			place(main, p, caster.getYRot());
