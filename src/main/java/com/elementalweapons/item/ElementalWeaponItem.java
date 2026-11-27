@@ -66,6 +66,14 @@ public class ElementalWeaponItem extends Item {
 			com.elementalweapons.growth.ModGrowth.denyMessage(user, type);
 			return InteractionResult.FAIL;
 		}
+		// 대형 기술: Shift + 우클릭 (지팡이는 그냥 우클릭이 대형 기술)
+		if (hand == InteractionHand.MAIN_HAND && user.isShiftKeyDown() && type != WeaponType.STAFF && com.elementalweapons.spell.GrandSkill.kindFor(type, element) >= 0) {
+			if (level instanceof ServerLevel server && user instanceof net.minecraft.server.level.ServerPlayer sp) {
+				com.elementalweapons.spell.GrandSkill.tryCast(server, sp, element, type);
+				com.elementalweapons.growth.Jobs.flourish(sp, element, true);
+			}
+			return InteractionResult.SUCCESS;
+		}
 		if (type == WeaponType.SHIELD) return super.use(level, user, hand); // 방패 막기
 		if (type == WeaponType.BOW) { user.startUsingItem(hand); return InteractionResult.CONSUME; } // 활 당기기
 		if (type == WeaponType.DAGGER) {
@@ -120,6 +128,12 @@ public class ElementalWeaponItem extends Item {
 				user.getCooldowns().addCooldown(user.getItemInHand(hand), 100);
 			}
 			case STAFF -> {
+				int gk = com.elementalweapons.spell.GrandSkill.kindFor(type, element);
+				if (gk >= 0) {   // 빛(천국의 문) 말고는 속성별 대형 소환
+					com.elementalweapons.spell.GrandSkill.cast(server, user, element, gk);
+					user.getCooldowns().addCooldown(user.getItemInHand(hand), (int) Math.round(Math.max(element.staffCooldown, 260) * (com.elementalweapons.growth.ModGrowth.get(user).staffCooldownFactor() * (1 - com.elementalweapons.growth.ModGrowth.paragon(user).cooldownCut()))));
+					break;
+				}
 				Spell spell = ElementEffects.staffSpell(element, server, user);
 				if (spell == null) return InteractionResult.PASS;
 				SpellManager.add(spell);

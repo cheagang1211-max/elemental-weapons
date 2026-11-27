@@ -45,6 +45,7 @@ public final class ModMobs {
 	public static EntityType<Shopkeepers.Enchanter> ENCHANTER;
 	public static EntityType<Shopkeepers.Instructor> INSTRUCTOR;
 	public static EntityType<com.elementalweapons.spell.HeavenVisual> HEAVEN_GATE, ARCHANGEL;
+	public static EntityType<com.elementalweapons.spell.GrandVisual> GRAND;
 	public static EntityType<Shopkeepers.Alchemist> ALCHEMIST;
 	public static EntityType<SkyDragon> SKY_DRAGON;
 
@@ -93,6 +94,8 @@ public final class ModMobs {
 		HEAVEN_GATE = register("heaven_gate", FabricEntityType.Builder.<com.elementalweapons.spell.HeavenVisual>createMob(com.elementalweapons.spell.HeavenVisual::new, MobCategory.MISC,
 				mob -> mob.defaultAttributes(com.elementalweapons.spell.HeavenVisual::attributes)).sized(1F, 1F).clientTrackingRange(16).updateInterval(1).noSave().fireImmune());
 		ARCHANGEL = register("archangel", FabricEntityType.Builder.<com.elementalweapons.spell.HeavenVisual>createMob(com.elementalweapons.spell.HeavenVisual::new, MobCategory.MISC,
+				mob -> mob.defaultAttributes(com.elementalweapons.spell.HeavenVisual::attributes)).sized(1F, 1F).clientTrackingRange(16).updateInterval(1).noSave().fireImmune());
+		GRAND = register("grand_visual", FabricEntityType.Builder.<com.elementalweapons.spell.GrandVisual>createMob(com.elementalweapons.spell.GrandVisual::new, MobCategory.MISC,
 				mob -> mob.defaultAttributes(com.elementalweapons.spell.HeavenVisual::attributes)).sized(1F, 1F).clientTrackingRange(16).updateInterval(1).noSave().fireImmune());
 		INSTRUCTOR = register("job_instructor", FabricEntityType.Builder.<Shopkeepers.Instructor>createMob(Shopkeepers.Instructor::new, MobCategory.MISC,
 				mob -> mob.defaultAttributes(ElementalMerchant::attributes)).sized(0.6F, 2.1F).clientTrackingRange(10));

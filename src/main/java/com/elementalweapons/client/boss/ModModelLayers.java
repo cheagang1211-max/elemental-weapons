@@ -17,5 +17,6 @@ public final class ModModelLayers {
 		GeneratedBossModels.register();
 		GeneratedMobModels.register();
 		com.elementalweapons.client.spell.HeavenVisualRenderer.register();
+		com.elementalweapons.client.spell.GrandVisualRenderer.register();
 	}
 }
