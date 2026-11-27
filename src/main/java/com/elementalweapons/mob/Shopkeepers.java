@@ -59,12 +59,13 @@ public final class Shopkeepers {
 			offer(o, ae, 2, new ItemStack(G.get("aether_shovel")));
 			// 주괴 바꾸기
 			offer(o, ae, 4, new ItemStack(ori, 1));
-			offer(o, ae, 3, new ItemStack(Items.DIAMOND, 2));
-			offer(o, ae, 1, new ItemStack(Items.ARROW, 32));
+			// 강화 재료 (7층 강화의 제단에서 사용)
+			offer(o, ae, 2, new ItemStack(ModItems.ENHANCE_STONE, 1));
+			offer(o, ori, 4, new ItemStack(ModItems.BLESS_STONE, 1));
 		}
 	}
 
-	/** 마법부여사: 마법이 부여된 책, 청금석, 경험치 병, 마법부여대 */
+	/** 마법부여사: 마법이 부여된 책(주괴 + 원소 가루), 경험치 병, 엔더 진주 */
 	public static class Enchanter extends ElementalMerchant {
 		public Enchanter(EntityType<? extends Enchanter> type, Level level) { super(type, level); }
 
@@ -84,20 +85,17 @@ public final class Shopkeepers {
 			MerchantOffers o = getOffers();
 			Item ae = ModBlocks.item("aether_ingot"), ori = ModBlocks.item("orichalcum_ingot");
 			Item lightC = ModBlocks.item("radiant_crystal"), darkC = ModBlocks.item("umbral_crystal");
-			offerBook(o, ori, 4, new ItemStack(Items.BOOK), book(level, Enchantments.SHARPNESS, 5));
-			offerBook(o, ori, 3, new ItemStack(Items.BOOK), book(level, Enchantments.SMITE, 5));
-			offerBook(o, ori, 4, new ItemStack(Items.BOOK), book(level, Enchantments.LOOTING, 3));
-			offerBook(o, ori, 3, new ItemStack(Items.BOOK), book(level, Enchantments.SWEEPING_EDGE, 3));
-			offerBook(o, ori, 4, new ItemStack(Items.BOOK), book(level, Enchantments.PROTECTION, 4));
-			offerBook(o, ori, 2, new ItemStack(Items.BOOK), book(level, Enchantments.FEATHER_FALLING, 4));
-			offerBook(o, ori, 3, new ItemStack(Items.BOOK), book(level, Enchantments.EFFICIENCY, 5));
-			offerBook(o, ori, 4, new ItemStack(Items.BOOK), book(level, Enchantments.FORTUNE, 3));
-			offerBook(o, ori, 4, new ItemStack(Items.BOOK), book(level, Enchantments.POWER, 5));
-			offerBook(o, ori, 6, new ItemStack(Items.BOOK), book(level, Enchantments.MENDING, 1));
-			offer(o, ae, 2, new ItemStack(Items.LAPIS_LAZULI, 8));
+			offerBook(o, ori, 4, new ItemStack(ModBlocks.item("element_dust"), 8), book(level, Enchantments.SHARPNESS, 5));
+			offerBook(o, ori, 3, new ItemStack(ModBlocks.item("element_dust"), 8), book(level, Enchantments.SMITE, 5));
+			offerBook(o, ori, 4, new ItemStack(ModBlocks.item("element_dust"), 8), book(level, Enchantments.LOOTING, 3));
+			offerBook(o, ori, 3, new ItemStack(ModBlocks.item("element_dust"), 8), book(level, Enchantments.SWEEPING_EDGE, 3));
+			offerBook(o, ori, 4, new ItemStack(ModBlocks.item("element_dust"), 8), book(level, Enchantments.PROTECTION, 4));
+			offerBook(o, ori, 2, new ItemStack(ModBlocks.item("element_dust"), 8), book(level, Enchantments.FEATHER_FALLING, 4));
+			offerBook(o, ori, 3, new ItemStack(ModBlocks.item("element_dust"), 8), book(level, Enchantments.EFFICIENCY, 5));
+			offerBook(o, ori, 4, new ItemStack(ModBlocks.item("element_dust"), 8), book(level, Enchantments.FORTUNE, 3));
+			offerBook(o, ori, 4, new ItemStack(ModBlocks.item("element_dust"), 8), book(level, Enchantments.POWER, 5));
+			offerBook(o, ori, 6, new ItemStack(ModBlocks.item("element_dust"), 8), book(level, Enchantments.MENDING, 1));
 			offer(o, lightC == Items.AIR ? ae : lightC, 2, new ItemStack(Items.EXPERIENCE_BOTTLE, 6));
-			offer(o, ae, 6, new ItemStack(Items.ENCHANTING_TABLE));
-			offer(o, ae, 2, new ItemStack(Items.BOOKSHELF, 3));
 			if (darkC != Items.AIR) offer(o, darkC, 3, new ItemStack(Items.ENDER_PEARL, 2));
 		}
 

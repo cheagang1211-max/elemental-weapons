@@ -63,34 +63,34 @@ public final class ShotHarness {
 	}
 
 	/** v4.15 확인: 속성별 갑옷 색·장식 (3인칭 정면·뒤) */
-	private static final double[][] TOUR = {   // x, y, z, yaw, pitch
-			{0, com.elementalweapons.world.sky.Annex.Y6 + 14, 30, 180, 22},     // 투기장 관중석에서
-			{0, com.elementalweapons.world.sky.Annex.Y6 + 22, -80, 0, 8},      // 투기장 바깥
-			{0, com.elementalweapons.world.sky.Annex.Y7 + 6, 30, 180, 4},      // 정상: 신전과 성문
-			{0, com.elementalweapons.world.sky.Annex.Y7 + 4, -12, 180, -2},    // 정상: 성문 정면
-			{0, com.elementalweapons.world.sky.Annex.Y7 + 30, 75, 180, 22},    // 정상 전체
-			{0, com.elementalweapons.world.sky.Annex.YB + 6, 20, 180, 8},      // 지하 성소
-			{18, com.elementalweapons.world.sky.Annex.YB + 5, -12, 135, 10},   // 지하 성소 신전
-			{190, 300, 0, 90, 8},                                               // 천공성 전체 옆모습
-	};
 	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
-		if (f == 1) server.execute(() -> { try {
+		int Y7 = com.elementalweapons.world.sky.Annex.Y7;
+		if (f == 200) server.execute(() -> { try {
 			server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "time set noon");
-			ServerPlayer p = sp(server); p.getAbilities().mayfly = true; p.getAbilities().flying = true; p.onUpdateAbilities();
-			log("세계 높이 " + p.level().getMaxY());
-		} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 증축 테스트 오류", ex); } });
-		if (f < 160) { if (f == 159) server.execute(() -> { log("증축 완료? " + com.elementalweapons.world.sky.Annex.done);
-			var lv = sp(server).level(); StringBuilder sb = new StringBuilder();
-			for (int z = 10; z <= 70; z += 4) for (int dy = -1; dy <= 2; dy++) { var st = lv.getBlockState(new net.minecraft.core.BlockPos(0, com.elementalweapons.world.sky.Annex.Y7 + dy, z)); if (!st.isAir()) sb.append(" z").append(z).append("/").append(dy).append("=").append(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(st.getBlock()).getPath()); }
-			log("정상 남쪽 길:" + sb); }); return; }
-		int i = (f - 160) / 60, g = (f - 160) % 60;
-		if (i >= TOUR.length) return;
-		double[] t = TOUR[i];
-		if (g == 0) server.execute(() -> { ServerPlayer p = sp(server);
-			p.teleportTo(t[0], t[1], t[2]); p.setYRot((float) t[3]); p.setXRot((float) t[4]);
-			p.getAbilities().flying = true; p.onUpdateAbilities(); });
-		if (g >= 1) { mc.player.setYRot((float) t[3]); mc.player.setXRot((float) t[4]); mc.options.setCameraType(CameraType.FIRST_PERSON); }
-		if (g == 55) shot(mc, "96" + i + "_annex");
+			ServerPlayer p = sp(server);
+			p.teleportTo(0.5, Y7 + 1, -3.5); p.setYRot(180); p.setXRot(25);
+			var sword = new ItemStack(com.elementalweapons.item.ModItems.WEAPONS.get(com.elementalweapons.item.Element.FIRE).get(com.elementalweapons.item.WeaponType.SWORD));
+			p.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, sword);
+			p.getInventory().add(new ItemStack(com.elementalweapons.item.ModItems.ENHANCE_STONE, 30));
+			p.getInventory().add(new ItemStack(com.elementalweapons.world.ModBlocks.item("ember_crystal"), 60));
+			p.getInventory().add(new ItemStack(com.elementalweapons.world.ModBlocks.item("element_dust"), 64));
+			p.getInventory().add(new ItemStack(com.elementalweapons.world.ModBlocks.item("element_dust"), 64));
+			p.getInventory().add(new ItemStack(com.elementalweapons.item.ModItems.ELEMENT_ESSENCE, 20));
+			p.getInventory().add(new ItemStack(com.elementalweapons.item.ModItems.BLESS_STONE, 2));
+			log("증축 " + com.elementalweapons.world.sky.Annex.done + " 제단 블록 " + p.level().getBlockState(com.elementalweapons.world.sky.Summit.ALTAR.above()));
+		} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 강화 테스트 오류", ex); } });
+		if (f >= 201 && f < 300) { mc.player.setYRot(180); mc.player.setXRot(25); mc.options.setCameraType(CameraType.FIRST_PERSON); }
+		if (f == 240) shot(mc, "95a_altar");
+		if (f == 250) server.execute(() -> { ServerPlayer p = sp(server);
+			for (int i = 0; i < 6; i++) com.elementalweapons.item.Enhancement.attempt(p, false);
+			ItemStack w = p.getMainHandItem();
+			log("강화 결과 +" + com.elementalweapons.item.Enhancement.level(w) + " 이름=" + w.getHoverName().getString() + " 공격력=" + p.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE)); });
+		if (f == 262) mc.gui.setScreen(new com.elementalweapons.client.growth.EnhanceScreen());
+		if (f == 290) shot(mc, "95b_enhance_screen");
+		if (f == 292) mc.gui.setScreen(null);
+		if (f == 300) server.execute(() -> { ServerPlayer p = sp(server); p.teleportTo(0.5, Y7 + 1, 2.5); p.setYRot(0); p.setXRot(15); });
+		if (f > 300 && f < 340) { mc.player.setYRot(0); mc.player.setXRot(15); }
+		if (f == 335) shot(mc, "95c_bell");
 	}
 
 	private static long lastXp;
@@ -245,8 +245,8 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
-		if (f < 660) { classTest(mc, server, f); return; }
-		f -= 660;
+		if (f < 340) { classTest(mc, server, f); return; }
+		f -= 340;
 		double[][] sc = focusScenes();
 		int per = 300;
 		if (f < sc.length * per) {

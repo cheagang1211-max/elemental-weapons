@@ -229,5 +229,7 @@
 	"entity.elementalweapons.job_instructor": "전직 교관",
 	"entity.elementalweapons.enchanter": "마법부여사",
 	"entity.elementalweapons.alchemist": "연금술사",
-	"entity.elementalweapons.sky_dragon": "천공룡"
+	"entity.elementalweapons.sky_dragon": "천공룡",
+	"item.elementalweapons.enhance_stone": "강화석",
+	"item.elementalweapons.bless_stone": "천상의 가호석"
 }

@@ -106,6 +106,11 @@ public class ModItems {
 	public static final Item ELEMENT_ESSENCE = register(key("element_essence"), Item::new,
 			new Item.Properties().rarity(Rarity.EPIC).fireResistant());
 
+	/** 강화석: 무기 강화 기본 재료 (몹·보스·상인·천상의 종) */
+	public static final Item ENHANCE_STONE = register(key("enhance_stone"), Item::new, new Item.Properties().rarity(Rarity.RARE));
+	/** 천상의 가호석: 강화 실패 때 단계가 내려가지 않게 지켜 줌 */
+	public static final Item BLESS_STONE = register(key("bless_stone"), Item::new, new Item.Properties().rarity(Rarity.EPIC).fireResistant());
+
 	/** 보스별 핵 / 소환석 (아이디 → 아이템). 볼트라는 위의 VOLTRA_CORE / VOLTRA_SUMMON */
 	public static final Map<String, Item> BOSS_CORES = new java.util.LinkedHashMap<>();
 	public static final Map<String, Item> BOSS_SUMMONS = new java.util.LinkedHashMap<>();
@@ -167,6 +172,8 @@ public class ModItems {
 					output.accept(VOLTRA_CORE);
 					for (Item it : BOSS_CORES.values()) output.accept(it);
 					output.accept(ELEMENT_ESSENCE);
+					output.accept(ENHANCE_STONE);
+					output.accept(BLESS_STONE);
 					for (Item it : WOODEN.values()) output.accept(it);
 					output.accept(com.elementalweapons.rift.RiftItems.RIFT_KEY);
 					for (Element element : Element.values()) {

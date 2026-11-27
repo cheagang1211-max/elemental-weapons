@@ -155,7 +155,7 @@ public final class ModGrowth {
 	public static void bossKilled(ServerLevel level, ElementalBoss boss) {
 		long hp = boss.maxBigHealth();
 		long xp = hp >= 5_000_000_000L ? 50_000 : hp >= 2_500_000_000L ? 12_000 : hp >= 1_500_000_000L ? 6_000 : 3_000;
-		for (ServerPlayer p : level.players()) if (p.distanceToSqr(boss) < 64 * 64) { addXp(p, xp); Jobs.onBossKill(p); }
+		for (ServerPlayer p : level.players()) if (p.distanceToSqr(boss) < 64 * 64) { addXp(p, xp); Jobs.onBossKill(p); bossGift(p); }
 	}
 
 	/** 성장 속도 배율 (얻는 경험치) */
@@ -232,6 +232,15 @@ public final class ModGrowth {
 	private static final String[] REGION_CRYSTAL = {"bloom_crystal", "tide_crystal", "storm_crystal", "gale_crystal", "ember_crystal", "radiant_crystal", "umbral_crystal"};
 
 	/** 원소 지역 몹을 잡으면 일정 확률로 광석 재료 */
+	/** 보스를 잡으면 강화석, 가끔 천상의 가호석 */
+	private static void bossGift(ServerPlayer p) {
+		var r = p.getRandom();
+		java.util.List<ItemStack> g = new java.util.ArrayList<>();
+		g.add(new ItemStack(com.elementalweapons.item.ModItems.ENHANCE_STONE, 2 + r.nextInt(3)));
+		if (r.nextFloat() < 0.3F) g.add(new ItemStack(com.elementalweapons.item.ModItems.BLESS_STONE));
+		for (ItemStack s : g) if (!p.getInventory().add(s)) p.drop(s, false);
+	}
+
 	private static void oreDrop(ServerPlayer p, net.minecraft.world.entity.LivingEntity mob) {
 		if (!(mob.level() instanceof ServerLevel level)) return;
 		int region = com.elementalweapons.world.sky.SkyLayout.regionAt(mob.getX(), mob.getZ());
@@ -243,6 +252,7 @@ public final class ModGrowth {
 		if (rnd.nextFloat() < 0.22F * bonus) drops.add(new ItemStack(com.elementalweapons.world.ModBlocks.item(crystal), 1 + rnd.nextInt(2)));
 		if (rnd.nextFloat() < 0.08F * bonus) drops.add(new ItemStack(com.elementalweapons.world.ModBlocks.item("raw_aether")));
 		if (rnd.nextFloat() < 0.02F * bonus) drops.add(new ItemStack(com.elementalweapons.world.ModBlocks.item("orichalcum_chunk")));
+		if (rnd.nextFloat() < 0.04F * bonus) drops.add(new ItemStack(com.elementalweapons.item.ModItems.ENHANCE_STONE));
 		for (ItemStack s : drops) mob.spawnAtLocation(level, s);
 	}
 

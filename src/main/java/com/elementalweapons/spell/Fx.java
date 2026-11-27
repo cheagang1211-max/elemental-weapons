@@ -106,6 +106,7 @@ public final class Fx {
 	public static void hurt(ServerLevel level, Player caster, LivingEntity target, float amount) {
 		if (target instanceof Player tp && (caster == null || !com.elementalweapons.world.sky.ArenaDuel.opponents(caster, tp))) return;   // 결투 상대만
 		float m = caster == null ? 1F : (float) com.elementalweapons.growth.ModGrowth.paragon(caster).spellMult() * com.elementalweapons.growth.Jobs.damageMult(caster);
+		if (caster != null && caster.getMainHandItem().getItem() instanceof com.elementalweapons.item.ElementalWeaponItem) m *= (float) com.elementalweapons.item.Enhancement.skillMult(caster.getMainHandItem());
 		target.hurtServer(level, level.damageSources().indirectMagic(caster, caster), amount * m);
 	}
 

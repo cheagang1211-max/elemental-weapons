@@ -229,5 +229,7 @@
 	"entity.elementalweapons.job_instructor": "Job Instructor",
 	"entity.elementalweapons.enchanter": "Enchanter",
 	"entity.elementalweapons.alchemist": "Alchemist",
-	"entity.elementalweapons.sky_dragon": "Sky Dragon"
+	"entity.elementalweapons.sky_dragon": "Sky Dragon",
+	"item.elementalweapons.enhance_stone": "Enhancement Stone",
+	"item.elementalweapons.bless_stone": "Celestial Ward Stone"
 }

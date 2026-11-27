@@ -54,12 +54,11 @@ public class ElementalMerchant extends WanderingTrader implements PosedEntity {
 		sell(offers, dust, 30, com.elementalweapons.item.ModItems.ELEMENT_ESSENCE, 1);
 		for (String[] t : tier1) sell(offers, dust, 6, ModBlocks.item(t[1]), 1);                     // 원소 가루 → 원하는 속성 수정
 		// 생활
-		sell(offers, aether, 1, Items.GOLDEN_CARROT, 8);
 		sell(offers, aether, 2, Items.GOLDEN_APPLE, 1);
 		sell(offers, ori, 6, Items.TOTEM_OF_UNDYING, 1);
-		sell(offers, aether, 1, Items.WHEAT_SEEDS, 8);
-		sell(offers, aether, 1, Items.BONE_MEAL, 12);
-		sell(offers, aether, 3, Items.NAME_TAG, 1);
+		// 강화 재료
+		sell(offers, dust, 12, com.elementalweapons.item.ModItems.ENHANCE_STONE, 1);
+		sell(offers, ori, 5, com.elementalweapons.item.ModItems.BLESS_STONE, 1);
 	}
 
 	protected static void sellTwo(MerchantOffers offers, Item cost, int n, Item cost2, int n2, Item result) {
@@ -82,9 +81,17 @@ public class ElementalMerchant extends WanderingTrader implements PosedEntity {
 	public net.minecraft.core.BlockPos post() { return post; }
 	@Override public boolean shouldBeSaved() { return post == null && super.shouldBeSaved(); }
 
+	private boolean tradesFresh;
+
 	@Override
 	public void tick() {
 		super.tick();
+		// 불러올 때마다 거래 목록을 새로 만듦 (예전에 저장된 옛 거래가 남지 않게)
+		if (!tradesFresh && !this.level().isClientSide() && this.level() instanceof ServerLevel sl && this.getTradingPlayer() == null) {
+			tradesFresh = true;
+			this.getOffers().clear();
+			this.updateTrades(sl);
+		}
 		// 밀리거나 떨어져도 자기 자리로 돌아감
 		if (post != null && !this.level().isClientSide() && this.tickCount % 20 == 0
 				&& this.distanceToSqr(post.getX() + 0.5, post.getY(), post.getZ() + 0.5) > 2.25) {
