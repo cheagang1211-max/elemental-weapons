@@ -63,7 +63,7 @@ def frost_giant():
     mantle = [C(0, -28, 0.5, 26, 6, 15, "fur"), C(-11, -25.5, 0.5, 6, 5, 14, "fur"), C(11, -25.5, 0.5, 6, 5, 14, "fur"), C(0, -31.5, 2, 18, 2, 10, "fur2")]
     plate = [C(0, -19, -6.6, 14, 12, 1.2, "ice"), C(0, -19, -7.3, 6, 6, 1, "deep"), C(0, -25, -6.8, 16, 2, 1, "iron"),
              C(-4.5, -13, -6.4, 4, 2, 1, "iron"), C(4.5, -13, -6.4, 4, 2, 1, "iron")]
-    belt = [C(0, -7, 0, 18, 4, 12, "leather"), C(0, -7, -6.3, 5, 5, 1, "metal"), C(0, -7, -6.9, 3, 3, 1, "bone"),
+    belt = [C(0, -2.5, 0, 16, 6, 10, "leather"), C(0, -7, 0, 18, 4, 12, "leather"), C(0, -7, -6.3, 5, 5, 1, "metal"), C(0, -7, -6.9, 3, 3, 1, "bone"),
             C(-7, -7, -6.2, 2, 2, 1, "iron"), C(7, -7, -6.2, 2, 2, 1, "iron")]
     loin = chain("swayL", 2, (0, -5, -5.5), 4, 9, 8, "fur2", axis="y", h0=1, h1=1)
     loin2 = chain("swayK", 2, (0, -5, 5.5), 4, 12, 10, "fur2", axis="y", h0=1, h1=1)
@@ -228,6 +228,7 @@ def steam_colossus():
         C(0, -16, -7.8, 12, 11, 1, "dark"), C(0, -16, -8.3, 10, 9, 1, "furnace"), C(0, -16, -8.9, 11, 1, 1, "iron"), C(0, -12.5, -8.9, 11, 1, 1, "iron"),
         C(-3, -16, -8.9, 1, 9, 1, "iron"), C(3, -16, -8.9, 1, 9, 1, "iron"),
         C(0, -28, 0, 28, 4, 16, "iron"), C(0, -30.5, 0, 14, 2, 10, "dark"), C(0, -5, 0, 20, 4, 13, "iron"), C(0, -2.5, 0, 16, 2, 11, "dark"),
+        C(0, 0, 0, 18, 6, 12, "iron"), C(0, 0, -6.2, 6, 4, 1, "brass2"), C(-8, 1, 0, 3, 4, 10, "brass"), C(8, 1, 0, 3, 4, 10, "brass"),
         C(-10.5, -10, -7.6, 3, 3, 1, "lens"), C(10.5, -10, -7.6, 3, 3, 1, "glass"), C(10.5, -14, -7.6, 3, 3, 1, "glass")] + stacks
     torso += [C(x, y, -7.9, 1, 1, 1, "rivet") for x in (-12, 12) for y in (-24, -20, -16, -12, -8)]
     torso += [C(0, -20, 8, 18, 12, 2, "copper"), C(-5, -20, 9.4, 3, 10, 1, "pipe"), C(5, -20, 9.4, 3, 10, 1, "pipe"), C(0, -26, 9.4, 13, 2, 1, "pipe")]
@@ -539,3 +540,155 @@ def sphinx():
     legs = [paw("right_leg", (-5, 13, 9)), paw("left_leg", (5, 13, 9)),
             paw("front_right_leg", (-5, 13, -9), "front_right_leg2"), paw("front_left_leg", (5, 13, -9), "front_left_leg2")]
     return [body, sun] + legs, m
+
+
+def dragon_head(name, m_scale, face, horn, teethm, glowm, size=1.0, jaw_name="jaw", horn_prefix="horn", extra=()):
+    """용 머리: 주둥이 + 눈썹 융기 + 콧구멍 불빛 + 이빨 + 아래턱 + 뿔 2쌍"""
+    k = size
+    jaw = P(jaw_name, (0, 3 * k, -2 * k), (0, 0, 0), [C(0, 1 * k, -6 * k, 8 * k, 2 * k, 12 * k, m_scale), C(0, 0, -6 * k, 6 * k, 1, 10 * k, glowm),
+            *teeth(-3.5 * k, 3.5 * k, 0, -11 * k, teethm, up=True)], field=(jaw_name == "jaw"))
+    horns = []
+    for s in (-1, 1):
+        h = bend_chain(f"{horn_prefix}{'L' if s > 0 else 'R'}", (s * 3.5 * k, -4 * k, 2 * k), [(5 * k, 2.6 * k), (4 * k, 2 * k), (4 * k, 1.4 * k)], horn, bend=(R(-28), 0, 0))
+        h.rot = (R(-60), s * R(-18), 0)
+        horns.append(h)
+        h2 = bend_chain(f"{horn_prefix}{'l' if s > 0 else 'r'}2", (s * 5.4 * k, -1 * k, 0), [(3 * k, 1.6 * k), (3 * k, 1.2 * k)], horn, bend=(R(-25), 0, 0))
+        h2.rot = (R(-75), s * R(-40), 0)
+        horns.append(h2)
+    boxes = rounded(0, -1 * k, -4 * k, 11 * k, 9 * k, 10 * k, m_scale) + [C(0, -1 * k, -9.1 * k, 11 * k, 9 * k, 1, m_scale, {"front": face}),
+             C(0, 0.6 * k, -13 * k, 8 * k, 5 * k, 8 * k, m_scale), C(0, -2.6 * k, -12 * k, 6 * k, 1.4 * k, 7 * k, m_scale),
+             C(-3.6 * k, -4.4 * k, -7 * k, 3.4 * k, 1.6 * k, 6 * k, m_scale), C(3.6 * k, -4.4 * k, -7 * k, 3.4 * k, 1.6 * k, 6 * k, m_scale),
+             C(-2 * k, -1.5 * k, -17.1 * k, 1.4 * k, 1.4 * k, 1, glowm), C(2 * k, -1.5 * k, -17.1 * k, 1.4 * k, 1.4 * k, 1, glowm),
+             *teeth(-3.5 * k, 3.5 * k, 3 * k, -16.5 * k, teethm),
+             C(-6 * k, 0, -3 * k, 1.4 * k, 4 * k, 5 * k, horn), C(6 * k, 0, -3 * k, 1.4 * k, 4 * k, 5 * k, horn)] + list(extra)
+    return boxes, [jaw] + horns
+
+
+@spec
+def ignis():
+    """화염룡 이그니스: 큰 머리·뿔 2쌍·빛나는 목 비늘·용암 갈라진 배·불꽃 꼬리 끝·핏줄 빛나는 날개"""
+    m = {"scale": M(0xB8321C, "scale", accent=0x7A160C), "scale2": M(0x8A2414, "scale", accent=0x5A100A), "belly": M(0xF0A040, "plate"),
+         "horn": M(0xE8DCC0, "bone"), "wing": M(0x7A1E14, "veins", glow=0xFF9A30), "fire": M(0xFFB040, glow_all=True), "fire2": M(0xFF6A20, glow_all=True),
+         "claw": M(0x2A1A16, "metal"), "magma": M(0x5A1A10, "lava", glow=0xFFA030), "teeth": M(0xF4EEDC, "plain")}
+    m["face"] = FACE3(m["scale"], 0xFFE040, kind="beast", skin_shadow=0.45, eye_y=0.32, eye_gap=0.3, eye_w=0.16)
+    hb, hc = dragon_head("head", "scale", m["face"], "horn", "teeth", "fire2")
+    head = P("head", (0, 0, -6), (0, 0, 0), hb, hc)
+    neck = chain("neck", 3, (0, -3, -12), 6, 9, 7, "scale", axis="z", direction=-1,
+                 decor=lambda i, w, h, L: spikes(2, 0, 0, -h / 2, -1, -L + 1, 2, 2.5, "horn") + [C(0, h / 2, -L / 2, w * 0.7, 1, L, "belly"), C(0, h / 2 + 0.3, -L / 2, 2, 1, L - 1, "fire")])
+    n = neck
+    while n.children: n = n.children[0]
+    n.children.append(head); head.pivot = (0, 0, -6)
+    neck.rot = (R(-14), 0, 0)
+    tail = chain("tail", 7, (0, -2, 12), 6, 9, 2.4, "scale", axis="z",
+                 decor=lambda i, w, h, L: spikes(2, 0, 0, -h / 2, 1, L - 1, max(1.2, 3.4 - i * 0.35), max(1.2, 3.4 - i * 0.35), "horn") + [C(0, h / 2, L / 2, w * 0.7, 1, L, "belly")])
+    t = tail
+    while t.children: t = t.children[0]
+    t.boxes += [C(0, 0, 5, 7, 1.4, 6, "claw"), C(0, 0, 6, 5, 1.6, 4, "fire2"), C(0, -2.5, 7, 3, 4, 3, "fire"), C(0, -5, 7.5, 1.6, 3, 1.6, "fire2")]
+    tail.rot = (R(-8), 0, 0)
+    rw = wing("right", (-6, -6, -6), "horn", "wing", span=40, depth=20, fingers=4, mat_claw="claw", rot=(0, R(10), R(-40)))
+    lw = wing("left", (6, -6, -6), "horn", "wing", span=40, depth=20, fingers=4, mat_claw="claw", rot=(0, R(-10), R(40)))
+    body = P("body", (0, 8, 0), (0, 0, 0), rounded(0, 0, 0, 17, 13, 27, "scale", 1.5) + [
+        C(0, 6.2, 0, 12, 2, 23, "belly"), C(0, 6.8, 0, 6, 1, 18, "magma"), C(0, -6.5, -9, 15, 3, 9, "scale2"),
+        C(-7.5, -2, -8, 4, 8, 9, "scale2"), C(7.5, -2, -8, 4, 8, 9, "scale2"), C(0, 2, 0, 17.6, 5, 20, "magma"),
+        C(0, -7.5, 4, 10, 2, 12, "scale2"), *spikes(8, 0, 0, -6.5, -12, 12, 2.4, 5.5, "horn", w=2),
+        *[C(s * 8.8, 1, z, 1, 2, 2, "fire") for s in (-1, 1) for z in (-6, 0, 6)]], [neck, tail, rw, lw])
+    legs = [leg("right_leg", (-6.5, 14, 9), (6.5, 6), (5, 4), "scale", "scale2", "claw"),
+            leg("left_leg", (6.5, 14, 9), (6.5, 6), (5, 4), "scale", "scale2", "claw"),
+            leg("front_right_leg", (-6.5, 14, -8), (5.5, 6), (4.4, 4), "scale", "scale2", "claw", knee_name="front_right_leg2"),
+            leg("front_left_leg", (6.5, 14, -8), (5.5, 6), (4.4, 4), "scale", "scale2", "claw", knee_name="front_left_leg2")]
+    for l in legs: l.boxes.append(C(0, 1, 0, 7.4, 4, 7.4, "scale2"))
+    return [body] + legs, m
+
+
+@spec
+def storm_wyvern():
+    """폭풍 와이번: 뿔 투구 같은 머리, 번개 등지느러미, 끝이 번개 칼날인 꼬리, 큰 막 날개"""
+    m = {"scale": M(0x1E2A4A, "scale", accent=0x3A5AA0), "scale2": M(0x2A3A6A, "scale", accent=0x4A6AB0), "belly": M(0x8AA0C8, "plate"),
+         "bolt": M(0x9FE8FF, glow_all=True), "horn": M(0xD0D8E8, "bone"), "wing": M(0x2A3A6A, "veins", glow=0x9FE8FF), "claw": M(0x101018, "metal"),
+         "teeth": M(0xF0F4FF, "plain")}
+    m["face"] = FACE3(m["scale"], 0x9FF0FF, kind="beast", skin_shadow=0.45, eye_y=0.32, eye_gap=0.3, eye_w=0.16)
+    hb, hc = dragon_head("head", "scale", m["face"], "horn", "teeth", "bolt", size=0.85, horn_prefix="hornW")
+    head = P("head", (0, 0, -5), (0, 0, 0), hb + [C(0, -5.5, -3, 1.4, 2, 8, "bolt")], hc)
+    neck = chain("neck", 3, (0, -2, -9), 5, 6.4, 5, "scale", axis="z", direction=-1,
+                 decor=lambda i, w, h, L: [C(0, -h / 2 - 1.2, -L / 2, 1, 2.4, 2.4, "bolt"), C(0, h / 2, -L / 2, w * 0.7, 1, L, "belly")])
+    n = neck
+    while n.children: n = n.children[0]
+    n.children.append(head)
+    neck.rot = (R(-25), 0, 0)
+    tail = chain("tail", 7, (0, -1, 9), 6, 6.4, 2, "scale", axis="z", decor=lambda i, w, h, L: [C(0, -h / 2 - 0.8, L / 2, 1, 1.6, 3.4, "bolt")])
+    t = tail
+    while t.children: t = t.children[0]
+    t.boxes += [C(0, 0, 6, 7, 1.2, 6, "bolt"), C(0, -2.5, 6, 1.2, 5, 6, "bolt"), C(0, 0, 3, 3, 3, 3, "claw")]
+    rw = wing("right", (-5, -4, -4), "horn", "wing", span=54, depth=24, fingers=4, mat_claw="claw", rot=(0, R(10), R(-25)))
+    lw = wing("left", (5, -4, -4), "horn", "wing", span=54, depth=24, fingers=4, mat_claw="claw", rot=(0, R(-10), R(25)))
+    body = P("body", (0, 8, 0), (0, 0, 0), rounded(0, 0, 0, 12, 11, 20, "scale", 1.5) + [C(0, 5.2, 0, 9, 2, 16, "belly"), C(0, -5.6, 0, 8, 1.4, 16, "scale2"),
+             *spikes(6, 0, 0, -6, -8, 9, 2, 3.4, "bolt", w=1), C(-6.4, -1, -4, 1.4, 4, 6, "scale2"), C(6.4, -1, -4, 1.4, 4, 6, "scale2")],
+             [neck, tail, rw, lw])
+    legs = [leg("right_leg", (-5, 12, 5), (5, 6), (3.4, 6), "scale", "claw", "claw"), leg("left_leg", (5, 12, 5), (5, 6), (3.4, 6), "scale", "claw", "claw")]
+    return [body] + legs, m
+
+
+@spec
+def zephyros():
+    """바람의 대붕 제피로스: 볏 깃털 부채, 금 가면, 끝이 빛나는 긴 날개, 길게 갈라진 꼬리깃"""
+    m = {"feather": M(0xE6F2F0, "feather", accent=0x4FB8A8), "dark": M(0x2F6F73, "feather", accent=0x9FF3E8), "gold": M(0xF0C040, "metal"),
+         "tip": M(0xB8FFF0, glow_all=True), "talon": M(0x3A3A40, "metal"), "gem": M(0x60FFE0, "gem", glow=0x9FFFF0), "beak": M(0xF0D070, "bone")}
+    m["face"] = FACE3(m["feather"], 0x60FFE0, kind="beast", skin_shadow=0.5, eye_y=0.38, eye_gap=0.28)
+    crest = [P(f"zc{i}", (0, -6, 1), (R(-30 - i * 14), 0, 0), [B(-0.8, -9 + i, -0.5, 1.6, 9 - i, 1, "dark"), B(-0.6, -10 + i, -0.5, 1.2, 1.6, 1, "tip")], field=False) for i in range(5)]
+    head = P("head", (0, -4, -9), (0, 0, 0), rounded(0, -3, -3, 9, 8, 8, "feather", 1) + [C(0, -3, -7.1, 9, 8, 1, "feather", {"front": m["face"]}),
+             C(0, -1, -9.5, 3.4, 3, 5, "beak"), C(0, 0.6, -12.2, 2.4, 2.6, 1.6, "beak"), C(0, 1.6, -9, 2.6, 1, 4, "beak"),
+             C(0, -6.4, -6.2, 7, 1.4, 1.4, "gold"), C(0, -7.6, -6.6, 2, 2, 1, "gem"), C(-4.6, -3, -4, 1, 3, 4, "gold"), C(4.6, -3, -4, 1, 3, 4, "gold")], crest)
+    rw = wing("right", (-6, -5, -2), "dark", "feather", span=50, depth=20, fingers=5, rot=(0, 0, R(-10)))
+    lw = wing("left", (6, -5, -2), "dark", "feather", span=50, depth=20, fingers=5, rot=(0, 0, R(10)))
+    for w_ in (rw, lw):
+        s = -1 if w_.name.startswith("right") else 1
+        w_.children[0].boxes += [B((s * 25 if s > 0 else -25) - (0 if s > 0 else 0), 0.5, 2, 2, 1, 18, "tip"), B((s * 25 if s > 0 else -25) - s * 4, 0.6, 2, 2, 1, 19, "tip")]
+    tail = chain("tail", 3, (0, 0, 9), 6, 10, 15, "dark", axis="z", h0=1, h1=1)
+    t = tail
+    while t.children: t = t.children[0]
+    t.boxes += [B(-8, 0, 4, 4, 1, 10, "feather"), B(4, 0, 4, 4, 1, 10, "feather"), B(-9, 0.2, 12, 3, 1, 4, "tip"), B(6, 0.2, 12, 3, 1, 4, "tip")]
+    body = P("body", (0, 6, 0), (0, 0, 0), rounded(0, 0, 0, 13, 12, 18, "feather", 1.5) + [C(0, 4, -4, 10, 6, 8, "feather"),
+             C(0, -2, -9.6, 9, 6, 1, "gold"), C(0, -2, -10.2, 2.4, 2.4, 1, "gem"), C(0, -6.5, 2, 10, 1.4, 12, "dark"),
+             C(0, -3, -8.6, 11, 1.4, 4, "dark")], [head, rw, lw, tail])
+    legs = [leg("right_leg", (-3, 12, 2), (4, 6), (2.4, 6), "dark", "talon", "talon"), leg("left_leg", (3, 12, 2), (4, 6), (2.4, 6), "dark", "talon", "talon")]
+    for l in legs: l.boxes.append(C(0, 1, 0, 5.4, 3, 5.4, "feather"))
+    return [body] + legs, m
+
+
+@spec
+def hydra():
+    """꽃의 히드라: 세 머리(가운데가 큼)·꽃잎 볏·독 빛나는 목구멍, 덩굴 감긴 몸, 꽃 가시 등"""
+    m = {"scale": M(0x1E5A2A, "scale", accent=0x0E3A18), "scale2": M(0x2E7A3A, "scale", accent=0x1A5A28), "belly": M(0xC8D890, "plate"),
+         "petal": M(0xFF70B0, "leaf", accent=0xFFB0D8, glow=0xFFD0F0), "poison": M(0xB0FF60, glow_all=True), "horn": M(0xE8E0C8, "bone"),
+         "vine": M(0x2E7D32, "bark"), "teeth": M(0xF4F0DC, "plain"), "bloom": M(0xFFD0E8, glow_all=True)}
+    heads = []
+    for i, (x, sz, tilt) in enumerate(((-10, 0.7, -8), (0, 0.85, -14), (10, 0.7, -8))):
+        face = FACE3(m["scale"], 0xD0FF60, kind="beast", skin_shadow=0.45, eye_y=0.32, eye_gap=0.3, eye_w=0.16)
+        m[f"face{i}"] = face
+        hb, hc = dragon_head(f"head{i + 1}", "scale", face, "horn", "teeth", "poison", size=sz, jaw_name=f"jawh{i + 1}", horn_prefix=f"hh{i}")
+        petals = [P(f"hp{i}{k}", (0, -4 * sz, 2 * sz), (R(-40), 0, R(-60 + k * 30)), [B(-1.2, -6, -0.5, 2.4, 6, 1, "petal"), B(-0.6, -7, -0.5, 1.2, 1.4, 1, "bloom")], field=False) for k in range(5)]
+        h = P(f"head{i + 1}", (0, -6, -2), (R(10), 0, 0), hb, hc + petals)
+        nk = chain(f"neckh{i + 1}x", 4, (x, -6, -6), 6, 7 * sz / 0.7 * 0.8, 5.4, "scale", axis="y", direction=-1,
+                   decor=lambda k, w, hh, L: [C(0, -L / 2, w / 2 + 0.6, 3.4, L - 0.6, 1.2, "belly"), C(0, -L / 2, -w / 2 - 0.6, 1.4, 2, 1.4, "petal")])
+        e = nk
+        while e.children: e = e.children[0]
+        e.children.append(h)
+        nk.rot = (R(tilt), 0, R(x * 2.4))
+        heads.append(nk)
+    tail = chain("tail", 6, (0, 0, 12), 6, 10, 2.4, "scale", axis="z",
+                 decor=lambda i, w, h, L: ([C(0, -h / 2 - 1, L / 2, 2.4, 2.4, 2.4, "petal")] if i % 2 == 0 else []) + [C(0, h / 2, L / 2, w * 0.7, 1, L, "belly")])
+    t = tail
+    while t.children: t = t.children[0]
+    t.boxes += [C(0, 0, 4, 5, 5, 5, "petal"), C(0, 0, 4, 2.4, 6, 2.4, "bloom")]
+    vines = [C(-9.8, -2, 0, 1.6, 1.6, 24, "vine"), C(9.8, -2, 0, 1.6, 1.6, 24, "vine"), C(0, -7.8, 4, 19, 1.6, 1.6, "vine"), C(0, -7.8, -6, 19, 1.6, 1.6, "vine")]
+    flowers = []
+    for j, (x, z) in enumerate(((-5, -6), (5, -2), (-4, 3), (5, 7), (0, 10))):
+        flowers += [C(x, -8.5, z, 4, 1.4, 4, "petal"), C(x, -9.4, z, 1.6, 1.6, 1.6, "bloom")]
+    body = P("body", (0, 10, 0), (0, 0, 0), rounded(0, 0, 0, 19, 14, 25, "scale", 1.5) + [C(0, 7, 0, 14, 2, 21, "belly"), C(0, -6.8, 0, 12, 1.4, 20, "scale2"),
+             *vines, *flowers, *spikes(5, 0, 0, -7.4, -8, 10, 3, 4, "horn", w=2)] + [C(x, -7, z, 2, 2, 2, "poison") for x, z in ((-7, -4), (7, 2), (-6, 8))], heads + [tail])
+    def hl(name, pv, knee=None):
+        l = leg(name, pv, (6.4, 5), (5.4, 4), "scale", "scale2", "horn", knee_name=knee)
+        l.boxes.append(C(0, 1, 0, 7.6, 3.4, 7.6, "scale2"))
+        return l
+    legs = [hl("right_leg", (-8, 15, 8)), hl("left_leg", (8, 15, 8)), hl("front_right_leg", (-8, 15, -8), "front_right_leg2"), hl("front_left_leg", (8, 15, -8), "front_left_leg2")]
+    return [body] + legs, m

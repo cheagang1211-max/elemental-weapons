@@ -47,13 +47,16 @@ def M(base, pat="plain", accent=None, glow=None, trim=None, glow_all=False, rim=
         if pat in ("scale", "plate", "stone", "bark", "crystal", "metal", "feather", "fur", "bone"):
             lv += 0.3 if sy == 0 else (-0.3 if sy == PS - 1 else 0)
         if pat == "scale":
-            cw, ch = 6, 4
+            cw, ch = 6, 5
             row = y // ch; ox = (row % 2) * (cw // 2)
             lx, ly = (x + ox) % cw, y % ch
             dxc = abs(lx - (cw - 1) / 2) / (cw / 2)
-            if ly >= ch - 1 - int(dxc * 1.5): lv -= 1.1          # 비늘 아래 가장자리 그림자
-            elif ly == 0 and dxc < 0.6: lv += 0.9                 # 비늘 윗면 반사광
-            elif ly == 1 and dxc < 0.3: lv += 0.4
+            # 둥근 비늘: 아래로 볼록한 반원, 윗부분 밝고 테두리 어둡게
+            edge = ly + dxc * dxc * 2.6
+            if edge >= ch - 0.6: lv -= 1.2
+            elif edge >= ch - 1.6: lv -= 0.45
+            elif ly <= 1 and dxc < 0.5: lv += 0.85
+            elif ly == 2 and dxc < 0.3: lv += 0.35
             if A and (row % 6 == 0) and face != "top": return pick(A, lv), None
         elif pat == "plate":
             gx, gy = x % 12, y % 12
