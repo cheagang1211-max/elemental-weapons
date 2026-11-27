@@ -55,7 +55,7 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 	private final List<Strike> strikes = new ArrayList<>();
 	private final List<Proj> projs = new ArrayList<>();
 	private final List<Entity> minions = new ArrayList<>();
-	private final List<com.elementalweapons.spell.GrandVisual> meteorVis = new ArrayList<>(), beamVis = new ArrayList<>();
+	private final List<com.elementalweapons.spell.GrandVisual> meteorVis = new ArrayList<>(), beamVis = new ArrayList<>(), markVis = new ArrayList<>();
 	private Vec3 dashDir = Vec3.ZERO;
 	private final Set<UUID> hitOnce = new HashSet<>();
 	private final Map<UUID, Integer> lastHit = new HashMap<>();
@@ -408,8 +408,28 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 			}
 		} else if (t == 55) {
 			for (Player p : marked) markedPos.add(BossFx.ground(level, p.getX(), p.getZ()));
+			for (var v : markVis) if (v.isAlive()) v.discard();
+			markVis.clear();
+			for (Vec3 g : markedPos) {   // 하늘에 거대한 속성 검이 나타나 겨눔
+				var v = com.elementalweapons.mob.ModMobs.GRAND.create(level, net.minecraft.world.entity.EntitySpawnReason.MOB_SUMMONED);
+				if (v == null) continue;
+				v.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
+				v.setKind(12); v.setElem(e.ordinal());
+				v.snapTo(g.x, g.y + 22, g.z, this.getRandom().nextFloat() * 360, 0);
+				level.addFreshEntity(v);
+				markVis.add(v);
+			}
 		} else if (t < 72) {
 			for (Vec3 g : markedPos) BossFx.warnRing(level, g, s.radius(), BossFx.WARN_RED, t * 0.3);
+			int i = 0;
+			for (Vec3 g : markedPos) {
+				if (i < markVis.size()) {
+					var v = markVis.get(i);
+					double f = t < 66 ? 0 : (t - 66) / 6.0;
+					v.setPos(g.x, g.y + 22 * (1 - f * f) - 0.6 * f, g.z); v.life = 0;
+				}
+				i++;
+			}
 		} else if (t == 72) {
 			for (Vec3 g : markedPos) {
 				ElementFx.impact(level, e, g, s.radius());
@@ -420,6 +440,12 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 					schedule(BossFx.ground(level, g.x + rnd(6), g.z + rnd(6)), 10 + i * 4, 2.0, s.damage() * 0.45F, e);
 				}
 			}
+		} else if (t < 92) {
+			int i = 0;
+			for (Vec3 g : markedPos) { if (i < markVis.size()) { var v = markVis.get(i); v.setPhase(Math.min(1, (t - 72) / 10F)); v.setPos(g.x, g.y - 0.6 - Math.max(0, t - 80) * 0.5, g.z); v.life = 0; } i++; }
+		} else if (t == 92) {
+			for (var v : markVis) if (v.isAlive()) v.discard();
+			markVis.clear();
 		}
 	}
 
@@ -652,6 +678,7 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 			for (Vec3 g : markedPos) {
 				ElementFx.impact(level, e, g, s.radius());
 				ElementFx.impact(level, e, g.add(rnd(2), 0, rnd(2)), s.radius() * 0.7);
+				fxVis(level, 15, e, g, 26, (float) (s.radius() / 4.5));
 				Fx.sphere(level, ElementFx.dust(e, 2.0F), g.add(0, 1, 0), s.radius() * 0.8, 120);
 				Fx.sound(level, g, SoundEvents.GENERIC_EXPLODE, 3.0F, 0.6F);
 				hitPlayers(level, g, s.radius(), s.damage(), e);
