@@ -244,6 +244,20 @@ public final class ShotHarness {
 		f -= RC_T;
 		if (f < PAT_T) { patternDemo(mc, server, f); return; }
 		f -= PAT_T;
+		if (f < 70) {
+			if (f == 0) server.execute(() -> { ServerPlayer p = sp(server);
+				if (current != null) current.discard();
+				Entity e = ModEntities.BOSSES.get("frost_giant").create(p.level(), EntitySpawnReason.COMMAND);
+				e.snapTo(RX, RY, RZ + 9, 180, 0);
+				if (e instanceof Mob m) m.setNoAi(true);
+				p.level().addFreshEntity(e); current = e;
+				p.teleportTo(RX + 8, RY + 5, RZ - 12); });
+			if (f > 2 && current != null) lookAt(mc, RX - 0.5, RY + 1.5, RZ + 9 - 0.5);
+			if (f == 20) server.execute(() -> { if (current instanceof com.elementalweapons.boss.ElementalBoss b) b.debugDamage((ServerLevel) b.level(), Long.MAX_VALUE / 4); });
+			if (f == 26 || f == 34 || f == 48) shot(mc, "d_death_" + f);
+			return;
+		}
+		f -= 70;
 		if (f == 5) { log("DONE"); mc.stop(); }
 	}
 
