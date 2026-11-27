@@ -81,9 +81,9 @@ public final class ShotHarness {
 			} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 핵 강화 오류", ex); } });
 		if (f == 20) mc.gui.setScreen(new com.elementalweapons.client.growth.GrowthScreen());
 		if (f == 50) shot(mc, "92a_core_forge");
-		if (f == 52) { com.elementalweapons.client.growth.GrowthScreen.paragonMode = true; }
-		if (f == 70) shot(mc, "92b_core_forge_paragon");
-		if (f == 72) { com.elementalweapons.client.growth.GrowthScreen.paragonMode = false; mc.gui.setScreen(null); }
+		if (f == 52) { com.elementalweapons.client.growth.GrowthScreen.coreMode = true; }
+		if (f == 70) shot(mc, "92b_core_forge_open");
+		if (f == 72) { com.elementalweapons.client.growth.GrowthScreen.coreMode = false; mc.gui.setScreen(null); }
 	}
 
 	private static long lastXp;

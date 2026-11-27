@@ -21,15 +21,21 @@ public class GrowthScreen extends Screen {
 	public static boolean paragonMode = false;
 	private static final int PW = 164, PG = 4, RH = 11;
 	private int left, top, px;
+	private boolean narrow;
+	public static boolean coreMode = false;
+	private final java.util.List<Button> statBtns = new java.util.ArrayList<>();
+	private Button paragonBtn;
 	private final Button[] coreBtns = new Button[com.elementalweapons.growth.CoreForge.IDS.length];
 
 	public GrowthScreen() { super(Component.literal("원소 성장")); }
 
 	@Override
 	protected void init() {
-		left = (width - W - PG - PW) / 2;
+		narrow = width < W + PG + PW + 8;
+		left = narrow ? (width - W) / 2 : (width - W - PG - PW) / 2;
 		top = (height - H) / 2;
-		px = left + W + PG;
+		px = narrow ? left + W - PW : left + W + PG;
+		statBtns.clear();
 		for (int i = 0; i < coreBtns.length; i++) {
 			final int idx = i;
 			coreBtns[i] = addRenderableWidget(Button.builder(Component.literal("+"), b -> ClientPlayNetworking.send(new com.elementalweapons.growth.CoreForge.Up(idx)))
@@ -37,13 +43,15 @@ public class GrowthScreen extends Screen {
 		}
 		for (int i = 0; i < 4; i++) {
 			final int stat = i;
-			addRenderableWidget(Button.builder(Component.literal("+"), b -> {
+			statBtns.add(addRenderableWidget(Button.builder(Component.literal("+"), b -> {
 					int n = minecraft.hasShiftDown() ? 5 : 1;
 					if (paragonMode) ClientPlayNetworking.send(new GrowthPayloads.SpendParagon(stat, n));
 					else ClientPlayNetworking.send(new GrowthPayloads.Spend(stat, n)); })
-					.bounds(left + W - 28, top + 32 + i * 34 + 6, 20, 20).build());
+					.bounds(left + W - 28, top + 32 + i * 34 + 6, 20, 20).build()));
 		}
-		addRenderableWidget(Button.builder(Component.literal("✧ 초월"), b -> paragonMode = !paragonMode)
+		if (narrow) addRenderableWidget(Button.builder(Component.literal("◆ 핵 강화"), b -> coreMode = !coreMode)
+				.bounds(left + W - 160, top + 4, 54, 16).build());
+		paragonBtn = addRenderableWidget(Button.builder(Component.literal("✧ 초월"), b -> paragonMode = !paragonMode)
 				.bounds(left + W - 104, top + 4, 50, 16).build());
 		if (minecraft.player != null && com.elementalweapons.growth.Evolution.pending(minecraft.player))
 			addRenderableWidget(Button.builder(Component.literal("✦ 전직"), b -> minecraft.gui.setScreen(new com.elementalweapons.client.skill.EvolveScreen()))
@@ -68,26 +76,39 @@ public class GrowthScreen extends Screen {
 		// 왼쪽 캐릭터 칸
 		g.fill(left + 8, top + 30, left + 92, top + H - 8, 0x60000000);
 		g.outline(left + 8, top + 30, 84, H - 38, 0xFF3B3260);
-		// 핵 강화 칸
-		g.fillGradient(px, top, px + PW, top + H, 0xF5151A33, 0xF5160E28);
-		g.outline(px, top, PW, H, 0xFFFFB347);
-		g.fillGradient(px + 1, top + 1, px + PW - 1, top + 24, 0x40FFB347, 0x00FFB347);
-		g.horizontalLine(px + 1, px + PW - 2, top + 24, 0x80FFB347);
-		for (int i = 0; i < com.elementalweapons.growth.CoreForge.IDS.length; i++)
-			if (i % 2 == 0) g.fill(px + 2, top + 26 + i * RH, px + PW - 2, top + 26 + (i + 1) * RH, 0x14FFFFFF);
 		// 스탯 줄
 		for (int i = 0; i < 4; i++) {
 			int ry = top + 32 + i * 34;
 			g.fill(left + 98, ry, left + W - 6, ry + 31, 0x18FFFFFF);
 			g.outline(left + 98, ry, W - 104, 31, 0xFF3B3260);
 		}
+		// 핵 강화 칸 (좁은 화면은 버튼으로 바꿔 보기)
+		if (narrow && !coreMode) return;
+		g.fill(px, top, px + PW, top + H, 0xFF151A33);
+		g.fillGradient(px, top, px + PW, top + H, 0xF5151A33, 0xF5160E28);
+		g.outline(px, top, PW, H, 0xFFFFB347);
+		g.fillGradient(px + 1, top + 1, px + PW - 1, top + 24, 0x40FFB347, 0x00FFB347);
+		g.horizontalLine(px + 1, px + PW - 2, top + 24, 0x80FFB347);
+		for (int i = 0; i < com.elementalweapons.growth.CoreForge.IDS.length; i++)
+			if (i % 2 == 0) g.fill(px + 2, top + 26 + i * RH, px + PW - 2, top + 26 + (i + 1) * RH, 0x14FFFFFF);
 	}
 
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float pt) {
 		super.extractRenderState(g, mx, my, pt);
 		Growth gr = GrowthClient.current();
-		renderCores(g);
+		boolean showCores = !narrow || coreMode;
+		for (Button b : statBtns) b.visible = !(narrow && coreMode);
+		if (paragonBtn != null) paragonBtn.visible = !(narrow && coreMode);
+		for (Button b : coreBtns) if (!showCores) b.visible = false;
+		if (showCores) renderCores(g);
+		if (narrow && coreMode) {
+			g.text(font, "원소 성장", left + 8, top + 8, 0xFFFFFFFF, true);
+			g.text(font, "Lv " + gr.level(), left + 62, top + 8, 0xFFFFD34D, true);
+			if (minecraft.player != null)
+				InventoryScreen.extractEntityInInventoryFollowsMouse(g, left + 10, top + 32, left + 90, top + 112, 32, 0.0625F, mx, my, minecraft.player);
+			return;
+		}
 		if (paragonMode) { renderParagon(g, gr, mx, my); return; }
 		g.text(font, "원소 성장", left + 8, top + 8, 0xFFFFFFFF, true);
 		g.text(font, "Lv " + gr.level(), left + 62, top + 8, 0xFFFFD34D, true);
