@@ -427,7 +427,7 @@ public class GrandSkill extends Spell {
 			for (LivingEntity e : foes(14)) {
 				Vec3 d = target.subtract(e.position());
 				e.setDeltaMovement(e.getDeltaMovement().add(d.normalize().scale(0.25)).add(0, 0.12, 0));
-				e.hurtMarked = true;
+				e.needsSync = true;
 				if (age % 5 == 0) Fx.hurt(level, caster, e, 4);
 			}
 			for (int i = 0; i < 6; i++) { double t2 = age * 0.5 + i; double rr = 2 + i * 1.4; Fx.at(level, ElementFx.dust(el, 1.5F), target.add(Math.cos(t2) * rr, i * 2.2, Math.sin(t2) * rr)); }
@@ -449,7 +449,7 @@ public class GrandSkill extends Spell {
 			Vec3 p = diveTo[((age - 52) / 18) % 12];
 			if (p != null) { DarkSwarmSpell.burst(level, caster, p); hurt(p, 4, 16); Fx.sound(level, p, SoundEvents.WARDEN_SONIC_BOOM, 0.8F, 0.6F); }
 		}
-		if (age >= 118 && age < 130) for (LivingEntity e : foes(12)) { Vec3 d = target.subtract(e.position()); e.setDeltaMovement(d.normalize().scale(0.4)); e.hurtMarked = true; }
+		if (age >= 118 && age < 130) for (LivingEntity e : foes(12)) { Vec3 d = target.subtract(e.position()); e.setDeltaMovement(d.normalize().scale(0.4)); e.needsSync = true; }
 		if (age == 130) { boom(target, 10, 40); for (LivingEntity e : foes(10)) e.addEffect(new MobEffectInstance(MobEffects.WITHER, 100, 1)); }
 		return age >= 140;
 	}
