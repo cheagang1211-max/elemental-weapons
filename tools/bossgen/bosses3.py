@@ -96,7 +96,7 @@ def frost_giant():
 @spec
 def twilight_twins():
     """황혼의 쌍둥이: 달의 마녀(왼) + 해의 기사(오) 가 등을 맞댄 채 떠 있음, 둘을 잇는 황혼 고리"""
-    m = {"dark": M(0x3A2458, "cloth"), "dark2": M(0x1A1028, "cloth"), "light": M(0xF6EED8, "cloth"), "light2": M(0xE8D8B0, "cloth"),
+    m = {"dark": M(0x3A2458, "robe", glow=0xC080FF), "dark2": M(0x1A1028, "cloth"), "light": M(0xF6EED8, "robe", glow=0xFFD860), "light2": M(0xE8D8B0, "cloth"),
          "dskin": M(0x7A6A98, "flesh"), "lskin": M(0xF2D8C0, "flesh"), "dhair": M(0x3A2A5A, "fur"), "lhair": M(0xFFE8A0, "fur"),
          "void": M(0xA060FF, glow_all=True), "sun": M(0xFFD860, glow_all=True), "gold": M(0xF0C040, "metal"), "silver": M(0xB8C0D8, "metal"),
          "moon": M(0xD8E0FF, "crystal", glow=0xE8ECFF), "ember": M(0xFF9A40, "crystal", glow=0xFFC070), "star": M(0xFFFFFF, glow_all=True)}
@@ -248,7 +248,7 @@ def steam_colossus():
 @spec
 def nox():
     """밤의 군주: 공중에 뜬 해골 망령 왕. 너덜너덜한 망토 자락 여러 갈래, 가시 왕관, 빛나는 갈비뼈, 거대한 낫"""
-    m = {"robe": M(0x24142E, "cloth"), "robe2": M(0x3A2050, "cloth"), "bone": M(0xDCD4C2, "bone"), "void": M(0xA050FF, glow_all=True),
+    m = {"robe": M(0x24142E, "robe", glow=0xB070FF), "robe2": M(0x3A2050, "robe"), "bone": M(0xDCD4C2, "bone"), "void": M(0xA050FF, glow_all=True),
          "metal": M(0x3E3A4A, "metal"), "metal2": M(0x6A6080, "metal"), "blade": M(0xB088FF, "crystal", glow=0xE0C0FF), "dark": M(0x0E0812, "cloth"),
          "chain": M(0x585868, "metal"), "rune": M(0x1E1028, "rune", glow=0xC080FF)}
     m["skull"] = FACE3(m["bone"], 0xC070FF, kind="skull", mouth=0x1A1020, fangs=True, eye_w=0.2, eye_y=0.36)
@@ -287,7 +287,7 @@ def prima():
     """원초의 여제: 일곱 속성 결정 날개, 네 팔, 별의 관"""
     cols = {"fire": 0xFF6A30, "water": 0x3AA0FF, "grass": 0x60E060, "wind": 0xB0FFF0, "dark": 0xA050FF, "light": 0xFFF090, "elec": 0x60E0FF}
     m = {k: M(v, "crystal", glow=v) for k, v in cols.items()}
-    m.update({"body": M(0xF0EEFF, "plate"), "gold": M(0xF0C040, "metal"), "gold2": M(0xC89020, "metal"), "robe": M(0x2E2258, "cloth"), "robe2": M(0x4A3A88, "cloth"),
+    m.update({"body": M(0xF0EEFF, "plate"), "gold": M(0xF0C040, "metal"), "gold2": M(0xC89020, "metal"), "robe": M(0x2E2258, "robe", glow=0xD8C0FF), "robe2": M(0x4A3A88, "robe"),
               "core": M(0xFFFFFF, glow_all=True), "skin": M(0xE8E0FF, "flesh"), "hair": M(0xF4F0FF, "fur"), "star": M(0xFFF6D0, glow_all=True)})
     m["face"] = FACE3(m["skin"], 0xFFFFFF, kind="human", iris=0xE0D0FF, brow=0xC0B8E0, mouth=0x9A6A9A, mark="forehead", mark_col=0xFFF6D0)
     crown = [C(0, -9.6, 0, 9, 1.4, 9, "gold")] + [C(x, -11.5 - hh / 2, -4.2, 1.2, hh, 1.2, k) for x, k, hh in

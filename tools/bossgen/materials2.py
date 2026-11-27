@@ -77,6 +77,14 @@ def M(base, pat="plain", accent=None, glow=None, trim=None, glow_all=False, rim=
             d = (X + Y) % 7
             lv += 1.6 if d == 0 else (0.7 if d == 1 else (-0.8 if d in (4, 5) else 0))
             if G and (X * 5 + Y * 3) % 13 == 0: g = G
+        elif pat == "robe":
+            # 세로 주름 + 아랫단 수놓은 띠(trim) + 띄엄띄엄 빛나는 별무늬(glow)
+            fold = math.sin(x * 0.55 + math.sin(y * 0.15) * 1.5)
+            lv += 0.55 * fold - (0.35 if (x % 7 == 0) else 0)
+            if T and h >= 8 and face not in ("top", "bottom") and h - 5 <= y <= h - 3:
+                if y == h - 4 and (x // 2) % 3 == 0 and G: return G, G
+                return pick(T, lv + 0.4), None
+            if G and face not in ("top", "bottom") and n > 0.985: return G, G
         elif pat == "cloth":
             lv += 0.5 * math.sin(X * 1.1) - (0.6 if Y % 5 == 4 else 0)
             if T and (Y < 2 or Y >= H - 2): return pick(T, lv + 0.3), None
