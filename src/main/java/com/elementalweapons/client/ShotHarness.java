@@ -71,14 +71,14 @@ public final class ShotHarness {
 			{0, 1, 30}, {1, 0, 18}, {2, 5, 44}, {3, 3, 28}, {5, 5, 42}, {6, 2, 60}, {7, 0, 48}, {8, 2, 50}, {9, 3, 60}, {10, 4, 40}, {11, 5, 62}};
 	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
 		if (f == 2) server.execute(() -> { server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "time set noon");
-			ServerPlayer p = sp(server); p.teleportTo(com.elementalweapons.world.sky.SkyLayout.SPAWN.getX() + 0.5, com.elementalweapons.world.sky.SkyLayout.SPAWN.getY(), com.elementalweapons.world.sky.SkyLayout.SPAWN.getZ() + 0.5); });
+			ServerPlayer p = sp(server); p.getAbilities().mayfly = true; p.getAbilities().flying = true; p.onUpdateAbilities(); p.teleportTo(0.5, 230, -330.5); });
 		if (f < 10) return;
 		int i = (f - 10) / 80, g = (f - 10) % 80;
 		if (i >= CASTS.length) return;
-		float yaw = (i % 4) * 90;
-		mc.player.setYRot(yaw); mc.player.setXRot(-18); mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+		float yaw = 180 + ((i % 4) - 1.5F) * 70;
+		mc.player.setYRot(yaw); mc.player.setXRot(-8); mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
 		final int ii = i;
-		if (g == 2) server.execute(() -> { ServerPlayer p = sp(server); p.setYRot(yaw); p.setYHeadRot(yaw); p.setXRot(10);
+		if (g == 2) server.execute(() -> { ServerPlayer p = sp(server); p.getAbilities().flying = true; p.onUpdateAbilities(); p.setYRot(yaw); p.setYHeadRot(yaw); p.setXRot(25);
 			com.elementalweapons.spell.GrandSkill.cast((net.minecraft.server.level.ServerLevel) p.level(), p, com.elementalweapons.item.Element.values()[CASTS[ii][1]], CASTS[ii][0]); });
 		if (g == 2 + CASTS[i][2]) shot(mc, String.format("93%02d_cast", i));
 	}

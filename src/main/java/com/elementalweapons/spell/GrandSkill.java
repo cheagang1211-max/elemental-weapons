@@ -262,7 +262,7 @@ public class GrandSkill extends Spell {
 	// ---------------- 궁수: 천궁 ----------------
 	private GrandVisual arrow;
 	private boolean bow() {
-		Vec3 bowPos = caster.position().add(fwd.scale(-6)).add(0, 22, 0);
+		Vec3 bowPos = caster.position().add(fwd.scale(5)).add(0, 20, 0);
 		Vec3 dir = target.subtract(bowPos);
 		float yaw = yawOf(dir), pitch = (float) Math.toDegrees(Math.atan2(-dir.y, Math.hypot(dir.x, dir.z)));
 		if (age == 0) { main = spawn(BOW, bowPos); SpellManager.add(new MagicCircle(level, caster, el, target.add(0, 0.1, 0), 9, 100, false)); }
@@ -315,12 +315,12 @@ public class GrandSkill extends Spell {
 	private Vec3 stand;
 	private boolean goddess() {
 		if (age == 0) {
-			stand = ground(level, caster.position().add(fwd.scale(-12)));
+			stand = ground(level, caster.position().add(fwd.scale(13)));
 			main = spawn(GODDESS, stand.add(0, -46, 0));
 			SpellManager.add(new MagicCircle(level, caster, el, caster.position().add(0, 0.1, 0), 13, 175, false));
 		}
 		float y = age < 30 ? -46 + 46 * ease(age / 30F) : age > 165 ? -46 * ease((age - 165) / 15F) : 0;
-		place(main, stand.add(0, y, 0), yawOf(fwd));
+		place(main, stand.add(0, y, 0), yawOf(fwd.scale(-1)));
 		if (main != null) main.setPhase(age < 30 ? 0 : ease((age - 30) / 25F));
 		if (age == 30) ElementEffects.supportAura(el, level, caster);
 		if (age >= 40 && age <= 165 && age % 10 == 0) {
