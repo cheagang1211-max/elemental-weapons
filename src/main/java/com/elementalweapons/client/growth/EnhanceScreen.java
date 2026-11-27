@@ -16,7 +16,7 @@ import com.elementalweapons.item.ModItems;
 
 /** 7층 강화의 제단: 오른손 무기 강화 창 */
 public class EnhanceScreen extends Screen {
-	private static final int W = 300, H = 214;
+	private static final int W = 300, H = 236;
 	private int left, top;
 	private boolean protect;
 	private Button go, guard;
@@ -104,7 +104,7 @@ public class EnhanceScreen extends Screen {
 		g.text(font, fail, left + 160, top + 90, Enhancement.dropsOnFail(n) && !protect ? 0xFFFF9A8A : 0xFFB0B0C8, false);
 		// 재료
 		Enhancement.Cost cost = Enhancement.cost(n);
-		int y = top + 122;
+		int y = top + 134;
 		g.text(font, "필요한 재료", left + 14, y - 12, 0xFFFFD34D, false);
 		int col = 0;
 		col = mat(g, ModItems.ENHANCE_STONE, cost.stones(), col, y);
