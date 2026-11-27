@@ -224,8 +224,9 @@ public class GrowthScreen extends Screen {
 	private void renderCores(GuiGraphicsExtractor g) {
 		if (minecraft.player == null) return;
 		var p = minecraft.player;
-		g.text(font, "◆ 핵 강화", px + 6, top + 6, 0xFFFFC870, true);
-		small(g, "보스 핵으로 영구 강화 · 최대 " + com.elementalweapons.growth.CoreForge.MAX + "단계", px + 6, top + 16, 0.6F, 0xFF9A93B8);
+		int tx = px + (narrow ? 62 : 6);
+		g.text(font, narrow ? "핵 강화" : "◆ 핵 강화", tx, top + 6, 0xFFFFC870, true);
+		small(g, "보스 핵으로 영구 강화 · 최대 " + com.elementalweapons.growth.CoreForge.MAX + "단계", tx, top + 16, 0.58F, 0xFF9A93B8);
 		for (int i = 0; i < coreBtns.length; i++) {
 			int y = top + 26 + i * RH;
 			int lv = com.elementalweapons.growth.CoreForge.level(p, i);
