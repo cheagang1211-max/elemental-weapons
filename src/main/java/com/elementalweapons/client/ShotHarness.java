@@ -238,10 +238,12 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
+		if (SKILLS_ONLY) f += BOSS_T;
 		if (f < BOSS_T) { bossGallery(mc, server, f); return; }
 		f -= BOSS_T;
 		if (f < RC_T) { rightClickDemo(mc, server, f); return; }
 		f -= RC_T;
+		if (SKILLS_ONLY && f >= 0) { if (f == 5) { log("DONE"); mc.stop(); } return; }
 		if (f < PAT_T) { patternDemo(mc, server, f); return; }
 		f -= PAT_T;
 		if (f < 70) {
@@ -262,6 +264,7 @@ public final class ShotHarness {
 	}
 
 	// ---------------- 보스 전시 (하늘 위, 정면 3/4 + 뒤) ----------------
+	private static final boolean SKILLS_ONLY = true;
 	private static final String[] BOSS_IDS = {"voltra", "ignis", "marina", "silva", "zephyros", "nox", "lumiel", "crystal_golem",
 			"lava_queen", "frost_giant", "sphinx", "steam_colossus", "storm_wyvern", "twilight_twins", "hydra", "prima"};
 	private static final int BOSS_PER = 70, BOSS_T = 20 + BOSS_IDS.length * BOSS_PER;
@@ -330,12 +333,15 @@ public final class ShotHarness {
 	}
 
 	// ---------------- 무기 우클릭 공격 ----------------
-	private static final Object[][] RC = {
-			{WeaponType.SWORD, Element.FIRE}, {WeaponType.SWORD, Element.ELECTRIC}, {WeaponType.GREATSWORD, Element.WATER}, {WeaponType.GREATSWORD, Element.DARK},
-			{WeaponType.HAMMER, Element.GRASS}, {WeaponType.HAMMER, Element.FIRE}, {WeaponType.SCYTHE, Element.DARK}, {WeaponType.SWORD, Element.DARK},
-			{WeaponType.BOOK, Element.LIGHT}, {WeaponType.BOOK, Element.WATER}, {WeaponType.SWORD, Element.LIGHT}, {WeaponType.GREATSWORD, Element.WIND},
-			{WeaponType.BOW, Element.ELECTRIC}, {WeaponType.HAMMER, Element.ELECTRIC}, {WeaponType.SWORD, Element.WATER}, {WeaponType.GREATSWORD, Element.FIRE}};
-	private static final int RC_PER = 60, RC_T = 30 + RC.length * RC_PER;
+	private static final Object[][] RC = buildRc();
+	private static Object[][] buildRc() {
+		WeaponType[] ts = {WeaponType.DAGGER, WeaponType.SWORD, WeaponType.GREATSWORD, WeaponType.HAMMER, WeaponType.SCYTHE, WeaponType.BOOK, WeaponType.BOW, WeaponType.SHIELD};
+		Object[][] r = new Object[ts.length * 7][];
+		int i = 0;
+		for (WeaponType t : ts) for (Element e : Element.values()) r[i++] = new Object[]{t, e};
+		return r;
+	}
+	private static final int RC_PER = 50, RC_T = 30 + RC.length * RC_PER;
 	private static final double RX = 3000.5, RY = 200, RZ = 300.5;
 
 	private static void rightClickDemo(Minecraft mc, IntegratedServer server, int f) {
@@ -364,19 +370,18 @@ public final class ShotHarness {
 				if (e instanceof Mob m) { m.setNoAi(true); m.setHealth(m.getMaxHealth()); }
 				lv.addFreshEntity(e); dummies.add(e);
 			} });
-		if (k == 1) mc.options.setCameraType(idx >= 14 ? CameraType.FIRST_PERSON : CameraType.THIRD_PERSON_BACK);
+		if (k == 1) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
 		if (k > 0 && k < 12) look(mc, 0, 12);
 		if (k == 8) server.execute(() -> { ServerPlayer p = sp(server);
+			try {
 			if (wt == WeaponType.BOW) { com.elementalweapons.spell.SpellManager.add(new com.elementalweapons.spell.ElementArrowSpell((ServerLevel) p.level(), p, el, 1.0F, p.getMainHandItem()));
-				com.elementalweapons.spell.WeaponVisual.start((ServerLevel) p.level(), p, el, wt, null); }
-			else p.getMainHandItem().use(p.level(), p, net.minecraft.world.InteractionHand.MAIN_HAND); });
+				com.elementalweapons.spell.WeaponVisual.start((ServerLevel) p.level(), p, el, wt, null); com.elementalweapons.spell.ElementSkills.bowFull(el, (ServerLevel) p.level(), p); }
+			else com.elementalweapons.spell.ElementSkills.cast(wt, el, (ServerLevel) p.level(), p);
+			} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 기술 오류 " + wt + " " + el, ex); } });
 		if (k == 8) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, true);
 		String nm = String.format("b%02d_%s_%s", idx, wt.id, el.name().toLowerCase());
-		if (k == 10) shot(mc, nm + "_0");
-		if (k == 11) shot(mc, nm + "_1");
-		if (k == 16) shot(mc, nm + "_2");
-		if (k == 24) shot(mc, nm + "_3");
-		if (k == 36) shot(mc, nm + "_4");
+		if (k == 14) shot(mc, nm + "_1");
+		if (k == 30) shot(mc, nm + "_2");
 	}
 
 	private static void focusOld(Minecraft mc, IntegratedServer server, int f) {
