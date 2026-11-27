@@ -13,7 +13,11 @@ import net.minecraft.world.entity.LivingEntity;
  */
 public final class Smooth {
 	public float time = Float.NaN, lastBodyYaw;
-	public final float[] pose = new float[4];
+	public final float[] pose = new float[4], poseV = new float[4];
+	/** 지금 공격 자세가 시작된 뒤 흐른 틱 (예비 동작·내지르기용) */
+	public float actAge = 99;
+	private int lastAttack = 0;
+	private float attackStart = -99;
 	public float walk, headYaw, headPitch, turn, vy, flinch, speed, lean;
 
 	private static final Map<Entity, Smooth> MAP = new WeakHashMap<>();
@@ -31,7 +35,21 @@ public final class Smooth {
 		float dt = Float.isNaN(time) ? 10F : Mth.clamp(now - time, 0F, 10F);
 		boolean first = Float.isNaN(time);
 		time = now;
-		for (int i = 0; i < 4; i++) pose[i] = follow(pose[i], attackPose == i ? 1F : 0F, 0.32F, dt);
+		if (attackPose != lastAttack) { lastAttack = attackPose; attackStart = now; }
+		actAge = now - attackStart;
+		// 자세 전환: 용수철(살짝 지나쳤다 돌아옴) → 묵직한 관성
+		if (first) for (int i = 0; i < 4; i++) { pose[i] = attackPose == i ? 1F : 0F; poseV[i] = 0; }
+		else {
+			float left = dt;
+			while (left > 0) {
+				float h = Math.min(0.5F, left); left -= h;
+				for (int i = 0; i < 4; i++) {
+					float acc = 0.16F * ((attackPose == i ? 1F : 0F) - pose[i]) - 0.62F * poseV[i];
+					poseV[i] += acc * h;
+					pose[i] = Mth.clamp(pose[i] + poseV[i] * h, -0.15F, 1.2F);
+				}
+			}
+		}
 		walk = follow(walk, Mth.clamp(walkSpeed, 0F, 1F), 0.22F, dt);
 		headYaw = follow(headYaw, headYawDeg, first ? 1F : 0.35F, dt);
 		headPitch = follow(headPitch, headPitchDeg, first ? 1F : 0.35F, dt);

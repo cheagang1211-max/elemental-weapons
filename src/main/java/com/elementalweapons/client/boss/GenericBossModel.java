@@ -44,7 +44,7 @@ public class GenericBossModel extends EntityModel<BossRenderState> {
 
 	private static float lerp(float a, float b, float w) { return a + (b - a) * w; }
 	/** 부드러운 시작·끝 */
-	private static float ease(float w) { return w * w * (3 - 2 * w); }
+	private static float ease(float w) { if (w <= 0 || w >= 1) return w; return w * w * (3 - 2 * w); }
 
 	@Override
 	public void setupAnim(BossRenderState s) {
@@ -58,6 +58,12 @@ public class GenericBossModel extends EntityModel<BossRenderState> {
 		float step = Mth.sin(walk * 0.6F), stepAbs = Math.abs(step);
 		float lean = Mth.clamp(s.turn * 0.012F, -0.22F, 0.22F);
 		float fl = s.flinch;
+		// 예비 동작(뒤로 젖힘) → 내지르기(앞으로 튕김): 공격 자세가 바뀐 직후 0.5초
+		float ag = s.actAge;
+		boolean attacking = s.attackPose > 0;
+		float wind = attacking ? (ag < 5 ? ease(ag / 5F) : ag < 9 ? 1 - ease((ag - 5) / 4F) : 0) : 0;
+		float punch = attacking && ag >= 5 && ag < 14 ? Mth.sin((ag - 5) / 9F * Mth.PI) : 0;
+		float shake = attacking && ag >= 5 && ag < 11 ? Mth.sin(ag * 3.1F) * (1 - (ag - 5) / 6F) : 0;
 
 		ModelPart body = p("body");
 		if (body != null) {
@@ -67,14 +73,15 @@ public class GenericBossModel extends EntityModel<BossRenderState> {
 			} else {
 				body.y += -stepAbs * 1.1F * amt + breath * 0.25F * idle;           // 걸음마다 살짝 내려앉음, 숨쉬기
 			}
-			body.xRot += breath * 0.015F + 0.4F * w2 - 0.12F * w1 - fl * 0.22F;
+			body.xRot += breath * 0.015F + 0.4F * w2 - 0.12F * w1 - fl * 0.22F - wind * 0.22F + punch * 0.16F;
+			body.zRot += shake * 0.04F;
 			body.zRot += lean + Mth.sin(walk * 0.3F) * 0.05F * amt + Mth.sin(t * 0.031F) * 0.02F * idle;   // 몸무게 옮기기
 			body.yRot += step * 0.07F * amt;
 		}
 		ModelPart head = p("head");
 		if (head != null) {
 			head.yRot += s.headYawS * Mth.DEG_TO_RAD * 0.8F + (Mth.sin(t * 0.021F) * 0.12F + Mth.sin(t * 0.047F) * 0.04F) * idle * calm;   // 가만히 있을 땐 두리번
-			head.xRot += s.headPitchS * Mth.DEG_TO_RAD * 0.8F + breath * 0.03F + Mth.sin(t * 0.033F) * 0.04F * idle * calm - 0.35F * w3 - fl * 0.3F;
+			head.xRot += -wind * 0.18F + punch * 0.1F + s.headPitchS * Mth.DEG_TO_RAD * 0.8F + breath * 0.03F + Mth.sin(t * 0.033F) * 0.04F * idle * calm - 0.35F * w3 - fl * 0.3F;
 			head.zRot += -lean * 0.6F - Mth.sin(walk * 0.3F) * 0.04F * amt;
 			if (body == null) head.y += -stepAbs * 0.8F * amt;
 		}
@@ -95,6 +102,9 @@ public class GenericBossModel extends EntityModel<BossRenderState> {
 		float sway = Mth.sin(t * 0.06F) * 0.06F;
 		arm(p("right_arm"), p("right_arm2"), 1, sway, walk, amt, breath, w1, w2, w3, fl);
 		arm(p("left_arm"), p("left_arm2"), -1, sway, walk, amt, breath, w1, w2, w3, fl);
+		ModelPart ra = p("right_arm"), la = p("left_arm");
+		if (ra != null) ra.xRot += -wind * 0.6F + punch * 0.5F;
+		if (la != null) la.xRot += -wind * 0.6F + punch * 0.5F;
 		// 날개 (안쪽 + 바깥 마디가 늦게 따라옴), 돌진할수록 빠르게
 		float f1 = Mth.sin(t * 0.22F), f2 = Mth.sin(t * 0.55F);
 		float flap = lerp(f1, f2, w2) * (0.42F + Mth.clamp(s.vy, 0F, 0.4F)), flap2 = lerp(Mth.sin(t * 0.22F - 0.9F), Mth.sin(t * 0.55F - 0.9F), w2) * 0.5F;
@@ -108,7 +118,7 @@ public class GenericBossModel extends EntityModel<BossRenderState> {
 			ModelPart tl = p("tail" + i);
 			if (tl == null) break;
 			tl.yRot += Mth.sin(t * 0.09F - i * 0.7F) * (0.09F + 0.06F * amt) - lean * 0.35F * i / 3F;
-			tl.xRot += Mth.sin(t * 0.06F - i * 0.6F) * 0.035F + Mth.sin(walk * 0.6F - i * 0.8F) * 0.05F * amt;
+			tl.xRot += -punch * 0.08F * i + Mth.sin(t * 0.06F - i * 0.6F) * 0.035F + Mth.sin(walk * 0.6F - i * 0.8F) * 0.05F * amt;
 		}
 		for (int i = 1; i <= 4; i++) {
 			ModelPart nk = p("neck" + i);
@@ -121,6 +131,7 @@ public class GenericBossModel extends EntityModel<BossRenderState> {
 			if (cp == null) break;
 			cp.xRot += 0.06F + Mth.sin(t * 0.1F - i * 0.6F) * 0.06F + amt * 0.25F * (i == 1 ? 1 : 0.35F) + Math.max(0F, -s.vy) * 0.4F;
 			cp.zRot += -lean * 0.4F;
+			cp.xRot += punch * 0.25F * (1 + i * 0.2F) + fl * 0.2F;
 		}
 		for (List<ModelPart> chain : sways.values()) {
 			int i = 0;

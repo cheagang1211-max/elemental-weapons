@@ -10,5 +10,6 @@ public class BossRenderState extends LivingEntityRenderState {
 	public boolean bigLabel;
 	/** 부드러운 움직임 (Smooth에서 옮겨 담음) */
 	public final float[] pose = {1, 0, 0, 0};
+	public float actAge = 99;
 	public float walkS, headYawS, headPitchS, turn, vy, flinch;
 }

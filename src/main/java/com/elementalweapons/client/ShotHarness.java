@@ -269,20 +269,20 @@ public final class ShotHarness {
 			EntityType<?> type = id.equals("voltra") ? ModEntities.VOLTRA : ModEntities.BOSSES.get(id);
 			Entity e = type.create(p.level(), EntitySpawnReason.COMMAND);
 			e.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
-			e.snapTo(GX, GY, GZ, 0, 0);
+			e.snapTo(GX + idx * 40, GY, GZ, 0, 0);
 			if (e instanceof Mob m) { m.setNoAi(true); m.setNoGravity(true); m.setYHeadRot(0); m.setYBodyRot(0); m.setPersistenceRequired(); }
 			p.level().addFreshEntity(e); current = e;
 			double h = e.getBbHeight(), w = e.getBbWidth();
-			double dist = 3.5 + h * 1.5 + w * 1.1;
-			p.teleportTo(GX + dist * 0.6, GY + h * 0.45 - 1.4, GZ + dist * 0.8);
+			double dist = 3 + h * 1.25 + w * 0.8;
+			p.teleportTo(GX + idx * 40 + dist * 0.6, GY + h * 0.5 - 1.2, GZ + dist * 0.8);
 			log("보스 " + id + " 키 " + String.format("%.1f", h) + " 폭 " + String.format("%.1f", w));
 			} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 보스 " + id, ex); } });
-		if (k > 2 && k < 40 && current != null) lookAt(mc, current.getX() - 0.5, current.getY() + current.getBbHeight() * 0.5, current.getZ() - 0.5);
+		if (k > 2 && k < 40 && current != null) lookAt(mc, current.getX() - 0.5, current.getY() + current.getBbHeight() * 0.62, current.getZ() - 0.5);
 		if (k == 36) shot(mc, String.format("a%02d_%s", idx, id));
 		if (k == 40) server.execute(() -> { ServerPlayer p = sp(server); if (current == null) return;
-			double h = current.getBbHeight(), w = current.getBbWidth(), dist = 3.5 + h * 1.5 + w * 1.1;
-			p.teleportTo(GX - dist * 0.75, GY + h * 0.6 - 1.4, GZ - dist * 0.65); });
-		if (k > 42 && current != null) lookAt(mc, current.getX() - 0.5, current.getY() + current.getBbHeight() * 0.5, current.getZ() - 0.5);
+			double h = current.getBbHeight(), w = current.getBbWidth(), dist = 3 + h * 1.25 + w * 0.8;
+			p.teleportTo(current.getX() - dist * 0.75, GY + h * 0.6 - 1.2, GZ - dist * 0.65); });
+		if (k > 42 && current != null) lookAt(mc, current.getX() - 0.5, current.getY() + current.getBbHeight() * 0.62, current.getZ() - 0.5);
 		if (k == 66) shot(mc, String.format("a%02d_%s_back", idx, id));
 		if (k == BOSS_PER - 1 && idx == BOSS_IDS.length - 1) server.execute(() -> { if (current != null) current.discard(); current = null; });
 	}
