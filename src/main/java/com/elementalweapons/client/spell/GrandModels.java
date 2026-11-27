@@ -776,7 +776,7 @@ public final class GrandModels {
 				}
 				case CRESCENT -> {
 					ModelPart sp = get("spin");
-					if (sp != null) { sp.yRot = -ph * Mth.TWO_PI * 2; sp.zRot = Mth.sin(ph * Mth.PI * 2) * 0.12F; }
+					if (sp != null) { sp.yRot = -s.phase * Mth.TWO_PI * 2; sp.zRot = Mth.sin(s.phase * Mth.PI * 2) * 0.12F; }
 				}
 				case BEAM -> {
 					ModelPart rr = get("main", "rings");

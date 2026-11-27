@@ -170,7 +170,7 @@ public class WeaponVisual extends Spell {
 		if (age == 0) main = spawn(HAMMER, hit.add(0, rest + 16, 0), yaw);
 		if (age <= 5) {
 			float f = age / 5F;
-			place(main, hit.add(0, rest + 16 * (1 - f * f), 0), yaw);
+			place(main, hit.add(0, rest + 16 * (1 - f * f), 0), yaw + (el == Element.WIND ? age * 72 : 0));
 			if (age % 2 == 0) Fx.line(level, ElementFx.particle(el), hit.add(0, rest + 16 * (1 - f * f), 0), hit.add(0, rest + 22, 0), 1.0);
 		}
 		if (main != null) main.setPhase(age < 5 ? 0 : Math.min(1, (age - 5) / 14F));
@@ -192,7 +192,8 @@ public class WeaponVisual extends Spell {
 	private boolean crescent() {
 		if (age == 0) main = spawn(CRESCENT, caster.position().add(0, 1.0, 0), yaw);
 		place(main, caster.position().add(0, 0.9, 0), yaw);
-		if (main != null) main.setPhase(ease(age / 13F));
+		float turns = el == Element.WIND ? 1.5F : el == Element.DARK ? -1F : 1F;   // 바람은 세 바퀴, 어둠은 반대로
+		if (main != null) main.setPhase(ease(age / 13F) * turns);
 		return age >= 15;
 	}
 
