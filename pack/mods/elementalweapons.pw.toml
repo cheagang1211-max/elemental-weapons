@@ -1,8 +1,8 @@
 name = "Elemental Weapons"
-filename = "elementalweapons-4.21.0.jar"
+filename = "elementalweapons-4.22.0.jar"
 side = "both"
 
 [download]
-url = "https://github.com/cheagang1211-max/elemental-weapons/releases/download/v4.21.0/elementalweapons-4.21.0.jar"
+url = "https://github.com/cheagang1211-max/elemental-weapons/releases/download/v4.22.0/elementalweapons-4.22.0.jar"
 hash-format = "sha512"
-hash = "9e4aca11b984f17b07555ccf7702cb4976b6feb7a2508c279fe283a545a45734d5efc9c53d0bfe18311f5cf4a0e9f61904e4801f1efa0fbd11b7c50222d0f6aa"
+hash = "e77524cb224513d902b50b3386a43117397b276d6d8553adc05a162906d5017ff7183b2582f1b185ddd183b840c4e8484ad17f1ccd5ce6d214b0eb7ec5f662a2"
