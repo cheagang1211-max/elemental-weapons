@@ -104,7 +104,12 @@ public class ElementalWeaponItem extends Item {
 		switch (type) {
 			case SWORD -> {
 				HitResult hit = user.pick(30.0, 0.0F, false);
-				if (hit.getType() == HitResult.Type.MISS) return InteractionResult.PASS;
+				if (hit.getType() == HitResult.Type.MISS) {   // 허공을 보면 앞쪽 7칸 땅에 내리꽂음
+					Vec3 fl = com.elementalweapons.spell.Fx.flatLook(user);
+					net.minecraft.core.BlockPos.MutableBlockPos bp = net.minecraft.core.BlockPos.containing(user.getX() + fl.x * 7, user.getY() + 2, user.getZ() + fl.z * 7).mutable();
+					for (int i = 0; i < 12 && server.getBlockState(bp.below()).isAir(); i++) bp.move(0, -1, 0);
+					hit = new net.minecraft.world.phys.BlockHitResult(new Vec3(bp.getX() + 0.5, bp.getY(), bp.getZ() + 0.5), net.minecraft.core.Direction.UP, bp.below().immutable(), false);
+				}
 				visTarget = hit.getLocation();
 				ElementEffects.strike(element, server, user, hit.getLocation());
 				user.getCooldowns().addCooldown(user.getItemInHand(hand), SWORD_COOLDOWN);
