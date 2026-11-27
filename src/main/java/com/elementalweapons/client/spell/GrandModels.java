@@ -19,8 +19,10 @@ public final class GrandModels {
 	private GrandModels() {}
 
 	public static final int SWORD = 0, AXE = 1, DAGGER = 2, BOW = 3, ARROW = 4, REAPER = 5, GODDESS = 6, TITAN = 7, LEVIATHAN = 8, TREE = 9, ROC = 10, ABYSS = 11;
-	public static final int COUNT = 12;
-	public static final float[] SCALE = {6F, 6F, 5F, 6F, 6F, 7F, 7F, 8F, 6F, 7F, 7F, 6F};
+	/** 무기 우클릭 연출: 12 낙하 영검  13 대검 원진  14 거대 망치  15 충격 결정 고리  16 초승달 낫날  17 마도서 */
+	public static final int BLADE = 12, BLADE_RING = 13, HAMMER = 14, SHOCK = 15, CRESCENT = 16, TOME = 17;
+	public static final int COUNT = 18;
+	public static final float[] SCALE = {6F, 6F, 5F, 6F, 6F, 7F, 7F, 8F, 6F, 7F, 7F, 6F, 1.5F, 1.7F, 1.4F, 1.5F, 1.35F, 1.3F};
 
 	public static class State extends LivingEntityRenderState {
 		public int kind, elem;
@@ -83,8 +85,114 @@ public final class GrandModels {
 			case LEVIATHAN -> leviathan(root);
 			case TREE -> tree(root);
 			case ROC -> roc(root);
-			default -> abyss(root);
+			case ABYSS -> abyss(root);
+			case BLADE -> sword(root);
+			case BLADE_RING -> bladeRing(root);
+			case HAMMER -> hammer(root);
+			case SHOCK -> shock(root);
+			case CRESCENT -> crescent(root);
+			default -> tome(root);
 		}
+	}
+
+	// ---------------------------------------------------------------- 13 대검 원진: 끝이 아래인 대검 6자루가 원을 이룸
+	static void bladeRing(PartDefinition root) {
+		PartDefinition sp = node(root, "spin", 0, 24, 0);
+		for (int i = 0; i < 6; i++) {
+			float a = (float) (i * Math.PI / 3);
+			PartDefinition g = node(sp, "g" + i, at(Mth.cos(a) * 42, 0, Mth.sin(a) * 42, 0, -a + Mth.HALF_PI, 0.18F));
+			box(g, "tip", BASE, -1.5F, -6, -1, 3, 6, 2);
+			for (int k = 0; k < 6; k++) {
+				float w = 5 + k * 0.9F;
+				box(g, "b" + k, BASE, -w / 2, -6 - (k + 1) * 7, -1.4F, w, 7.1F, 2.8F);
+				box(g, "e" + k, LIGHT, -w / 2 - 0.5F, -6 - (k + 1) * 7, -0.6F, 0.6F, 7.1F, 1.2F);
+				box(g, "f" + k, LIGHT, w / 2 - 0.1F, -6 - (k + 1) * 7, -0.6F, 0.6F, 7.1F, 1.2F);
+			}
+			box(g, "fuller", CRYSTAL, -0.8F, -46, -1.7F, 1.6F, 38, 3.4F);
+			box(g, "guard", TRIM, -8, -53, -2.5F, 16, 4, 5);
+			box(g, "gem", CRYSTAL, -2, -53.5F, -3, 4, 4, 6);
+			box(g, "grip", ARMOR, -1.6F, -64, -1.6F, 3.2F, 11, 3.2F);
+			box(g, "pom", TRIM, -2.6F, -68, -2.6F, 5.2F, 4, 5.2F);
+		}
+		PartDefinition rr = node(root, "runes", 0, 23, 0);
+		ring(rr, "r", CRYSTAL, 24, 46, 4, 0.6F, 2, true);
+		ring(rr, "s", LIGHT, 12, 30, 2.4F, 0.6F, 2.4F, true);
+	}
+
+	// ---------------------------------------------------------------- 14 거대 망치 (원점 = 자루 윗끝, 아래로 매달림)
+	static void hammer(PartDefinition root) {
+		PartDefinition a = node(root, "arm", 0, 24, 0);
+		for (int i = 0; i < 5; i++) { box(a, "h" + i, ARMOR, -2.4F, i * 10F, -2.4F, 4.8F, 10.1F, 4.8F); box(a, "r" + i, TRIM, -3, i * 10F + 8.4F, -3, 6, 1.6F, 6); }
+		box(a, "pom", CRYSTAL, -3.5F, -6, -3.5F, 7, 6, 7);
+		PartDefinition head = node(a, "head", 0, 58, 0);
+		box(head, "core", BASE, -9, -8, -15, 18, 16, 30);
+		box(head, "bandA", TRIM, -10, -9, -9, 20, 18, 3);
+		box(head, "bandB", TRIM, -10, -9, 6, 20, 18, 3);
+		box(head, "faceF", ARMOR, -8, -7, -17, 16, 14, 2);
+		box(head, "faceB", ARMOR, -8, -7, 15, 16, 14, 2);
+		box(head, "runeF", CRYSTAL, -4, -4, -18, 8, 8, 1.2F, at(0, 0, 0, 0, 0, 0.785F));
+		box(head, "runeB", CRYSTAL, -4, -4, 16.8F, 8, 8, 1.2F, at(0, 0, 0, 0, 0, 0.785F));
+		for (int sd = -1; sd <= 1; sd += 2) {
+			box(head, "side" + sd, LIGHT, sd < 0 ? -10.5F : 9.5F, -5, -12, 1, 10, 24);
+			for (int k = 0; k < 3; k++) box(head, "sp" + sd + k, TRIM, -1.5F, -1.5F, -1.5F, 3, 3, 3, at(sd * 10.5F, -4 + k * 4, -14 + k * 14, 0.785F, 0, 0.785F));
+		}
+		box(head, "top", TRIM, -6, -12, -6, 12, 4, 12);
+	}
+
+	// ---------------------------------------------------------------- 15 충격 결정 고리 (땅에서 솟는 결정 가시)
+	static void shock(PartDefinition root) {
+		PartDefinition m = node(root, "main", 0, 24, 0);
+		for (int i = 0; i < 14; i++) {
+			float a = (float) (i * Math.PI * 2 / 14);
+			float r = 34 + (i % 2) * 8, h = 18 + (i % 3) * 7;
+			PartDefinition sp = node(m, "s" + i, at(Mth.cos(a) * r, 0, Mth.sin(a) * r, 0, -a, 0));
+			box(sp, "b", CRYSTAL, -3, -h * 0.6F, -3, 6, h * 0.6F, 6, at(0, 0, 0, 0, 0, 0.35F));
+			box(sp, "t", LIGHT, -1.8F, -h, -1.8F, 3.6F, h * 0.45F, 3.6F, at(0, 0, 0, 0, 0, 0.35F));
+			box(sp, "rk", BASE, -5, -3, -5, 10, 3, 10, at(0, 0, 0, 0, 0.6F, 0));
+		}
+		PartDefinition rr = node(m, "runes", 0, -0.5F, 0);
+		ring(rr, "r", LIGHT, 32, 28, 4, 0.5F, 1.6F, true);
+		ring(rr, "q", CRYSTAL, 40, 46, 4, 0.5F, 2.2F, true);
+	}
+
+	// ---------------------------------------------------------------- 16 초승달 낫날 (수평으로 도는 거대한 날)
+	static void crescent(PartDefinition root) {
+		PartDefinition sp = node(root, "spin", 0, 6, 0);
+		int n = 16;
+		for (int k = 0; k < n; k++) {
+			float t = k / (float) (n - 1);
+			float a = (float) Math.toRadians(-110 + 220 * t);
+			float w = 3 + 9 * Mth.sin(t * Mth.PI);
+			float r = 44;
+			box(sp, "b" + k, BASE, -w / 2, -1.2F, -5.2F, w, 2.4F, 10.4F, at(Mth.cos(a) * (r - w / 2 + 2), 0, Mth.sin(a) * (r - w / 2 + 2), 0, -a, 0));
+			box(sp, "e" + k, LIGHT, -0.8F, -0.8F, -5.4F, 1.6F, 1.6F, 10.8F, at(Mth.cos(a) * (r + 2.2F), 0, Mth.sin(a) * (r + 2.2F), 0, -a, 0));
+		}
+		box(sp, "hub", TRIM, -5, -3, -5, 10, 6, 10);
+		box(sp, "gem", CRYSTAL, -3, -4, -3, 6, 8, 6, at(0, 0, 0, 0, 0.785F, 0));
+		box(sp, "arm", ARMOR, -1.6F, -1.6F, -1.6F, 30, 3.2F, 3.2F, at(0, 0, 0, 0, Mth.PI, 0));
+		box(sp, "arm2", ARMOR, -1.6F, -1.6F, -1.6F, 30, 3.2F, 3.2F);
+	}
+
+	// ---------------------------------------------------------------- 17 마도서 (펼쳐지는 거대한 책 + 도는 룬 고리)
+	static void tome(PartDefinition root) {
+		PartDefinition m = node(root, "main", 0, 24, 0);
+		box(m, "spine", TRIM, -1.5F, -2, -12, 3, 3, 24);
+		for (int sd = -1; sd <= 1; sd += 2) {
+			PartDefinition half = node(m, sd < 0 ? "pr" : "pl", 0, 0, 0);
+			box(half, "cover", ARMOR, sd < 0 ? -18 : 0, -0.6F, -12.5F, 18, 1.4F, 25);
+			box(half, "edge", TRIM, sd < 0 ? -18.6F : 17.6F, -1, -12.5F, 1, 2, 25);
+			box(half, "pages", CLOTH, sd < 0 ? -16.5F : 0.5F, -2.6F, -11, 16, 2, 22);
+			box(half, "glyph", CRYSTAL, sd < 0 ? -12 : 4, -2.9F, -6, 8, 0.4F, 12);
+			box(half, "corner", TRIM, sd < 0 ? -18.6F : 15.6F, -1, -13, 3, 2, 3);
+			box(half, "corner2", TRIM, sd < 0 ? -18.6F : 15.6F, -1, 10, 3, 2, 3);
+		}
+		PartDefinition fl = node(m, "flip", 0, -2, 0);
+		box(fl, "pg", CLOTH_GLOW, 0, -0.3F, -10.5F, 15, 0.6F, 21);
+		PartDefinition ring1 = node(m, "ring1", 0, -10, 0);
+		ring(ring1, "r", LIGHT, 28, 30, 3.2F, 0.6F, 1.6F, true);
+		for (int k = 0; k < 6; k++) { float ang = (float) (k * Math.PI / 3); box(ring1, "g" + k, CRYSTAL, -2, -2, -0.4F, 4, 4, 0.8F, at(Mth.cos(ang) * 30, -2, Mth.sin(ang) * 30, 0, -ang + Mth.HALF_PI, 0.785F)); }
+		PartDefinition ring2 = node(m, "ring2", 0, -18, 0);
+		ring(ring2, "r", CRYSTAL, 20, 20, 3, 0.6F, 1.4F, true);
 	}
 
 	// ---------------------------------------------------------------- 0 성검 (끝이 원점, 위로 솟음)
@@ -610,6 +718,48 @@ public final class GrandModels {
 						if (arm != null) { arm.xRot = 0.2F + slam; arm.yRot = sd * (0.35F - reach * 0.2F); arm.z = -2 + (1 - reach) * 30; arm.visible = reach > 0.02F; }
 						if (f != null) f.xRot = 0.4F + Mth.sin(t * 0.07F + sd) * 0.08F + Math.max(0, slam) * 0.3F;
 					}
+				}
+				case BLADE -> {
+					ModelPart r = get("runes");
+					if (r != null) { r.yRot = t * 0.2F; r.visible = true; r.y = -10 - ph * 30; }
+				}
+				case BLADE_RING -> {
+					ModelPart sp = get("spin"), rr = get("runes");
+					if (sp != null) sp.yRot = t * 0.35F * (1.2F - ph);
+					if (rr != null) { rr.yRot = -t * 0.08F; float k = 0.3F + 0.7F * ease(ph * 2); rr.xScale = k; rr.zScale = k; }
+				}
+				case HAMMER -> {
+					ModelPart arm = get("arm");
+					float ang = a < 5 ? -2.2F - 0.7F * ease(a / 5F) : a < 8 ? -2.9F + 3.0F * ease((a - 5) / 3F) : a < 24 ? 0.1F - 0.1F * ease((a - 8) / 16F) : 0;
+					if (s.strike <= 0) ang = -2.2F;
+					if (arm != null) arm.xRot = ang;
+				}
+				case SHOCK -> {
+					float rise = ph < 0.35F ? ease(ph / 0.35F) : ph > 0.75F ? 1 - ease((ph - 0.75F) / 0.25F) : 1;
+					for (int i = 0; i < 14; i++) {
+						ModelPart sp = get("main", "s" + i);
+						if (sp == null) continue;
+						float d = Mth.clamp(rise * 1.4F - (i % 3) * 0.15F, 0, 1);
+						sp.y = (1 - d) * 26;
+						sp.yScale = 0.2F + 0.8F * d;
+					}
+					ModelPart rr = get("main", "runes");
+					if (rr != null) { rr.yRot = t * 0.1F; float k = 0.4F + 0.9F * ease(ph * 1.5F); rr.xScale = k; rr.zScale = k; }
+				}
+				case CRESCENT -> {
+					ModelPart sp = get("spin");
+					if (sp != null) { sp.yRot = -ph * Mth.TWO_PI * 2; sp.zRot = Mth.sin(ph * Mth.PI * 2) * 0.12F; }
+				}
+				case TOME -> {
+					float open = ease(ph * 2.5F);
+					ModelPart pr = get("main", "pr"), pl = get("main", "pl"), fl = get("main", "flip"), r1 = get("main", "ring1"), r2 = get("main", "ring2");
+					if (pr != null) pr.zRot = -(1 - open) * 1.45F + 0.12F;
+					if (pl != null) pl.zRot = (1 - open) * 1.45F - 0.12F;
+					if (fl != null) { fl.zRot = -((t * 0.18F) % Mth.PI); fl.visible = open > 0.8F; }
+					if (r1 != null) { r1.yRot = t * 0.06F; float k = open; r1.xScale = k; r1.zScale = k; r1.y = -10 - open * 4; }
+					if (r2 != null) { r2.yRot = -t * 0.1F; float k = open * 0.9F; r2.xScale = k; r2.zScale = k; r2.y = -18 - open * 6; }
+					ModelPart m = get("main");
+					if (m != null) m.y = 24 + Mth.sin(t * 0.12F) * 1.5F;
 				}
 				default -> { }
 			}
