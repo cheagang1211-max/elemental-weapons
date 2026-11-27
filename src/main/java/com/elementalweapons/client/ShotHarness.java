@@ -68,23 +68,22 @@ public final class ShotHarness {
 			{7, 1, 0, 0}, {7, 0, 0, 0}, {8, 2, -60, 1}, {9, 3, 0, 0}, {10, 4, 8, 0}, {11, 5, 0, 0}};
 	private static final java.util.List<com.elementalweapons.spell.GrandVisual> GV = new java.util.ArrayList<>();
 	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
-		if (f == 5) mc.gui.setScreen(new com.elementalweapons.client.skill.EvolveScreen());
-		if (f == 30) shot(mc, "92a_evolve_classes");
-		if (f == 32) mc.gui.setScreen(new com.elementalweapons.client.growth.ClassSelectScreen());
-		if (f == 50) shot(mc, "92b_class_select");
-		if (f == 52) mc.gui.setScreen(null);
-		if (f == 60) server.execute(() -> { try { ServerPlayer p = sp(server);
-			ModGrowth.set(p, ModGrowth.get(p).withClass(com.elementalweapons.item.PlayerClass.BREAKER.ordinal()));
-			p.setAttached(com.elementalweapons.growth.Evolution.ELEMENT, 1);
-			String[] parts = {"helmet", "chestplate", "leggings", "boots"};
-			var slots = new net.minecraft.world.entity.EquipmentSlot[]{net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET};
-			for (int i = 0; i < 4; i++) p.setItemSlot(slots[i], new ItemStack(com.elementalweapons.item.ModGear.ITEMS.get("aether_" + parts[i])));
-			p.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(com.elementalweapons.item.ModItems.get(com.elementalweapons.item.Element.FIRE, WeaponType.HAMMER)));
-			} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 파괴자 오류", ex); } });
-		if (f == 62) { mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT); mc.player.setXRot(8); }
-		if (f == 100) shot(mc, "92c_breaker_front");
-		if (f == 102) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
-		if (f == 118) shot(mc, "92d_breaker_back");
+		if (f == 5) server.execute(() -> { try { ServerPlayer p = sp(server);
+			p.getInventory().clearContent();
+			for (int i = 0; i < 16; i++) { var it = com.elementalweapons.growth.CoreForge.core(i); if (it != null) p.getInventory().add(new ItemStack(it, i % 4 == 0 ? 20 : i % 3 + 1)); }
+			double hp0 = p.getMaxHealth();
+			for (int k = 0; k < 6; k++) com.elementalweapons.growth.CoreForge.upgradeForTest(p, 2);
+			com.elementalweapons.growth.CoreForge.upgradeForTest(p, 0);
+			com.elementalweapons.growth.CoreForge.upgradeForTest(p, 15);
+			com.elementalweapons.growth.ModGrowth.applyStats(p);
+			log("[CORE] 마리나 단계=" + com.elementalweapons.growth.CoreForge.level(p, 2) + " 체력 " + hp0 + " → " + p.getMaxHealth()
+					+ " 남은 마리나 핵=" + com.elementalweapons.growth.CoreForge.count(p, com.elementalweapons.growth.CoreForge.core(2)));
+			} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 핵 강화 오류", ex); } });
+		if (f == 20) mc.gui.setScreen(new com.elementalweapons.client.growth.GrowthScreen());
+		if (f == 50) shot(mc, "92a_core_forge");
+		if (f == 52) { com.elementalweapons.client.growth.GrowthScreen.paragonMode = true; }
+		if (f == 70) shot(mc, "92b_core_forge_paragon");
+		if (f == 72) { com.elementalweapons.client.growth.GrowthScreen.paragonMode = false; mc.gui.setScreen(null); }
 	}
 
 	private static long lastXp;
@@ -239,8 +238,8 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
-		if (f < 120) { classTest(mc, server, f); return; }
-		f -= 120;
+		if (f < 80) { classTest(mc, server, f); return; }
+		f -= 80;
 		double[][] sc = focusScenes();
 		int per = 300;
 		if (f < sc.length * per) {

@@ -89,7 +89,7 @@ public class GrandSkill extends Spell {
 			p.sendOverlayMessage(Component.literal(String.format("대형 기술 재사용까지 %d초", (ready - now + 19) / 20)).withStyle(ChatFormatting.GRAY));
 			return true;
 		}
-		double cut = com.elementalweapons.growth.ModGrowth.get(p).staffCooldownFactor() * (1 - com.elementalweapons.growth.ModGrowth.paragon(p).cooldownCut());
+		double cut = com.elementalweapons.growth.ModGrowth.get(p).staffCooldownFactor() * (1 - com.elementalweapons.growth.ModGrowth.paragon(p).cooldownCut()) * com.elementalweapons.growth.CoreForge.cooldownFactor(p);
 		COOL.put(p.getUUID(), now + Math.round(COOLDOWN * cut));
 		cast(level, p, el, kind);
 		return true;

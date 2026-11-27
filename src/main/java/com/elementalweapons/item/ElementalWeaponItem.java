@@ -117,7 +117,7 @@ public class ElementalWeaponItem extends Item {
 			}
 			case BOOK -> {
 				ElementEffects.supportAura(element, server, user);
-				user.getCooldowns().addCooldown(user.getItemInHand(hand), (int) Math.round(300 * (com.elementalweapons.growth.ModGrowth.get(user).staffCooldownFactor() * (1 - com.elementalweapons.growth.ModGrowth.paragon(user).cooldownCut()))));
+				user.getCooldowns().addCooldown(user.getItemInHand(hand), (int) Math.round(300 * (com.elementalweapons.growth.ModGrowth.get(user).staffCooldownFactor() * (1 - com.elementalweapons.growth.ModGrowth.paragon(user).cooldownCut()) * com.elementalweapons.growth.CoreForge.cooldownFactor(user))));
 			}
 			case SCYTHE -> {
 				SpellManager.add(new com.elementalweapons.spell.ReapSpell(server, user, element, com.elementalweapons.skill.ElementMotion.mult(user)));
@@ -131,13 +131,13 @@ public class ElementalWeaponItem extends Item {
 				int gk = com.elementalweapons.spell.GrandSkill.kindFor(type, element);
 				if (gk >= 0) {   // 빛(천국의 문) 말고는 속성별 대형 소환
 					com.elementalweapons.spell.GrandSkill.cast(server, user, element, gk);
-					user.getCooldowns().addCooldown(user.getItemInHand(hand), (int) Math.round(Math.max(element.staffCooldown, 260) * (com.elementalweapons.growth.ModGrowth.get(user).staffCooldownFactor() * (1 - com.elementalweapons.growth.ModGrowth.paragon(user).cooldownCut()))));
+					user.getCooldowns().addCooldown(user.getItemInHand(hand), (int) Math.round(Math.max(element.staffCooldown, 260) * (com.elementalweapons.growth.ModGrowth.get(user).staffCooldownFactor() * (1 - com.elementalweapons.growth.ModGrowth.paragon(user).cooldownCut()) * com.elementalweapons.growth.CoreForge.cooldownFactor(user))));
 					break;
 				}
 				Spell spell = ElementEffects.staffSpell(element, server, user);
 				if (spell == null) return InteractionResult.PASS;
 				SpellManager.add(spell);
-				user.getCooldowns().addCooldown(user.getItemInHand(hand), (int) Math.round(element.staffCooldown * (com.elementalweapons.growth.ModGrowth.get(user).staffCooldownFactor() * (1 - com.elementalweapons.growth.ModGrowth.paragon(user).cooldownCut()))));
+				user.getCooldowns().addCooldown(user.getItemInHand(hand), (int) Math.round(element.staffCooldown * (com.elementalweapons.growth.ModGrowth.get(user).staffCooldownFactor() * (1 - com.elementalweapons.growth.ModGrowth.paragon(user).cooldownCut()) * com.elementalweapons.growth.CoreForge.cooldownFactor(user))));
 			}
 			default -> {
 				return InteractionResult.PASS;

@@ -19,14 +19,22 @@ public class GrowthScreen extends Screen {
 	private static final String[] PDESCS = {"모든 피해 +1% (상한 없음)", "마법 피해 +1%, 쿨타임 감소 (최대 35%)", "최대 체력 +1, 방어 강도 (최대 16)", "이동 속도·공격 속도 (최대 30%/50%)"};
 	private static final int[] PCOLORS = {0xFFFF5A5A, 0xFFC27AFF, 0xFFFFD34D, 0xFF6AE8FF};
 	public static boolean paragonMode = false;
-	private int left, top;
+	private static final int PW = 164, PG = 4, RH = 11;
+	private int left, top, px;
+	private final Button[] coreBtns = new Button[com.elementalweapons.growth.CoreForge.IDS.length];
 
 	public GrowthScreen() { super(Component.literal("원소 성장")); }
 
 	@Override
 	protected void init() {
-		left = (width - W) / 2;
+		left = (width - W - PG - PW) / 2;
 		top = (height - H) / 2;
+		px = left + W + PG;
+		for (int i = 0; i < coreBtns.length; i++) {
+			final int idx = i;
+			coreBtns[i] = addRenderableWidget(Button.builder(Component.literal("+"), b -> ClientPlayNetworking.send(new com.elementalweapons.growth.CoreForge.Up(idx)))
+					.bounds(px + PW - 15, top + 27 + i * RH, 12, 10).build());
+		}
 		for (int i = 0; i < 4; i++) {
 			final int stat = i;
 			addRenderableWidget(Button.builder(Component.literal("+"), b -> {
@@ -60,6 +68,13 @@ public class GrowthScreen extends Screen {
 		// 왼쪽 캐릭터 칸
 		g.fill(left + 8, top + 30, left + 92, top + H - 8, 0x60000000);
 		g.outline(left + 8, top + 30, 84, H - 38, 0xFF3B3260);
+		// 핵 강화 칸
+		g.fillGradient(px, top, px + PW, top + H, 0xF5151A33, 0xF5160E28);
+		g.outline(px, top, PW, H, 0xFFFFB347);
+		g.fillGradient(px + 1, top + 1, px + PW - 1, top + 24, 0x40FFB347, 0x00FFB347);
+		g.horizontalLine(px + 1, px + PW - 2, top + 24, 0x80FFB347);
+		for (int i = 0; i < com.elementalweapons.growth.CoreForge.IDS.length; i++)
+			if (i % 2 == 0) g.fill(px + 2, top + 26 + i * RH, px + PW - 2, top + 26 + (i + 1) * RH, 0x14FFFFFF);
 		// 스탯 줄
 		for (int i = 0; i < 4; i++) {
 			int ry = top + 32 + i * 34;
@@ -72,6 +87,7 @@ public class GrowthScreen extends Screen {
 	public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float pt) {
 		super.extractRenderState(g, mx, my, pt);
 		Growth gr = GrowthClient.current();
+		renderCores(g);
 		if (paragonMode) { renderParagon(g, gr, mx, my); return; }
 		g.text(font, "원소 성장", left + 8, top + 8, 0xFFFFFFFF, true);
 		g.text(font, "Lv " + gr.level(), left + 62, top + 8, 0xFFFFD34D, true);
@@ -181,6 +197,44 @@ public class GrowthScreen extends Screen {
 		g.pose().translate(left + 98, top + H - 8);
 		g.pose().scale(0.6F, 0.6F);
 		g.text(font, "초월 스탯은 상한 없음 · 균열의 열쇠로 무한 균열 도전", 0, 0, 0xFF8A83A8, false);
+		g.pose().popMatrix();
+	}
+
+	private void renderCores(GuiGraphicsExtractor g) {
+		if (minecraft.player == null) return;
+		var p = minecraft.player;
+		g.text(font, "◆ 핵 강화", px + 6, top + 6, 0xFFFFC870, true);
+		small(g, "보스 핵으로 영구 강화 · 최대 " + com.elementalweapons.growth.CoreForge.MAX + "단계", px + 6, top + 16, 0.6F, 0xFF9A93B8);
+		for (int i = 0; i < coreBtns.length; i++) {
+			int y = top + 26 + i * RH;
+			int lv = com.elementalweapons.growth.CoreForge.level(p, i);
+			net.minecraft.world.item.Item it = com.elementalweapons.growth.CoreForge.core(i);
+			int have = it == null ? 0 : com.elementalweapons.growth.CoreForge.count(p, it);
+			int need = com.elementalweapons.growth.CoreForge.cost(lv);
+			boolean max = lv >= com.elementalweapons.growth.CoreForge.MAX;
+			if (it != null) {
+				g.pose().pushMatrix();
+				g.pose().translate(px + 3, y + 1.5F);
+				g.pose().scale(0.5F, 0.5F);
+				g.item(new net.minecraft.world.item.ItemStack(it), 0, 0);
+				g.pose().popMatrix();
+			}
+			int col = com.elementalweapons.growth.CoreForge.COLORS[i];
+			small(g, com.elementalweapons.growth.CoreForge.NAMES[i], px + 13, y + 3, 0.62F, lv > 0 ? col : 0xFF8A83A8);
+			small(g, max ? "MAX" : "Lv" + lv, px + 52, y + 3, 0.62F, max ? 0xFFFFD34D : 0xFFFFFFFF);
+			String st = com.elementalweapons.growth.CoreForge.STAT[i] + " " + com.elementalweapons.growth.CoreForge.fmt(i, com.elementalweapons.growth.CoreForge.value(i, lv));
+			small(g, st, px + 67, y + 3, 0.58F, lv > 0 ? 0xFF9FF0FF : 0xFF6A6488);
+			if (!max) small(g, have + "/" + need, px + 127, y + 3, 0.58F, have >= need ? 0xFF7CFF8A : 0xFFFF7A7A);
+			coreBtns[i].active = !max && have >= need;
+			coreBtns[i].visible = !max;
+		}
+	}
+
+	private void small(GuiGraphicsExtractor g, String t, float x, float y, float sc, int col) {
+		g.pose().pushMatrix();
+		g.pose().translate(x, y);
+		g.pose().scale(sc, sc);
+		g.text(font, t, 0, 0, col, false);
 		g.pose().popMatrix();
 	}
 

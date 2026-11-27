@@ -154,6 +154,7 @@ public final class ModGrowth {
 			else if (path.endsWith("_ore")) addXp(sp, 8);
 		});
 		Tutorial.initialize();
+		CoreForge.initialize();
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.TutorialSkip.TYPE, GrowthPayloads.TutorialSkip.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.TutorialSkip.TYPE, (payload, ctx) -> Tutorial.set(ctx.player(), payload.restart() ? 1 : Tutorial.DONE));
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
@@ -403,6 +404,15 @@ public final class ModGrowth {
 		mod(p, Attributes.ATTACK_SPEED, PASPD, pg.attackSpeed(), AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
 		mod(p, Attributes.ATTACK_DAMAGE, PATK, pg.damageMult() - 1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
 		mod(p, Attributes.ATTACK_DAMAGE, id("job_attack"), Jobs.damageMult(p) - 1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);   // 전직 단계 보너스
+		// 핵 강화
+		mod(p, Attributes.ATTACK_SPEED, id("core_attack_speed"), CoreForge.value(p, 0) + CoreForge.value(p, 13), AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+		mod(p, Attributes.ATTACK_DAMAGE, id("core_attack_mult"), CoreForge.value(p, 1) + CoreForge.value(p, 15), AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+		mod(p, Attributes.ATTACK_DAMAGE, id("core_attack"), CoreForge.value(p, 8), AttributeModifier.Operation.ADD_VALUE);
+		mod(p, Attributes.MAX_HEALTH, id("core_health"), CoreForge.value(p, 2) + CoreForge.value(p, 14), AttributeModifier.Operation.ADD_VALUE);
+		mod(p, Attributes.ARMOR, id("core_armor"), CoreForge.value(p, 3) + CoreForge.value(p, 11), AttributeModifier.Operation.ADD_VALUE);
+		mod(p, Attributes.MOVEMENT_SPEED, id("core_speed"), CoreForge.value(p, 4) + CoreForge.value(p, 12), AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+		mod(p, Attributes.ARMOR_TOUGHNESS, id("core_toughness"), CoreForge.value(p, 7), AttributeModifier.Operation.ADD_VALUE);
+		mod(p, Attributes.KNOCKBACK_RESISTANCE, id("core_knockback"), CoreForge.value(p, 9), AttributeModifier.Operation.ADD_VALUE);
 		if (p.getHealth() > p.getMaxHealth()) p.setHealth(p.getMaxHealth());
 	}
 

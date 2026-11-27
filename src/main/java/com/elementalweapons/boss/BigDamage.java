@@ -45,6 +45,7 @@ public final class BigDamage {
 				mult *= w.type() == com.elementalweapons.item.WeaponType.STAFF ? g.staffBossBonus() : g.meleeBossBonus();
 				com.elementalweapons.growth.Paragon pg = com.elementalweapons.growth.ModGrowth.paragon(p);
 				mult *= w.type() == com.elementalweapons.item.WeaponType.STAFF ? pg.spellMult() : pg.damageMult();
+				mult *= com.elementalweapons.growth.CoreForge.bossMult(p);
 				mult *= com.elementalweapons.skill.SkillInfo.tierMult(com.elementalweapons.skill.SkillInfo.tier(g.level()));
 				el = w.element();
 				aff = affinity(el, boss.element());
