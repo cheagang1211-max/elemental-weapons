@@ -238,8 +238,101 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
-		if (f < 80) { classTest(mc, server, f); return; }
-		f -= 80;
+		if (f < BOSS_T) { bossGallery(mc, server, f); return; }
+		f -= BOSS_T;
+		if (f < RC_T) { rightClickDemo(mc, server, f); return; }
+		f -= RC_T;
+		if (f == 5) { log("DONE"); mc.stop(); }
+	}
+
+	// ---------------- 보스 전시 (하늘 위, 정면 3/4 + 뒤) ----------------
+	private static final String[] BOSS_IDS = {"voltra", "ignis", "marina", "silva", "zephyros", "nox", "lumiel", "crystal_golem",
+			"lava_queen", "frost_giant", "sphinx", "steam_colossus", "storm_wyvern", "twilight_twins", "hydra", "prima"};
+	private static final int BOSS_PER = 70, BOSS_T = 20 + BOSS_IDS.length * BOSS_PER;
+	private static final double GX = 3000.5, GY = 230, GZ = 0.5;
+
+	private static void bossGallery(Minecraft mc, IntegratedServer server, int f) {
+		if (f == 1) server.execute(() -> { ServerPlayer p = sp(server);
+			p.getAbilities().flying = true; p.getAbilities().mayfly = true; p.getAbilities().invulnerable = true; p.onUpdateAbilities();
+			p.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+			p.teleportTo(GX, GY, GZ + 12);
+			server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set 6000");
+			server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "gamerule advance_time false");
+			server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "weather clear"); });
+		if (f == 2) mc.options.setCameraType(CameraType.FIRST_PERSON);
+		if (f < 20) return;
+		int g = f - 20, idx = g / BOSS_PER, k = g % BOSS_PER;
+		String id = BOSS_IDS[idx];
+		if (k == 0) server.execute(() -> { try {
+			ServerPlayer p = sp(server);
+			if (current != null) current.discard();
+			EntityType<?> type = id.equals("voltra") ? ModEntities.VOLTRA : ModEntities.BOSSES.get(id);
+			Entity e = type.create(p.level(), EntitySpawnReason.COMMAND);
+			e.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
+			e.snapTo(GX, GY, GZ, 0, 0);
+			if (e instanceof Mob m) { m.setNoAi(true); m.setNoGravity(true); m.setYHeadRot(0); m.setYBodyRot(0); m.setPersistenceRequired(); }
+			p.level().addFreshEntity(e); current = e;
+			double h = e.getBbHeight(), w = e.getBbWidth();
+			double dist = 2.2 + h * 1.15 + w * 0.9;
+			p.teleportTo(GX + dist * 0.6, GY + h * 0.55, GZ + dist * 0.8);
+			log("보스 " + id + " 키 " + String.format("%.1f", h) + " 폭 " + String.format("%.1f", w));
+			} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 보스 " + id, ex); } });
+		if (k > 2 && k < 40 && current != null) lookAt(mc, current.getX() - 0.5, current.getY() + current.getBbHeight() * 0.5, current.getZ() - 0.5);
+		if (k == 36) shot(mc, String.format("a%02d_%s", idx, id));
+		if (k == 40) server.execute(() -> { ServerPlayer p = sp(server); if (current == null) return;
+			double h = current.getBbHeight(), w = current.getBbWidth(), dist = 2.2 + h * 1.15 + w * 0.9;
+			p.teleportTo(GX - dist * 0.75, GY + h * 0.7, GZ - dist * 0.65); });
+		if (k > 42 && current != null) lookAt(mc, current.getX() - 0.5, current.getY() + current.getBbHeight() * 0.5, current.getZ() - 0.5);
+		if (k == 66) shot(mc, String.format("a%02d_%s_back", idx, id));
+		if (k == BOSS_PER - 1 && idx == BOSS_IDS.length - 1) server.execute(() -> { if (current != null) current.discard(); current = null; });
+	}
+
+	// ---------------- 무기 우클릭 공격 ----------------
+	private static final Object[][] RC = {
+			{WeaponType.SWORD, Element.FIRE}, {WeaponType.SWORD, Element.ELECTRIC}, {WeaponType.GREATSWORD, Element.WATER}, {WeaponType.GREATSWORD, Element.DARK},
+			{WeaponType.HAMMER, Element.GRASS}, {WeaponType.HAMMER, Element.FIRE}, {WeaponType.SCYTHE, Element.DARK}, {WeaponType.SCYTHE, Element.WIND},
+			{WeaponType.BOOK, Element.LIGHT}, {WeaponType.BOOK, Element.WATER}, {WeaponType.SWORD, Element.LIGHT}, {WeaponType.GREATSWORD, Element.WIND}};
+	private static final int RC_PER = 60, RC_T = 30 + RC.length * RC_PER;
+	private static final double RX = 3000.5, RY = 200, RZ = 300.5;
+
+	private static void rightClickDemo(Minecraft mc, IntegratedServer server, int f) {
+		if (f == 1) server.execute(() -> { ServerPlayer p = sp(server); ServerLevel lv = (ServerLevel) p.level();
+			for (int dx = -14; dx <= 14; dx++) for (int dz = -14; dz <= 14; dz++)
+				lv.setBlock(new BlockPos((int) Math.floor(RX) + dx, (int) RY - 1, (int) Math.floor(RZ) + dz), (dx + dz) % 2 == 0 ? Blocks.POLISHED_DEEPSLATE.defaultBlockState() : Blocks.DEEPSLATE_TILES.defaultBlockState(), 3);
+			p.getAbilities().flying = false; p.onUpdateAbilities();
+			p.teleportTo(RX, RY, RZ);
+			server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "attribute " + p.getScoreboardName() + " minecraft:camera_distance base set 7"); });
+		if (f == 3) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+		if (f < 30) return;
+		int g = f - 30, idx = g / RC_PER, k = g % RC_PER;
+		WeaponType wt = (WeaponType) RC[idx][0]; Element el = (Element) RC[idx][1];
+		if (k == 0) server.execute(() -> { ServerPlayer p = sp(server); ServerLevel lv = (ServerLevel) p.level();
+			for (Entity e : dummies) e.discard(); dummies.clear();
+			p.teleportTo(RX, RY, RZ); p.setYRot(0); p.setXRot(0);
+			ModGrowth.set(p, ModGrowth.get(p).withClass(wt.playerClass().ordinal()));
+			ItemStack st = new ItemStack(ModItems.WEAPONS.get(el).get(wt));
+			com.elementalweapons.growth.Evolution.setTier(st, 4);
+			p.setItemSlot(EquipmentSlot.MAINHAND, st);
+			for (int i = 0; i < 5; i++) {
+				Entity e = net.minecraft.world.entity.EntityTypes.HUSK.create(lv, EntitySpawnReason.COMMAND);
+				if (e == null) continue;
+				e.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
+				e.snapTo(RX + (i - 2) * 2.2, RY, RZ + 6 + Math.abs(i - 2), 180, 0);
+				if (e instanceof Mob m) { m.setNoAi(true); m.setHealth(m.getMaxHealth()); }
+				lv.addFreshEntity(e); dummies.add(e);
+			} });
+		if (k > 0 && k < 12) look(mc, 0, 12);
+		if (k == 8) server.execute(() -> { ServerPlayer p = sp(server);
+			p.getMainHandItem().use(p.level(), p, net.minecraft.world.InteractionHand.MAIN_HAND); });
+		if (k == 8) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+		String nm = String.format("b%02d_%s_%s", idx, wt.id, el.name().toLowerCase());
+		if (k == 11) shot(mc, nm + "_1");
+		if (k == 16) shot(mc, nm + "_2");
+		if (k == 24) shot(mc, nm + "_3");
+		if (k == 36) shot(mc, nm + "_4");
+	}
+
+	private static void focusOld(Minecraft mc, IntegratedServer server, int f) {
 		double[][] sc = focusScenes();
 		int per = 300;
 		if (f < sc.length * per) {

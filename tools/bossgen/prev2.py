@@ -14,6 +14,8 @@ for bid in ids:
         try: pack(root, tw, tw); break
         except SystemExit: continue
     tex, glow = paint(root, tw, tw, mats, seed=7)
+    if os.environ.get('AO'):
+        from ao import bake; tex = bake(root, tex, glow)
     n = sum(1 for _ in all_boxes(root))
     for yaw in (-35, 145):
         im = preview(root, tex, size=360, yaw=yaw, pitch=12, glow=glow)
