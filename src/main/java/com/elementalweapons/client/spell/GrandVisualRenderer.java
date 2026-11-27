@@ -52,6 +52,7 @@ public class GrandVisualRenderer extends MobRenderer<GrandVisual, GrandModels.St
 	protected void scale(GrandModels.State s, PoseStack p) {
 		float k = GrandModels.SCALE[Mth.clamp(s.kind, 0, GrandModels.COUNT - 1)];
 		if (s.kind == GrandModels.TREE) { float g = Mth.clamp(s.phase, 0, 1); k *= 0.08F + 0.92F * g * g * (3 - 2 * g); }
+		if (s.kind == GrandModels.SHOCK && s.pitch > 0) { k *= s.pitch; p.scale(k, k, k); return; }   // 보스 충격 고리: PITCH = 크기 배율
 		p.scale(k, k, s.kind == GrandModels.BEAM ? k * Math.max(0.05F, s.phase) : k);
 		if (s.pitch != 0) p.rotateDegrees(com.mojang.math.Axis.XP, s.pitch);
 	}

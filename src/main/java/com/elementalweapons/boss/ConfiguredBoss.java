@@ -141,6 +141,7 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 		if (!(this.level() instanceof ServerLevel level)) return;
 		tickStrikes(level);
 		tickProjs(level);
+		tickFxVis();
 		if (this.tickCount % 3 == 0) {
 			Fx.burst(level, ElementFx.particle(element()), this.position().add(0, getBbHeight() * 0.5, 0), 2, getBbWidth() * 0.5, 0.02);
 			if (secondaryElement() != null) {
@@ -258,6 +259,27 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 		}
 	}
 
+	// 입체 연출 (충격 결정 고리 등): 수명 동안 진행도를 0→1로 올리고 끝나면 지움
+	private record FxVis(com.elementalweapons.spell.GrandVisual v, int born, int life) {}
+	private final List<FxVis> fxVis = new ArrayList<>();
+	private void fxVis(ServerLevel level, int kind, Element e, Vec3 pos, int life, float size) {
+		var v = com.elementalweapons.mob.ModMobs.GRAND.create(level, net.minecraft.world.entity.EntitySpawnReason.MOB_SUMMONED);
+		if (v == null) return;
+		v.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
+		v.setKind(kind); v.setElem(e.ordinal()); v.setPitch(size);
+		v.snapTo(pos.x, pos.y, pos.z, this.getRandom().nextFloat() * 360, 0);
+		level.addFreshEntity(v);
+		fxVis.add(new FxVis(v, this.tickCount, life));
+	}
+	private void tickFxVis() {
+		fxVis.removeIf(f -> {
+			float ph = (this.tickCount - f.born()) / (float) f.life();
+			if (ph >= 1 || !f.v().isAlive()) { if (f.v().isAlive()) f.v().discard(); return true; }
+			f.v().setPhase(ph); f.v().life = 0;
+			return false;
+		});
+	}
+
 	/** 촬영·시험용: 이 종류의 패턴을 t 틱째로 한 번 진행 */
 	public void debugRun(PatternType type, ServerLevel level, int t) {
 		for (PatternSpec sp : def().patterns) if (sp.type() == type) { run(sp, level, level.getNearestPlayer(this, 40), t); return; }
@@ -359,6 +381,7 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 			Fx.ring(level, ElementFx.dust(e, 1.6F), c.add(0, 0.2, 0), r, (int) (r * 4), -r);
 		}
 		Fx.sound(level, c, SoundEvents.GENERIC_EXPLODE, 2.0F, 0.8F);
+		fxVis(level, 15, e, c, 26, (float) (to / 4.5));
 		for (Player p : BossFx.players(level, c, to + 2)) {
 			double d = Math.hypot(p.getX() - c.x, p.getZ() - c.z);
 			if (d >= from && d <= to && p.getY() - c.y < 3.0) hurt(level, p, dmg, e);
@@ -389,6 +412,7 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 		} else if (t == 72) {
 			for (Vec3 g : markedPos) {
 				ElementFx.impact(level, e, g, s.radius());
+				fxVis(level, 15, e, g, 26, (float) (s.radius() / 4.5));
 				ElementFx.impact(level, e, g.add(rnd(1), 0, rnd(1)), s.radius() * 0.6);
 				hitPlayers(level, g, s.radius(), s.damage(), e);
 				for (int i = 0; i < 3; i++) {
@@ -435,6 +459,7 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 			int k = t - 25;
 			if (k == 0) {
 				ElementFx.impact(level, e, anchor, 5);
+				fxVis(level, 15, e, anchor, 30, (float) (s.radius() * 0.5 / 4.5));
 				Fx.sound(level, anchor, SoundEvents.GENERIC_EXPLODE, 3.0F, 0.6F);
 			}
 			double[] rings = getPhase() >= 2 ? new double[] {k * 0.75, (k - 10) * 0.75} : new double[] {k * 0.75};

@@ -290,7 +290,7 @@ public final class ShotHarness {
 	}
 
 	// ---------------- 보스 패턴 (운석·광선) ----------------
-	private static final Object[][] PAT = {{"ignis", com.elementalweapons.boss.PatternType.METEOR}, {"ignis", com.elementalweapons.boss.PatternType.BEAM},
+	private static final Object[][] PAT = {{"crystal_golem", com.elementalweapons.boss.PatternType.NOVA}, {"crystal_golem", com.elementalweapons.boss.PatternType.SLAM},
 			{"lumiel", com.elementalweapons.boss.PatternType.BEAM}};
 	private static final int PAT_PER = 110, PAT_T = 10 + PAT.length * PAT_PER;
 
@@ -310,7 +310,7 @@ public final class ShotHarness {
 		if (k == 2) mc.options.setCameraType(CameraType.FIRST_PERSON);
 		if (k > 2 && current != null) lookAt(mc, current.getX() - 0.5, RY + 1, current.getZ() - 0.5);
 		if (k >= 5 && k < 105) { int tt = k - 5; server.execute(() -> { if (current instanceof com.elementalweapons.boss.ConfiguredBoss cb) cb.debugRun(type, (ServerLevel) cb.level(), tt); }); }
-		if (k == 35 || k == 50 || k == 70) shot(mc, String.format("c%d_%s_%s_%d", idx, id, type.name().toLowerCase(), k));
+		if (k == 35 || k == 50 || k == 70 || k == 48) shot(mc, String.format("c%d_%s_%s_%d", idx, id, type.name().toLowerCase(), k));
 	}
 
 	// ---------------- 무기 우클릭 공격 ----------------
