@@ -4,12 +4,13 @@ package com.elementalweapons.item;
 public enum PlayerClass {
 	NONE("없음", "None", "", 0xFFAAAAAA),
 	MAGE("마법사", "Mage", "지팡이", 0xFFB0A2FF),
-	WARRIOR("전사", "Warrior", "대검 · 망치", 0xFFFF8A6A),
+	WARRIOR("전사", "Warrior", "대검", 0xFFFF8A6A),
 	KNIGHT("기사", "Knight", "검 + 방패", 0xFF8AD0FF),
 	ASSASSIN("암살자", "Assassin", "단검", 0xFF6AFFBA),
 	SUPPORT("서포터", "Support", "마법서", 0xFFFFB0E0),
 	REAPER("사신", "Reaper", "낫", 0xFFC27AFF),
-	RANGER("궁수", "Ranger", "활", 0xFFB6F07A);
+	RANGER("궁수", "Ranger", "활", 0xFFB6F07A),
+	BREAKER("파괴자", "Breaker", "망치", 0xFFFFB347);
 
 	public final String koName, enName, weapons;
 	public final int color;

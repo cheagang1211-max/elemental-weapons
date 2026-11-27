@@ -20,7 +20,8 @@ public enum WeaponType {
 	public PlayerClass playerClass() {
 		return switch (this) {
 			case STAFF -> PlayerClass.MAGE;
-			case GREATSWORD, HAMMER -> PlayerClass.WARRIOR;
+			case GREATSWORD -> PlayerClass.WARRIOR;
+			case HAMMER -> PlayerClass.BREAKER;
 			case SWORD, SHIELD -> PlayerClass.KNIGHT;
 			case DAGGER -> PlayerClass.ASSASSIN;
 			case BOOK -> PlayerClass.SUPPORT;

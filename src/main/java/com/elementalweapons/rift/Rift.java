@@ -38,7 +38,7 @@ import com.elementalweapons.spell.Fx;
  */
 public class Rift {
 	public static final double R = 16;
-	private static final int TIME = 20 * 240;
+	private static final int TIME = 20 * 300;
 	private static final Identifier HP = Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "rift_health");
 	private static final Identifier ATK = Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "rift_attack");
 	private static final Identifier SCALE = Identifier.fromNamespaceAndPath(ElementalWeaponsMod.MOD_ID, "rift_scale");
@@ -60,7 +60,7 @@ public class Rift {
 		for (ServerPlayer p : who) { players.add(p.getUUID()); bar.addPlayer(p); }
 		Fx.sound(level, c, SoundEvents.END_PORTAL_SPAWN, 1.0F, 1.3F);
 		Fx.sound(level, c, SoundEvents.WITHER_SPAWN, 0.5F, 1.6F);
-		for (ServerPlayer p : who) p.sendSystemMessage(Component.literal("✧ 원소 균열 " + tier + "단계가 열렸습니다! 결계 안에서 3웨이브를 정리하세요 (제한 4분)")
+		for (ServerPlayer p : who) p.sendSystemMessage(Component.literal("✧ 원소 균열 " + tier + "단계가 열렸습니다! 결계 안에서 3웨이브를 정리하세요 (제한 5분)")
 				.withStyle(ChatFormatting.LIGHT_PURPLE, ChatFormatting.BOLD));
 	}
 
@@ -110,8 +110,10 @@ public class Rift {
 
 	private void spawnWave(List<ServerPlayer> ps) {
 		List<EntityType<?>> types = new ArrayList<>(ModMobs.MOBS.values());
-		int n = Math.min(14, 3 + tier / 2 + wave + (ps.size() - 1) * 2);
-		double hp = 0.4 * tier + 0.25 * (ps.size() - 1), atk = 0.15 * tier;
+		// 혼자서도 깰 수 있게: 단계마다 완만하게, 함께 하면 사람 수만큼 더 강해짐
+		int extra = Math.max(0, ps.size() - 1);
+		int n = Math.min(14, 2 + tier / 3 + wave + extra * 2);
+		double hp = 0.2 * tier + 0.3 * extra, atk = 0.07 * tier + 0.05 * extra;
 		for (int i = 0; i < n; i++) {
 			double a = i * Math.PI * 2 / n + wave;
 			Vec3 pos = c.add(Math.cos(a) * 10, 1, Math.sin(a) * 10);
@@ -119,7 +121,7 @@ public class Rift {
 			if (m != null) mobs.add(m);
 		}
 		if (wave == 3) {
-			LivingEntity g = spawn(types.get(level.getRandom().nextInt(types.size())), c.add(0, 1, 0), hp * 3 + 6, atk * 1.5 + 0.5, 1.8);
+			LivingEntity g = spawn(types.get(level.getRandom().nextInt(types.size())), c.add(0, 1, 0), hp * 2 + 3, atk * 1.3 + 0.3, 1.8);
 			if (g != null) {
 				g.setCustomName(Component.literal("균열 수호자 · " + tier + "단계").withStyle(ChatFormatting.LIGHT_PURPLE, ChatFormatting.BOLD));
 				g.setCustomNameVisible(true);

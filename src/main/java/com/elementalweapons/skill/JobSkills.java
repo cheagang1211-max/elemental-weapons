@@ -131,7 +131,27 @@ public final class JobSkills {
 				Skills.run(l, p, a -> { if (a % 5 == 0) Fx.burst(l, ElementFx.dust(e, 1.0F), p.position().add(0, 1, 0), 4, 0.4, 0.03); return a >= dur; });
 				Fx.sound(l, pos, SoundEvents.RAVAGER_ROAR, 1F, 1.2F);
 			}
-			case 22 -> {   // 파쇄자: 대지 분쇄 — 앞으로 땅이 갈라지며 적을 띄움
+			case 22 -> {   // 검귀: 검기 폭풍 — 부채꼴로 검기를 연달아 날려 멀리까지 벰
+				int waves = awake ? 3 : 2, lines = awake ? 7 : 5;
+				circle(l, p, e, pos, 3, 30, awake);
+				Set<LivingEntity> hitSet = new HashSet<>();
+				Skills.run(l, p, a -> {
+					int w = a / 6;
+					if (a % 6 == 0 && w < waves) { hitSet.clear(); Fx.sound(l, pos, SoundEvents.PLAYER_ATTACK_SWEEP, 1.2F, 0.7F + w * 0.15F); }
+					if (w < waves) {
+						double d = 1.5 + (a % 6) * 2.6;
+						for (int k = 0; k < lines; k++) {
+							double ang = Math.atan2(look.z, look.x) + (k - (lines - 1) / 2.0) * 0.16 + (w % 2 == 0 ? 0 : 0.08);
+							Vec3 at = chest.add(Math.cos(ang) * d, 0, Math.sin(ang) * d);
+							Fx.at(l, ElementFx.dust(e, 1.5F), at);
+							Fx.at(l, ElementFx.particle(e), at.add(0, 0.3, 0));
+							for (LivingEntity t : Fx.enemies(l, at, 1.6)) if (hitSet.add(t)) { hurt(l, p, t, 8 * m); if (a % 6 == 5) ElementEffects.strike(e, l, p, t.position()); }
+						}
+					}
+					return a >= waves * 6;
+				});
+			}
+			case 81 -> {   // 파쇄자: 대지 분쇄 — 앞으로 땅이 갈라지며 적을 띄움
 				int lines = awake ? 3 : 1;
 				Set<LivingEntity> once = new HashSet<>();
 				circle(l, p, e, pos, 3, 30, awake);
@@ -332,6 +352,24 @@ public final class JobSkills {
 					return a >= dur;
 				});
 				Fx.sound(l, tg, SoundEvents.ARROW_SHOOT, 1.5F, 0.6F);
+			}
+			case 82 -> {   // 철벽 거인: 거인의 갑주 — 단단해지고 주변 적을 도발, 충격파
+				int dur = awake ? 200 : 140;
+				p.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, dur, awake ? 2 : 1));
+				p.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, dur, awake ? 3 : 2));
+				for (LivingEntity t : Fx.enemies(l, chest, 12)) if (t instanceof net.minecraft.world.entity.Mob mob) mob.setTarget(p);
+				circle(l, p, e, pos, 6, 40, awake);
+				Skills.run(l, p, a -> {
+					if (a % 10 == 0 && a <= 20) {
+						double r = 3 + a / 10 * 2.5;
+						ElementFx.groundRing(l, c1, pos.add(0, 0.1, 0), r, 2F, 12);
+						ElementFx.impact(l, e, pos, r * 0.5);
+						for (LivingEntity t : Fx.enemies(l, chest, r)) { hurt(l, p, t, 6 * m); Fx.launch(t, 0, 0.6, 0); }
+						Fx.sound(l, pos, SoundEvents.ANVIL_LAND, 1F, 0.5F + a * 0.01F);
+					}
+					if (a % 5 == 0) Fx.burst(l, ElementFx.dust(e, 1.4F), chest, 6, 0.7, 0.02);
+					return a >= 20;
+				});
 			}
 			default -> { return false; }
 		}

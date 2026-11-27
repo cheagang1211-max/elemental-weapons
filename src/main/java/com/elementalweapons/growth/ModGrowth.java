@@ -86,6 +86,17 @@ public final class ModGrowth {
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.ResetClass.TYPE, (payload, ctx) -> sageReset(ctx.player()));
 		// 운명의 현자: 처음 접속한 플레이어 근처에 한 번 배치하고, 사라지면 같은 자리에 다시 세움
 		net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> server.execute(() -> placeSage(handler.getPlayer())));
+		// 전사 분리: 예전 전사 중 '파쇄자'(망치 갈래)는 새 직업 파괴자로 옮김
+		net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> server.execute(() -> {
+			ServerPlayer p = handler.getPlayer();
+			Jobs.Data d = Jobs.get(p);
+			if (get(p).playerClass() == com.elementalweapons.item.PlayerClass.WARRIOR && d.branch() == 2) {
+				set(p, get(p).withClass(com.elementalweapons.item.PlayerClass.BREAKER.ordinal()));
+				p.setAttached(Jobs.DATA, new Jobs.Data(d.stage(), 1, d.trial(), d.kills(), d.bosses()));
+				p.sendSystemMessage(Component.literal("✦ 전사가 대검의 '전사'와 망치의 '파괴자'로 나뉘었습니다. 파쇄자였으므로 파괴자로 옮겼습니다.").withStyle(ChatFormatting.GOLD));
+			} else if (get(p).playerClass() == com.elementalweapons.item.PlayerClass.WARRIOR && swapHammers(p))
+				p.sendSystemMessage(Component.literal("✦ 전사가 대검의 '전사'와 망치의 '파괴자'로 나뉘었습니다. 전사는 이제 대검만 씁니다 (가지고 있던 망치는 같은 속성의 대검으로 바꿔 드렸어요).").withStyle(ChatFormatting.GRAY));
+		}));
 		ServerTickEvents.END_SERVER_TICK.register(server -> { if (server.getTickCount() % 200 == 100) keepSage(server.overworld()); });		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.ChooseClass.TYPE, GrowthPayloads.ChooseClass.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.ChooseClass.TYPE, (payload, ctx) -> chooseClass(ctx.player(), payload.cls()));
 		// 직업에 맞지 않는 무기로는 공격 불가
@@ -232,6 +243,22 @@ public final class ModGrowth {
 	private static final String[] REGION_CRYSTAL = {"bloom_crystal", "tide_crystal", "storm_crystal", "gale_crystal", "ember_crystal", "radiant_crystal", "umbral_crystal"};
 
 	/** 원소 지역 몹을 잡으면 일정 확률로 광석 재료 */
+	/** 전사가 가진 속성 망치를 같은 속성 대검으로 바꿈 (강화 단계 유지) */
+	private static boolean swapHammers(ServerPlayer p) {
+		boolean any = false;
+		var inv = p.getInventory();
+		for (int i = 0; i < inv.getContainerSize(); i++) {
+			ItemStack st = inv.getItem(i);
+			if (st.getItem() instanceof com.elementalweapons.item.ElementalWeaponItem w && w.type() == com.elementalweapons.item.WeaponType.HAMMER) {
+				ItemStack g = new ItemStack(com.elementalweapons.item.ModItems.get(w.element(), com.elementalweapons.item.WeaponType.GREATSWORD));
+				int lv = com.elementalweapons.item.Enhancement.level(st);
+				if (lv > 0) com.elementalweapons.item.Enhancement.apply(g, lv, 0);
+				inv.setItem(i, g); any = true;
+			}
+		}
+		return any;
+	}
+
 	/** 보스를 잡으면 강화석, 가끔 천상의 가호석 */
 	private static void bossGift(ServerPlayer p) {
 		var r = p.getRandom();

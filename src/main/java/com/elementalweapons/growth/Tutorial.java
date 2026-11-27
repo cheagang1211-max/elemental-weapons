@@ -66,7 +66,7 @@ public final class Tutorial {
 
 	private static String weapon(PlayerClass c) {
 		return switch (c) {
-			case MAGE -> "나무 지팡이"; case WARRIOR -> "나무 대검(또는 망치)"; case KNIGHT -> "나무 검"; case ASSASSIN -> "나무 단검";
+			case MAGE -> "나무 지팡이"; case WARRIOR -> "나무 대검"; case BREAKER -> "나무 망치"; case KNIGHT -> "나무 검"; case ASSASSIN -> "나무 단검";
 			case SUPPORT -> "나무 마법서"; case REAPER -> "나무 낫"; case RANGER -> "나무 활"; default -> "무기";
 		};
 	}
@@ -92,7 +92,8 @@ public final class Tutorial {
 			case 0 -> "곧 모든 직업의 나무 무기를 받아요";
 			case 1 -> switch (c) {
 				case MAGE -> "우클릭: 마력 구슬 (멀리 있는 적을 맞혀요)";
-				case WARRIOR -> "우클릭: 대검은 넓게 베기, 망치는 땅 내리치기";
+				case WARRIOR -> "우클릭: 대검으로 주변 6방향 강타";
+				case BREAKER -> "우클릭: 망치로 땅 내리치기 충격파";
 				case KNIGHT -> "우클릭: 앞의 적 찌르기 · 방패는 왼손에 들고 우클릭으로 막기";
 				case ASSASSIN -> "우클릭: 짧게 돌진";
 				case SUPPORT -> "우클릭: 주변 아군과 나를 치유";

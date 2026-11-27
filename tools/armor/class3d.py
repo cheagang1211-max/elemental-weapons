@@ -46,6 +46,8 @@ def palette(cls, el):
         P.update(cloth=mix((78, 100, 48), m, 0.35), cloth2=mix((120, 88, 52), m, 0.15), dark=(52, 36, 22), trim=mix((150, 108, 58), m, 0.15), feather=mix((176, 150, 110), m, 0.3))
     elif cls == "knight":
         P.update(cloth=m, cloth2=mix(m, (255, 255, 255), 0.6), dark=d, trim=GOLD, fur=(236, 234, 228))
+    elif cls == "breaker":
+        P.update(cloth=mix(m, (70, 60, 50), 0.4), cloth2=mix(m, (40, 40, 40), 0.5), dark=(40, 36, 34), trim=mix((180, 140, 70), m, 0.15), metal=mix((120, 122, 130), m, 0.12), leather=(70, 50, 34))
     elif cls == "warrior":
         P.update(cloth=mix(m, (100, 40, 20), 0.4), cloth2=mix(m, (60, 40, 30), 0.5), dark=(54, 34, 20), trim=(160, 118, 64), metal=(140, 140, 148))
     return P
@@ -373,6 +375,40 @@ def build():
     for bone in ("right_leg", "left_leg"):
         o.add(bone, (-2.8, 6.2, -2.8, 5.6, 1.8, 5.6), "fur", slot="f")
     outfits["warrior"] = o
+
+    # ===================== 파괴자: 대지의 파괴자 (판금 위) =====================
+    o = Outfit("breaker")
+    # 얼굴 창살 + 투구 위 철판 볏
+    for k in range(4):
+        o.add("head", (-0.3, 0, -0.3, 0.6, 3.4, 0.6), "metal", (-1.8 + k * 1.2, -4.6, -5.4), slot="h")
+    o.add("head", (-2.6, -0.4, -0.4, 5.2, 0.8, 0.8), "trim", (0, -4.8, -5.4), slot="h")
+    o.add("head", (-0.7, -4, -4, 1.4, 4, 8), "metal", (0, -9.6, 0), slot="h")
+    # 거대한 모루 어깨갑 (세 겹, 징)
+    for bone, x0, s in (("right_arm", -7.4, -1), ("left_arm", 2.4, 1)):
+        o.add(bone, (x0, -3.8, -4.2, 5.0, 3.0, 8.4), "metal")
+        o.add(bone, (x0 + (0 if s < 0 else 0.4), -5.6, -3.4, 4.6, 1.9, 6.8), "metal")
+        o.add(bone, (x0 + (0.6 if s < 0 else 0.2), -7.0, -2.4, 4.2, 1.5, 4.8), "trim")
+        for k in range(3):
+            o.add(bone, (-0.5, -0.5, -0.5, 1.0, 1.0, 1.0), "gold", (x0 + (0 if s < 0 else 5.0), -2.4, -2.8 + k * 2.8), (0.785, 0, 0.785))
+        o.add(bone, (x0 + 0.2, 4.8, -3.2, 4.6, 4.2, 6.4), "leather", stitch=True)
+    # 가슴 철판 + 쇠사슬 띠 + 등의 대지 문장 원반
+    o.add("body", (-4.4, 0.6, -0.4, 8.8, 6.8, 0.8), "metal", (0, 0, -3.9))
+    o.add("body", (-1.6, -1.6, -0.3, 3.2, 3.2, 0.6), "gem", (0, 3.6, -4.5), (0, 0, 0.785))
+    for k in range(10):
+        o.add("body", (-0.45, -0.55, -0.25, 0.9, 1.1, 0.5), "metal", (-4.4 + k * 0.98, 1.0 + k * 0.95, -4.4), (0, 0, -0.75 + (0.5 if k % 2 else 0)))
+    disc = o.add("body", (-4.0, -4.0, -0.4, 8.0, 8.0, 0.8), "metal", (0, 5.0, 4.4))
+    o.add("body", (-2.6, -2.6, -0.5, 5.2, 5.2, 1.0), "trim", parent=disc)
+    o.add("body", (-1.2, -1.2, -0.7, 2.4, 2.4, 1.4), "gem", parent=disc)
+    o.add("body", (-5.2, 9.0, -3.3, 10.4, 2.4, 6.6), "leather", stitch=True)
+    o.add("body", (-1.8, 8.6, -3.9, 3.6, 3.2, 0.8), "metal")
+    for k in range(3):   # 허리에 매단 사슬
+        o.add("body", (-0.4, 0, -0.4, 0.8, 1.2, 0.8), "metal", (3.6, 11.0 + k * 1.2, -3.0), anim="t")
+    o.add("body", (-2.8, 0, -0.3, 5.6, 9, 0.6), "leather", (0, 11.6, -4.2), slot="l", anim="f", bands="bottom", stitch=True)
+    o.add("body", (-3.2, 0, -0.3, 6.4, 8, 0.6), "cloth", (0, 11.6, 3.4), slot="l", anim="b", bands="bottom")
+    for bone in ("right_leg", "left_leg"):
+        o.add(bone, (-3.0, 6.0, -3.0, 6.0, 2.0, 6.0), "metal", slot="f")
+        o.add(bone, (-1.4, 2.6, -3.4, 2.8, 2.8, 0.8), "trim", slot="l")
+    outfits["breaker"] = o
     return outfits
 
 # ------------------------------------------------------------------ 텍스처 자리 배정

@@ -33,12 +33,13 @@ public final class ArmorStyle {
 	public static final double[][] CLASS_DEF = {
 			{0, 0, 0, 0},          // 없음
 			{-5, -1, 0, 0.04},     // 마법사: 로브 — 가볍고 빠름
-			{4, 2, 0.2, 0},        // 전사: 모피 갑주 — 단단하고 밀리지 않음
+			{3, 2, 0.15, 0.02},    // 전사: 모피 갑주 — 단단하면서 날렵
 			{7, 3, 0.1, -0.03},    // 기사: 전신 판금 — 가장 단단, 조금 느림
 			{-3, 0, 0, 0.08},      // 암살자: 가죽 은신복 — 가장 빠름
 			{-4, 0, 0, 0.03},      // 서포터: 사제복
 			{0, 1, 0, 0.03},       // 사신: 수의 망토
 			{-2, 0, 0, 0.05},      // 궁수: 사냥꾼 가죽
+			{6, 3, 0.3, -0.03},    // 파괴자: 육중한 판금 — 가장 안 밀림
 	};
 	private static final net.minecraft.resources.Identifier DEF = ElementalWeaponsMod.id("class_armor"), TOUGH = ElementalWeaponsMod.id("class_armor_tough"),
 			KB = ElementalWeaponsMod.id("class_armor_kb"), SPEED = ElementalWeaponsMod.id("class_armor_speed");

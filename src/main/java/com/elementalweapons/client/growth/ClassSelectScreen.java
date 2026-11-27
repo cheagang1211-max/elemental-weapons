@@ -15,16 +15,17 @@ import com.elementalweapons.item.WeaponType;
 
 /** 직업 선택 화면 */
 public class ClassSelectScreen extends Screen {
-	private static final PlayerClass[] CLASSES = {PlayerClass.MAGE, PlayerClass.WARRIOR, PlayerClass.KNIGHT, PlayerClass.ASSASSIN, PlayerClass.SUPPORT, PlayerClass.REAPER, PlayerClass.RANGER};
+	private static final PlayerClass[] CLASSES = {PlayerClass.MAGE, PlayerClass.WARRIOR, PlayerClass.KNIGHT, PlayerClass.ASSASSIN, PlayerClass.SUPPORT, PlayerClass.REAPER, PlayerClass.RANGER, PlayerClass.BREAKER};
 	private static final String[][] DESC = {
 			{"원소 마법으로 멀리서 공격", "지팡이 스킬: 속성 대마법"},
-			{"무거운 무기로 강하게 공격", "대검: 주변 6방향 강타", "망치: 땅 내리치기 충격파"},
+			{"대검으로 넓게 베어 가르기", "대검: 주변 6방향 강타"},
 			{"검과 방패로 공격과 방어", "검: 원거리 속성 일격", "방패: 막으면 속성 반격"},
 			{"빠른 단검으로 기습", "단검: 순간 돌진"},
 			{"아군을 돕는 지원 마법", "마법서: 주변 아군 강화·회복", "어둠: 적 약화"},
 			{"낫으로 넓게 베어 가르기", "낫: 회전 베기", "적을 끌어당긴 뒤 폭발"},
-			{"멀리서 속성 화살 사격", "활: 당길수록 강해짐", "끝까지 당기면 5연발"}};
-	private static final WeaponType[][] WEAPONS = {{WeaponType.STAFF}, {WeaponType.GREATSWORD, WeaponType.HAMMER}, {WeaponType.SWORD, WeaponType.SHIELD}, {WeaponType.DAGGER}, {WeaponType.BOOK}, {WeaponType.SCYTHE}, {WeaponType.BOW}};
+			{"멀리서 속성 화살 사격", "활: 당길수록 강해짐", "끝까지 당기면 5연발"},
+			{"망치로 땅을 부수는 육중한 전사", "망치: 땅 내리치기 충격파", "가장 단단한 몸"}};
+	private static final WeaponType[][] WEAPONS = {{WeaponType.STAFF}, {WeaponType.GREATSWORD}, {WeaponType.SWORD, WeaponType.SHIELD}, {WeaponType.DAGGER}, {WeaponType.BOOK}, {WeaponType.SCYTHE}, {WeaponType.BOW}, {WeaponType.HAMMER}};
 	private static final int CW = 56, CH = 150, GAP = 3;
 	private int left, top;
 
