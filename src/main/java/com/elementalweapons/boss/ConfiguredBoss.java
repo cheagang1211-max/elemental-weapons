@@ -55,6 +55,7 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 	private final List<Strike> strikes = new ArrayList<>();
 	private final List<Proj> projs = new ArrayList<>();
 	private final List<Entity> minions = new ArrayList<>();
+	private final List<com.elementalweapons.spell.GrandVisual> meteorVis = new ArrayList<>();
 	private Vec3 dashDir = Vec3.ZERO;
 	private final Set<UUID> hitOnce = new HashSet<>();
 	private final Map<UUID, Integer> lastHit = new HashMap<>();
@@ -573,13 +574,32 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 			if (markedPos.isEmpty()) markedPos.add(BossFx.ground(level, getX() + rnd(8), getZ() + rnd(8)));
 			Fx.sound(level, this.position(), SoundEvents.WITHER_SPAWN, 1.0F, 1.6F);
 		}
+		if (t == 0) {
+			for (var v : meteorVis) if (v.isAlive()) v.discard();
+			meteorVis.clear();
+			for (Vec3 g : markedPos) {
+				var v = com.elementalweapons.mob.ModMobs.GRAND.create(level, net.minecraft.world.entity.EntitySpawnReason.MOB_SUMMONED);
+				if (v == null) continue;
+				v.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
+				v.setKind(19); v.setElem(e.ordinal());
+				v.snapTo(g.x, g.y + 31, g.z, 0, 0);
+				level.addFreshEntity(v);
+				meteorVis.add(v);
+			}
+		}
 		if (t < 50) {
+			int i = 0;
 			for (Vec3 g : markedPos) {
 				BossFx.warnRing(level, g, s.radius(), t > 35 ? BossFx.WARN_RED : BossFx.WARN_YELLOW, t * 0.1);
 				BossFx.warnRing(level, g, s.radius() * 0.5, BossFx.WARN_YELLOW, -t * 0.1);
-				ElementFx.orb(level, e, g.add(0, 30 * (1 - t / 50.0) + 1, 0), 1.8);
+				double f = t / 50.0, h = 30 * (1 - f * f) + 1;
+				ElementFx.orb(level, e, g.add(0, h, 0), 1.8);
+				if (i < meteorVis.size()) { var v = meteorVis.get(i); v.setPos(g.x, g.y + h - 1.2, g.z); v.life = 0; }
+				i++;
 			}
 		} else if (t == 50) {
+			for (var v : meteorVis) if (v.isAlive()) v.discard();
+			meteorVis.clear();
 			for (Vec3 g : markedPos) {
 				ElementFx.impact(level, e, g, s.radius());
 				ElementFx.impact(level, e, g.add(rnd(2), 0, rnd(2)), s.radius() * 0.7);
