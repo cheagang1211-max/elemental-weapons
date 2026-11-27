@@ -141,6 +141,16 @@ public class GenericBossModel extends EntityModel<BossRenderState> {
 				sp.xRot += Mth.sin(t * 0.065F - i * 0.6F) * 0.06F + amt * 0.08F;
 			}
 		}
+		// 쌍둥이: 서로 반대로 떠오르고 살짝 돌며, 공격 땐 바깥으로 벌어짐
+		for (int i = 1; i <= 2; i++) {
+			ModelPart tw = p("twin" + i);
+			if (tw == null) continue;
+			float sgn = i == 1 ? -1 : 1;
+			tw.y += Mth.sin(t * 0.09F + i * Mth.PI) * 1.4F;
+			tw.yRot += Mth.sin(t * 0.04F + i) * 0.12F;
+			tw.x += sgn * (act * 2.5F + punch * 2F);
+			tw.zRot += sgn * (0.04F * Mth.sin(t * 0.07F) + act * 0.12F);
+		}
 		for (ModelPart sp : spins) sp.zRot += t * 0.08F;
 		for (int i = 0; i < bobs.size(); i++) bobs.get(i).y += Mth.sin(t * 0.09F + i * 1.7F) * 1.5F;
 		for (int i = 0; i < pulses.size(); i++) {
