@@ -291,7 +291,8 @@ public final class ShotHarness {
 	private static final Object[][] RC = {
 			{WeaponType.SWORD, Element.FIRE}, {WeaponType.SWORD, Element.ELECTRIC}, {WeaponType.GREATSWORD, Element.WATER}, {WeaponType.GREATSWORD, Element.DARK},
 			{WeaponType.HAMMER, Element.GRASS}, {WeaponType.HAMMER, Element.FIRE}, {WeaponType.SCYTHE, Element.DARK}, {WeaponType.SCYTHE, Element.WIND},
-			{WeaponType.BOOK, Element.LIGHT}, {WeaponType.BOOK, Element.WATER}, {WeaponType.SWORD, Element.LIGHT}, {WeaponType.GREATSWORD, Element.WIND}};
+			{WeaponType.BOOK, Element.LIGHT}, {WeaponType.BOOK, Element.WATER}, {WeaponType.SWORD, Element.LIGHT}, {WeaponType.GREATSWORD, Element.WIND},
+			{WeaponType.BOW, Element.ELECTRIC}, {WeaponType.HAMMER, Element.ELECTRIC}};
 	private static final int RC_PER = 60, RC_T = 30 + RC.length * RC_PER;
 	private static final double RX = 3000.5, RY = 200, RZ = 300.5;
 
@@ -323,7 +324,9 @@ public final class ShotHarness {
 			} });
 		if (k > 0 && k < 12) look(mc, 0, 12);
 		if (k == 8) server.execute(() -> { ServerPlayer p = sp(server);
-			p.getMainHandItem().use(p.level(), p, net.minecraft.world.InteractionHand.MAIN_HAND); });
+			if (wt == WeaponType.BOW) { com.elementalweapons.spell.SpellManager.add(new com.elementalweapons.spell.ElementArrowSpell((ServerLevel) p.level(), p, el, 1.0F, p.getMainHandItem()));
+				com.elementalweapons.spell.WeaponVisual.start((ServerLevel) p.level(), p, el, wt, null); }
+			else p.getMainHandItem().use(p.level(), p, net.minecraft.world.InteractionHand.MAIN_HAND); });
 		if (k == 8) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, true);
 		String nm = String.format("b%02d_%s_%s", idx, wt.id, el.name().toLowerCase());
 		if (k == 10) shot(mc, nm + "_0");

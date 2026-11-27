@@ -20,9 +20,9 @@ public final class GrandModels {
 
 	public static final int SWORD = 0, AXE = 1, DAGGER = 2, BOW = 3, ARROW = 4, REAPER = 5, GODDESS = 6, TITAN = 7, LEVIATHAN = 8, TREE = 9, ROC = 10, ABYSS = 11;
 	/** 무기 우클릭 연출: 12 낙하 영검  13 대검 원진  14 거대 망치  15 충격 결정 고리  16 초승달 낫날  17 마도서 */
-	public static final int BLADE = 12, BLADE_RING = 13, HAMMER = 14, SHOCK = 15, CRESCENT = 16, TOME = 17;
-	public static final int COUNT = 18;
-	public static final float[] SCALE = {6F, 6F, 5F, 6F, 6F, 7F, 7F, 8F, 6F, 7F, 7F, 6F, 1.5F, 1.7F, 1.6F, 1.2F, 1.35F, 1.3F};
+	public static final int BLADE = 12, BLADE_RING = 13, HAMMER = 14, SHOCK = 15, CRESCENT = 16, TOME = 17, SPIRIT_BOW = 18;
+	public static final int COUNT = 19;
+	public static final float[] SCALE = {6F, 6F, 5F, 6F, 6F, 7F, 7F, 8F, 6F, 7F, 7F, 6F, 1.5F, 1.7F, 1.6F, 1.2F, 1.35F, 1.3F, 0.9F};
 
 	public static class State extends LivingEntityRenderState {
 		public int kind, elem;
@@ -91,7 +91,8 @@ public final class GrandModels {
 			case HAMMER -> hammer(root);
 			case SHOCK -> shock(root);
 			case CRESCENT -> crescent(root);
-			default -> tome(root);
+			case TOME -> tome(root);
+			default -> bow(root);
 		}
 	}
 
@@ -631,7 +632,7 @@ public final class GrandModels {
 					if (s.strike <= 0) ang = -2.7F * ph;
 					if (arm != null) arm.xRot = ang;
 				}
-				case BOW -> {
+				case BOW, SPIRIT_BOW -> {
 					float pull = ph;
 					ModelPart su = get("main", "string_u"), sd = get("main", "string_d"), nock = get("main", "nocked");
 					float back = 21.4F + pull * 16;

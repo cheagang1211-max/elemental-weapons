@@ -171,7 +171,7 @@ public class ElementalWeaponItem extends Item {
 		if (charge < 0.15F) return false;
 		if (level instanceof ServerLevel server) {
 			SpellManager.add(new com.elementalweapons.spell.ElementArrowSpell(server, p, element, charge, stack));
-			if (charge >= 1.0F) com.elementalweapons.growth.Tutorial.classEvent(p, "full_volley");
+			if (charge >= 1.0F) { com.elementalweapons.growth.Tutorial.classEvent(p, "full_volley"); com.elementalweapons.spell.WeaponVisual.start(server, p, element, type, null); }
 			com.elementalweapons.growth.Tutorial.event(p, 1);
 			p.getCooldowns().addCooldown(stack, charge >= 1.0F ? 30 : 8);
 		}
