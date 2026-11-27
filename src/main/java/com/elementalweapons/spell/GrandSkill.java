@@ -108,7 +108,9 @@ public class GrandSkill extends Spell {
 	// ---------------- 도움 함수 ----------------
 	private static Vec3 pickTarget(ServerLevel level, Player p, Vec3 fwd) {
 		HitResult hit = p.pick(40, 0, false);
-		Vec3 t = hit.getType() == HitResult.Type.MISS ? p.position().add(fwd.scale(16)) : hit.getLocation();
+		Vec3 t = hit.getType() == HitResult.Type.MISS ? p.position().add(fwd.scale(26)) : hit.getLocation();
+		Vec3 flat = t.subtract(p.position()).multiply(1, 0, 1);
+		if (flat.length() < 14) t = p.position().add(fwd.scale(14)).add(0, t.y - p.getY(), 0);   // 너무 가까우면 거대 모형이 화면을 가림
 		var foes = Fx.enemies(level, t, 10);
 		if (!foes.isEmpty()) t = foes.get(0).position();
 		return ground(level, t);
