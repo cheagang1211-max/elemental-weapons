@@ -16,6 +16,9 @@ import com.elementalweapons.client.anim.SwingTracker;
 @Mixin(ArmedEntityRenderState.class)
 public abstract class SwingStepStateMixin implements SwingStep {
 	@Unique private int elementalweapons$stepValue = 1;
+	@Unique private final float[] elementalweapons$motionValue = new float[3];
+
+	@Override public float[] elementalweapons$motion() { return elementalweapons$motionValue; }
 
 	@Override public int elementalweapons$step() { return elementalweapons$stepValue; }
 	@Override public void elementalweapons$setStep(int step) { elementalweapons$stepValue = step; }
@@ -23,5 +26,15 @@ public abstract class SwingStepStateMixin implements SwingStep {
 	@Inject(method = "extractArmedEntityRenderState", at = @At("TAIL"), require = 0)
 	private static void elementalweapons$extract(LivingEntity entity, ArmedEntityRenderState state, ItemModelResolver resolver, float partial, CallbackInfo ci) {
 		((SwingStep) state).elementalweapons$setStep(SwingTracker.step(entity));
+		float[] m = ((SwingStep) state).elementalweapons$motion();
+		if (entity instanceof net.minecraft.world.entity.player.Player p) {
+			com.elementalweapons.client.anim.Smooth sm = com.elementalweapons.client.anim.Smooth.of(p);
+			float dt = sm.update(p, partial, 0, 0, 0, 0);
+			float target = (p.onGround() ? 1F : 0.4F) * net.minecraft.util.Mth.clamp(sm.speed * 0.55F, 0F, 0.16F);
+			if (p.isShiftKeyDown() || p.isSwimming() || p.isFallFlying() || p.isPassenger()) target = 0;
+			m[0] = sm.lean = com.elementalweapons.client.anim.Smooth.follow(sm.lean, target, 0.12F, dt);
+			m[1] = net.minecraft.util.Mth.clamp(sm.turn * 0.01F, -0.14F, 0.14F);
+			m[2] = (p.isShiftKeyDown() || p.isSwimming() || p.isFallFlying() || p.isPassenger()) ? 0 : 1;
+		} else { m[0] = 0; m[1] = 0; m[2] = 0; }
 	}
 }

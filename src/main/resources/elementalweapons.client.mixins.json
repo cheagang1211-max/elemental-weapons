@@ -7,7 +7,8 @@
 		"StarFieldMixin",
 		"WeaponSwingPoseMixin",
 		"SwingStepStateMixin",
-		"FirstPersonSwingMixin"
+		"FirstPersonSwingMixin",
+		"SmoothMotionMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

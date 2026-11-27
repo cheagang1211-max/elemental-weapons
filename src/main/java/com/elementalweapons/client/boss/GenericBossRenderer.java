@@ -49,6 +49,11 @@ public class GenericBossRenderer<T extends Mob & PosedEntity> extends MobRendere
 		state.attackPose = entity.getAttackPose();
 		state.floating = entity.isFloatingBoss();
 		state.bigLabel = label(entity) != null;
+		com.elementalweapons.client.anim.Smooth sm = com.elementalweapons.client.anim.Smooth.of(entity);
+		sm.update(entity, partialTick, state.attackPose, state.walkAnimationSpeed, state.yRot, state.xRot);
+		System.arraycopy(sm.pose, 0, state.pose, 0, 4);
+		state.walkS = sm.walk; state.headYawS = sm.headYaw; state.headPitchS = sm.headPitch;
+		state.turn = sm.turn; state.vy = sm.vy; state.flinch = sm.flinch;
 	}
 
 	/** 가게 주인·현자 이름표 (멀리서도 보이게) */

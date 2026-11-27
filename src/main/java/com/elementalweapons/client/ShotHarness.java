@@ -64,33 +64,28 @@ public final class ShotHarness {
 
 	/** v4.15 확인: 속성별 갑옷 색·장식 (3인칭 정면·뒤) */
 	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
-		int Y7 = com.elementalweapons.world.sky.Annex.Y7;
-		if (f == 200) server.execute(() -> { try {
-			server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "time set noon");
-			ServerPlayer p = sp(server);
-			p.teleportTo(0.5, Y7 + 1, -3.5); p.setYRot(180); p.setXRot(25);
-			var sword = new ItemStack(com.elementalweapons.item.ModItems.WEAPONS.get(com.elementalweapons.item.Element.FIRE).get(com.elementalweapons.item.WeaponType.SWORD));
-			p.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, sword);
-			p.getInventory().add(new ItemStack(com.elementalweapons.item.ModItems.ENHANCE_STONE, 30));
-			p.getInventory().add(new ItemStack(com.elementalweapons.world.ModBlocks.item("ember_crystal"), 60));
-			p.getInventory().add(new ItemStack(com.elementalweapons.world.ModBlocks.item("element_dust"), 64));
-			p.getInventory().add(new ItemStack(com.elementalweapons.world.ModBlocks.item("element_dust"), 64));
-			p.getInventory().add(new ItemStack(com.elementalweapons.item.ModItems.ELEMENT_ESSENCE, 20));
-			p.getInventory().add(new ItemStack(com.elementalweapons.item.ModItems.BLESS_STONE, 2));
-			log("증축 " + com.elementalweapons.world.sky.Annex.done + " 제단 블록 " + p.level().getBlockState(com.elementalweapons.world.sky.Summit.ALTAR.above()));
-		} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 강화 테스트 오류", ex); } });
-		if (f >= 201 && f < 300) { mc.player.setYRot(180); mc.player.setXRot(25); mc.options.setCameraType(CameraType.FIRST_PERSON); }
-		if (f == 240) shot(mc, "95a_altar");
-		if (f == 250) server.execute(() -> { ServerPlayer p = sp(server);
-			for (int i = 0; i < 6; i++) com.elementalweapons.item.Enhancement.attempt(p, false);
-			ItemStack w = p.getMainHandItem();
-			log("강화 결과 +" + com.elementalweapons.item.Enhancement.level(w) + " 이름=" + w.getHoverName().getString() + " 공격력=" + p.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE)); });
-		if (f == 262) mc.gui.setScreen(new com.elementalweapons.client.growth.EnhanceScreen());
-		if (f == 290) shot(mc, "95b_enhance_screen");
-		if (f == 292) mc.gui.setScreen(null);
-		if (f == 300) server.execute(() -> { ServerPlayer p = sp(server); p.teleportTo(0.5, Y7 + 1, 2.5); p.setYRot(0); p.setXRot(15); });
-		if (f > 300 && f < 340) { mc.player.setYRot(0); mc.player.setXRot(15); }
-		if (f == 335) shot(mc, "95c_bell");
+		if (f == 2) server.execute(() -> server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "time set noon"));
+		if (f == 10) { mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT); mc.player.setXRot(10); }
+		if (f == 12) { mc.options.keyUp.setDown(true); mc.player.setSprinting(true); }
+		if (f > 12 && f < 60) mc.player.setSprinting(true);
+		if (f == 40) shot(mc, "94a_sprint_front");
+		if (f == 46) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+		if (f == 58) shot(mc, "94b_sprint_back");
+		if (f == 60) mc.options.keyUp.setDown(false);
+		if (f == 70) server.execute(() -> { ServerPlayer p = sp(server); var lvl = (net.minecraft.server.level.ServerLevel) p.level();
+			int k = 0;
+			for (var t : ModMobs.MOBS.values()) {
+				if (k >= 4) break;
+				var m = t.create(lvl, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+				if (m == null) continue;
+				m.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
+				m.snapTo(p.getX() - 5 + k * 3, p.getY(), p.getZ() + 9, 180, 0);
+				lvl.addFreshEntity(m); k++;
+			} log("몹 소환 " + k); });
+		if (f == 71) { mc.options.setCameraType(CameraType.FIRST_PERSON); mc.player.setYRot(0); mc.player.setXRot(10); }
+		if (f > 71 && f < 120) { mc.player.setYRot(0); mc.player.setXRot(10); }
+		if (f == 100) shot(mc, "94c_mobs");
+		if (f == 118) shot(mc, "94d_mobs2");
 	}
 
 	private static long lastXp;
@@ -245,8 +240,8 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
-		if (f < 340) { classTest(mc, server, f); return; }
-		f -= 340;
+		if (f < 120) { classTest(mc, server, f); return; }
+		f -= 120;
 		double[][] sc = focusScenes();
 		int per = 300;
 		if (f < sc.length * per) {

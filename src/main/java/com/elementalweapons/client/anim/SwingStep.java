@@ -4,4 +4,6 @@ package com.elementalweapons.client.anim;
 public interface SwingStep {
 	int elementalweapons$step();
 	void elementalweapons$setStep(int step);
+	/** 부드러운 움직임: {앞으로 기울기, 옆 기울기, 플레이어면 1} */
+	float[] elementalweapons$motion();
 }
