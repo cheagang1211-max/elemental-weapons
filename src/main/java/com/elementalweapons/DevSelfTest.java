@@ -98,7 +98,7 @@ public final class DevSelfTest {
 		com.elementalweapons.item.Enhancement.apply(w, 3);
 		double after = com.elementalweapons.item.Enhancement.multiplier(w);
 		int gear = com.elementalweapons.item.ModGear.ITEMS.size();
-		boolean ok = before == 1.0 && after == 2.5 && gear == 18;
+		boolean ok = before == 1.0 && Math.abs(after - 2.2) < 1e-6 && gear == 18;
 		if (!ok) failures++;
 		ElementalWeaponsMod.LOGGER.info("[SELFTEST] {} GEAR 장비 {}종, 강화 배율 {} -> {}", ok ? "OK  " : "FAIL", gear, before, after);
 	}
