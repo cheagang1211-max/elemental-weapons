@@ -55,7 +55,7 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 	private final List<Strike> strikes = new ArrayList<>();
 	private final List<Proj> projs = new ArrayList<>();
 	private final List<Entity> minions = new ArrayList<>();
-	private final List<com.elementalweapons.spell.GrandVisual> meteorVis = new ArrayList<>();
+	private final List<com.elementalweapons.spell.GrandVisual> meteorVis = new ArrayList<>(), beamVis = new ArrayList<>();
 	private Vec3 dashDir = Vec3.ZERO;
 	private final Set<UUID> hitOnce = new HashSet<>();
 	private final Map<UUID, Integer> lastHit = new HashMap<>();
@@ -256,6 +256,11 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 			double a = i * Math.PI / 3;
 			schedule(BossFx.ground(level, getX() + Math.cos(a) * 7, getZ() + Math.sin(a) * 7), 20 + i * 3, 2.8, 8.0F, element());
 		}
+	}
+
+	/** 촬영·시험용: 이 종류의 패턴을 t 틱째로 한 번 진행 */
+	public void debugRun(PatternType type, ServerLevel level, int t) {
+		for (PatternSpec sp : def().patterns) if (sp.type() == type) { run(sp, level, level.getNearestPlayer(this, 40), t); return; }
 	}
 
 	// ======================= 패턴 =======================
@@ -521,12 +526,30 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 			}
 			return;
 		}
-		if (t >= 95) return;
+		if (t >= 95) { for (var v : beamVis) if (v.isAlive()) v.discard(); beamVis.clear(); return; }
+		if (t == 25) {
+			for (var v : beamVis) if (v.isAlive()) v.discard();
+			beamVis.clear();
+			for (int i = 0; i < n; i++) {
+				var v = com.elementalweapons.mob.ModMobs.GRAND.create(level, net.minecraft.world.entity.EntitySpawnReason.MOB_SUMMONED);
+				if (v == null) continue;
+				v.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
+				v.setKind(20); v.setElem(e.ordinal()); v.setPhase((float) (s.radius() / 3.0));
+				v.snapTo(getX(), y, getZ(), 0, 0);
+				level.addFreshEntity(v);
+				beamVis.add(v);
+			}
+		}
 		beamAngle += 0.035 + getPhase() * 0.012;
 		for (int i = 0; i < n; i++) {
 			double a = beamAngle + i * Math.PI * 2 / n;
 			Vec3 from = new Vec3(getX(), y, getZ());
 			Vec3 to = new Vec3(getX() + Math.cos(a) * s.radius(), y, getZ() + Math.sin(a) * s.radius());
+			if (i < beamVis.size()) {
+				var v = beamVis.get(i);
+				float yaw = (float) Math.toDegrees(Math.atan2(-Math.cos(a), Math.sin(a)));
+				v.setPos(from.x, from.y, from.z); v.setYRot(yaw); v.setYBodyRot(yaw); v.setYHeadRot(yaw); v.yBodyRotO = yaw; v.life = 0;
+			}
 			if (t % 2 == 0) {
 				Fx.line(level, ElementFx.dust(e, 2.2F), from, to, 0.45);
 				Fx.line(level, ElementFx.particle(e), from, to, 1.5);

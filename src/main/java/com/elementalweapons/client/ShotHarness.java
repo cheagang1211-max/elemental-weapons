@@ -242,6 +242,8 @@ public final class ShotHarness {
 		f -= BOSS_T;
 		if (f < RC_T) { rightClickDemo(mc, server, f); return; }
 		f -= RC_T;
+		if (f < PAT_T) { patternDemo(mc, server, f); return; }
+		f -= PAT_T;
 		if (f == 5) { log("DONE"); mc.stop(); }
 	}
 
@@ -285,6 +287,30 @@ public final class ShotHarness {
 		if (k > 42 && current != null) lookAt(mc, current.getX() - 0.5, current.getY() + current.getBbHeight() * 0.62, current.getZ() - 0.5);
 		if (k == 66) shot(mc, String.format("a%02d_%s_back", idx, id));
 		if (k == BOSS_PER - 1 && idx == BOSS_IDS.length - 1) server.execute(() -> { if (current != null) current.discard(); current = null; });
+	}
+
+	// ---------------- 보스 패턴 (운석·광선) ----------------
+	private static final Object[][] PAT = {{"ignis", com.elementalweapons.boss.PatternType.METEOR}, {"ignis", com.elementalweapons.boss.PatternType.BEAM},
+			{"lumiel", com.elementalweapons.boss.PatternType.BEAM}};
+	private static final int PAT_PER = 110, PAT_T = 10 + PAT.length * PAT_PER;
+
+	private static void patternDemo(Minecraft mc, IntegratedServer server, int f) {
+		if (f < 10) return;
+		int g = f - 10, idx = g / PAT_PER, k = g % PAT_PER;
+		String id = (String) PAT[idx][0]; var type = (com.elementalweapons.boss.PatternType) PAT[idx][1];
+		if (k == 0) server.execute(() -> { ServerPlayer p = sp(server);
+			for (Entity e : dummies) e.discard(); dummies.clear();
+			if (current != null) current.discard();
+			Entity e = ModEntities.BOSSES.get(id).create(p.level(), EntitySpawnReason.COMMAND);
+			e.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
+			e.snapTo(RX, RY, RZ + 9, 180, 0);
+			if (e instanceof Mob m) { m.setNoAi(true); m.setYBodyRot(180); }
+			p.level().addFreshEntity(e); current = e;
+			p.teleportTo(RX + 6, RY + 4, RZ - 10); });
+		if (k == 2) mc.options.setCameraType(CameraType.FIRST_PERSON);
+		if (k > 2 && current != null) lookAt(mc, current.getX() - 0.5, RY + 1, current.getZ() - 0.5);
+		if (k >= 5 && k < 105) { int tt = k - 5; server.execute(() -> { if (current instanceof com.elementalweapons.boss.ConfiguredBoss cb) cb.debugRun(type, (ServerLevel) cb.level(), tt); }); }
+		if (k == 35 || k == 50 || k == 70) shot(mc, String.format("c%d_%s_%s_%d", idx, id, type.name().toLowerCase(), k));
 	}
 
 	// ---------------- 무기 우클릭 공격 ----------------

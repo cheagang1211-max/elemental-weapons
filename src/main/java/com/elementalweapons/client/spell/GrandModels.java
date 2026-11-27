@@ -20,9 +20,9 @@ public final class GrandModels {
 
 	public static final int SWORD = 0, AXE = 1, DAGGER = 2, BOW = 3, ARROW = 4, REAPER = 5, GODDESS = 6, TITAN = 7, LEVIATHAN = 8, TREE = 9, ROC = 10, ABYSS = 11;
 	/** 무기 우클릭 연출: 12 낙하 영검  13 대검 원진  14 거대 망치  15 충격 결정 고리  16 초승달 낫날  17 마도서 */
-	public static final int BLADE = 12, BLADE_RING = 13, HAMMER = 14, SHOCK = 15, CRESCENT = 16, TOME = 17, SPIRIT_BOW = 18, METEOR = 19;
-	public static final int COUNT = 20;
-	public static final float[] SCALE = {6F, 6F, 5F, 6F, 6F, 7F, 7F, 8F, 6F, 7F, 7F, 6F, 1.5F, 1.7F, 1.6F, 1.2F, 1.35F, 1.3F, 1.1F, 1.8F};
+	public static final int BLADE = 12, BLADE_RING = 13, HAMMER = 14, SHOCK = 15, CRESCENT = 16, TOME = 17, SPIRIT_BOW = 18, METEOR = 19, BEAM = 20;
+	public static final int COUNT = 21;
+	public static final float[] SCALE = {6F, 6F, 5F, 6F, 6F, 7F, 7F, 8F, 6F, 7F, 7F, 6F, 1.5F, 1.7F, 1.6F, 1.2F, 1.35F, 1.3F, 1.1F, 1.8F, 3F};
 
 	public static class State extends LivingEntityRenderState {
 		public int kind, elem;
@@ -93,7 +93,8 @@ public final class GrandModels {
 			case CRESCENT -> crescent(root);
 			case TOME -> tome(root);
 			case SPIRIT_BOW -> bow(root);
-			default -> meteor(root);
+			case METEOR -> meteor(root);
+			default -> beam(root);
 		}
 	}
 
@@ -188,6 +189,16 @@ public final class GrandModels {
 		}
 		PartDefinition tail = node(root, "tail", 0, 14, 0);
 		for (int i = 0; i < 4; i++) box(tail, "t" + i, CLOTH_GLOW, -6 + i * 1.2F, -14 - i * 10, -6 + i * 1.2F, 12 - i * 2.4F, 10, 12 - i * 2.4F);
+	}
+
+	// ---------------------------------------------------------------- 20 광선 (길이는 렌더러가 늘림: 앞 = -z, 16칸 = 1배)
+	static void beam(PartDefinition root) {
+		PartDefinition m = node(root, "main", 0, 24, 0);
+		box(m, "core", LIGHT, -1.2F, -1.2F, -16, 2.4F, 2.4F, 16);
+		box(m, "shell", CRYSTAL, -2.2F, -2.2F, -16, 4.4F, 4.4F, 16, at(0, 0, 0, 0, 0, 0.785F));
+		PartDefinition rr = node(m, "rings", 0, 0, 0);
+		for (int i = 0; i < 6; i++) box(rr, "r" + i, CLOTH_GLOW, -3.2F, -3.2F, -0.3F, 6.4F, 6.4F, 0.6F, at(0, 0, -1.5F - i * 2.6F, 0, 0, i * 0.5F));
+		box(m, "src", TRIM, -3.5F, -3.5F, -3.5F, 7, 7, 7, at(0, 0, 0, 0.785F, 0.785F, 0));
 	}
 
 	// ---------------------------------------------------------------- 17 마도서 (펼쳐지는 거대한 책 + 도는 룬 고리)
@@ -766,6 +777,12 @@ public final class GrandModels {
 				case CRESCENT -> {
 					ModelPart sp = get("spin");
 					if (sp != null) { sp.yRot = -ph * Mth.TWO_PI * 2; sp.zRot = Mth.sin(ph * Mth.PI * 2) * 0.12F; }
+				}
+				case BEAM -> {
+					ModelPart rr = get("main", "rings");
+					if (rr != null) rr.zRot = t * 0.4F;
+					ModelPart sh = get("main", "shell");
+					if (sh != null) { float k = 1 + Mth.sin(t * 0.9F) * 0.15F; sh.xScale = k; sh.yScale = k; }
 				}
 				case METEOR -> {
 					ModelPart sp = get("spin");
