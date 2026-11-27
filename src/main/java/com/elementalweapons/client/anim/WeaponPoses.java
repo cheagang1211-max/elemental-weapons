@@ -29,7 +29,21 @@ public final class WeaponPoses {
 	/** [준비 자세, 타격 끝 자세, 몸 회전 여부] */
 	private record Move(Pose from, Pose to, boolean spin, boolean aim) {}
 
+	/** 우클릭 특수 동작 (step 4) */
+	private static Move special(WeaponType t) {
+		return switch (t) {
+			case SWORD -> new Move(P(-3.15F, 0, 0.25F, -0.4F, 0, -0.3F, -0.2F, 0.2F, -0.35F, 0.2F, -0.2F), P(-0.5F, 0.3F, -0.2F, -0.6F, 0, 0.4F, 0.35F, -0.2F, 0.2F, -0.6F, 0.5F), false, false);   // 하늘로 치켜든 검을 내리긋기
+			case GREATSWORD -> new Move(P(-3.05F, -0.3F, 0, -3.05F, 0.3F, 0, -0.3F, 0, -0.35F, 0.1F, 0.1F), P(-0.7F, -0.25F, 0, -0.7F, 0.25F, 0, 0.7F, 0, 0.35F, -0.9F, 0.75F), false, false);   // 머리 위에서 땅에 꽂기
+			case HAMMER -> new Move(P(-3.4F, -0.2F, 0, -3.4F, 0.2F, 0, -0.55F, 0, -0.45F, 0.25F, 0.25F), P(-0.2F, -0.2F, 0, -0.2F, 0.2F, 0, 0.9F, 0, 0.4F, -0.8F, 0.8F), false, false);   // 뛰어올라 내리찍기
+			case SCYTHE -> new Move(P(-1.4F, 0, -1.2F, -1.4F, 0, 0.8F, 0.25F, 0, 0, 0.3F, -0.3F), P(-1.4F, 0, -1.25F, -1.4F, 0, 0.85F, 0.3F, 0, 0, -0.3F, 0.3F), true, false);   // 낮게 두 바퀴
+			case BOOK -> new Move(P(-1.0F, -0.3F, 0, -1.0F, 0.3F, 0, 0.1F, 0, 0.1F, 0, 0), P(-3.0F, -0.2F, -0.25F, -3.0F, 0.2F, 0.25F, -0.3F, 0, -0.55F, 0, 0), false, false);   // 책을 높이 들어 올림
+			case STAFF -> new Move(P(-1.2F, 0, 0, -0.6F, 0, 0, 0.1F, 0, 0, 0, 0), P(-3.1F, 0, 0.1F, -2.6F, 0.4F, -0.3F, -0.3F, 0, -0.5F, 0.15F, -0.15F), false, false);   // 지팡이를 하늘로
+			default -> null;
+		};
+	}
+
 	private static Move move(WeaponType t, int step) {
+		if (step == 4) { Move sp = special(t); if (sp != null) return sp; step = 3; }
 		return switch (t) {
 			case SWORD -> switch (step) {
 				case 1 -> new Move(P(-2.6F, -0.5F, 0.6F, -0.3F, 0, 0, 0, 0.5F, 0, 0.2F, -0.2F), P(-0.4F, 0.6F, -0.4F, -0.2F, 0, 0, 0.12F, -0.5F, 0, -0.3F, 0.3F), false, false);   // 사선 내려베기
@@ -101,7 +115,7 @@ public final class WeaponPoses {
 		float k = Mth.sin(t0 * (float) Math.PI);
 		float aim = m.aim ? head.xRot : 0;
 		float rx = p.rx + aim, ry = p.ry, rz = p.rz, lx = p.lx + (m.aim && type == WeaponType.BOW ? aim : 0), ly = p.ly, lz = p.lz, bx = p.bx, by = p.by, hx = p.hx;
-		if (m.spin) by += cubic((t - 0.2F) / 0.6F) * (float) Math.PI * 2;
+		if (m.spin) by += cubic((t - 0.2F) / 0.6F) * (float) Math.PI * (step == 4 ? 4 : 2);
 		if (melee && el != null) switch (el) {
 			case FIRE -> { rx *= 1.15F; lx *= 1.15F; bx += 0.12F * k; }
 			case WATER -> { float a = t0 * (float) Math.PI * 2; rz += 0.5F * Mth.sin(a) * k; by += 0.3F * Mth.sin(a) * k; }
@@ -126,6 +140,18 @@ public final class WeaponPoses {
 	private record FMove(float x0, float y0, float z0, float x1, float y1, float z1, float tx, float ty, float tz, boolean spin) {}
 
 	private static FMove fmove(WeaponType t, int step) {
+		if (step == 4) {
+			FMove sp = switch (t) {
+				case SWORD -> new FMove(-80, 0, 10, 40, 0, -20, 0, 0.35F, -0.2F, false);
+				case GREATSWORD -> new FMove(-85, 0, 0, 70, 0, 0, 0, 0.4F, -0.3F, false);
+				case HAMMER -> new FMove(-95, 0, 0, 85, 0, 0, 0, 0.45F, -0.3F, false);
+				case SCYTHE -> new FMove(0, 0, 25, 0, 720, 25, 0, 0, -0.2F, true);
+				case BOOK, STAFF -> new FMove(0, 0, 0, -70, 0, 0, 0, 0.45F, -0.1F, false);
+				default -> null;
+			};
+			if (sp != null) return sp;
+			step = 3;
+		}
 		return switch (t) {
 			case SWORD -> step == 1 ? new FMove(-20, 10, 70, -40, -20, -65, 0.15F, 0.05F, -0.15F, false)
 					: step == 2 ? new FMove(-30, -15, -70, -10, 25, 70, -0.1F, 0.1F, -0.15F, false)
@@ -161,7 +187,7 @@ public final class WeaponPoses {
 		float w = t0 < 0.12F ? smooth(t0 / 0.12F) : t0 > 0.8F ? 1 - smooth((t0 - 0.8F) / 0.2F) : 1F;
 		float u = t < 0.25F ? 0 : t < 0.55F ? cubic((t - 0.25F) / 0.3F) : 1;
 		float rx = Mth.lerp(u, m.x0, m.x1), ry = Mth.lerp(u, m.y0, m.y1), rz = Mth.lerp(u, m.z0, m.z1);
-		if (m.spin) { rx = m.x0; rz = m.z0; ry = u * 360; }
+		if (m.spin) { rx = m.x0; rz = m.z0; ry = u * m.y1; }
 		// 앞으로 내미는 정도: 타격 순간 가장 멀리 (활은 당겼다가 놓으면 튀어나감)
 		float thrust = type == WeaponType.BOW ? (t < 0.45F ? smooth(t / 0.45F) : -0.6F * (1 - smooth((t - 0.45F) / 0.4F))) : Mth.sin(u * (float) Math.PI * 0.9F + 0.1F) * (t < 0.25F ? smooth(t / 0.25F) * 0.3F : 1F);
 		float tx = m.tx * thrust, ty = m.ty * thrust, tz = m.tz * thrust;

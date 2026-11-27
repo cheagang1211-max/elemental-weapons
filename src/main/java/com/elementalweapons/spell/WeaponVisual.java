@@ -38,8 +38,28 @@ public class WeaponVisual extends Spell {
 		this.yaw = caster.getYRot();
 	}
 
+	/** 서버 → 클라: 이 엔티티의 다음 휘두르기는 '우클릭 특수 동작' */
+	public record Special(int entity) implements net.minecraft.network.protocol.common.custom.CustomPacketPayload {
+		public static final Type<Special> TYPE = new Type<>(com.elementalweapons.ElementalWeaponsMod.id("special_swing"));
+		public static final net.minecraft.network.codec.StreamCodec<io.netty.buffer.ByteBuf, Special> CODEC =
+				net.minecraft.network.codec.ByteBufCodecs.VAR_INT.map(Special::new, Special::entity);
+		@Override public Type<? extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> type() { return TYPE; }
+	}
+
+	public static void initialize() {
+		net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(Special.TYPE, Special.CODEC);
+	}
+
+	private static void announce(Player caster) {
+		Special sp = new Special(caster.getId());
+		java.util.Set<net.minecraft.server.level.ServerPlayer> to = new java.util.HashSet<>(net.fabricmc.fabric.api.networking.v1.PlayerLookup.tracking(caster));
+		if (caster instanceof net.minecraft.server.level.ServerPlayer self) to.add(self);
+		for (var p : to) net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(p, sp);
+	}
+
 	/** 우클릭 연출 시작 (target: 검이 꽂힐 곳, 다른 무기는 무시) */
 	public static void start(ServerLevel level, Player caster, Element el, WeaponType type, Vec3 target) {
+		announce(caster);
 		if (type != WeaponType.SWORD && type != WeaponType.GREATSWORD && type != WeaponType.HAMMER && type != WeaponType.SCYTHE && type != WeaponType.BOOK) return;
 		SpellManager.add(new WeaponVisual(level, caster, el, type, target == null ? caster.position() : target));
 	}
@@ -128,24 +148,29 @@ public class WeaponVisual extends Spell {
 		return age >= 32;
 	}
 
-	// 망치: 앞에 거대한 망치가 들려 올라갔다(7틱) 내리찍힘(3틱) → 결정 가시 고리
+	// 망치: 하늘에서 거대한 망치가 앞에 내리꽂힘(5틱) → 결정 가시 고리 → 다시 솟아 사라짐
 	private boolean hammer() {
 		Vec3 fwd = Vec3.directionFromRotation(0, yaw);
-		Vec3 pivot = caster.position().add(fwd.scale(3.6));
-		if (age == 0) {
-			main = spawn(HAMMER, pivot.add(0, 6.4, 0), yaw);
-			if (main != null) main.setStrike(main.tickCount * 2 + 2);
+		Vec3 hit = caster.position().add(fwd.scale(3.2));
+		double rest = 6.6;   // 망치 머리가 땅에 닿는 높이 (모형 길이 × 배율)
+		if (age == 0) main = spawn(HAMMER, hit.add(0, rest + 16, 0), yaw);
+		if (age <= 5) {
+			float f = age / 5F;
+			place(main, hit.add(0, rest + 16 * (1 - f * f), 0), yaw);
+			if (age % 2 == 0) Fx.line(level, ElementFx.particle(el), hit.add(0, rest + 16 * (1 - f * f), 0), hit.add(0, rest + 22, 0), 1.0);
 		}
-		if (main != null) place(main, pivot.add(0, 6.4, 0), yaw + 180);
-		if (age == 9) {
-			Vec3 hit = pivot;
-			extra = spawn(SHOCK, caster.position(), yaw);
-			Fx.burst(level, ElementFx.particle(el), hit.add(0, 0.4, 0), 50, 1.2, 0.25);
-			Fx.sound(level, hit, SoundEvents.GENERIC_EXPLODE.value(), 0.9F, 0.8F);
+		if (main != null) main.setPhase(age < 5 ? 0 : Math.min(1, (age - 5) / 14F));
+		if (age == 5) {
+			extra = spawn(SHOCK, hit, yaw);
+			Fx.burst(level, ElementFx.particle(el), hit.add(0, 0.4, 0), 60, 1.4, 0.3);
+			Fx.ring(level, ElementFx.dust(el, 2.0F), hit.add(0, 0.2, 0), 2.5, 36, 0);
+			Fx.sound(level, hit, SoundEvents.GENERIC_EXPLODE.value(), 1.0F, 0.7F);
+			Fx.sound(level, hit, SoundEvents.ANVIL_LAND, 1.0F, 0.5F);
 		}
-		if (extra != null) { extra.setPhase(Math.min(1, (age - 9) / 22F)); place(extra, caster.position(), yaw); }
-		if (age == 26 && main != null) { main.discard(); main = null; }
-		return age >= 34;
+		if (extra != null) extra.setPhase(Math.min(1, (age - 5) / 24F));
+		if (age > 20 && main != null) place(main, hit.add(0, rest + (age - 20) * 0.9, 0), yaw);
+		if (age == 28 && main != null) { Fx.burst(level, ElementFx.dust(el, 1.6F), main.position(), 30, 1.5, 0.05); main.discard(); main = null; }
+		return age >= 30;
 	}
 
 	// 낫: 초승달 날이 시전자를 따라다니며 두 바퀴

@@ -22,7 +22,7 @@ public final class GrandModels {
 	/** 무기 우클릭 연출: 12 낙하 영검  13 대검 원진  14 거대 망치  15 충격 결정 고리  16 초승달 낫날  17 마도서 */
 	public static final int BLADE = 12, BLADE_RING = 13, HAMMER = 14, SHOCK = 15, CRESCENT = 16, TOME = 17;
 	public static final int COUNT = 18;
-	public static final float[] SCALE = {6F, 6F, 5F, 6F, 6F, 7F, 7F, 8F, 6F, 7F, 7F, 6F, 1.5F, 1.7F, 1.4F, 1.5F, 1.35F, 1.3F};
+	public static final float[] SCALE = {6F, 6F, 5F, 6F, 6F, 7F, 7F, 8F, 6F, 7F, 7F, 6F, 1.5F, 1.7F, 1.6F, 1.2F, 1.35F, 1.3F};
 
 	public static class State extends LivingEntityRenderState {
 		public int kind, elem;
@@ -144,15 +144,15 @@ public final class GrandModels {
 		PartDefinition m = node(root, "main", 0, 24, 0);
 		for (int i = 0; i < 14; i++) {
 			float a = (float) (i * Math.PI * 2 / 14);
-			float r = 34 + (i % 2) * 8, h = 18 + (i % 3) * 7;
+			float r = 50 + (i % 2) * 10, h = 20 + (i % 3) * 8;
 			PartDefinition sp = node(m, "s" + i, at(Mth.cos(a) * r, 0, Mth.sin(a) * r, 0, -a, 0));
-			box(sp, "b", CRYSTAL, -3, -h * 0.6F, -3, 6, h * 0.6F, 6, at(0, 0, 0, 0, 0, 0.35F));
-			box(sp, "t", LIGHT, -1.8F, -h, -1.8F, 3.6F, h * 0.45F, 3.6F, at(0, 0, 0, 0, 0, 0.35F));
-			box(sp, "rk", BASE, -5, -3, -5, 10, 3, 10, at(0, 0, 0, 0, 0.6F, 0));
+			box(sp, "b", CRYSTAL, -2.2F, -h * 0.62F, -2.2F, 4.4F, h * 0.62F, 4.4F, at(0, 0, 0, 0, 0, 0.4F));
+			box(sp, "t", LIGHT, -1.2F, -h, -1.2F, 2.4F, h * 0.42F, 2.4F, at(0, 0, 0, 0, 0, 0.4F));
+			box(sp, "rk", BASE, -4, -2, -4, 8, 2, 8, at(0, 0, 0, 0, 0.6F, 0));
 		}
 		PartDefinition rr = node(m, "runes", 0, -0.5F, 0);
-		ring(rr, "r", LIGHT, 32, 28, 4, 0.5F, 1.6F, true);
-		ring(rr, "q", CRYSTAL, 40, 46, 4, 0.5F, 2.2F, true);
+		ring(rr, "r", LIGHT, 36, 40, 4, 0.5F, 1.6F, true);
+		ring(rr, "q", CRYSTAL, 48, 66, 4, 0.5F, 2.2F, true);
 	}
 
 	// ---------------------------------------------------------------- 16 초승달 낫날 (수평으로 도는 거대한 날)
@@ -730,9 +730,9 @@ public final class GrandModels {
 				}
 				case HAMMER -> {
 					ModelPart arm = get("arm");
-					float ang = a < 5 ? -2.2F - 0.7F * ease(a / 5F) : a < 8 ? -2.9F + 3.0F * ease((a - 5) / 3F) : a < 24 ? 0.1F - 0.1F * ease((a - 8) / 16F) : 0;
-					if (s.strike <= 0) ang = -2.2F;
-					if (arm != null) arm.xRot = ang;
+					// 하늘에서 떨어져 내리꽂힘 (위치는 서버가 옮김) → 꽂힌 뒤 부르르 떨림
+					float wob = ph > 0.3F ? Mth.sin(t * 2.2F) * 0.05F * Math.max(0, 1 - (ph - 0.3F) * 3) : 0;
+					if (arm != null) { arm.xRot = wob; arm.zRot = wob * 0.7F; }
 				}
 				case SHOCK -> {
 					float rise = ph < 0.35F ? ease(ph / 0.35F) : ph > 0.75F ? 1 - ease((ph - 0.75F) / 0.25F) : 1;

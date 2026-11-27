@@ -154,6 +154,7 @@ public final class ModGrowth {
 			else if (path.endsWith("_ore")) addXp(sp, 8);
 		});
 		Tutorial.initialize();
+		com.elementalweapons.spell.WeaponVisual.initialize();
 		CoreForge.initialize();
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.TutorialSkip.TYPE, GrowthPayloads.TutorialSkip.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(GrowthPayloads.TutorialSkip.TYPE, (payload, ctx) -> Tutorial.set(ctx.player(), payload.restart() ? 1 : Tutorial.DONE));
