@@ -67,20 +67,24 @@ public final class ShotHarness {
 			{0, 1, 0, 0}, {1, 0, 0, 1}, {2, 5, 0, 0}, {3, 3, 0, 1}, {4, 4, 0, 1}, {5, 5, 0, 0}, {6, 2, 0, 0},
 			{7, 1, 0, 0}, {7, 0, 0, 0}, {8, 2, -60, 1}, {9, 3, 0, 0}, {10, 4, 8, 0}, {11, 5, 0, 0}};
 	private static final java.util.List<com.elementalweapons.spell.GrandVisual> GV = new java.util.ArrayList<>();
-	private static final int[][] CASTS = {   // 종류, 속성, 찍을 때(틱)
-			{0, 1, 30}, {1, 0, 18}, {2, 5, 44}, {3, 3, 28}, {5, 5, 42}, {6, 2, 60}, {7, 0, 48}, {8, 2, 50}, {9, 3, 60}, {10, 4, 40}, {11, 5, 62}};
 	private static void classTest(Minecraft mc, IntegratedServer server, int f) {
-		if (f == 2) server.execute(() -> { server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "time set noon");
-			ServerPlayer p = sp(server); p.getAbilities().mayfly = true; p.getAbilities().flying = true; p.onUpdateAbilities(); p.teleportTo(0.5, 230, -330.5); });
-		if (f < 10) return;
-		int i = (f - 10) / 80, g = (f - 10) % 80;
-		if (i >= CASTS.length) return;
-		float yaw = 180 + ((i % 4) - 1.5F) * 70;
-		mc.player.setYRot(yaw); mc.player.setXRot(-8); mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
-		final int ii = i;
-		if (g == 2) server.execute(() -> { ServerPlayer p = sp(server); p.getAbilities().flying = true; p.onUpdateAbilities(); p.setYRot(yaw); p.setYHeadRot(yaw); p.setXRot(25);
-			com.elementalweapons.spell.GrandSkill.cast((net.minecraft.server.level.ServerLevel) p.level(), p, com.elementalweapons.item.Element.values()[CASTS[ii][1]], CASTS[ii][0]); });
-		if (g == 2 + CASTS[i][2]) shot(mc, String.format("93%02d_cast", i));
+		if (f == 5) mc.gui.setScreen(new com.elementalweapons.client.skill.EvolveScreen());
+		if (f == 30) shot(mc, "92a_evolve_classes");
+		if (f == 32) mc.gui.setScreen(new com.elementalweapons.client.growth.ClassSelectScreen());
+		if (f == 50) shot(mc, "92b_class_select");
+		if (f == 52) mc.gui.setScreen(null);
+		if (f == 60) server.execute(() -> { try { ServerPlayer p = sp(server);
+			ModGrowth.set(p, ModGrowth.get(p).withClass(com.elementalweapons.item.PlayerClass.BREAKER.ordinal()));
+			p.setAttached(com.elementalweapons.growth.Evolution.ELEMENT, 1);
+			String[] parts = {"helmet", "chestplate", "leggings", "boots"};
+			var slots = new net.minecraft.world.entity.EquipmentSlot[]{net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET};
+			for (int i = 0; i < 4; i++) p.setItemSlot(slots[i], new ItemStack(com.elementalweapons.item.ModGear.ITEMS.get("aether_" + parts[i])));
+			p.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(com.elementalweapons.item.ModItems.get(com.elementalweapons.item.Element.FIRE, WeaponType.HAMMER)));
+			} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 파괴자 오류", ex); } });
+		if (f == 62) { mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT); mc.player.setXRot(8); }
+		if (f == 100) shot(mc, "92c_breaker_front");
+		if (f == 102) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+		if (f == 118) shot(mc, "92d_breaker_back");
 	}
 
 	private static long lastXp;
@@ -235,8 +239,8 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
-		if (f < 900) { classTest(mc, server, f); return; }
-		f -= 900;
+		if (f < 120) { classTest(mc, server, f); return; }
+		f -= 120;
 		double[][] sc = focusScenes();
 		int per = 300;
 		if (f < sc.length * per) {
