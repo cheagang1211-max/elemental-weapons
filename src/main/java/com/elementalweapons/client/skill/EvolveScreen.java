@@ -22,7 +22,7 @@ public class EvolveScreen extends Screen {
 	private static final String[] CLASS_DESC = {"",
 			"원거리 마법 · 강한 한 방", "넓게 베기 · 높은 체력", "찌르기 · 방패로 막기", "돌진 · 빠른 연타",
 			"치유 · 아군 지원", "주변 베기 · 흡수", "멀리서 화살 · 집중 사격", "땅 내리치기 · 가장 단단함"};
-	private static final int CW = 56, CH = 128, GAP = 3;
+	private int CW = 56; private static final int CH = 128, GAP = 3;
 	private int left, top;
 	/** 0이면 직업 고르는 단계 */
 	private int cls = 0;
@@ -39,6 +39,7 @@ public class EvolveScreen extends Screen {
 	@Override
 	protected void init() {
 		int n = count();
+		CW = Math.min(56, (width - 8 - GAP * (n - 1)) / n);
 		left = (width - (CW * n + GAP * (n - 1))) / 2;
 		top = (height - CH) / 2 + 8;
 		for (int i = 0; i < n; i++) {

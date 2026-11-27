@@ -26,13 +26,14 @@ public class ClassSelectScreen extends Screen {
 			{"멀리서 속성 화살 사격", "활: 당길수록 강해짐", "끝까지 당기면 5연발"},
 			{"망치로 땅을 부수는 육중한 전사", "망치: 땅 내리치기 충격파", "가장 단단한 몸"}};
 	private static final WeaponType[][] WEAPONS = {{WeaponType.STAFF}, {WeaponType.GREATSWORD}, {WeaponType.SWORD, WeaponType.SHIELD}, {WeaponType.DAGGER}, {WeaponType.BOOK}, {WeaponType.SCYTHE}, {WeaponType.BOW}, {WeaponType.HAMMER}};
-	private static final int CW = 56, CH = 150, GAP = 3;
+	private int CW = 56; private static final int CH = 150, GAP = 3;
 	private int left, top;
 
 	public ClassSelectScreen() { super(Component.literal("직업 선택")); }
 
 	@Override
 	protected void init() {
+		CW = Math.min(56, (width - 8 - GAP * (CLASSES.length - 1)) / CLASSES.length);
 		left = (width - (CW * CLASSES.length + GAP * (CLASSES.length - 1))) / 2;
 		top = (height - CH) / 2 + 8;
 		PlayerClass cur = GrowthClient.current().playerClass();
