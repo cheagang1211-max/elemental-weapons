@@ -25,7 +25,7 @@ import com.elementalweapons.spell.SpellManager;
  *  - 지팡이: 속성별 대마법 (spell 패키지 참고)
  */
 public class ElementalWeaponItem extends Item {
-	private static final int DAGGER_COOLDOWN = 30;
+	private static final int DAGGER_COOLDOWN = 50;
 	private static final int SWORD_COOLDOWN = 40;
 	private static final int GREATSWORD_COOLDOWN = 120;
 
@@ -74,13 +74,22 @@ public class ElementalWeaponItem extends Item {
 			}
 			return InteractionResult.SUCCESS;
 		}
-		if (type == WeaponType.SHIELD) return super.use(level, user, hand); // 방패 막기
+		if (type == WeaponType.SHIELD) {
+			// 방패: Shift+우클릭 = 속성 기술, 그냥 우클릭 = 막기
+			if (user.isShiftKeyDown()) {
+				if (level instanceof ServerLevel server) {
+					com.elementalweapons.spell.ElementSkills.cast(type, element, server, user);
+					user.getCooldowns().addCooldown(user.getItemInHand(hand), 160);
+				}
+				return InteractionResult.SUCCESS;
+			}
+			return super.use(level, user, hand); // 방패 막기
+		}
 		if (type == WeaponType.BOW) { user.startUsingItem(hand); return InteractionResult.CONSUME; } // 활 당기기
 		if (type == WeaponType.DAGGER) {
 			// 단검: 속성마다 다른 몸놀림 (서버가 움직이고 동기화)
 			if (level instanceof ServerLevel server && user instanceof net.minecraft.server.level.ServerPlayer sp) {
-				com.elementalweapons.skill.ElementMotion.opener(server, sp, element);
-				ElementEffects.dashBurst(element, server, user.position());
+				com.elementalweapons.spell.ElementSkills.cast(type, element, server, sp);
 				com.elementalweapons.growth.Tutorial.event(user, 1);
 			}
 			user.getCooldowns().addCooldown(user.getItemInHand(hand), DAGGER_COOLDOWN);
@@ -95,44 +104,15 @@ public class ElementalWeaponItem extends Item {
 			return InteractionResult.PASS; // 실제 능력은 서버에서만 처리
 		}
 
-		// 근접 무기: 속성마다 다른 시작 동작 (순간 이동·돌진·후퇴·속박·도약·기습·강림)
-		if ((type == WeaponType.SWORD || type == WeaponType.GREATSWORD || type == WeaponType.HAMMER || type == WeaponType.SCYTHE)
-				&& user instanceof net.minecraft.server.level.ServerPlayer sp)
-			com.elementalweapons.skill.ElementMotion.opener(server, sp, element);
-
-		Vec3 visTarget = null;
+		// 속성 × 무기마다 다른 우클릭 기술 (ElementSkills)
 		switch (type) {
-			case SWORD -> {
-				HitResult hit = user.pick(30.0, 0.0F, false);
-				if (hit.getType() == HitResult.Type.MISS) {   // 허공을 보면 앞쪽 7칸 땅에 내리꽂음
-					Vec3 fl = com.elementalweapons.spell.Fx.flatLook(user);
-					net.minecraft.core.BlockPos.MutableBlockPos bp = net.minecraft.core.BlockPos.containing(user.getX() + fl.x * 7, user.getY() + 2, user.getZ() + fl.z * 7).mutable();
-					for (int i = 0; i < 12 && server.getBlockState(bp.below()).isAir(); i++) bp.move(0, -1, 0);
-					hit = new net.minecraft.world.phys.BlockHitResult(new Vec3(bp.getX() + 0.5, bp.getY(), bp.getZ() + 0.5), net.minecraft.core.Direction.UP, bp.below().immutable(), false);
-				}
-				visTarget = hit.getLocation();
-				ElementEffects.strike(element, server, user, hit.getLocation());
-				user.getCooldowns().addCooldown(user.getItemInHand(hand), SWORD_COOLDOWN);
-			}
-			case GREATSWORD -> {
-				Vec3 c = user.position();
-				for (int i = 0; i < 6; i++) {
-					double a = i * Math.PI / 3;
-					ElementEffects.strike(element, server, user, c.add(Math.cos(a) * 4.5, 0, Math.sin(a) * 4.5));
-				}
-				user.getCooldowns().addCooldown(user.getItemInHand(hand), GREATSWORD_COOLDOWN);
-			}
-			case BOOK -> {
-				ElementEffects.supportAura(element, server, user);
-				user.getCooldowns().addCooldown(user.getItemInHand(hand), (int) Math.round(300 * (com.elementalweapons.growth.ModGrowth.get(user).staffCooldownFactor() * (1 - com.elementalweapons.growth.ModGrowth.paragon(user).cooldownCut()) * com.elementalweapons.growth.CoreForge.cooldownFactor(user))));
-			}
-			case SCYTHE -> {
-				SpellManager.add(new com.elementalweapons.spell.ReapSpell(server, user, element, com.elementalweapons.skill.ElementMotion.mult(user)));
-				user.getCooldowns().addCooldown(user.getItemInHand(hand), 45);
-			}
-			case HAMMER -> {
-				ElementEffects.hammerSlam(element, server, user);
-				user.getCooldowns().addCooldown(user.getItemInHand(hand), 100);
+			case SWORD, GREATSWORD, HAMMER, SCYTHE, BOOK -> {
+				com.elementalweapons.spell.ElementSkills.cast(type, element, server, user);
+				int cd = switch (type) {
+					case SWORD -> SWORD_COOLDOWN; case GREATSWORD -> GREATSWORD_COOLDOWN; case HAMMER -> 100; case SCYTHE -> 45;
+					default -> (int) Math.round(300 * (com.elementalweapons.growth.ModGrowth.get(user).staffCooldownFactor() * (1 - com.elementalweapons.growth.ModGrowth.paragon(user).cooldownCut()) * com.elementalweapons.growth.CoreForge.cooldownFactor(user)));
+				};
+				user.getCooldowns().addCooldown(user.getItemInHand(hand), cd);
 			}
 			case STAFF -> {
 				int gk = com.elementalweapons.spell.GrandSkill.kindFor(type, element);
@@ -150,7 +130,6 @@ public class ElementalWeaponItem extends Item {
 				return InteractionResult.PASS;
 			}
 		}
-		com.elementalweapons.spell.WeaponVisual.start(server, user, element, type, visTarget);
 		com.elementalweapons.growth.Tutorial.classEvent(user, "skill");
 		com.elementalweapons.growth.Tutorial.event(user, 1);
 		if (user instanceof net.minecraft.server.level.ServerPlayer jp) com.elementalweapons.growth.Jobs.flourish(jp, element, type == WeaponType.STAFF);
@@ -176,7 +155,7 @@ public class ElementalWeaponItem extends Item {
 		if (charge < 0.15F) return false;
 		if (level instanceof ServerLevel server) {
 			SpellManager.add(new com.elementalweapons.spell.ElementArrowSpell(server, p, element, charge, stack));
-			if (charge >= 1.0F) { com.elementalweapons.growth.Tutorial.classEvent(p, "full_volley"); com.elementalweapons.spell.WeaponVisual.start(server, p, element, type, null); }
+			if (charge >= 1.0F) { com.elementalweapons.growth.Tutorial.classEvent(p, "full_volley"); com.elementalweapons.spell.WeaponVisual.start(server, p, element, type, null); com.elementalweapons.spell.ElementSkills.bowFull(element, server, p); }
 			com.elementalweapons.growth.Tutorial.event(p, 1);
 			p.getCooldowns().addCooldown(stack, charge >= 1.0F ? 30 : 8);
 		}

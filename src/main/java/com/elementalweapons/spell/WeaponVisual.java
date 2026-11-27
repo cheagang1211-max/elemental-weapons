@@ -50,7 +50,7 @@ public class WeaponVisual extends Spell {
 		net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(Special.TYPE, Special.CODEC);
 	}
 
-	private static void announce(Player caster) {
+	public static void announce(Player caster) {
 		Special sp = new Special(caster.getId());
 		java.util.Set<net.minecraft.server.level.ServerPlayer> to = new java.util.HashSet<>(net.fabricmc.fabric.api.networking.v1.PlayerLookup.tracking(caster));
 		if (caster instanceof net.minecraft.server.level.ServerPlayer self) to.add(self);
@@ -59,7 +59,6 @@ public class WeaponVisual extends Spell {
 
 	/** 우클릭 연출 시작 (target: 검이 꽂힐 곳, 다른 무기는 무시) */
 	public static void start(ServerLevel level, Player caster, Element el, WeaponType type, Vec3 target) {
-		announce(caster);
 		if (type != WeaponType.SWORD && type != WeaponType.GREATSWORD && type != WeaponType.HAMMER && type != WeaponType.SCYTHE && type != WeaponType.BOOK && type != WeaponType.BOW) return;
 		SpellManager.add(new WeaponVisual(level, caster, el, type, target == null ? caster.position() : target));
 	}
