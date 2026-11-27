@@ -763,7 +763,7 @@ public final class GrandModels {
 					if (arm != null) { arm.xRot = wob; arm.zRot = wob * 0.7F; }
 				}
 				case SHOCK -> {
-					float rise = ph < 0.35F ? ease(ph / 0.35F) : ph > 0.75F ? 1 - ease((ph - 0.75F) / 0.25F) : 1;
+					float rise = ph < 0.14F ? ease(ph / 0.14F) : ph > 0.7F ? 1 - ease((ph - 0.7F) / 0.3F) : 1;
 					for (int i = 0; i < 14; i++) {
 						ModelPart sp = get("main", "s" + i);
 						if (sp == null) continue;

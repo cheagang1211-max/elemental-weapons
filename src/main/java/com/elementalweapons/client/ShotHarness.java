@@ -316,7 +316,7 @@ public final class ShotHarness {
 	// ---------------- 무기 우클릭 공격 ----------------
 	private static final Object[][] RC = {
 			{WeaponType.SWORD, Element.FIRE}, {WeaponType.SWORD, Element.ELECTRIC}, {WeaponType.GREATSWORD, Element.WATER}, {WeaponType.GREATSWORD, Element.DARK},
-			{WeaponType.HAMMER, Element.GRASS}, {WeaponType.HAMMER, Element.FIRE}, {WeaponType.SCYTHE, Element.DARK}, {WeaponType.SCYTHE, Element.WIND},
+			{WeaponType.HAMMER, Element.GRASS}, {WeaponType.HAMMER, Element.FIRE}, {WeaponType.SCYTHE, Element.DARK}, {WeaponType.SWORD, Element.DARK},
 			{WeaponType.BOOK, Element.LIGHT}, {WeaponType.BOOK, Element.WATER}, {WeaponType.SWORD, Element.LIGHT}, {WeaponType.GREATSWORD, Element.WIND},
 			{WeaponType.BOW, Element.ELECTRIC}, {WeaponType.HAMMER, Element.ELECTRIC}, {WeaponType.SWORD, Element.WATER}, {WeaponType.GREATSWORD, Element.FIRE}};
 	private static final int RC_PER = 60, RC_T = 30 + RC.length * RC_PER;

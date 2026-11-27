@@ -105,26 +105,34 @@ public class WeaponVisual extends Spell {
 		vis.clear();
 	}
 
-	// 검: 영검 낙하 (4틱) → 꽂힌 채 빛남 → 땅속으로 가라앉음
+	// 검: 영검 낙하 → 꽂힌 채 빛남 → 가라앉음 (속성마다 떨어지는 방식이 다름)
+	//  전기: 번개처럼 2틱 만에 / 빛: 천천히 빛기둥을 타고 / 바람: 돌면서 / 어둠: 땅속에서 솟구침
 	private boolean sword() {
 		Vec3 t = target;
+		int fall = el == Element.ELECTRIC ? 2 : el == Element.LIGHT ? 7 : 4;
+		boolean rise = el == Element.DARK;
 		if (age == 0) {
-			main = spawn(BLADE, t.add(0, 16, 0), yaw);
+			main = spawn(BLADE, rise ? t.add(0, -9, 0) : t.add(0, 16, 0), yaw);
 			SpellManager.add(new MagicCircle(level, caster, el, t.add(0, 0.1, 0), 3.5, 26, false));
+			if (el == Element.LIGHT) Fx.line(level, ElementFx.particle(el), t, t.add(0, 24, 0), 0.6);
 		}
-		if (age <= 4) {
-			float f = age / 4F;
-			place(main, t.add(0, 16 * (1 - f * f) - 0.6 * f, 0), yaw);
-			Fx.line(level, ElementFx.particle(el), t.add(0, 16 * (1 - f * f) + 6, 0), t.add(0, 24, 0), 1.2);
+		float spin = el == Element.WIND && age <= fall ? age * 45 : 0;
+		if (age <= fall) {
+			float f = age / (float) fall;
+			double y = rise ? -9 + 8.4 * (1 - (1 - f) * (1 - f)) : 16 * (1 - f * f) - 0.6 * f;
+			place(main, t.add(0, y, 0), yaw + spin);
+			if (!rise) Fx.line(level, ElementFx.particle(el), t.add(0, y + 6, 0), t.add(0, 24, 0), 1.2);
+			else Fx.burst(level, ElementFx.dust(el, 1.6F), t.add(0, 0.3, 0), 10, 0.8, 0.1);
 		}
-		if (age == 4) {
+		if (age == fall) {
 			Fx.ring(level, ElementFx.dust(el, 1.8F), t.add(0, 0.2, 0), 2.2, 30, 0);
 			Fx.burst(level, ElementFx.particle(el), t.add(0, 0.5, 0), 30, 0.8, 0.15);
 			ElementFx.impact(level, el, t, 3.0);
+			if (el == Element.ELECTRIC) ElectricStormSpell.drawBolt(level, t);
 			Fx.sound(level, t, SoundEvents.ANVIL_LAND, 0.8F, 1.3F);
 		}
-		if (main != null) main.setPhase(age < 4 ? 0 : Math.min(1, (age - 4) / 10F));
-		if (age > 4 && age < 22 && age % 3 == 0) Fx.ring(level, ElementFx.particle(el), t.add(0, 0.3, 0), 1 + (age - 4) * 0.25, 18, age);
+		if (main != null) main.setPhase(age < fall ? 0 : Math.min(1, (age - fall) / 10F));
+		if (age > fall && age < 22 && age % 3 == 0) Fx.ring(level, ElementFx.particle(el), t.add(0, 0.3, 0), 1 + (age - fall) * 0.25, 18, age);
 		if (age > 18) place(main, t.add(0, -0.6 - (age - 18) * 0.45, 0), yaw);
 		return age >= 30;
 	}
@@ -132,10 +140,13 @@ public class WeaponVisual extends Spell {
 	// 대검: 원진이 머리 위에서 돌며 내려와 땅에 꽂힘
 	private boolean ring() {
 		Vec3 c = caster.position();
-		if (age == 0) main = spawn(BLADE_RING, c.add(0, 7, 0), yaw);
+		boolean rise = el == Element.DARK;
+		if (age == 0) main = spawn(BLADE_RING, rise ? c.add(0, -6, 0) : c.add(0, 7, 0), yaw);
 		float f = ease(age / 6F);
-		Vec3 base = target.add(0, 7 * (1 - f) - 0.8 * f, 0);
-		if (age <= 6) place(main, base, yaw + age * 9);
+		Vec3 base = rise ? target.add(0, -6 + 5.2 * f, 0) : target.add(0, 7 * (1 - f) - 0.8 * f, 0);
+		if (age <= 6) place(main, base, yaw + age * (el == Element.WIND ? 30 : 9));
+		if (age > 6 && age <= 20 && el == Element.FIRE && age % 4 == 0)
+			for (int i = 0; i < 6; i++) { double a = Math.toRadians(yaw + 54) + i * Math.PI / 3; Fx.burst(level, com.elementalweapons.fx.P.FLAME, target.add(Math.cos(a) * 4.5, 1.5, Math.sin(a) * 4.5), 6, 0.3, 0.05); }
 		if (main != null) main.setPhase(Math.min(1, age / 6F));
 		if (age == 6) {
 			for (int i = 0; i < 6; i++) {
