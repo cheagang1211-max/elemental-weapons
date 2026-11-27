@@ -252,6 +252,7 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 		}
 		Fx.sound(level, this.position(), SoundEvents.ENDER_DRAGON_GROWL, 3.0F, newPhase == 2 ? 1.2F : 0.8F);
 		Fx.sphere(level, ElementFx.dust(element(), 2.0F), center(), 4.5, 150);
+		fxVis(level, 15, element(), BossFx.ground(level, getX(), getZ()), 34, 1.8F);
 		if (newPhase == 3 && !def().shifting) this.bossBar.setColor(BossEvent.BossBarColor.RED);
 		for (int i = 0; i < 6; i++) {
 			double a = i * Math.PI / 3;

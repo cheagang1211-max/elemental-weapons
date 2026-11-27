@@ -141,6 +141,13 @@ public abstract class ElementalBoss extends Monster {
 			if (p.distanceToSqr(this) < 128 * 128) p.sendSystemMessage(msg);
 		}
 		bossBar.removeAllPlayers();
+		// 쓰러짐 연출: 거대한 결정 고리 두 겹 + 속성 폭발
+		Vec3 g = com.elementalweapons.boss.BossFx.ground(level, getX(), getZ());
+		if (Math.abs(g.y - getY()) > 6) g = position();
+		com.elementalweapons.spell.VisualFx.spawn(level, 15, element(), g, 40, 2.2F);
+		com.elementalweapons.spell.VisualFx.spawn(level, 15, element(), g, 30, 1.2F);
+		ElementFx.impact(level, element(), g, 8);
+		com.elementalweapons.spell.Fx.sphere(level, ElementFx.dust(element(), 2.4F), position().add(0, getBbHeight() * 0.5, 0), getBbHeight() * 0.7, 200);
 		this.setHealth(0.0F);
 		this.die(source);
 	}
