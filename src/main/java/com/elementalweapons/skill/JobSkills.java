@@ -145,7 +145,7 @@ public final class JobSkills {
 							Vec3 at = chest.add(Math.cos(ang) * d, 0, Math.sin(ang) * d);
 							Fx.at(l, ElementFx.dust(e, 1.5F), at);
 							Fx.at(l, ElementFx.particle(e), at.add(0, 0.3, 0));
-							for (LivingEntity t : Fx.enemies(l, at, 1.6)) if (hitSet.add(t)) { hurt(l, p, t, 8 * m); if (a % 6 == 5) ElementEffects.strike(e, l, p, t.position()); }
+							for (LivingEntity t : Fx.enemies(l, at, 1.6)) if (hitSet.add(t)) { hurt(l, p, t, 8 * m); if (a % 6 == 5) com.elementalweapons.spell.ElementEffects.strike(e, l, p, t.position()); }
 						}
 					}
 					return a >= waves * 6;
