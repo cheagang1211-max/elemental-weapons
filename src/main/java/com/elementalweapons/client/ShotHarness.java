@@ -324,8 +324,8 @@ public final class ShotHarness {
 		if (k == 2) mc.options.setCameraType(CameraType.FIRST_PERSON);
 		if (k > 2 && current != null) lookAt(mc, current.getX() - 0.5, RY + 1, current.getZ() - 0.5);
 		if (k >= 5 && k < 105) { int tt = k - 5; server.execute(() -> { if (current instanceof com.elementalweapons.boss.ConfiguredBoss cb) cb.debugRun(type, (ServerLevel) cb.level(), tt); }); }
-		if (type == com.elementalweapons.boss.PatternType.MARK && k == 62) server.execute(() -> sp(server).teleportTo(RX + 16, RY + 6, RZ - 16));
-		if (type == com.elementalweapons.boss.PatternType.MARK && k > 62) lookAt(mc, RX + 6, RY + 4, RZ - 10);
+		if (type == com.elementalweapons.boss.PatternType.MARK && k == 62) server.execute(() -> sp(server).teleportTo(RX + 13, RY, RZ - 13));
+		if (type == com.elementalweapons.boss.PatternType.MARK && k > 62) lookAt(mc, RX + 6, RY + 5, RZ - 10);
 		if (type == com.elementalweapons.boss.PatternType.MARK ? (k == 74 || k == 77 || k == 82 || k == 90) : (k == 35 || k == 50 || k == 70 || k == 48)) shot(mc, String.format("c%d_%s_%s_%d", idx, id, type.name().toLowerCase(), k));
 	}
 

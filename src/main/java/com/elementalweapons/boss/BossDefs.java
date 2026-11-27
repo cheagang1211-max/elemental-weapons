@@ -162,7 +162,7 @@ public final class BossDefs {
 				.drop(() -> ModItems.ELEMENT_ESSENCE, 2, 3).drop(() -> com.elementalweapons.world.ModBlocks.item("orichalcum_ingot"), 4, 6));
 
 		add(BossDef.of("twilight_twins", "황혼의 쌍둥이", "Twilight Twins").element(LIGHT, DARK).health(3_000_000_000L)
-				.look("☯", LIGHT_PURPLE, BossEvent.BossBarColor.PURPLE).size(3.6F, 5.0F, 4.2F, 2.0F, 2.0F).hover(3.0, 7.0, 0.30, true)
+				.look("☯", LIGHT_PURPLE, BossEvent.BossBarColor.PURPLE).size(3.6F, 5.0F, 4.2F, 2.5F, 2.0F).hover(3.0, 7.0, 0.30, true)
 				.lines("빛과 어둠, 우리는 둘이자 하나.", "낮과 밤이 뒤섞인다!", "황혼의 끝에서 함께 사라지자!")
 				.pattern(BEAM, "빛과 어둠의 교차", LIGHT, 1, 2, 9, 2, 18)
 				.pattern(BEAM, "어둠의 반달", DARK, 1, 2, 9, 2, 18)
