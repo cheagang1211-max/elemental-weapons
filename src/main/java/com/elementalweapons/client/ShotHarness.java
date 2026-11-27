@@ -324,7 +324,7 @@ public final class ShotHarness {
 		if (k > 0 && k < 12) look(mc, 0, 12);
 		if (k == 8) server.execute(() -> { ServerPlayer p = sp(server);
 			p.getMainHandItem().use(p.level(), p, net.minecraft.world.InteractionHand.MAIN_HAND); });
-		if (k == 8) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+		if (k == 8) mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, true);
 		String nm = String.format("b%02d_%s_%s", idx, wt.id, el.name().toLowerCase());
 		if (k == 11) shot(mc, nm + "_1");
 		if (k == 16) shot(mc, nm + "_2");
