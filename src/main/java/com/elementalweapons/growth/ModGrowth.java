@@ -238,7 +238,7 @@ public final class ModGrowth {
 		java.util.List<ItemStack> g = new java.util.ArrayList<>();
 		g.add(new ItemStack(com.elementalweapons.item.ModItems.ENHANCE_STONE, 2 + r.nextInt(3)));
 		if (r.nextFloat() < 0.3F) g.add(new ItemStack(com.elementalweapons.item.ModItems.BLESS_STONE));
-		for (ItemStack s : g) if (!p.getInventory().add(s)) p.drop(s, false);
+		for (ItemStack s : g) if (!p.getInventory().add(s)) p.spawnAtLocation((ServerLevel) p.level(), s);
 	}
 
 	private static void oreDrop(ServerPlayer p, net.minecraft.world.entity.LivingEntity mob) {

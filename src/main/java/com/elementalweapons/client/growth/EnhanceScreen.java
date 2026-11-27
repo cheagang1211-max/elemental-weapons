@@ -93,7 +93,7 @@ public class EnhanceScreen extends Screen {
 		g.pose().pushMatrix();
 		g.pose().translate(bx + 48, by + 14);
 		g.pose().scale(1.5F, 1.5F);
-		g.text(font, "+" + lv + "  →  +" + n, 0, 0, 0xFF000000 | Enhancement.color(n).getColor(), true);
+		g.text(font, "+" + lv + "  →  +" + n, 0, 0, tier(n), true);
 		g.pose().popMatrix();
 		stats(g, lv, n, left + 14, top + 78);
 		// 확률
@@ -126,6 +126,8 @@ public class EnhanceScreen extends Screen {
 			g.pose().popMatrix();
 		}
 	}
+
+	private static int tier(int n) { return n >= 15 ? 0xFFFF9AFF : n >= 10 ? 0xFFFFC84A : n >= 5 ? 0xFF7AE8FF : 0xFFFFFFFF; }
 
 	private void stats(GuiGraphicsExtractor g, int a, int b, int x, int y) {
 		g.text(font, String.format("공격력    +%.1f → +%.1f", Enhancement.attackBonus(a), Enhancement.attackBonus(b)), x, y, 0xFFE0D8F0, false);

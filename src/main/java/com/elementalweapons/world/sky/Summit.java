@@ -148,7 +148,7 @@ public final class Summit {
 		StringBuilder sb = new StringBuilder();
 		for (ItemStack s : gifts) {
 			sb.append(sb.length() == 0 ? "" : ", ").append(s.getHoverName().getString()).append(" ×").append(s.getCount());
-			if (!p.getInventory().add(s)) p.drop(s, false);
+			if (!p.getInventory().add(s)) p.spawnAtLocation((ServerLevel) p.level(), s);
 		}
 		Fx.sound(l, at, SoundEvents.BELL_BLOCK, 1F, 1.2F);
 		Fx.sound(l, at, SoundEvents.PLAYER_LEVELUP, 0.7F, 1.4F);
