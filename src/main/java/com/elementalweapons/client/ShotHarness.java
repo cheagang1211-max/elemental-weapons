@@ -71,33 +71,39 @@ public final class ShotHarness {
 		if (f == 2) server.execute(() -> { try {
 			server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "time set noon");
 			ServerPlayer p = sp(server); p.getAbilities().mayfly = true; p.getAbilities().flying = true; p.onUpdateAbilities();
-			var lvl = (net.minecraft.server.level.ServerLevel) p.level();
-			for (int i = 0; i < GAL.length; i++) {
+			p.teleportTo(0.5, 200, -200.5);
+		} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 대형 기술 오류", ex); } });
+		if (f < 10) return;
+		int i = (f - 10) / 34, gg = (f - 10) % 34;
+		if (i < GAL.length) {
+			final int ii = i;
+			if (gg == 0) server.execute(() -> { try {
+				for (var g : GV) g.discard(); GV.clear();
+				ServerPlayer p = sp(server); var lvl = (net.minecraft.server.level.ServerLevel) p.level();
+				p.teleportTo(0.5, 200, -200.5); p.getAbilities().flying = true; p.onUpdateAbilities();
 				var g = ModMobs.GRAND.create(lvl, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
-				g.setKind(GAL[i][0]); g.setElem(GAL[i][1]); g.setPitch(GAL[i][2]); g.setPhase(GAL[i][0] == 3 ? 0.7F : 1F);
-				float yaw = GAL[i][3] == 1 ? 90 : 180;
-				g.snapTo(i * 160, 200, 0, yaw, 0); g.setYBodyRot(yaw); g.setYHeadRot(yaw);
+				g.setKind(GAL[ii][0]); g.setElem(GAL[ii][1]); g.setPitch(GAL[ii][2]); g.setPhase(GAL[ii][0] == 3 ? 0.7F : 1F);
+				float yaw = GAL[ii][3] == 1 ? 90 : 180;
+				g.snapTo(0.5, 185, -150, yaw, 0); g.setYBodyRot(yaw); g.setYHeadRot(yaw);
 				g.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
 				lvl.addFreshEntity(g); GV.add(g);
+			} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 대형 기술 오류", ex); } });
+			server.execute(() -> { for (var g : GV) { g.life = 0; if (g.kind() == 1 && g.tickCount % 40 == 0) g.setStrike(g.tickCount * 2 + 2); if (g.kind() == 7 && g.tickCount % 30 == 0) g.setStrike(g.tickCount * 2 + 2); } });
+			mc.player.setYRot(0); mc.player.setXRot(-12); mc.options.setCameraType(CameraType.FIRST_PERSON);
+			if (gg == 30) {
+				int n = 0; for (var e : mc.level.entitiesForRendering()) if (e instanceof com.elementalweapons.spell.GrandVisual) n++;
+				log("클라 대형 모형 " + n + " 종류 " + GAL[ii][0]);
+				shot(mc, String.format("93%02d_grand", ii));
 			}
-			log("대형 모형 " + GV.size() + "개");
-		} catch (Throwable ex) { ElementalWeaponsMod.LOGGER.error("[SHOTS] 대형 기술 오류", ex); } });
-		if (f > 2) server.execute(() -> { for (var g : GV) { g.life = 0; if (g.kind() == 1 && g.tickCount % 40 == 0) g.setStrike(g.tickCount * 2 + 2); if (g.kind() == 7 && g.tickCount % 30 == 0) g.setStrike(g.tickCount * 2 + 2); } });
-		int i = (f - 10) / 30, gg = (f - 10) % 30;
-		if (f >= 10 && i < GAL.length) {
-			final int ii = i;
-			if (gg == 0) server.execute(() -> { ServerPlayer p = sp(server); p.teleportTo(ii * 160, 222, -80); p.getAbilities().flying = true; p.onUpdateAbilities(); });
-			mc.player.setYRot(0); mc.player.setXRot(8); mc.options.setCameraType(CameraType.FIRST_PERSON);
-			if (gg == 27) shot(mc, String.format("93%02d_grand", i));
 			return;
 		}
-		int c = f - 10 - GAL.length * 30;
+		int c = f - 10 - GAL.length * 34;
 		if (c == 0) server.execute(() -> { for (var g : GV) g.discard(); GV.clear(); ServerPlayer p = sp(server);
 			p.teleportTo(com.elementalweapons.world.sky.SkyLayout.SPAWN.getX() + 0.5, com.elementalweapons.world.sky.SkyLayout.SPAWN.getY(), com.elementalweapons.world.sky.SkyLayout.SPAWN.getZ() + 0.5);
 			p.getAbilities().flying = false; p.onUpdateAbilities(); p.setYRot(0); p.setXRot(10); });
-		if (c > 0 && c < 200) { mc.player.setYRot(0); mc.player.setXRot(-5); mc.options.setCameraType(CameraType.THIRD_PERSON_BACK); }
+		if (c > 0 && c < 200) { mc.player.setYRot(0); mc.player.setXRot(-20); mc.options.setCameraType(CameraType.THIRD_PERSON_BACK); }
 		if (c == 20) server.execute(() -> com.elementalweapons.spell.GrandSkill.cast((net.minecraft.server.level.ServerLevel) sp(server).level(), sp(server), com.elementalweapons.item.Element.LIGHT, com.elementalweapons.spell.GrandSkill.SWORD));
-		if (c == 36) shot(mc, "93x_cast_sword_fall");
+		if (c == 36) { int n = 0; for (var e : mc.level.entitiesForRendering()) if (e instanceof com.elementalweapons.spell.GrandVisual gv) { n++; log("성검 위치 " + gv.position() + " 종류 " + gv.kind()); } log("클라 성검 수 " + n); shot(mc, "93x_cast_sword_fall"); }
 		if (c == 50) shot(mc, "93y_cast_sword_hit");
 		if (c == 140) server.execute(() -> com.elementalweapons.spell.GrandSkill.cast((net.minecraft.server.level.ServerLevel) sp(server).level(), sp(server), com.elementalweapons.item.Element.FIRE, com.elementalweapons.spell.GrandSkill.TITAN));
 		if (c == 190) shot(mc, "93z_cast_titan");
@@ -255,8 +261,8 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
-		if (f < 610) { classTest(mc, server, f); return; }
-		f -= 610;
+		if (f < 660) { classTest(mc, server, f); return; }
+		f -= 660;
 		double[][] sc = focusScenes();
 		int per = 300;
 		if (f < sc.length * per) {
