@@ -244,6 +244,7 @@ if __name__ == "__main__":
             try: pack(root, tw, tw); break
             except SystemExit: continue
         tex, glow = paint(root, tw, tw, mats, seed=sum(map(ord, mid)))
+        from ao import bake; tex = bake(root, tex, glow)
         tex.save(f"{tdir}/{mid}.png"); glow.save(f"{tdir}/{mid}_glow.png")
         cls = camel(mid) + "Model"
         open(f"{jdir}/{cls}.java", "w").write(java_model(cls, roots, tw, tw).replace("tools/bossgen/bosses.py", "tools/bossgen/mobs2.py"))
