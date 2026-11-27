@@ -20,7 +20,7 @@ public final class GrandModels {
 
 	public static final int SWORD = 0, AXE = 1, DAGGER = 2, BOW = 3, ARROW = 4, REAPER = 5, GODDESS = 6, TITAN = 7, LEVIATHAN = 8, TREE = 9, ROC = 10, ABYSS = 11;
 	public static final int COUNT = 12;
-	public static final float[] SCALE = {4F, 4F, 3F, 4F, 4F, 4.5F, 4.5F, 5F, 4F, 5F, 4F, 4.5F};
+	public static final float[] SCALE = {6F, 6F, 5F, 6F, 6F, 7F, 7F, 8F, 6F, 7F, 7F, 6F};
 
 	public static class State extends LivingEntityRenderState {
 		public int kind, elem;
@@ -384,7 +384,7 @@ public final class GrandModels {
 		}
 		PartDefinition trunk = t;
 		for (int i = 0; i < 8; i++) {   // 꼬인 줄기
-			float w = 14 - i * 1.1F;
+			float w = 18 - i * 1.5F;
 			PartDefinition seg = node(trunk, "tr" + i, at(0, i == 0 ? 0 : -9, 0, 0, 0.18F, 0));
 			box(seg, "b", BASE, -w / 2, -9.2F, -w / 2, w, 9.4F, w);
 			if (i % 2 == 0) box(seg, "v", CRYSTAL, -w / 2 - 0.3F, -8, -1, 0.6F, 5, 2);
@@ -395,8 +395,9 @@ public final class GrandModels {
 					PartDefinition br = node(seg, "br" + b, at(0, -5, 0, 0, a, -0.9F + i * 0.05F));
 					box(br, "l", BASE, -1.6F, -18 + i, -1.6F, 3.2F, 18 - i, 3.2F);
 					PartDefinition leaf = node(br, "leaf", 0, -18 + i, 0);
-					box(leaf, "c1", CLOTH, -7, -6, -7, 14, 8, 14);
-					box(leaf, "c2", CLOTH, -5, -10, -5, 10, 5, 10);
+					box(leaf, "c1", CLOTH, -9, -7, -9, 18, 9, 14);
+					box(leaf, "c1b", CLOTH, -7, -7, 5, 14, 9, 6);
+					box(leaf, "c2", CLOTH, -6, -12, -6, 12, 6, 12);
 					box(leaf, "bl", CRYSTAL, -2, -11, -2, 4, 2, 4);
 					box(leaf, "fr", LIGHT, 4, 1, -1, 2, 2, 2);
 				}
@@ -404,8 +405,10 @@ public final class GrandModels {
 			trunk = seg;
 		}
 		PartDefinition crown = node(trunk, "crown", 0, -9, 0);
-		box(crown, "c1", CLOTH, -14, -10, -14, 28, 12, 28);
-		box(crown, "c2", CLOTH, -10, -18, -10, 20, 9, 20);
+		for (int q = 0; q < 4; q++) box(crown, "c1" + q, CLOTH, q % 2 == 0 ? -16 : 0, -10, q < 2 ? -16 : 0, 16, 12, 16);
+		for (int q = 0; q < 6; q++) { float qa = (float) (q * Math.PI / 3); box(crown, "cs" + q, CLOTH, -8, -6, -8, 16, 10, 16, at(Mth.cos(qa) * 18, -2, Mth.sin(qa) * 18, 0, qa, 0)); }
+		box(crown, "c2a", CLOTH, -12, -20, -12, 12, 11, 24);
+		box(crown, "c2b", CLOTH, 0, -20, -12, 12, 11, 24);
 		box(crown, "c3", CLOTH_GLOW, -6, -24, -6, 12, 7, 12);
 		for (int k = 0; k < 10; k++) { float a = (float) (k * Math.PI / 5); box(crown, "b" + k, CRYSTAL, -1.5F, -1.5F, -1.5F, 3, 3, 3, at(Mth.cos(a) * 13, -6 - (k % 3) * 5, Mth.sin(a) * 13, 0.7F, 0.7F, 0)); }
 		box(crown, "core", LIGHT, -3, -30, -3, 6, 6, 6, at(0, 0, 0, 0.785F, 0.785F, 0));

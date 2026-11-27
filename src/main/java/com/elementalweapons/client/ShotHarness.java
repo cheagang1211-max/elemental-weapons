@@ -76,7 +76,7 @@ public final class ShotHarness {
 				var g = ModMobs.GRAND.create(lvl, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
 				g.setKind(GAL[i][0]); g.setElem(GAL[i][1]); g.setPitch(GAL[i][2]); g.setPhase(GAL[i][0] == 3 ? 0.7F : 1F);
 				float yaw = GAL[i][3] == 1 ? 90 : 180;
-				g.snapTo(i * 60, 200, 0, yaw, 0); g.setYBodyRot(yaw); g.setYHeadRot(yaw);
+				g.snapTo(i * 160, 200, 0, yaw, 0); g.setYBodyRot(yaw); g.setYHeadRot(yaw);
 				g.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
 				lvl.addFreshEntity(g); GV.add(g);
 			}
@@ -86,7 +86,7 @@ public final class ShotHarness {
 		int i = (f - 10) / 30, gg = (f - 10) % 30;
 		if (f >= 10 && i < GAL.length) {
 			final int ii = i;
-			if (gg == 0) server.execute(() -> { ServerPlayer p = sp(server); p.teleportTo(ii * 60, 212, -46); p.getAbilities().flying = true; p.onUpdateAbilities(); });
+			if (gg == 0) server.execute(() -> { ServerPlayer p = sp(server); p.teleportTo(ii * 160, 222, -80); p.getAbilities().flying = true; p.onUpdateAbilities(); });
 			mc.player.setYRot(0); mc.player.setXRot(8); mc.options.setCameraType(CameraType.FIRST_PERSON);
 			if (gg == 27) shot(mc, String.format("93%02d_grand", i));
 			return;

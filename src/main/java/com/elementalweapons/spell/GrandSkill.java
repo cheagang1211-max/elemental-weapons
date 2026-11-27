@@ -178,13 +178,13 @@ public class GrandSkill extends Spell {
 		float yaw = yawOf(caster.position().subtract(target));
 		if (age == 0) {
 			SpellManager.add(new MagicCircle(level, caster, el, target.add(0, 0.1, 0), 7, 110, false));
-			SpellManager.add(new MagicCircle(level, caster, el, target.add(0, 38, 0), 5, 30, true));
-			main = spawn(SWORD, target.add(0, 40, 0));
+			SpellManager.add(new MagicCircle(level, caster, el, target.add(0, 58, 0), 7, 30, true));
+			main = spawn(SWORD, target.add(0, 60, 0));
 		}
 		if (age <= 18) {
 			float f = age / 18F;
-			place(main, target.add(0, 40 * (1 - f * f) - 3 * f, 0), yaw);
-			if (age % 2 == 0) Fx.line(level, ElementFx.particle(el), target.add(0, 40 * (1 - f * f) + 22, 0), target.add(0, 60, 0), 1.5);
+			place(main, target.add(0, 60 * (1 - f * f) - 4 * f, 0), yaw);
+			if (age % 2 == 0) Fx.line(level, ElementFx.particle(el), target.add(0, 60 * (1 - f * f) + 34, 0), target.add(0, 90, 0), 1.5);
 		}
 		if (age == 18) {
 			boom(target, 8, 40);
@@ -197,11 +197,11 @@ public class GrandSkill extends Spell {
 			for (LivingEntity e : Fx.enemies(level, target, r + 1)) if (e.distanceTo(caster) > 0 && e.position().distanceTo(target) > r - 1.2 && hitOnce.add(e.getId())) { Fx.hurt(level, caster, e, 10); e.push(0, 0.6, 0); }
 		}
 		if (age > 18 && age < 100) {
-			place(main, target.add(0, -3, 0), yaw);
+			place(main, target.add(0, -4, 0), yaw);
 			if (main != null) main.setPhase(Math.min(1, (age - 18) / 20F));
 			if (age % 12 == 0) { hurt(target, 7, 6); ElementEffects.strike(el, level, caster, randAround(target, 6)); }
 		}
-		if (age >= 100) place(main, target.add(0, -3 + (age - 100) * (age - 100) * 0.12, 0), yaw);
+		if (age >= 100) place(main, target.add(0, -4 + (age - 100) * (age - 100) * 0.18, 0), yaw);
 		return age >= 120;
 	}
 
@@ -209,7 +209,7 @@ public class GrandSkill extends Spell {
 	private boolean axe() {
 		Vec3 away = target.subtract(caster.position()); away = new Vec3(away.x, 0, away.z).normalize();
 		float yaw = yawOf(away.scale(-1));
-		Vec3 pivot = target.add(away.scale(0)).add(0, 17.5 + 1, 0);
+		Vec3 pivot = target.add(0, 26.5, 0);
 		if (age == 0) { SpellManager.add(new MagicCircle(level, caster, el, target.add(0, 0.1, 0), 6, 100, false)); main = spawn(AXE, pivot); }
 		place(main, pivot, yaw);
 		for (int k = 0; k < 3; k++) {
@@ -229,7 +229,7 @@ public class GrandSkill extends Spell {
 	// ---------------- 암살자: 천인참 ----------------
 	private boolean dagger() {
 		if (age == 0) {
-			SpellManager.add(new MagicCircle(level, caster, el, target.add(0, 14, 0), 9, 80, true));
+			SpellManager.add(new MagicCircle(level, caster, el, target.add(0, 20, 0), 12, 80, true));
 			for (int i = 0; i < 12; i++) spawn(DAGGER, target.add(0, 30, 0));
 		}
 		double spin = age * 0.06;
@@ -237,7 +237,7 @@ public class GrandSkill extends Spell {
 			GrandVisual g = vis.get(i);
 			if (g == null || !g.isAlive()) continue;
 			double a = spin + i * Math.PI / 6;
-			Vec3 ring = target.add(Math.cos(a) * 8, 14 + (age < 25 ? (1 - ease(age / 25F)) * 16 : 0), Math.sin(a) * 8);
+			Vec3 ring = target.add(Math.cos(a) * 11, 20 + (age < 25 ? (1 - ease(age / 25F)) * 20 : 0), Math.sin(a) * 11);
 			int dive = 28 + i * 4;
 			if (age < dive) place(g, ring, (float) Math.toDegrees(a));
 			else if (age < dive + 4) {
@@ -262,7 +262,7 @@ public class GrandSkill extends Spell {
 	// ---------------- 궁수: 천궁 ----------------
 	private GrandVisual arrow;
 	private boolean bow() {
-		Vec3 bowPos = caster.position().add(fwd.scale(-3)).add(0, 10, 0);
+		Vec3 bowPos = caster.position().add(fwd.scale(-6)).add(0, 22, 0);
 		Vec3 dir = target.subtract(bowPos);
 		float yaw = yawOf(dir), pitch = (float) Math.toDegrees(Math.atan2(-dir.y, Math.hypot(dir.x, dir.z)));
 		if (age == 0) { main = spawn(BOW, bowPos); SpellManager.add(new MagicCircle(level, caster, el, target.add(0, 0.1, 0), 9, 100, false)); }
@@ -296,8 +296,8 @@ public class GrandSkill extends Spell {
 
 	// ---------------- 사신: 명계의 대낫 ----------------
 	private boolean reaper() {
-		if (age == 0) { main = spawn(REAPER, target.add(0, -22, 0)); SpellManager.add(new MagicCircle(level, caster, el, target.add(0, 0.1, 0), 9, 125, false)); baseYaw = yawOf(caster.position().subtract(target)); }
-		float y = age < 25 ? -22 + 22 * ease(age / 25F) : age > 100 ? -22 * ease((age - 100) / 25F) : 0;
+		if (age == 0) { main = spawn(REAPER, target.add(0, -44, 0)); SpellManager.add(new MagicCircle(level, caster, el, target.add(0, 0.1, 0), 9, 125, false)); baseYaw = yawOf(caster.position().subtract(target)); }
+		float y = age < 25 ? -44 + 44 * ease(age / 25F) : age > 100 ? -44 * ease((age - 100) / 25F) : 0;
 		float yaw = baseYaw;
 		if (age >= 35 && age < 55) yaw = baseYaw + (age - 35) / 20F * 360;
 		if (age >= 70 && age < 90) yaw = baseYaw - (age - 70) / 20F * 360;
@@ -305,8 +305,8 @@ public class GrandSkill extends Spell {
 		if (main != null) main.setPhase(age < 35 ? ease((age - 20) / 15F) : 1);
 		if ((age >= 35 && age < 55) || (age >= 70 && age < 90)) {
 			double ang = Math.toRadians(yaw) + Math.PI;
-			for (int k = 0; k < 3; k++) Fx.burst(level, ElementFx.dust(el, 1.8F), target.add(Math.cos(ang) * (7 + k * 2), 3, Math.sin(ang) * (7 + k * 2)), 2, 0.4, 0.02);
-			if (age == 45 || age == 80) { boom(target, 12, 30); for (LivingEntity e : foes(12)) ElementEffects.strike(el, level, caster, e.position()); Fx.sound(level, target, SoundEvents.PLAYER_ATTACK_SWEEP, 1.6F, 0.4F); }
+			for (int k = 0; k < 5; k++) Fx.burst(level, ElementFx.dust(el, 1.8F), target.add(Math.cos(ang) * (8 + k * 2.5), 3, Math.sin(ang) * (8 + k * 2.5)), 2, 0.4, 0.02);
+			if (age == 45 || age == 80) { boom(target, 16, 30); for (LivingEntity e : foes(12)) ElementEffects.strike(el, level, caster, e.position()); Fx.sound(level, target, SoundEvents.PLAYER_ATTACK_SWEEP, 1.6F, 0.4F); }
 		}
 		return age >= 128;
 	}
@@ -315,11 +315,11 @@ public class GrandSkill extends Spell {
 	private Vec3 stand;
 	private boolean goddess() {
 		if (age == 0) {
-			stand = ground(level, caster.position().add(fwd.scale(-7)));
-			main = spawn(GODDESS, stand.add(0, -26, 0));
+			stand = ground(level, caster.position().add(fwd.scale(-12)));
+			main = spawn(GODDESS, stand.add(0, -46, 0));
 			SpellManager.add(new MagicCircle(level, caster, el, caster.position().add(0, 0.1, 0), 13, 175, false));
 		}
-		float y = age < 30 ? -26 + 26 * ease(age / 30F) : age > 165 ? -26 * ease((age - 165) / 15F) : 0;
+		float y = age < 30 ? -46 + 46 * ease(age / 30F) : age > 165 ? -46 * ease((age - 165) / 15F) : 0;
 		place(main, stand.add(0, y, 0), yawOf(fwd));
 		if (main != null) main.setPhase(age < 30 ? 0 : ease((age - 30) / 25F));
 		if (age == 30) ElementEffects.supportAura(el, level, caster);
@@ -337,9 +337,9 @@ public class GrandSkill extends Spell {
 	// ---------------- 마법사: 염제 / 뇌신 ----------------
 	private boolean titan() {
 		float yaw = yawOf(caster.position().subtract(target));
-		Vec3 base = target.add(target.subtract(caster.position()).multiply(1, 0, 1).normalize().scale(6));
-		if (age == 0) { main = spawn(TITAN, base.add(0, -30, 0)); SpellManager.add(new MagicCircle(level, caster, el, base.add(0, 0.1, 0), 10, 140, false)); }
-		float y = age < 25 ? -30 + 30 * ease(age / 25F) : age > 130 ? -30 * ease((age - 130) / 10F) : 0;
+		Vec3 base = target.add(target.subtract(caster.position()).multiply(1, 0, 1).normalize().scale(12));
+		if (age == 0) { main = spawn(TITAN, base.add(0, -40, 0)); SpellManager.add(new MagicCircle(level, caster, el, base.add(0, 0.1, 0), 10, 140, false)); }
+		float y = age < 25 ? -40 + 40 * ease(age / 25F) : age > 130 ? -40 * ease((age - 130) / 10F) : 0;
 		place(main, base.add(0, y, 0), yaw);
 		if (main != null) main.setPhase(age < 112 ? 0.5F : Math.min(1, 0.5F + (age - 112) / 16F * 0.5F));
 		int k = (age - 30) / 16;
@@ -365,11 +365,11 @@ public class GrandSkill extends Spell {
 	// ---------------- 마법사(물): 리바이어던 ----------------
 	private boolean leviathan() {
 		float yaw = yawOf(caster.position().subtract(target));
-		if (age == 0) { main = spawn(LEVIATHAN, target.add(0, -30, 0)); SpellManager.add(new MagicCircle(level, caster, el, target.add(0, 0.1, 0), 10, 120, false)); }
+		if (age == 0) { main = spawn(LEVIATHAN, target.add(0, -45, 0)); SpellManager.add(new MagicCircle(level, caster, el, target.add(0, 0.1, 0), 10, 120, false)); }
 		if (main == null) return true;
-		if (age < 25) { place(main, target.add(0, -30 + 38 * ease(age / 25F), 0), yaw); main.setPitch(-70); if (age % 3 == 0) WaterOrbSpell.splash(level, caster, target, 0F, 2.5); }
+		if (age < 25) { place(main, target.add(0, -45 + 57 * ease(age / 25F), 0), yaw); main.setPitch(-70); if (age % 3 == 0) WaterOrbSpell.splash(level, caster, target, 0F, 2.5); }
 		else if (age < 92) {
-			place(main, target.add(Math.sin(age * 0.05) * 1.5, 8 + Math.sin(age * 0.1) * 0.8, 0), yaw); main.setPitch(-70 + (float) Math.sin(age * 0.08) * 8);
+			place(main, target.add(Math.sin(age * 0.05) * 2, 12 + Math.sin(age * 0.1) * 1.2, 0), yaw); main.setPitch(-70 + (float) Math.sin(age * 0.08) * 8);
 			if ((age - 25) % 20 == 0) {
 				strike(main, 0);
 				Fx.sound(level, main.position(), SoundEvents.ELDER_GUARDIAN_CURSE, 1.4F, 0.6F);
@@ -379,7 +379,7 @@ public class GrandSkill extends Spell {
 		} else if (age < 108) {
 			float f = (age - 92) / 16F;
 			main.setPitch(-70 + 140 * ease(f));
-			place(main, target.add(0, 8 + 10 * Mth.sin(f * Mth.PI) - 18 * f * f, 0), yaw);
+			place(main, target.add(0, 12 + 12 * Mth.sin(f * Mth.PI) - 26 * f * f, 0), yaw);
 		} else if (age == 108) {
 			boom(target, 10, 40);
 			for (int i = 0; i < 8; i++) { double a = i * Math.PI / 4; WaterOrbSpell.splash(level, caster, target.add(Math.cos(a) * 6, 0, Math.sin(a) * 6), 8F, 3.5); }
@@ -410,9 +410,9 @@ public class GrandSkill extends Spell {
 
 	// ---------------- 마법사(바람): 폭풍의 대붕 ----------------
 	private boolean roc() {
-		if (age == 0) { main = spawn(ROC, target.add(14, 16, 0)); SpellManager.add(new MagicCircle(level, caster, el, target.add(0, 0.1, 0), 12, 140, false)); }
+		if (age == 0) { main = spawn(ROC, target.add(20, 24, 0)); SpellManager.add(new MagicCircle(level, caster, el, target.add(0, 0.1, 0), 12, 140, false)); }
 		double a = age * 0.09;
-		Vec3 pos = target.add(Math.cos(a) * 14, 16 + Math.sin(age * 0.2) * 1.5, Math.sin(a) * 14);
+		Vec3 pos = target.add(Math.cos(a) * 20, 24 + Math.sin(age * 0.2) * 2, Math.sin(a) * 20);
 		Vec3 vel = new Vec3(-Math.sin(a), 0, Math.cos(a));
 		place(main, pos, yawOf(vel));
 		if (main != null) main.setPitch(8);
@@ -439,7 +439,7 @@ public class GrandSkill extends Spell {
 	// ---------------- 마법사(어둠): 심연의 문 ----------------
 	private boolean abyss() {
 		float yaw = yawOf(caster.position().subtract(target));
-		Vec3 pos = target.add(0, 10, 0);
+		Vec3 pos = target.add(0, 14, 0);
 		if (age == 0) { main = spawn(ABYSS, pos); SpellManager.add(new MagicCircle(level, caster, el, target.add(0, 0.1, 0), 10, 140, false)); Fx.sound(level, pos, SoundEvents.WITHER_SPAWN, 1F, 0.6F); }
 		place(main, pos, yaw);
 		if (main != null) main.setPhase(Math.min(1, age / 40F));
