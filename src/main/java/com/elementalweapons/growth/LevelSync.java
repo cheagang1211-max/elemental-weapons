@@ -27,6 +27,9 @@ public final class LevelSync {
 		ServerPlayConnectionEvents.DISCONNECT.register((h, s) -> LAST.remove(h.getPlayer().getUUID()));
 	}
 
+	/** 캐릭터 교체 직후: 바뀐 경험치 총량을 '새로 얻은 경험치'로 착각하지 않게 */
+	public static void forget(ServerPlayer p) { LAST.remove(p.getUUID()); }
+
 	private static long cumulative(Growth g) {
 		long t = g.xp();
 		for (int l = 1; l < g.level(); l++) t += Growth.need(l);

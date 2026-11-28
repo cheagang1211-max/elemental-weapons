@@ -247,6 +247,7 @@ public final class Characters {
 
 	/** 바꾼 뒤 내 화면에 다시 보내기 */
 	private static void resync(ServerPlayer p) {
+		LevelSync.forget(p);
 		for (AttachmentType<?> t : List.<AttachmentType<?>>of(ModGrowth.GROWTH, ModGrowth.PARAGON, CoreForge.DATA, Evolution.ELEMENT, Jobs.DATA, Tutorial.DATA)) resyncOne(p, t);
 		p.inventoryMenu.sendAllDataToRemote();
 		p.containerMenu.sendAllDataToRemote();
