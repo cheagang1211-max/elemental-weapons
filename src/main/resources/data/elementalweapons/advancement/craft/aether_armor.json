@@ -1,0 +1,35 @@
+{
+	"display": {
+		"icon": {
+			"id": "elementalweapons:aether_chestplate"
+		},
+		"title": "에테르의 가호",
+		"description": "에테르 갑옷 한 벌을 모두 갖춘다",
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:craft/aether",
+	"criteria": {
+		"v": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:aether_helmet"
+					},
+					{
+						"items": "elementalweapons:aether_chestplate"
+					},
+					{
+						"items": "elementalweapons:aether_leggings"
+					},
+					{
+						"items": "elementalweapons:aether_boots"
+					}
+				]
+			}
+		}
+	}
+}

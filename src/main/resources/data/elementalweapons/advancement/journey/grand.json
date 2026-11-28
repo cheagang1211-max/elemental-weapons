@@ -1,0 +1,19 @@
+{
+	"display": {
+		"icon": {
+			"id": "elementalweapons:light_book"
+		},
+		"title": "천지를 가르는 일격",
+		"description": "Shift+우클릭 대형 기술을 쓴다",
+		"frame": "goal",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:journey/finisher",
+	"criteria": {
+		"done": {
+			"trigger": "minecraft:impossible"
+		}
+	}
+}

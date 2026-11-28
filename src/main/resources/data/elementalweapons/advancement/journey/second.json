@@ -1,0 +1,19 @@
+{
+	"display": {
+		"icon": {
+			"id": "minecraft:armor_stand"
+		},
+		"title": "또 다른 나",
+		"description": "두 번째 캐릭터를 키우기 시작한다",
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:journey/class",
+	"criteria": {
+		"done": {
+			"trigger": "minecraft:impossible"
+		}
+	}
+}

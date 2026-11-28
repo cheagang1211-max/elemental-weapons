@@ -1,0 +1,19 @@
+{
+	"display": {
+		"icon": {
+			"id": "elementalweapons:wooden_sword"
+		},
+		"title": "운명의 갈림길",
+		"description": "직업을 정한다",
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:journey/root",
+	"criteria": {
+		"done": {
+			"trigger": "minecraft:impossible"
+		}
+	}
+}

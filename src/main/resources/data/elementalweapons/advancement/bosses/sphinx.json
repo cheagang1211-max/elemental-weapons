@@ -1,0 +1,19 @@
+{
+	"display": {
+		"icon": {
+			"id": "elementalweapons:sphinx_core"
+		},
+		"title": "사막 스핑크스 토벌",
+		"description": "사막 스핑크스을(를) 쓰러뜨린다",
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:bosses/zephyros",
+	"criteria": {
+		"done": {
+			"trigger": "minecraft:impossible"
+		}
+	}
+}

@@ -1,0 +1,19 @@
+{
+	"display": {
+		"icon": {
+			"id": "elementalweapons:electric_staff"
+		},
+		"title": "원소의 각성",
+		"description": "10레벨에 속성을 골라 무기를 진화시킨다",
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:journey/class",
+	"criteria": {
+		"done": {
+			"trigger": "minecraft:impossible"
+		}
+	}
+}

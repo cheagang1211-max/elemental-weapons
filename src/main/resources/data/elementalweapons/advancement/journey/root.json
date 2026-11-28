@@ -1,0 +1,19 @@
+{
+	"display": {
+		"icon": {
+			"id": "elementalweapons:fire_sword"
+		},
+		"title": "원소의 여정",
+		"description": "하늘 위 원소 세계에 첫발을 디뎠다",
+		"frame": "task",
+		"show_toast": false,
+		"announce_to_chat": false,
+		"hidden": false,
+		"background": "elementalweapons:block/aether_stone"
+	},
+	"criteria": {
+		"start": {
+			"trigger": "minecraft:tick"
+		}
+	}
+}

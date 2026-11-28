@@ -1,0 +1,26 @@
+{
+	"display": {
+		"icon": {
+			"id": "elementalweapons:element_essence"
+		},
+		"title": "원소의 정수",
+		"description": "원소 정수를 얻는다",
+		"frame": "goal",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:craft/core",
+	"criteria": {
+		"v": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:element_essence"
+					}
+				]
+			}
+		}
+	}
+}

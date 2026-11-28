@@ -79,10 +79,12 @@ public final class Skills {
 			ok = false;
 		}
 		if (!ok) return;
+		com.elementalweapons.spell.WeaponVisual.announce(p);   // 스킬마다 공격 동작
 		int cd = (int) Math.round(infos[slot].cooldown() * (1 - ModGrowth.paragon(p).cooldownCut()));
 		ready[key] = now + cd;
 		SkillNet.sendCooldown(p, slot, cd);
 		Tutorial.skillUsed(p, slot);
+		if (!wood) com.elementalweapons.growth.Achieve.grant(p, "journey/skill");
 		if (!wood) com.elementalweapons.growth.Jobs.flourish(p, el, slot == 2);
 	}
 
@@ -246,40 +248,101 @@ public final class Skills {
 				}
 			}
 			case DAGGER -> {
-				if (s == 0) {   // 그림자 걸음
-					List<LivingEntity> es = Fx.enemies(l, pos, 10);
-					if (es.isEmpty()) { p.sendOverlayMessage(Component.literal("주변에 적이 없습니다").withStyle(ChatFormatting.GRAY)); return false; }
-					LivingEntity e = es.get(0);
-					Vec3 back0 = e.position().subtract(Vec3.directionFromRotation(0, e.getYRot()).scale(1.3));
-					Vec3 back = back0;
-					Fx.burst(l, FxOptions.of(FxOptions.SMOKE, 0x1A1024, 0.5F, 16).grow(1.6F), pos.add(0, 1, 0), 8, 0.4, 0.02);
-					if (!standable(l, net.minecraft.core.BlockPos.containing(back.x, e.getY(), back.z))) back = e.position();
-					p.teleportTo(back.x, e.getY(), back.z);
-					Fx.burst(l, FxOptions.of(FxOptions.SMOKE, 0x1A1024, 0.5F, 16).grow(1.6F), back.add(0, 1, 0), 8, 0.4, 0.02);
-					Fx.at(l, slash(c2, 1.6F, 6).facing(p.getYRot() + 90, 0, 60), e.position().add(0, 1, 0));
-					Fx.hurt(l, p, e, 12 * m);
-					Fx.sound(l, back, SoundEvents.ENDERMAN_TELEPORT, 0.8F, 1.6F);
-				} else if (s == 1) {   // 칼날 부채
-					Vec3 eye = p.getEyePosition();
-					for (int k = -2; k <= 2; k++) {
-						Vec3 dir = Vec3.directionFromRotation(p.getXRot(), yaw + k * 10);
-						Vec3 end = eye.add(dir.scale(10));
-						for (LivingEntity e : Fx.enemies(l, eye.add(dir.scale(5)), 6)) {
-							Vec3 to = e.position().add(0, e.getBbHeight() / 2, 0).subtract(eye);
-							double along = to.dot(dir);
-							if (along > 0 && along < 10 && to.subtract(dir.scale(along)).length() < 1.2) { Fx.hurt(l, p, e, 5 * m); end = eye.add(dir.scale(along)); break; }
-						}
-						Fx.line(l, FxOptions.of(FxOptions.SHARD, c2, 0.18F, 6).spin(40F), eye.add(dir), end, 1.2);
+				if (s == 0) {   // 그림자 걸음: 가장 가까운 적 등 뒤로 순간 이동 → 확정 치명 + 출혈 2. 적이 없으면 앞으로 7칸 은신 이동
+					List<LivingEntity> es = Fx.enemies(l, pos, 12);
+					Fx.burst(l, FxOptions.of(FxOptions.SMOKE, 0x1A1024, 0.5F, 16).grow(1.6F), pos.add(0, 1, 0), 10, 0.4, 0.02);
+					if (es.isEmpty()) {
+						Vec3 to = safeBlink(l, p, f, 7);
+						Fx.line(l, FxOptions.of(FxOptions.SMOKE, 0x2A2038, 0.35F, 10), pos.add(0, 1, 0), to.add(0, 1, 0), 0.5);
+						p.teleportTo(to.x, to.y, to.z);
+						p.addEffect(new MobEffectInstance(MobEffects.SPEED, 40, 1, false, false));
+					} else {
+						LivingEntity e = es.get(0);
+						Vec3 back = e.position().subtract(Vec3.directionFromRotation(0, e.getYRot()).scale(1.2 + e.getBbWidth() * 0.5));
+						if (!standable(l, net.minecraft.core.BlockPos.containing(back.x, e.getY(), back.z))) back = e.position();
+						Fx.line(l, FxOptions.of(FxOptions.SMOKE, 0x2A2038, 0.35F, 10), pos.add(0, 1, 0), back.add(0, 1, 0), 0.5);
+						p.teleportTo(back.x, e.getY(), back.z);
+						Vec3 d = e.position().subtract(back);
+						float ny = (float) (Math.toDegrees(Math.atan2(-d.x, d.z)));
+						p.setYRot(ny); p.setYHeadRot(ny);
+						p.connection.teleport(p.getX(), p.getY(), p.getZ(), ny, p.getXRot());
+						run(l, p, a -> {
+							if (a == 2 || a == 5) {
+								if (e.isAlive()) { DaggerArts.strike(l, p, e, (a == 2 ? 11 : 7) * m, true); DaggerArts.bleed(l, p, e, 1); }
+								Fx.at(l, slash(a == 2 ? c2 : c1, 1.5F, 5).facing(p.getYRot() + 90, 0, a == 2 ? 55 : -55), e.position().add(0, 1, 0));
+							}
+							return a >= 5;
+						});
 					}
-					Fx.sound(l, pos, SoundEvents.TRIDENT_THROW.value(), 1F, 1.6F);
-				} else {   // 연무
-					Vec3 c = pos;
-					p.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 80, 0, false, false));
-					p.addEffect(new MobEffectInstance(MobEffects.SPEED, 80, 1, false, false));
+					Fx.burst(l, FxOptions.of(FxOptions.SMOKE, 0x1A1024, 0.5F, 16).grow(1.6F), p.position().add(0, 1, 0), 10, 0.4, 0.02);
+					Fx.sound(l, p.position(), SoundEvents.ENDERMAN_TELEPORT, 0.8F, 1.6F);
+				} else if (s == 1) {   // 칼날 폭풍: 단검 9자루를 부채꼴로 연달아 던짐 (관통, 맞을 때마다 출혈)
+					Set<LivingEntity> got = new HashSet<>();
 					run(l, p, a -> {
-						if (a % 4 == 0) Fx.burst(l, FxOptions.of(FxOptions.SMOKE, a % 8 == 0 ? 0x3A3448 : 0x6A6478, 0.8F, 24).grow(1.8F), c.add(0, 1, 0), 6, 2.2, 0.01);
-						if (a % 20 == 0) for (LivingEntity e : Fx.enemies(l, c, 4.5)) { e.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 40, 0)); e.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 40, 1)); if (e instanceof Mob mob) mob.setTarget(null); }
-						return a >= 80;
+						if (a % 2 == 0) {
+							Vec3 eye = p.getEyePosition();
+							int wave = a / 2;
+							for (int k = -1; k <= 1; k++) {
+								float ang = p.getYRot() + (k * 3 + (wave - 1)) * 7F;
+								Vec3 dir = Vec3.directionFromRotation(p.getXRot(), ang);
+								Vec3 end = eye.add(dir.scale(13));
+								for (LivingEntity e : Fx.enemies(l, eye.add(dir.scale(6.5)), 7.5)) {
+									Vec3 to = e.position().add(0, e.getBbHeight() / 2, 0).subtract(eye);
+									double along = to.dot(dir);
+									if (along > 0 && along < 13 && to.subtract(dir.scale(along)).length() < 1.1 + e.getBbWidth() * 0.5) {
+										DaggerArts.strike(l, p, e, 5.5F * m, false);
+										DaggerArts.bleed(l, p, e, 1);
+										got.add(e);
+									}
+								}
+								Fx.line(l, FxOptions.of(FxOptions.SHARD, k == 0 ? c2 : c1, 0.2F, 6).spin(50F), eye.add(dir), end, 0.9);
+							}
+							Fx.sound(l, p.position(), SoundEvents.TRIDENT_THROW.value(), 0.8F, 1.5F + wave * 0.1F);
+						}
+						return a >= 4;
+					});
+				} else {   // 천인 난무: 주변 적(최대 8)을 차례로 순간 이동하며 베고, 마지막에 원래 자리로 돌아와 은신
+					List<LivingEntity> es = new java.util.ArrayList<>(Fx.enemies(l, pos, 11));
+					if (es.size() > 8) es = es.subList(0, 8);
+					List<LivingEntity> targets = es;
+					Vec3 home = pos;
+					p.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 50, 4, false, false));
+					int hits = Math.max(1, targets.size()) * (targets.size() <= 2 ? 3 : 1);
+					run(l, p, a -> {
+						if (targets.isEmpty()) {   // 적이 없으면 연막만
+							if (a == 0) {
+								p.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 80, 0, false, false));
+								p.addEffect(new MobEffectInstance(MobEffects.SPEED, 80, 1, false, false));
+								Fx.burst(l, FxOptions.of(FxOptions.SMOKE, 0x3A3448, 0.8F, 24).grow(1.8F), home.add(0, 1, 0), 24, 2.2, 0.01);
+							}
+							return true;
+						}
+						if (a % 3 == 0 && a / 3 < hits) {
+							LivingEntity e = targets.get((a / 3) % targets.size());
+							if (e.isAlive()) {
+								double ang = l.getRandom().nextDouble() * Math.PI * 2;
+								Vec3 at = e.position().add(Math.cos(ang) * (1.1 + e.getBbWidth() * 0.5), 0, Math.sin(ang) * (1.1 + e.getBbWidth() * 0.5));
+								if (!standable(l, net.minecraft.core.BlockPos.containing(at))) at = e.position();
+								Fx.line(l, FxOptions.of(FxOptions.SLASH, c2, 0.5F, 4), p.position().add(0, 1, 0), at.add(0, 1, 0), 0.8);
+								p.teleportTo(at.x, at.y, at.z);
+								Fx.at(l, slash(a % 6 == 0 ? c1 : c2, 2.0F, 5).facing(l.getRandom().nextFloat() * 360, 0, l.getRandom().nextFloat() * 120 - 60), e.position().add(0, e.getBbHeight() * 0.6, 0));
+								Fx.at(l, slash(0xFFFFFF, 1.6F, 4).facing(l.getRandom().nextFloat() * 360, 0, l.getRandom().nextFloat() * 120 - 60), e.position().add(0, e.getBbHeight() * 0.6, 0));
+								DaggerArts.strike(l, p, e, 13 * m, false);
+								DaggerArts.bleed(l, p, e, 2);
+								Fx.sound(l, at, SoundEvents.PLAYER_ATTACK_SWEEP, 0.9F, 1.4F + l.getRandom().nextFloat() * 0.4F);
+							}
+						}
+						if (a >= hits * 3 + 2) {
+							Fx.line(l, FxOptions.of(FxOptions.SMOKE, 0x2A2038, 0.35F, 10), p.position().add(0, 1, 0), home.add(0, 1, 0), 0.6);
+							p.teleportTo(home.x, home.y, home.z);
+							p.fallDistance = 0;
+							p.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 50, 0, false, false));
+							Fx.burst(l, FxOptions.of(FxOptions.SMOKE, 0x1A1024, 0.6F, 18).grow(1.7F), home.add(0, 1, 0), 16, 0.8, 0.02);
+							for (LivingEntity e : targets) if (e.isAlive()) Fx.at(l, slash(0xFF3040, 2.6F, 7).facing(l.getRandom().nextFloat() * 360, 0, 90), e.position().add(0, e.getBbHeight() * 0.6, 0));
+							Fx.sound(l, home, SoundEvents.ENDERMAN_TELEPORT, 0.9F, 0.8F);
+							return true;
+						}
+						return false;
 					});
 					Fx.sound(l, pos, SoundEvents.FIRE_EXTINGUISH, 1F, 0.6F);
 				}

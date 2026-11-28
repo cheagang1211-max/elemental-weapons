@@ -1,0 +1,26 @@
+{
+	"display": {
+		"icon": {
+			"id": "minecraft:sculk"
+		},
+		"title": "심연을 들여다본 자",
+		"description": "멀리 떨어진 원소의 심연에 들어선다",
+		"frame": "goal",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:explore/elemental_ocean",
+	"criteria": {
+		"v": {
+			"trigger": "minecraft:location",
+			"conditions": {
+				"player": {
+					"location": {
+						"biomes": "elementalweapons:elemental_abyss"
+					}
+				}
+			}
+		}
+	}
+}

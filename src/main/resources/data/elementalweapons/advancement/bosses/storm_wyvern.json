@@ -1,0 +1,19 @@
+{
+	"display": {
+		"icon": {
+			"id": "elementalweapons:storm_wyvern_core"
+		},
+		"title": "뇌운 와이번 토벌",
+		"description": "뇌운 와이번을(를) 쓰러뜨린다",
+		"frame": "goal",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:bosses/sphinx",
+	"criteria": {
+		"done": {
+			"trigger": "minecraft:impossible"
+		}
+	}
+}

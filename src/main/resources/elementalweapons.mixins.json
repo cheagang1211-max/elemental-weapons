@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "com.elementalweapons.mixin.common",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"AdvancementFilterMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

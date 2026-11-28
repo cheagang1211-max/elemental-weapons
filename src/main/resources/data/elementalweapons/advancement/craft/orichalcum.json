@@ -1,0 +1,26 @@
+{
+	"display": {
+		"icon": {
+			"id": "elementalweapons:orichalcum_ingot"
+		},
+		"title": "전설의 금속",
+		"description": "오리하르콘 주괴를 얻는다",
+		"frame": "goal",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:craft/aether",
+	"criteria": {
+		"v": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:orichalcum_ingot"
+					}
+				]
+			}
+		}
+	}
+}

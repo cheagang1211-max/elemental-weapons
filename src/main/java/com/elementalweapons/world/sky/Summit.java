@@ -136,6 +136,7 @@ public final class Summit {
 			return;
 		}
 		p.setAttached(DAILY, d);
+		com.elementalweapons.growth.Achieve.grant(p, "explore/summit");
 		var r = l.getRandom();
 		Integer el = p.getAttached(com.elementalweapons.growth.Evolution.ELEMENT);
 		Element e = el != null && el >= 0 ? Element.values()[el] : Element.values()[r.nextInt(7)];

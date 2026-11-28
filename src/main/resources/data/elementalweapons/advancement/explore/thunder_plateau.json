@@ -1,0 +1,26 @@
+{
+	"display": {
+		"icon": {
+			"id": "elementalweapons:storm_crystal"
+		},
+		"title": "뇌전 고원에 발을 딛다",
+		"description": "뇌전 고원에 간다",
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:explore/capital_gardens",
+	"criteria": {
+		"v": {
+			"trigger": "minecraft:location",
+			"conditions": {
+				"player": {
+					"location": {
+						"biomes": "elementalweapons:thunder_plateau"
+					}
+				}
+			}
+		}
+	}
+}

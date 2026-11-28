@@ -1,0 +1,26 @@
+{
+	"display": {
+		"icon": {
+			"id": "elementalweapons:gale_crystal"
+		},
+		"title": "바람의 고원에 발을 딛다",
+		"description": "바람의 고원에 간다",
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:explore/capital_gardens",
+	"criteria": {
+		"v": {
+			"trigger": "minecraft:location",
+			"conditions": {
+				"player": {
+					"location": {
+						"biomes": "elementalweapons:gale_highlands"
+					}
+				}
+			}
+		}
+	}
+}

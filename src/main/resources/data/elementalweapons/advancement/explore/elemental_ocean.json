@@ -1,0 +1,26 @@
+{
+	"display": {
+		"icon": {
+			"id": "minecraft:heart_of_the_sea"
+		},
+		"title": "원소의 바다에 발을 딛다",
+		"description": "원소의 바다에 간다",
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:explore/capital_gardens",
+	"criteria": {
+		"v": {
+			"trigger": "minecraft:location",
+			"conditions": {
+				"player": {
+					"location": {
+						"biomes": "elementalweapons:elemental_ocean"
+					}
+				}
+			}
+		}
+	}
+}

@@ -92,6 +92,7 @@ public class GrandSkill extends Spell {
 		double cut = com.elementalweapons.growth.ModGrowth.get(p).staffCooldownFactor() * (1 - com.elementalweapons.growth.ModGrowth.paragon(p).cooldownCut()) * com.elementalweapons.growth.CoreForge.cooldownFactor(p);
 		COOL.put(p.getUUID(), now + Math.round(COOLDOWN * cut));
 		cast(level, p, el, kind);
+		com.elementalweapons.growth.Achieve.grant(p, "journey/grand");
 		return true;
 	}
 

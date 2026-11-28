@@ -201,6 +201,7 @@ public final class ArenaDuel {
 		ow.setAttached(WINS, wins);
 		boardDirty = true;
 		title(w, "승리!", ChatFormatting.GOLD, why + " · 통산 " + n + "승");
+		com.elementalweapons.growth.Achieve.duelWin(w, n);
 		if (l != null) title(l, "패배", ChatFormatting.RED, why);
 		Fx.sound(ow, w.position(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1F, 1F);
 		Fx.burst(ow, com.elementalweapons.fx.P.END_ROD, w.position().add(0, 1, 0), 40, 1.0, 0.4);

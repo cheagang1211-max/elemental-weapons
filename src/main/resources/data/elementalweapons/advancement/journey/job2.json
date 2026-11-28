@@ -1,0 +1,19 @@
+{
+	"display": {
+		"icon": {
+			"id": "minecraft:writable_book"
+		},
+		"title": "두 갈래 길",
+		"description": "전직 교관의 시험을 통과해 2차 전직을 한다",
+		"frame": "goal",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:journey/lv60",
+	"criteria": {
+		"done": {
+			"trigger": "minecraft:impossible"
+		}
+	}
+}

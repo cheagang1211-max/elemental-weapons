@@ -1,0 +1,148 @@
+{
+	"display": {
+		"icon": {
+			"id": "minecraft:filled_map"
+		},
+		"title": "천공의 지도",
+		"description": "하늘 세계의 모든 지역을 밟는다",
+		"frame": "challenge",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:explore/elemental_abyss",
+	"criteria": {
+		"capital_gardens": {
+			"trigger": "minecraft:location",
+			"conditions": {
+				"player": {
+					"location": {
+						"biomes": "elementalweapons:capital_gardens"
+					}
+				}
+			}
+		},
+		"thunder_plateau": {
+			"trigger": "minecraft:location",
+			"conditions": {
+				"player": {
+					"location": {
+						"biomes": "elementalweapons:thunder_plateau"
+					}
+				}
+			}
+		},
+		"volcanic_plains": {
+			"trigger": "minecraft:location",
+			"conditions": {
+				"player": {
+					"location": {
+						"biomes": "elementalweapons:volcanic_plains"
+					}
+				}
+			}
+		},
+		"azure_forest": {
+			"trigger": "minecraft:location",
+			"conditions": {
+				"player": {
+					"location": {
+						"biomes": "elementalweapons:azure_forest"
+					}
+				}
+			}
+		},
+		"blossom_forest": {
+			"trigger": "minecraft:location",
+			"conditions": {
+				"player": {
+					"location": {
+						"biomes": "elementalweapons:blossom_forest"
+					}
+				}
+			}
+		},
+		"gale_highlands": {
+			"trigger": "minecraft:location",
+			"conditions": {
+				"player": {
+					"location": {
+						"biomes": "elementalweapons:gale_highlands"
+					}
+				}
+			}
+		},
+		"shadow_woods": {
+			"trigger": "minecraft:location",
+			"conditions": {
+				"player": {
+					"location": {
+						"biomes": "elementalweapons:shadow_woods"
+					}
+				}
+			}
+		},
+		"radiant_plains": {
+			"trigger": "minecraft:location",
+			"conditions": {
+				"player": {
+					"location": {
+						"biomes": "elementalweapons:radiant_plains"
+					}
+				}
+			}
+		},
+		"elemental_ocean": {
+			"trigger": "minecraft:location",
+			"conditions": {
+				"player": {
+					"location": {
+						"biomes": "elementalweapons:elemental_ocean"
+					}
+				}
+			}
+		},
+		"elemental_abyss": {
+			"trigger": "minecraft:location",
+			"conditions": {
+				"player": {
+					"location": {
+						"biomes": "elementalweapons:elemental_abyss"
+					}
+				}
+			}
+		}
+	},
+	"requirements": [
+		[
+			"capital_gardens"
+		],
+		[
+			"thunder_plateau"
+		],
+		[
+			"volcanic_plains"
+		],
+		[
+			"azure_forest"
+		],
+		[
+			"blossom_forest"
+		],
+		[
+			"gale_highlands"
+		],
+		[
+			"shadow_woods"
+		],
+		[
+			"radiant_plains"
+		],
+		[
+			"elemental_ocean"
+		],
+		[
+			"elemental_abyss"
+		]
+	]
+}

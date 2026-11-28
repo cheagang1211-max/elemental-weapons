@@ -1,0 +1,26 @@
+{
+	"display": {
+		"icon": {
+			"id": "elementalweapons:aether_ingot"
+		},
+		"title": "하늘의 금속",
+		"description": "에테르 주괴를 얻는다",
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:craft/root",
+	"criteria": {
+		"v": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:aether_ingot"
+					}
+				]
+			}
+		}
+	}
+}

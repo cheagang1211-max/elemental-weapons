@@ -1,0 +1,35 @@
+{
+	"display": {
+		"icon": {
+			"id": "elementalweapons:orichalcum_chestplate"
+		},
+		"title": "오리하르콘의 갑주",
+		"description": "오리하르콘 갑옷 한 벌을 모두 갖춘다",
+		"frame": "challenge",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:craft/orichalcum",
+	"criteria": {
+		"v": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:orichalcum_helmet"
+					},
+					{
+						"items": "elementalweapons:orichalcum_chestplate"
+					},
+					{
+						"items": "elementalweapons:orichalcum_leggings"
+					},
+					{
+						"items": "elementalweapons:orichalcum_boots"
+					}
+				]
+			}
+		}
+	}
+}

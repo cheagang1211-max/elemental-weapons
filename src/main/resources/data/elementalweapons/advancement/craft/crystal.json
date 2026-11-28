@@ -1,0 +1,97 @@
+{
+	"display": {
+		"icon": {
+			"id": "elementalweapons:radiant_crystal"
+		},
+		"title": "원소 결정",
+		"description": "원소 결정을 하나 얻는다",
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:craft/dust",
+	"criteria": {
+		"storm_crystal": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:storm_crystal"
+					}
+				]
+			}
+		},
+		"ember_crystal": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:ember_crystal"
+					}
+				]
+			}
+		},
+		"tide_crystal": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:tide_crystal"
+					}
+				]
+			}
+		},
+		"bloom_crystal": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:bloom_crystal"
+					}
+				]
+			}
+		},
+		"gale_crystal": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:gale_crystal"
+					}
+				]
+			}
+		},
+		"umbral_crystal": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:umbral_crystal"
+					}
+				]
+			}
+		},
+		"radiant_crystal": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:radiant_crystal"
+					}
+				]
+			}
+		}
+	},
+	"requirements": [
+		[
+			"storm_crystal",
+			"ember_crystal",
+			"tide_crystal",
+			"bloom_crystal",
+			"gale_crystal",
+			"umbral_crystal",
+			"radiant_crystal"
+		]
+	]
+}

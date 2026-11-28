@@ -16,7 +16,7 @@ public final class SkillInfo {
 			case SWORD -> new Info[]{new Info("질풍 찌르기", 100), new Info("십자 베기", 160), new Info("성역 결계", 600)};
 			case GREATSWORD -> new Info[]{new Info("도약 내려찍기", 160), new Info("회오리 베기", 200), new Info("검기 방출", 400)};
 			case HAMMER -> new Info[]{new Info("지진", 200), new Info("망치 투척", 160), new Info("대지 분쇄", 500)};
-			case DAGGER -> new Info[]{new Info("그림자 걸음", 120), new Info("칼날 부채", 140), new Info("연무", 500)};
+			case DAGGER -> new Info[]{new Info("그림자 걸음", 100), new Info("칼날 폭풍", 140), new Info("천인 난무", 420)};
 			case STAFF -> new Info[]{new Info("원소 화살", 80), new Info("순간 이동", 160), new Info("원소 폭풍", 600)};
 			case BOOK -> new Info[]{new Info("치유의 빛", 200), new Info("수호의 막", 300), new Info("축복의 장", 700)};
 			case SCYTHE -> new Info[]{new Info("영혼 수확", 160), new Info("망령 질주", 140), new Info("사신의 낫", 600)};

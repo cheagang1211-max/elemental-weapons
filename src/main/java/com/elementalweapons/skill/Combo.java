@@ -45,7 +45,7 @@ public final class Combo {
 
 	public static String finisherName(WeaponType t) {
 		return switch (t) {
-			case SWORD -> "회전 베기"; case DAGGER -> "급소 찌르기"; case GREATSWORD -> "대지 가르기"; case HAMMER -> "땅 울림";
+			case SWORD -> "회전 베기"; case DAGGER -> "난도질"; case GREATSWORD -> "대지 가르기"; case HAMMER -> "땅 울림";
 			case SCYTHE -> "사신의 원무"; case SHIELD -> "방패 강타"; case STAFF -> "원소 폭발탄"; case BOOK -> "축복의 파동"; case BOW -> "삼연사";
 		};
 	}
@@ -67,6 +67,7 @@ public final class Combo {
 		boolean fin = s[1] >= 3;
 		if (fin) s[1] = 0;
 		if (fin && el != null) com.elementalweapons.growth.Jobs.flourish(p, el, false);
+		if (fin && el != null) com.elementalweapons.growth.Achieve.grant(p, "journey/finisher");
 		float m = el == null ? 0.8F : SkillInfo.tierMult(SkillInfo.tier(ModGrowth.get(p).level()));
 		int rgb = el == null ? 0xFFF2DA : ElementFx.color(el);
 		try {
@@ -106,15 +107,19 @@ public final class Combo {
 				for (int k = 0; k < 3; k++) Fx.ring(l, FxOptions.of(FxOptions.SLASH, rgb, 0.9F, 8).facing((float) (k * 120), 999, 0), pos.add(0, 1 + k * 0.2, 0), 2.6, 10, k);
 				Fx.sound(l, pos, SoundEvents.PLAYER_ATTACK_SWEEP, 1F, 0.8F);
 			}
-			case DAGGER -> {   // 급소 찌르기: 뒤에서 찌르면 1.6배
-				var es = Fx.enemies(l, front.add(0, 1, 0), 2.4);
+			case DAGGER -> {   // 난도질: 앞의 적을 0.4초 동안 네 번 찌르고 출혈 4중첩 (뒤에서면 급소)
+				var es = Fx.enemies(l, front.add(0, 1, 0), 2.6);
 				if (!es.isEmpty()) {
 					LivingEntity e = es.get(0);
-					Vec3 face = Vec3.directionFromRotation(0, e.getYRot());
-					boolean back = face.dot(look) > 0.4;
-					hurt(l, p, e, (back ? 11 : 7) * m);
-					Fx.burst(l, FxOptions.of(FxOptions.SPARK, back ? 0xFF4040 : rgb, 0.5F, 10), e.position().add(0, 1, 0), 10, 0.4, 0.15);
-					if (back) p.sendOverlayMessage(Component.literal("✦ 급소!").withStyle(ChatFormatting.RED));
+					Skills.run(l, p, a -> {
+						if (a % 2 == 0 && e.isAlive()) {
+							DaggerArts.strike(l, p, e, 4.5F * m, a == 6);
+							DaggerArts.bleed(l, p, e, 1);
+							Fx.at(l, FxOptions.of(FxOptions.SLASH, a % 4 == 0 ? rgb : 0xFFFFFF, 0.9F, 4).facing(p.getYRot() + 90, 0, a * 40 - 120), e.position().add(0, 1.1, 0));
+							Fx.sound(l, e.position(), SoundEvents.PLAYER_ATTACK_STRONG, 0.7F, 1.6F + a * 0.05F);
+						}
+						return a >= 6;
+					});
 				}
 				Fx.sound(l, pos, SoundEvents.PLAYER_ATTACK_CRIT, 1F, 1.4F);
 			}

@@ -1,0 +1,109 @@
+{
+	"display": {
+		"icon": {
+			"id": "elementalweapons:umbral_crystal"
+		},
+		"title": "일곱 빛깔",
+		"description": "일곱 가지 원소 결정을 모두 모은다",
+		"frame": "goal",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:craft/crystal",
+	"criteria": {
+		"storm_crystal": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:storm_crystal"
+					}
+				]
+			}
+		},
+		"ember_crystal": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:ember_crystal"
+					}
+				]
+			}
+		},
+		"tide_crystal": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:tide_crystal"
+					}
+				]
+			}
+		},
+		"bloom_crystal": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:bloom_crystal"
+					}
+				]
+			}
+		},
+		"gale_crystal": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:gale_crystal"
+					}
+				]
+			}
+		},
+		"umbral_crystal": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:umbral_crystal"
+					}
+				]
+			}
+		},
+		"radiant_crystal": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "elementalweapons:radiant_crystal"
+					}
+				]
+			}
+		}
+	},
+	"requirements": [
+		[
+			"storm_crystal"
+		],
+		[
+			"ember_crystal"
+		],
+		[
+			"tide_crystal"
+		],
+		[
+			"bloom_crystal"
+		],
+		[
+			"gale_crystal"
+		],
+		[
+			"umbral_crystal"
+		],
+		[
+			"radiant_crystal"
+		]
+	]
+}

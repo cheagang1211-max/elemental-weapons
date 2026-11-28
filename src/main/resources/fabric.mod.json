@@ -25,6 +25,7 @@
 		"fabric-api": "*"
 	},
 	"mixins": [
+		"elementalweapons.mixins.json",
 		{
 			"config": "elementalweapons.client.mixins.json",
 			"environment": "client"

@@ -155,6 +155,7 @@ public final class ModGrowth {
 		});
 		Tutorial.initialize();
 		Characters.initialize();
+		Achieve.initialize();
 		com.elementalweapons.spell.WeaponVisual.initialize();
 		CoreForge.initialize();
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.TutorialSkip.TYPE, GrowthPayloads.TutorialSkip.CODEC);
@@ -169,7 +170,7 @@ public final class ModGrowth {
 	public static void bossKilled(ServerLevel level, ElementalBoss boss) {
 		long hp = boss.maxBigHealth();
 		long xp = hp >= 5_000_000_000L ? 50_000 : hp >= 2_500_000_000L ? 12_000 : hp >= 1_500_000_000L ? 6_000 : 3_000;
-		for (ServerPlayer p : level.players()) if (p.distanceToSqr(boss) < 64 * 64) { addXp(p, xp); Jobs.onBossKill(p); bossGift(p); }
+		for (ServerPlayer p : level.players()) if (p.distanceToSqr(boss) < 64 * 64) { addXp(p, xp); Jobs.onBossKill(p); bossGift(p); Achieve.boss(p, net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(boss.getType()).getPath()); }
 	}
 
 	/** 성장 속도 배율 (얻는 경험치) */

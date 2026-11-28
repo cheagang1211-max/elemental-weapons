@@ -1,0 +1,19 @@
+{
+	"display": {
+		"icon": {
+			"id": "elementalweapons:aether_pickaxe"
+		},
+		"title": "장인의 길",
+		"description": "새로운 광물과 재료로 장비를 단련한다",
+		"frame": "task",
+		"show_toast": false,
+		"announce_to_chat": false,
+		"hidden": false,
+		"background": "elementalweapons:block/orichalcum_ore"
+	},
+	"criteria": {
+		"start": {
+			"trigger": "minecraft:tick"
+		}
+	}
+}

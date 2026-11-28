@@ -79,7 +79,7 @@ public class ModItems {
 	private static Item.Properties woodStats(WeaponType type, Item.Properties props) {
 		var W = net.minecraft.world.item.ToolMaterial.WOOD;
 		return switch (type) {
-			case DAGGER -> props.sword(W, 1.0F, -1.6F);
+			case DAGGER -> props.sword(W, 2.0F, -1.3F);
 			case SWORD -> props.sword(W, 3.0F, -2.4F);
 			case GREATSWORD -> props.sword(W, 5.0F, -3.0F);
 			case HAMMER -> props.sword(W, 6.0F, -3.3F);
@@ -129,7 +129,7 @@ public class ModItems {
 	/** 무기 종류별 능력치 (공격력, 공격 속도) */
 	private static Item.Properties stats(WeaponType type, Item.Properties props) {
 		return switch (type) {
-			case DAGGER -> props.sword(ELEMENTAL_MATERIAL, 1.0F, -1.6F);     // 약하지만 빠름
+			case DAGGER -> props.sword(ELEMENTAL_MATERIAL, 3.0F, -1.2F);     // 빠르고 급소·출혈로 몰아침
 			case SWORD -> props.sword(ELEMENTAL_MATERIAL, 3.0F, -2.4F);      // 바닐라 검과 같은 비율
 			case GREATSWORD -> props.sword(ELEMENTAL_MATERIAL, 7.0F, -3.0F); // 강하지만 느림
 			case STAFF -> props.stacksTo(1);                                  // 마법 전용

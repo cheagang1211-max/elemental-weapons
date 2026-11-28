@@ -1,0 +1,19 @@
+{
+	"display": {
+		"icon": {
+			"id": "elementalweapons:rift_key"
+		},
+		"title": "보스 토벌",
+		"description": "원소 세계를 지배하는 강대한 존재들에 맞선다",
+		"frame": "task",
+		"show_toast": false,
+		"announce_to_chat": false,
+		"hidden": false,
+		"background": "elementalweapons:block/abyss_stone"
+	},
+	"criteria": {
+		"start": {
+			"trigger": "minecraft:tick"
+		}
+	}
+}

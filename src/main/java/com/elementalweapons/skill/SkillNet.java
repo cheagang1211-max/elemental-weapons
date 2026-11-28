@@ -57,6 +57,7 @@ public final class SkillNet {
 		ServerPlayNetworking.registerGlobalReceiver(Cast.TYPE, (p, ctx) -> Skills.cast(ctx.player(), p.slot()));
 		ServerPlayNetworking.registerGlobalReceiver(Swing.TYPE, (p, ctx) -> Combo.swing(ctx.player()));
 		ServerPlayNetworking.registerGlobalReceiver(ChooseElement.TYPE, (p, ctx) -> Evolution.choose(ctx.player(), p.cls(), p.element()));
+		DaggerArts.initialize();
 		ServerPlayConnectionEvents.DISCONNECT.register((h, server) -> { Skills.forget(h.getPlayer().getUUID()); Combo.forget(h.getPlayer().getUUID()); });
 	}
 

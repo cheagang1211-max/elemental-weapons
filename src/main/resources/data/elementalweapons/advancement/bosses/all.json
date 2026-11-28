@@ -1,0 +1,114 @@
+{
+	"display": {
+		"icon": {
+			"id": "elementalweapons:element_essence"
+		},
+		"title": "원소 세계의 정복자",
+		"description": "모든 보스를 한 번 이상 쓰러뜨린다",
+		"frame": "challenge",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"parent": "elementalweapons:bosses/prima",
+	"criteria": {
+		"voltra": {
+			"trigger": "minecraft:impossible"
+		},
+		"ignis": {
+			"trigger": "minecraft:impossible"
+		},
+		"marina": {
+			"trigger": "minecraft:impossible"
+		},
+		"silva": {
+			"trigger": "minecraft:impossible"
+		},
+		"zephyros": {
+			"trigger": "minecraft:impossible"
+		},
+		"nox": {
+			"trigger": "minecraft:impossible"
+		},
+		"lumiel": {
+			"trigger": "minecraft:impossible"
+		},
+		"crystal_golem": {
+			"trigger": "minecraft:impossible"
+		},
+		"lava_queen": {
+			"trigger": "minecraft:impossible"
+		},
+		"frost_giant": {
+			"trigger": "minecraft:impossible"
+		},
+		"sphinx": {
+			"trigger": "minecraft:impossible"
+		},
+		"steam_colossus": {
+			"trigger": "minecraft:impossible"
+		},
+		"storm_wyvern": {
+			"trigger": "minecraft:impossible"
+		},
+		"twilight_twins": {
+			"trigger": "minecraft:impossible"
+		},
+		"hydra": {
+			"trigger": "minecraft:impossible"
+		},
+		"prima": {
+			"trigger": "minecraft:impossible"
+		}
+	},
+	"requirements": [
+		[
+			"voltra"
+		],
+		[
+			"ignis"
+		],
+		[
+			"marina"
+		],
+		[
+			"silva"
+		],
+		[
+			"zephyros"
+		],
+		[
+			"nox"
+		],
+		[
+			"lumiel"
+		],
+		[
+			"crystal_golem"
+		],
+		[
+			"lava_queen"
+		],
+		[
+			"frost_giant"
+		],
+		[
+			"sphinx"
+		],
+		[
+			"steam_colossus"
+		],
+		[
+			"storm_wyvern"
+		],
+		[
+			"twilight_twins"
+		],
+		[
+			"hydra"
+		],
+		[
+			"prima"
+		]
+	]
+}

@@ -386,12 +386,21 @@ public final class ShotHarness {
 
 	// ---------------- 활 쏘기 동작 ----------------
 	// ---------------- Z/X/C 스킬 점검 ----------------
-	private static final WeaponType[] ZT = {WeaponType.SWORD, WeaponType.GREATSWORD, WeaponType.HAMMER, WeaponType.DAGGER, WeaponType.STAFF, WeaponType.BOOK, WeaponType.SCYTHE, WeaponType.BOW, WeaponType.SHIELD};
+	private static final WeaponType[] ZT = {WeaponType.DAGGER, WeaponType.SWORD, WeaponType.GREATSWORD, WeaponType.HAMMER, WeaponType.STAFF, WeaponType.BOOK, WeaponType.SCYTHE, WeaponType.BOW, WeaponType.SHIELD};
 	private static final double BIG = 1_000_000;
 
 	private static void zxcDemo(Minecraft mc, IntegratedServer server, int f) {
 		int per = 45, idx = f / per, k = f % per;
-		if (idx >= ZT.length * 3) { if (k == 2) { log("DONE"); mc.stop(); } return; }
+		if (idx >= ZT.length * 3) {
+			// 도전과제 화면
+			if (f - ZT.length * 3 * per == 2) server.execute(() -> { ServerPlayer p = sp(server);
+				for (String a : new String[]{"journey/skill", "journey/finisher", "bosses/voltra", "bosses/ignis", "explore/capital_gardens", "craft/dust"}) com.elementalweapons.growth.Achieve.grant(p, a);
+				log("[ADV] 서버 도전과제 수 " + server.getAdvancements().getAllAdvancements().size()); });
+			if (f - ZT.length * 3 * per == 20) { if (mc.gui.hud.isHidden()) mc.gui.hud.toggle(); mc.gui.setScreen(new net.minecraft.client.gui.screens.advancements.AdvancementsScreen(mc.player.connection.getAdvancements())); }
+			if (f - ZT.length * 3 * per == 30) shot(mc, "y0_advancements");
+			if (f - ZT.length * 3 * per == 40) { log("DONE"); mc.stop(); }
+			return;
+		}
 		WeaponType wt = ZT[idx / 3]; int slot = idx % 3;
 		if (k == 0) server.execute(() -> { ServerPlayer p = sp(server); ServerLevel lv = (ServerLevel) p.level();
 			if (idx == 0) {
