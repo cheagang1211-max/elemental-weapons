@@ -241,6 +241,7 @@ public final class ShotHarness {
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
 		if (f < 100) { charTest(mc, server, f); return; }
 		f -= 100;
+		if (ZXC_ONLY) { if (f >= 60) zxcDemo(mc, server, f - 60); return; }
 		if (BOW_ONLY) { if (f >= 60) bowDemo(mc, server, f - 60); return; }
 		if (CHAR_ONLY) { if (f == 5) { log("DONE"); mc.stop(); } return; }
 		if (SKILLS_ONLY) f += BOSS_T;
@@ -303,6 +304,7 @@ public final class ShotHarness {
 	private static final boolean SKILLS_ONLY = false;
 	private static final boolean CHAR_ONLY = false;
 	private static final boolean BOW_ONLY = false;
+	private static final boolean ZXC_ONLY = true;
 	private static final String[] BOSS_IDS = {"voltra", "ignis", "marina", "silva", "zephyros", "nox", "lumiel", "crystal_golem",
 			"lava_queen", "frost_giant", "sphinx", "steam_colossus", "storm_wyvern", "twilight_twins", "hydra", "prima"};
 	private static final int BOSS_PER = 70, BOSS_T = 20 + BOSS_IDS.length * BOSS_PER;
@@ -383,6 +385,57 @@ public final class ShotHarness {
 	private static final double RX = 3000.5, RY = 200, RZ = 300.5;
 
 	// ---------------- 활 쏘기 동작 ----------------
+	// ---------------- Z/X/C 스킬 점검 ----------------
+	private static final WeaponType[] ZT = {WeaponType.SWORD, WeaponType.GREATSWORD, WeaponType.HAMMER, WeaponType.DAGGER, WeaponType.STAFF, WeaponType.BOOK, WeaponType.SCYTHE, WeaponType.BOW, WeaponType.SHIELD};
+	private static final double BIG = 1_000_000;
+
+	private static void zxcDemo(Minecraft mc, IntegratedServer server, int f) {
+		int per = 45, idx = f / per, k = f % per;
+		if (idx >= ZT.length * 3) { if (k == 2) { log("DONE"); mc.stop(); } return; }
+		WeaponType wt = ZT[idx / 3]; int slot = idx % 3;
+		if (k == 0) server.execute(() -> { ServerPlayer p = sp(server); ServerLevel lv = (ServerLevel) p.level();
+			if (idx == 0) {
+				for (int dx = -14; dx <= 14; dx++) for (int dz = -14; dz <= 14; dz++) {
+					lv.setBlock(new BlockPos((int) Math.floor(RX) + dx, (int) RY - 1, (int) Math.floor(RZ) + dz), Blocks.POLISHED_DEEPSLATE.defaultBlockState(), 3);
+					for (int dy = 0; dy < 5; dy++) lv.setBlock(new BlockPos((int) Math.floor(RX) + dx, (int) RY + dy, (int) Math.floor(RZ) + dz), Blocks.AIR.defaultBlockState(), 3);
+				}
+				server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "attribute " + p.getScoreboardName() + " minecraft:camera_distance base set 7");
+			}
+			for (Entity e : dummies) e.discard(); dummies.clear();
+			p.getAbilities().flying = false; p.onUpdateAbilities();
+			p.teleportTo(RX, RY, RZ); p.setYRot(0); p.setXRot(0); p.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+			ModGrowth.set(p, ModGrowth.get(p).withClass(wt.playerClass().ordinal()));
+			ItemStack st = new ItemStack(ModItems.WEAPONS.get(Element.FIRE).get(wt));
+			p.setItemSlot(EquipmentSlot.MAINHAND, st);
+			com.elementalweapons.skill.Skills.forget(p.getUUID());
+			for (int i = 0; i < 5; i++) {
+				var e = net.minecraft.world.entity.EntityTypes.HUSK.create(lv, EntitySpawnReason.COMMAND);
+				if (e == null) continue;
+				e.addTag(com.elementalweapons.world.VanillaPurge.ALLOWED);
+				e.snapTo(RX + (i - 2) * 1.6, RY, RZ + 3 + Math.abs(i - 2) * 0.8, 180, 0);
+				e.setNoAi(true);
+				e.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(BIG); e.setHealth((float) BIG);
+				lv.addFreshEntity(e); dummies.add(e);
+			} });
+		if (k == 1) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+		if (k > 0 && k < 40) look(mc, 0, 8);
+		// 방금 평타를 친 상황(무적 시간)까지 재현
+		if (k == 6) server.execute(() -> { ServerPlayer p = sp(server); if (!dummies.isEmpty()) p.attack(dummies.get(2)); });
+		if (k == 8) server.execute(() -> { ServerPlayer p = sp(server); net.minecraft.world.phys.Vec3 a = p.position();
+			double b0 = 0; for (Entity e : dummies) if (e instanceof net.minecraft.world.entity.LivingEntity le) b0 += BIG - le.getHealth(); zxcBase = b0;
+			com.elementalweapons.skill.Skills.cast(p, slot);
+			server.execute(() -> {}); zxcPos = a; });
+		String nm = String.format("z%02d_%s_%d", idx, wt.id, slot);
+		if (k == 13) shot(mc, nm + "_a");
+		if (k == 26) shot(mc, nm + "_b");
+		if (k == 42) server.execute(() -> { ServerPlayer p = sp(server);
+			double dmg = 0; int hitN = 0;
+			for (Entity e : dummies) if (e instanceof net.minecraft.world.entity.LivingEntity le) { double d = BIG - le.getHealth(); dmg += d; if (d > 0) hitN++; }
+			log(String.format("[ZXC] %-10s %d  적중 %d/5  스킬피해 %.0f  이동 %.1f", wt.id, slot, hitN, dmg - zxcBase, zxcPos == null ? 0 : p.position().distanceTo(zxcPos))); });
+	}
+	private static net.minecraft.world.phys.Vec3 zxcPos;
+	private static double zxcBase;
+
 	private static net.minecraft.world.entity.LivingEntity archer;
 
 	private static void bowDemo(Minecraft mc, IntegratedServer server, int f) {
