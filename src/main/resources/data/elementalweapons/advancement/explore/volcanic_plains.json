@@ -13,17 +13,7 @@
 	"parent": "elementalweapons:explore/capital_gardens",
 	"criteria": {
 		"v": {
-			"trigger": "minecraft:location",
-			"conditions": {
-				"player": [
-					{
-						"condition": "minecraft:location_check",
-						"predicate": {
-							"biomes": "elementalweapons:volcanic_plains"
-						}
-					}
-				]
-			}
+			"trigger": "minecraft:impossible"
 		}
 	}
 }

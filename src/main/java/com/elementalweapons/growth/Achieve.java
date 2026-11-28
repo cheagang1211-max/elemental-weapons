@@ -44,6 +44,13 @@ public final class Achieve {
 
 	private static void check(ServerPlayer p) {
 		if (Characters.choosing(p)) return;
+		// 지역 도착
+		var bk = p.level().getBiome(p.blockPosition()).unwrapKey();
+		if (bk.isPresent() && bk.get().identifier().getNamespace().equals(ElementalWeaponsMod.MOD_ID)) {
+			String b = bk.get().identifier().getPath();
+			grant(p, "explore/" + b, "v");
+			grant(p, "explore/all", b);
+		}
 		Growth g = ModGrowth.get(p);
 		if (g.cls() > 0) grant(p, "journey/class");
 		if (Evolution.element(p) >= 0) grant(p, "journey/evolve");

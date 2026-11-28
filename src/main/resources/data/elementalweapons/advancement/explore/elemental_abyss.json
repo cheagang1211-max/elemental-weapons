@@ -13,17 +13,7 @@
 	"parent": "elementalweapons:explore/elemental_ocean",
 	"criteria": {
 		"v": {
-			"trigger": "minecraft:location",
-			"conditions": {
-				"player": [
-					{
-						"condition": "minecraft:location_check",
-						"predicate": {
-							"biomes": "elementalweapons:elemental_abyss"
-						}
-					}
-				]
-			}
+			"trigger": "minecraft:impossible"
 		}
 	}
 }

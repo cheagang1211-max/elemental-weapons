@@ -13,134 +13,34 @@
 	"parent": "elementalweapons:explore/elemental_abyss",
 	"criteria": {
 		"capital_gardens": {
-			"trigger": "minecraft:location",
-			"conditions": {
-				"player": [
-					{
-						"condition": "minecraft:location_check",
-						"predicate": {
-							"biomes": "elementalweapons:capital_gardens"
-						}
-					}
-				]
-			}
+			"trigger": "minecraft:impossible"
 		},
 		"thunder_plateau": {
-			"trigger": "minecraft:location",
-			"conditions": {
-				"player": [
-					{
-						"condition": "minecraft:location_check",
-						"predicate": {
-							"biomes": "elementalweapons:thunder_plateau"
-						}
-					}
-				]
-			}
+			"trigger": "minecraft:impossible"
 		},
 		"volcanic_plains": {
-			"trigger": "minecraft:location",
-			"conditions": {
-				"player": [
-					{
-						"condition": "minecraft:location_check",
-						"predicate": {
-							"biomes": "elementalweapons:volcanic_plains"
-						}
-					}
-				]
-			}
+			"trigger": "minecraft:impossible"
 		},
 		"azure_forest": {
-			"trigger": "minecraft:location",
-			"conditions": {
-				"player": [
-					{
-						"condition": "minecraft:location_check",
-						"predicate": {
-							"biomes": "elementalweapons:azure_forest"
-						}
-					}
-				]
-			}
+			"trigger": "minecraft:impossible"
 		},
 		"blossom_forest": {
-			"trigger": "minecraft:location",
-			"conditions": {
-				"player": [
-					{
-						"condition": "minecraft:location_check",
-						"predicate": {
-							"biomes": "elementalweapons:blossom_forest"
-						}
-					}
-				]
-			}
+			"trigger": "minecraft:impossible"
 		},
 		"gale_highlands": {
-			"trigger": "minecraft:location",
-			"conditions": {
-				"player": [
-					{
-						"condition": "minecraft:location_check",
-						"predicate": {
-							"biomes": "elementalweapons:gale_highlands"
-						}
-					}
-				]
-			}
+			"trigger": "minecraft:impossible"
 		},
 		"shadow_woods": {
-			"trigger": "minecraft:location",
-			"conditions": {
-				"player": [
-					{
-						"condition": "minecraft:location_check",
-						"predicate": {
-							"biomes": "elementalweapons:shadow_woods"
-						}
-					}
-				]
-			}
+			"trigger": "minecraft:impossible"
 		},
 		"radiant_plains": {
-			"trigger": "minecraft:location",
-			"conditions": {
-				"player": [
-					{
-						"condition": "minecraft:location_check",
-						"predicate": {
-							"biomes": "elementalweapons:radiant_plains"
-						}
-					}
-				]
-			}
+			"trigger": "minecraft:impossible"
 		},
 		"elemental_ocean": {
-			"trigger": "minecraft:location",
-			"conditions": {
-				"player": [
-					{
-						"condition": "minecraft:location_check",
-						"predicate": {
-							"biomes": "elementalweapons:elemental_ocean"
-						}
-					}
-				]
-			}
+			"trigger": "minecraft:impossible"
 		},
 		"elemental_abyss": {
-			"trigger": "minecraft:location",
-			"conditions": {
-				"player": [
-					{
-						"condition": "minecraft:location_check",
-						"predicate": {
-							"biomes": "elementalweapons:elemental_abyss"
-						}
-					}
-				]
-			}
+			"trigger": "minecraft:impossible"
 		}
 	},
 	"requirements": [

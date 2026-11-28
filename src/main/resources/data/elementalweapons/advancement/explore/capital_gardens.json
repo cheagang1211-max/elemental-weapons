@@ -13,17 +13,7 @@
 	"parent": "elementalweapons:explore/root",
 	"criteria": {
 		"v": {
-			"trigger": "minecraft:location",
-			"conditions": {
-				"player": [
-					{
-						"condition": "minecraft:location_check",
-						"predicate": {
-							"biomes": "elementalweapons:capital_gardens"
-						}
-					}
-				]
-			}
+			"trigger": "minecraft:impossible"
 		}
 	}
 }

@@ -20,7 +20,7 @@ def adv(path, parent, icon, title, desc, crit=None, frame="task", bg=None, hidde
 
 TICK = {"start": {"trigger": "minecraft:tick"}}
 def has(*items): return {"trigger": "minecraft:inventory_changed", "conditions": {"items": [{"items": I(i)} for i in items]}}
-def biome(b): return {"trigger": "minecraft:location", "conditions": {"player": [{"condition": "minecraft:location_check", "predicate": {"biomes": I(b)}}]}}
+def biome(b): return {"trigger": "minecraft:impossible"}   # 지역 도착은 Achieve.java 가 줌 (criterion = 바이옴 id 또는 "v")
 
 # ───────────── 1. 원소의 여정 (성장) ─────────────
 J = "journey"
