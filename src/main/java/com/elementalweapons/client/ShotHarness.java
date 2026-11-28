@@ -400,7 +400,7 @@ public final class ShotHarness {
 			com.elementalweapons.growth.Evolution.setTier(st, c == 1 ? 4 : 1);
 			ModGrowth.set(p, ModGrowth.get(p).withClass(WeaponType.BOW.playerClass().ordinal()));
 			p.setItemSlot(EquipmentSlot.MAINHAND, st); });
-		if (k == 2) { mc.options.setCameraType(cams[c]); mc.options.hideGui = true; }
+		if (k == 2) { mc.options.setCameraType(cams[c]); if (!mc.gui.hud.isHidden()) mc.gui.hud.toggle(); }
 		if (k > 2 && k < 75) look(mc, c == 0 ? 60 : 0, 0);
 		if (k == 10) mc.options.keyUse.setDown(true);
 		String nm = "w" + c + "_" + cn[c];
