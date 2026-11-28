@@ -19,6 +19,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -238,6 +239,9 @@ public final class ShotHarness {
 	private static int scene = -1;
 
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
+		if (f < 100) { charTest(mc, server, f); return; }
+		f -= 100;
+		if (CHAR_ONLY) { if (f == 5) { log("DONE"); mc.stop(); } return; }
 		if (SKILLS_ONLY) f += BOSS_T;
 		if (f < BOSS_T) { bossGallery(mc, server, f); return; }
 		f -= BOSS_T;
@@ -263,8 +267,40 @@ public final class ShotHarness {
 		if (f == 5) { log("DONE"); mc.stop(); }
 	}
 
+	// ---------------- 캐릭터 슬롯 ----------------
+	private static String charState(ServerPlayer p) {
+		var g = com.elementalweapons.growth.ModGrowth.get(p);
+		return "Lv" + g.level() + " cls" + g.cls() + " el" + com.elementalweapons.growth.Evolution.element(p) + " 다이아" + p.getInventory().countItem(net.minecraft.world.item.Items.DIAMOND)
+				+ " 위치 " + (int) p.getX() + "," + (int) p.getY() + "," + (int) p.getZ();
+	}
+
+	private static void charTest(Minecraft mc, IntegratedServer server, int f) {
+		if (f == 4) log("[CHAR] 첫 화면 = " + (mc.gui.screen() == null ? "없음" : mc.gui.screen().getClass().getSimpleName()));
+		if (f == 5) shot(mc, "e0_select_first");
+		if (f == 6) server.execute(() -> { ServerPlayer p = sp(server);
+			com.elementalweapons.growth.ModGrowth.set(p, new com.elementalweapons.growth.Growth(77, 0, 0, 10, 10, 10, 10, com.elementalweapons.item.PlayerClass.REAPER.ordinal()));
+			p.setAttached(com.elementalweapons.growth.Evolution.ELEMENT, com.elementalweapons.item.Element.DARK.ordinal());
+			p.getInventory().add(new ItemStack(net.minecraft.world.item.Items.DIAMOND, 5));
+			p.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.WEAPONS.get(Element.DARK).get(WeaponType.SCYTHE)));
+			log("[CHAR] 슬롯1 상태: " + charState(p));
+			com.elementalweapons.growth.Characters.open(p); });
+		if (f == 20) shot(mc, "e1_select_used");
+		if (f == 22) { ClientPlayNetworking.send(new com.elementalweapons.growth.Characters.Pick(3)); mc.gui.setScreen(null); }
+		if (f == 40) server.execute(() -> log("[CHAR] 새 캐릭터(슬롯4): " + charState(sp(server))));
+		if (f == 41) shot(mc, "e2_new_char");
+		if (f == 42) server.execute(() -> com.elementalweapons.growth.Characters.open(sp(server)));
+		if (f == 55) shot(mc, "e3_two_chars");
+		if (f == 57) { ClientPlayNetworking.send(new com.elementalweapons.growth.Characters.Pick(0)); mc.gui.setScreen(null); }
+		if (f == 75) server.execute(() -> log("[CHAR] 슬롯1로 복귀: " + charState(sp(server))));
+		if (f == 76) shot(mc, "e4_back");
+		if (f == 77) server.execute(() -> com.elementalweapons.growth.Characters.open(sp(server)));
+		if (f == 90) shot(mc, "e5_select_again");
+		if (f == 92) { ClientPlayNetworking.send(new com.elementalweapons.growth.Characters.Pick(0)); mc.gui.setScreen(null); }
+	}
+
 	// ---------------- 보스 전시 (하늘 위, 정면 3/4 + 뒤) ----------------
 	private static final boolean SKILLS_ONLY = false;
+	private static final boolean CHAR_ONLY = true;
 	private static final String[] BOSS_IDS = {"voltra", "ignis", "marina", "silva", "zephyros", "nox", "lumiel", "crystal_golem",
 			"lava_queen", "frost_giant", "sphinx", "steam_colossus", "storm_wyvern", "twilight_twins", "hydra", "prima"};
 	private static final int BOSS_PER = 70, BOSS_T = 20 + BOSS_IDS.length * BOSS_PER;
