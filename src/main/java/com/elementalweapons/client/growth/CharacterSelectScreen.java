@@ -54,6 +54,7 @@ public class CharacterSelectScreen extends Screen {
 					@Override public PlayerSkin getSkin() { return skin; }
 				};
 			} else a = new RemotePlayer(mc.level, mc.player.getGameProfile());
+			a.setId(-90000 - avatars.size());
 			for (int k = 0; k < GEAR.length && k < f.gear().size(); k++) a.setItemSlot(GEAR[k], f.gear().get(k));
 			avatars.add(a);
 		}
