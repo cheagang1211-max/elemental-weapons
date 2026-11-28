@@ -383,35 +383,53 @@ public final class ShotHarness {
 	private static final double RX = 3000.5, RY = 200, RZ = 300.5;
 
 	// ---------------- 활 쏘기 동작 ----------------
+	private static net.minecraft.world.entity.LivingEntity archer;
+
 	private static void bowDemo(Minecraft mc, IntegratedServer server, int f) {
 		int cyc = 80, c = f / cyc, k = f % cyc;
 		if (c >= 3) { if (k == 2) { log("DONE"); mc.stop(); } return; }
-		CameraType[] cams = {CameraType.THIRD_PERSON_FRONT, CameraType.THIRD_PERSON_BACK, CameraType.FIRST_PERSON};
-		String[] cn = {"front", "back", "fp"};
+		String[] cn = {"side", "diag", "fp"};
+		double ax = RX, ay = RY, az = RZ + 4;
 		if (k == 0) server.execute(() -> { ServerPlayer p = sp(server); ServerLevel lv = (ServerLevel) p.level();
 			if (c == 0) {
-				for (int dx = -8; dx <= 8; dx++) for (int dz = -8; dz <= 8; dz++)
+				for (int dx = -8; dx <= 8; dx++) for (int dz = -8; dz <= 12; dz++) {
 					lv.setBlock(new BlockPos((int) Math.floor(RX) + dx, (int) RY - 1, (int) Math.floor(RZ) + dz), Blocks.POLISHED_DEEPSLATE.defaultBlockState(), 3);
-				server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "attribute " + p.getScoreboardName() + " minecraft:camera_distance base set 3.2");
+					for (int dy = 0; dy < 4; dy++) lv.setBlock(new BlockPos((int) Math.floor(RX) + dx, (int) RY + dy, (int) Math.floor(RZ) + dz), Blocks.AIR.defaultBlockState(), 3);
+				}
 			}
 			p.getAbilities().flying = false; p.onUpdateAbilities();
-			p.teleportTo(RX, RY, RZ); p.setYRot(c == 0 ? 60 : 0); p.setXRot(0);
+			ModGrowth.set(p, ModGrowth.get(p).withClass(WeaponType.BOW.playerClass().ordinal()));
 			ItemStack st = new ItemStack(ModItems.WEAPONS.get(c == 1 ? Element.FIRE : Element.DARK).get(WeaponType.BOW));
 			com.elementalweapons.growth.Evolution.setTier(st, c == 1 ? 4 : 1);
-			ModGrowth.set(p, ModGrowth.get(p).withClass(WeaponType.BOW.playerClass().ordinal()));
-			p.setItemSlot(EquipmentSlot.MAINHAND, st); });
-		if (k == 2) { mc.options.setCameraType(cams[c]); if (!mc.gui.hud.isHidden()) mc.gui.hud.toggle(); }
-		if (k > 2 && k < 75) look(mc, c == 0 ? 60 : 0, 0);
-		if (k == 10) mc.options.keyUse.setDown(true);
+			if (c < 2) {
+				if (archer != null) archer.discard();
+				var m = net.minecraft.world.entity.EntityTypes.MANNEQUIN.create(lv, EntitySpawnReason.COMMAND);
+				m.snapTo(ax, ay, az, 90, 0); m.setYHeadRot(90); m.setYBodyRot(90);
+				m.setItemSlot(EquipmentSlot.MAINHAND, st.copy());
+				lv.addFreshEntity(m); archer = m;
+				// 옆(오른쪽)에서 / 비스듬히 앞에서 바라봄
+				if (c == 0) p.teleportTo(ax, ay, az - 3.6); else p.teleportTo(ax - 2.6, ay, az - 2.6);
+			} else {
+				if (archer != null) { archer.discard(); archer = null; }
+				p.teleportTo(RX, RY, RZ); p.setItemSlot(EquipmentSlot.MAINHAND, st);
+			}
+		});
+		if (k == 2) { mc.options.setCameraType(CameraType.FIRST_PERSON); if (!mc.gui.hud.isHidden()) mc.gui.hud.toggle(); }
+		if (k > 2 && k < 75) { if (c < 2) lookAt(mc, ax, ay + 1.15, az); else look(mc, 0, 0); }
+		Runnable start = () -> server.execute(() -> { if (archer != null) archer.startUsingItem(net.minecraft.world.InteractionHand.MAIN_HAND); });
+		Runnable stop = () -> server.execute(() -> { if (archer != null) archer.releaseUsingItem(); });
+		int rel = c < 2 ? 36 : 27;    // 플레이어는 만작 기술이 터지지 않게 살짝 덜 당김
+		if (k == 8) shot(mc, "w" + c + "_" + cn[c] + "_0_idle");
+		if (k == 10) { if (c < 2) start.run(); else mc.options.keyUse.setDown(true); }
 		String nm = "w" + c + "_" + cn[c];
 		if (k == 13) shot(mc, nm + "_1_nock");
 		if (k == 20) shot(mc, nm + "_2_half");
-		if (k == 33) shot(mc, nm + "_3_full");
-		if (k == 40) mc.options.keyUse.setDown(false);
-		if (k == 41) shot(mc, nm + "_4_release");
-		if (k == 43) shot(mc, nm + "_5_follow");
-		if (k == 47) shot(mc, nm + "_6_after");
-		if (k == 56) shot(mc, nm + "_7_back");
+		if (k == rel - 1) shot(mc, nm + "_3_full");
+		if (k == rel) { if (c < 2) stop.run(); else mc.options.keyUse.setDown(false); }
+		if (k == rel + 2) shot(mc, nm + "_4_release");
+		if (k == rel + 4) shot(mc, nm + "_5_follow");
+		if (k == rel + 8) shot(mc, nm + "_6_after");
+		if (k == rel + 16) shot(mc, nm + "_7_back");
 	}
 
 	private static void rightClickDemo(Minecraft mc, IntegratedServer server, int f) {
