@@ -241,7 +241,7 @@ public final class ShotHarness {
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
 		if (f < 100) { charTest(mc, server, f); return; }
 		f -= 100;
-		if (BOW_ONLY) { bowDemo(mc, server, f); return; }
+		if (BOW_ONLY) { if (f >= 30) bowDemo(mc, server, f - 30); return; }
 		if (CHAR_ONLY) { if (f == 5) { log("DONE"); mc.stop(); } return; }
 		if (SKILLS_ONLY) f += BOSS_T;
 		if (f < BOSS_T) { bossGallery(mc, server, f); return; }
@@ -398,8 +398,9 @@ public final class ShotHarness {
 			p.teleportTo(RX, RY, RZ); p.setYRot(c == 0 ? 60 : 0); p.setXRot(0);
 			ItemStack st = new ItemStack(ModItems.WEAPONS.get(c == 1 ? Element.FIRE : Element.DARK).get(WeaponType.BOW));
 			com.elementalweapons.growth.Evolution.setTier(st, c == 1 ? 4 : 1);
+			ModGrowth.set(p, ModGrowth.get(p).withClass(WeaponType.BOW.playerClass().ordinal()));
 			p.setItemSlot(EquipmentSlot.MAINHAND, st); });
-		if (k == 2) mc.options.setCameraType(cams[c]);
+		if (k == 2) { mc.options.setCameraType(cams[c]); mc.options.hideGui = true; }
 		if (k > 2 && k < 75) look(mc, c == 0 ? 60 : 0, 0);
 		if (k == 10) mc.options.keyUse.setDown(true);
 		String nm = "w" + c + "_" + cn[c];
