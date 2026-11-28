@@ -300,7 +300,7 @@ public final class ShotHarness {
 
 	// ---------------- 보스 전시 (하늘 위, 정면 3/4 + 뒤) ----------------
 	private static final boolean SKILLS_ONLY = false;
-	private static final boolean CHAR_ONLY = true;
+	private static final boolean CHAR_ONLY = false;
 	private static final String[] BOSS_IDS = {"voltra", "ignis", "marina", "silva", "zephyros", "nox", "lumiel", "crystal_golem",
 			"lava_queen", "frost_giant", "sphinx", "steam_colossus", "storm_wyvern", "twilight_twins", "hydra", "prima"};
 	private static final int BOSS_PER = 70, BOSS_T = 20 + BOSS_IDS.length * BOSS_PER;
