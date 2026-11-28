@@ -144,7 +144,7 @@ public final class Characters {
 		CompoundTag sum = t.getCompoundOrEmpty("sum");
 		List<ItemStack> gear = new ArrayList<>();
 		var ops = p.registryAccess().createSerializationContext(NbtOps.INSTANCE);
-		for (Tag it : t.getListOrEmpty("gear")) gear.add(ItemStack.OPTIONAL_CODEC.parse(ops, it).result().orElse(ItemStack.EMPTY));
+		for (Tag it : t.getListOrEmpty("gear")) gear.add(ItemStack.OPTIONAL_CODEC.parse(ops, it).resultOrPartial(e -> ElementalWeaponsMod.LOGGER.warn("[CHAR] gear parse: {} / {}", e, it)).orElse(ItemStack.EMPTY));
 		return new Info(slot, true, sum.getIntOr("lv", 1), sum.getIntOr("cls", 0), sum.getIntOr("el", -1), sum.getStringOr("job", ""), gear);
 	}
 
@@ -190,7 +190,7 @@ public final class Characters {
 		net.minecraft.nbt.ListTag gear = new net.minecraft.nbt.ListTag();
 		var ops = p.registryAccess().createSerializationContext(NbtOps.INSTANCE);
 		for (EquipmentSlot s : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET, EquipmentSlot.MAINHAND})
-			gear.add(ItemStack.OPTIONAL_CODEC.encodeStart(ops, p.getItemBySlot(s)).result().orElse(new CompoundTag()));
+			gear.add(ItemStack.OPTIONAL_CODEC.encodeStart(ops, p.getItemBySlot(s)).resultOrPartial(e -> ElementalWeaponsMod.LOGGER.warn("[CHAR] gear encode: {}", e)).orElse(new CompoundTag()));
 		CompoundTag t = new CompoundTag();
 		t.put("data", data); t.put("sum", sum); t.put("gear", gear);
 		return t;
