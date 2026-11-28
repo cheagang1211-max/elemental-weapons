@@ -15,11 +15,14 @@
 		"v": {
 			"trigger": "minecraft:location",
 			"conditions": {
-				"player": {
-					"location": {
-						"biomes": "elementalweapons:blossom_forest"
+				"player": [
+					{
+						"condition": "minecraft:location_check",
+						"predicate": {
+							"biomes": "elementalweapons:blossom_forest"
+						}
 					}
-				}
+				]
 			}
 		}
 	}
