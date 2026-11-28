@@ -107,9 +107,10 @@ public final class Fx {
 		if (target instanceof Player tp && (caster == null || !com.elementalweapons.world.sky.ArenaDuel.opponents(caster, tp))) return;   // 결투 상대만
 		float m = caster == null ? 1F : (float) com.elementalweapons.growth.ModGrowth.paragon(caster).spellMult() * com.elementalweapons.growth.Jobs.damageMult(caster) * (float) com.elementalweapons.growth.CoreForge.spellMult(caster);
 		if (caster != null && caster.getMainHandItem().getItem() instanceof com.elementalweapons.item.ElementalWeaponItem) m *= (float) com.elementalweapons.item.Enhancement.skillMult(caster.getMainHandItem());
-		// 기술 피해는 직전 평타의 무적 시간에 막히지 않게 (평타 직후 기술이 소리만 나고 안 들어가던 문제)
-		if (caster != null) target.setInvulnerableTime(0);
+		// 기술 피해는 직전 공격의 피해 대기 시간(26.x: damageCooldownTime)에 막히지 않게 — 평타 직후·연속 타격 기술이 소리만 나고 안 들어가던 문제
+		if (caster != null) target.damageCooldownTime = 0;
 		target.hurtServer(level, level.damageSources().indirectMagic(caster, caster), amount * m);
+		if (caster != null) target.damageCooldownTime = 0;   // 이어지는 평타·기술도 들어가게
 	}
 
 	/**

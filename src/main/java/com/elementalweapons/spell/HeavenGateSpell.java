@@ -262,7 +262,7 @@ public class HeavenGateSpell extends Spell {
 		Fx.burst(level, com.elementalweapons.fx.P.END_ROD, to, 25, 0.3, 0.15);
 		Fx.burst(level, PALE_GOLD, to, 20, 0.5, 0.02);
 		Fx.hurt(level, caster, target, 9.0F);
-		target.setInvulnerableTime(0);
+		target.damageCooldownTime = 0;
 		target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100, 0));
 		Fx.sound(level, to, SoundEvents.BELL_BLOCK, 1.5F, 1.6F);
 		Fx.sound(level, to, SoundEvents.AMETHYST_BLOCK_CHIME, 2.0F, 1.8F);

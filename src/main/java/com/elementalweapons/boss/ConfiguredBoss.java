@@ -522,7 +522,7 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 				for (Player p : BossFx.players(level, anchor, pullRange)) {
 					Vec3 d = anchor.subtract(p.position());
 					if (d.lengthSqr() < 1.0) continue;
-					p.setInvulnerableTime(0);
+					p.damageCooldownTime = 0;
 					p.hurtServer(level, level.damageSources().mobAttack(this), 0.5F); // 움직임 동기화용 약한 피해
 					Vec3 v = d.normalize().scale(0.55);
 					p.setDeltaMovement(v.x, 0.15, v.z); p.syncVelocity = true;

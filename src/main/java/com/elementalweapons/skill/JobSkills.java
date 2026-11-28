@@ -65,7 +65,7 @@ public final class JobSkills {
 		p.sendOverlayMessage(Component.literal("✦ " + Jobs.skill(cls, d.branch(), d.stage())).withStyle(st -> st.withColor(ElementFx.color(e)).withBold(true)));
 	}
 
-	private static void hurt(ServerLevel l, Player p, LivingEntity e, float dmg) { Fx.hurt(l, p, e, dmg); e.setInvulnerableTime(0); }
+	private static void hurt(ServerLevel l, Player p, LivingEntity e, float dmg) { Fx.hurt(l, p, e, dmg); e.damageCooldownTime = 0; }
 
 	private static int area(ServerLevel l, Player p, Vec3 c, double r, float dmg) {
 		int n = 0;

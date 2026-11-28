@@ -91,7 +91,7 @@ public final class DaggerArts {
 			float extra = taken * ((crit ? 0.8F : 0F) + (back ? 0.6F : 0F));
 			if (extra > 0) {
 				inner = true;
-				try { entity.setInvulnerableTime(0); entity.hurtServer(l, l.damageSources().playerAttack(p), extra); } finally { inner = false; }
+				try { entity.damageCooldownTime = 0; entity.hurtServer(l, l.damageSources().playerAttack(p), extra); } finally { inner = false; }
 				mark(l, entity, back);
 				if (back) p.sendOverlayMessage(Component.literal(crit ? "✦ 급소 치명타!" : "✦ 급소!").withStyle(ChatFormatting.RED));
 			}
@@ -112,7 +112,7 @@ public final class DaggerArts {
 			if (p == null) { it.remove(); continue; }
 			float atk = (float) p.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
 			inner = true;
-			try { e.setInvulnerableTime(0); e.hurtServer(b.level, b.level.damageSources().indirectMagic(p, p), b.stacks * atk * 0.12F); } finally { inner = false; }
+			try { e.damageCooldownTime = 0; e.hurtServer(b.level, b.level.damageSources().indirectMagic(p, p), b.stacks * atk * 0.12F); } finally { inner = false; }
 			Fx.burst(b.level, FxOptions.of(FxOptions.SPARK, 0xB01020, 0.3F, 12).gravity(0.05F), e.position().add(0, e.getBbHeight() * 0.5, 0), 2 + b.stacks, 0.3, 0.03);
 		}
 		if (BLEED.size() > 2000) BLEED.clear();

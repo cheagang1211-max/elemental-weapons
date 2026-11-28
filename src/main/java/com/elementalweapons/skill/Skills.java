@@ -107,7 +107,7 @@ public final class Skills {
 	private static boolean dodge(ServerLevel l, ServerPlayer p) {
 		Vec3 f = Fx.flatLook(p);
 		launchSelf(p, new Vec3(f.x * 1.15, 0.28, f.z * 1.15));
-		p.setInvulnerableTime(12);
+		p.setInvulnerableTime(12); p.damageCooldownTime = 12;
 		Fx.burst(l, FxOptions.of(FxOptions.SMOKE, 0xD8C8A8, 0.35F, 14).grow(1.6F), p.position().add(0, 0.2, 0), 6, 0.3, 0.02);
 		Fx.sound(l, p.position(), SoundEvents.PLAYER_ATTACK_NODAMAGE, 1F, 1.4F);
 		return true;

@@ -48,18 +48,18 @@ public class ReapSpell extends Spell {
 		for (LivingEntity e : Fx.enemies(level, c, 5.5)) {
 			if (e == caster || !hit.add(e)) continue;
 			Fx.hurt(level, caster, e, 14.0F * m);
-			e.setInvulnerableTime(0);
+			e.damageCooldownTime = 0;
 			Vec3 pull = c.subtract(e.position()).multiply(1, 0, 1).normalize().scale(0.7);
 			Fx.launch(e, pull.x, 0.25, pull.z);
 			caster.heal(1.5F);   // 흡혈
 			Fx.line(level, ElementFx.dust(element, 0.7F), e.position().add(0, 1, 0), c, 0.6);
 		}
 		// 두 번째 바퀴: 이미 벤 적도 한 번 더
-		if (age == DURATION / 2) for (LivingEntity e : hit) if (e.isAlive() && e.distanceToSqr(caster) < 7 * 7) { Fx.hurt(level, caster, e, 7.0F * m); e.setInvulnerableTime(0); }
+		if (age == DURATION / 2) for (LivingEntity e : hit) if (e.isAlive() && e.distanceToSqr(caster) < 7 * 7) { Fx.hurt(level, caster, e, 7.0F * m); e.damageCooldownTime = 0; }
 		if (age >= DURATION - 1) {
 			ElementFx.impact(level, element, caster.position(), 4.5);
 			if (hit.size() >= 2) com.elementalweapons.growth.Tutorial.classEvent(caster, "reap2");
-			for (LivingEntity e : hit) if (e.isAlive()) { Fx.hurt(level, caster, e, 9.0F * m); e.setInvulnerableTime(0); }
+			for (LivingEntity e : hit) if (e.isAlive()) { Fx.hurt(level, caster, e, 9.0F * m); e.damageCooldownTime = 0; }
 			caster.heal(Math.min(6, hit.size() * 1.0F));
 			Fx.sound(level, caster.position(), SoundEvents.PLAYER_ATTACK_CRIT, 1.0F, 0.7F);
 			return true;

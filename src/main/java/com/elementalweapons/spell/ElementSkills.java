@@ -82,7 +82,7 @@ public final class ElementSkills {
 		ParticleOptions part() { return ElementFx.particle(el); }
 		ParticleOptions dust(float s) { return ElementFx.dust(el, s); }
 		List<LivingEntity> foes(Vec3 at, double r) { List<LivingEntity> f = Fx.enemies(l, at, r); f.remove(p); return f; }
-		void hit(LivingEntity e, float d) { Fx.hurt(l, p, e, d * m); e.setInvulnerableTime(0); }
+		void hit(LivingEntity e, float d) { Fx.hurt(l, p, e, d * m); e.damageCooldownTime = 0; }
 		List<LivingEntity> area(Vec3 at, double r, float d) { List<LivingEntity> f = foes(at, r); for (LivingEntity e : f) hit(e, d); return f; }
 		void eff(LivingEntity e, Holder<MobEffect> ef, int dur, int amp) { e.addEffect(new MobEffectInstance(ef, dur, amp)); }
 		void push(LivingEntity e, Vec3 from, double s, double up) {

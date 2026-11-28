@@ -96,7 +96,7 @@ public final class Combo {
 	// ---------------- 근접 마무리 ----------------
 	private static void hurt(ServerLevel l, ServerPlayer p, LivingEntity e, float dmg) {
 		Fx.hurt(l, p, e, dmg);
-		e.setInvulnerableTime(0);   // 바로 이어지는 일반 공격도 들어가게
+		e.damageCooldownTime = 0;   // 바로 이어지는 일반 공격도 들어가게
 	}
 
 	private static void melee(ServerLevel l, ServerPlayer p, WeaponType t, Element el, int rgb, float m) {

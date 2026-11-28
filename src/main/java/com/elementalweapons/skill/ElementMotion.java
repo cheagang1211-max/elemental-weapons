@@ -31,7 +31,7 @@ public final class ElementMotion {
 
 	private static void hurt(ServerLevel l, ServerPlayer p, LivingEntity e, float dmg) {
 		Fx.hurt(l, p, e, dmg);
-		e.setInvulnerableTime(0);
+		e.damageCooldownTime = 0;
 	}
 
 	/** 우클릭 시작 동작 */
