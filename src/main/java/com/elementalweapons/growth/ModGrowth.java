@@ -154,6 +154,7 @@ public final class ModGrowth {
 			else if (path.endsWith("_ore")) addXp(sp, 8);
 		});
 		Tutorial.initialize();
+		Characters.initialize();
 		com.elementalweapons.spell.WeaponVisual.initialize();
 		CoreForge.initialize();
 		PayloadTypeRegistry.serverboundPlay().register(GrowthPayloads.TutorialSkip.TYPE, GrowthPayloads.TutorialSkip.CODEC);

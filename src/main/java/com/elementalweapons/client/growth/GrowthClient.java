@@ -43,6 +43,7 @@ public final class GrowthClient {
 			if (lv != null && lv.getEntity(p.entity()) instanceof net.minecraft.world.entity.LivingEntity le)
 				le.swing(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
 		});
+		ClientPlayNetworking.registerGlobalReceiver(com.elementalweapons.growth.Characters.Open.TYPE, (p, ctx) -> Minecraft.getInstance().gui.setScreen(new CharacterSelectScreen(p)));
 		ClientPlayNetworking.registerGlobalReceiver(com.elementalweapons.growth.Jobs.Open.TYPE, (p, ctx) -> Minecraft.getInstance().gui.setScreen(new JobScreen()));
 		ClientPlayNetworking.registerGlobalReceiver(com.elementalweapons.item.Enhancement.Open.TYPE, (p, ctx) -> Minecraft.getInstance().gui.setScreen(new EnhanceScreen()));
 		ClientPlayNetworking.registerGlobalReceiver(com.elementalweapons.item.Enhancement.Result.TYPE, (p, ctx) -> EnhanceScreen.result(p.kind(), p.level()));
