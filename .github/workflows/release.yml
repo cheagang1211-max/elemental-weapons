@@ -77,6 +77,11 @@ jobs:
           if [ ! -f mods/fabric-api.pw.toml ]; then
             "$PW" -y modrinth add fabric-api
           fi
+          # JEI: 서버에만 설치 (클라이언트의 JEI 경고 없애기, 제작법을 서버 기준으로)
+          if [ ! -f mods/jei.pw.toml ]; then
+            "$PW" -y modrinth add jei
+            sed -i 's/^side = .*/side = "server"/' mods/jei.pw.toml
+          fi
           # 원소 무기 모드: 방금 만든 릴리스 파일을 가리키도록
           {
             echo 'name = "Elemental Weapons"'
