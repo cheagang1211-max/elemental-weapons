@@ -35,6 +35,7 @@ public final class DaggerArts {
 	private static final Map<Integer, Bleed> BLEED = new HashMap<>();
 	private static boolean inner;   // 추가 피해를 넣는 중 (다시 걸리지 않게)
 	public static final int MAX_STACKS = 6;
+	public static boolean DEBUG = true;
 
 	public static boolean holdsDagger(LivingEntity p) {
 		var it = p.getMainHandItem().getItem();
@@ -64,7 +65,9 @@ public final class DaggerArts {
 		boolean crit = sureCrit || l.getRandom().nextFloat() < 0.3F;
 		float d = dmg * (crit ? 1.8F : 1F) * (back ? 1.6F : 1F);
 		inner = true;
+		float h0 = e.getHealth();
 		try { Fx.hurt(l, p, e, d); } finally { inner = false; }
+		if (DEBUG) com.elementalweapons.ElementalWeaponsMod.LOGGER.info("[DAGGER] {} {} -> {} (d={})", e.getType().toShortString(), h0, e.getHealth(), d);
 		if (crit || back) mark(l, e, back);
 		return d;
 	}

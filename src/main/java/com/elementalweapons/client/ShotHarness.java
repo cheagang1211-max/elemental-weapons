@@ -386,7 +386,7 @@ public final class ShotHarness {
 
 	// ---------------- 활 쏘기 동작 ----------------
 	// ---------------- Z/X/C 스킬 점검 ----------------
-	private static final WeaponType[] ZT = {WeaponType.HAMMER, WeaponType.DAGGER, WeaponType.SWORD};
+	private static final WeaponType[] ZT = {WeaponType.HAMMER, WeaponType.DAGGER};
 	private static final double BIG = 1_000_000;
 
 	private static void zxcDemo(Minecraft mc, IntegratedServer server, int f) {

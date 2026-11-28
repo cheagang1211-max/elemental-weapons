@@ -258,6 +258,12 @@ public final class Skills {
 						p.addEffect(new MobEffectInstance(MobEffects.SPEED, 40, 1, false, false));
 					} else {
 						LivingEntity e = es.get(0);
+						for (LivingEntity c : es) {   // 바라보는 쪽(앞 60도 안)의 적을 먼저
+							Vec3 to = c.position().subtract(pos).multiply(1, 0, 1);
+							if (to.lengthSqr() > 1.0E-4 && to.normalize().dot(f) > 0.5) { e = c; break; }
+						}
+						if (DaggerArts.DEBUG) com.elementalweapons.ElementalWeaponsMod.LOGGER.info("[DAGGER] Z 대상 {} {}", e.getType().toShortString(), e.position());
+						final LivingEntity tgt = e;
 						Vec3 back = e.position().subtract(Vec3.directionFromRotation(0, e.getYRot()).scale(1.2 + e.getBbWidth() * 0.5));
 						if (!standable(l, net.minecraft.core.BlockPos.containing(back.x, e.getY(), back.z))) back = e.position();
 						Fx.line(l, FxOptions.of(FxOptions.SMOKE, 0x2A2038, 0.35F, 10), pos.add(0, 1, 0), back.add(0, 1, 0), 0.5);
@@ -268,8 +274,8 @@ public final class Skills {
 						p.connection.teleport(p.getX(), p.getY(), p.getZ(), ny, p.getXRot());
 						run(l, p, a -> {
 							if (a == 2 || a == 5) {
-								if (e.isAlive()) { DaggerArts.strike(l, p, e, (a == 2 ? 11 : 7) * m, true); DaggerArts.bleed(l, p, e, 1); }
-								Fx.at(l, slash(a == 2 ? c2 : c1, 1.5F, 5).facing(p.getYRot() + 90, 0, a == 2 ? 55 : -55), e.position().add(0, 1, 0));
+								if (tgt.isAlive()) { DaggerArts.strike(l, p, tgt, (a == 2 ? 11 : 7) * m, true); DaggerArts.bleed(l, p, tgt, 1); }
+								Fx.at(l, slash(a == 2 ? c2 : c1, 1.5F, 5).facing(p.getYRot() + 90, 0, a == 2 ? 55 : -55), tgt.position().add(0, 1, 0));
 							}
 							return a >= 5;
 						});
