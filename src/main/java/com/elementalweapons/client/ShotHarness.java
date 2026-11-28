@@ -304,7 +304,7 @@ public final class ShotHarness {
 	private static final boolean SKILLS_ONLY = false;
 	private static final boolean CHAR_ONLY = false;
 	private static final boolean BOW_ONLY = false;
-	private static final boolean ZXC_ONLY = false;
+	private static final boolean ZXC_ONLY = true;
 	private static final String[] BOSS_IDS = {"voltra", "ignis", "marina", "silva", "zephyros", "nox", "lumiel", "crystal_golem",
 			"lava_queen", "frost_giant", "sphinx", "steam_colossus", "storm_wyvern", "twilight_twins", "hydra", "prima"};
 	private static final int BOSS_PER = 70, BOSS_T = 20 + BOSS_IDS.length * BOSS_PER;
@@ -386,7 +386,7 @@ public final class ShotHarness {
 
 	// ---------------- 활 쏘기 동작 ----------------
 	// ---------------- Z/X/C 스킬 점검 ----------------
-	private static final WeaponType[] ZT = {WeaponType.HAMMER, WeaponType.DAGGER, WeaponType.SWORD, WeaponType.GREATSWORD, WeaponType.STAFF, WeaponType.SCYTHE, WeaponType.BOW, WeaponType.SHIELD, WeaponType.HAMMER};
+	private static final WeaponType[] ZT = {WeaponType.HAMMER};
 	private static final double BIG = 1_000_000;
 
 	private static void zxcDemo(Minecraft mc, IntegratedServer server, int f) {
@@ -397,6 +397,7 @@ public final class ShotHarness {
 				for (String a : new String[]{"journey/skill", "journey/finisher", "bosses/voltra", "bosses/ignis", "explore/capital_gardens", "craft/dust"}) com.elementalweapons.growth.Achieve.grant(p, a);
 				log("[ADV] 서버 도전과제 수 " + server.getAdvancements().getAllAdvancements().size()); });
 			if (f - ZT.length * 3 * per == 20) { if (mc.gui.hud.isHidden()) mc.gui.hud.toggle(); mc.gui.setScreen(new net.minecraft.client.gui.screens.advancements.AdvancementsScreen(mc.player.connection.getAdvancements())); }
+			if (f - ZT.length * 3 * per == 12) shot(mc, "y1_reward_chat");
 			if (f - ZT.length * 3 * per == 30) shot(mc, "y0_advancements");
 			if (f - ZT.length * 3 * per == 40) { log("DONE"); mc.stop(); }
 			return;
