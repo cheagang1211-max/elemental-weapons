@@ -241,7 +241,7 @@ public final class ShotHarness {
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
 		if (f < 100) { charTest(mc, server, f); return; }
 		f -= 100;
-		if (BOW_ONLY) { if (f >= 30) bowDemo(mc, server, f - 30); return; }
+		if (BOW_ONLY) { if (f >= 60) bowDemo(mc, server, f - 60); return; }
 		if (CHAR_ONLY) { if (f == 5) { log("DONE"); mc.stop(); } return; }
 		if (SKILLS_ONLY) f += BOSS_T;
 		if (f < BOSS_T) { bossGallery(mc, server, f); return; }
@@ -388,7 +388,7 @@ public final class ShotHarness {
 	private static void bowDemo(Minecraft mc, IntegratedServer server, int f) {
 		int cyc = 80, c = f / cyc, k = f % cyc;
 		if (c >= 3) { if (k == 2) { log("DONE"); mc.stop(); } return; }
-		String[] cn = {"side", "diag", "fp"};
+		String[] cn = {"left", "right", "diag"};
 		double ax = RX, ay = RY, az = RZ + 4;
 		if (k == 0) server.execute(() -> { ServerPlayer p = sp(server); ServerLevel lv = (ServerLevel) p.level();
 			if (c == 0) {
@@ -401,31 +401,28 @@ public final class ShotHarness {
 			ModGrowth.set(p, ModGrowth.get(p).withClass(WeaponType.BOW.playerClass().ordinal()));
 			ItemStack st = new ItemStack(ModItems.WEAPONS.get(c == 1 ? Element.FIRE : Element.DARK).get(WeaponType.BOW));
 			com.elementalweapons.growth.Evolution.setTier(st, c == 1 ? 4 : 1);
-			if (c < 2) {
-				if (archer != null) archer.discard();
+			if (true) {
+				for (var old : lv.getEntitiesOfClass(net.minecraft.world.entity.decoration.Mannequin.class, new net.minecraft.world.phys.AABB(ax - 30, ay - 30, az - 30, ax + 30, ay + 30, az + 30))) old.discard();
 				var m = net.minecraft.world.entity.EntityTypes.MANNEQUIN.create(lv, EntitySpawnReason.COMMAND);
 				m.snapTo(ax, ay, az, 90, 0); m.setYHeadRot(90); m.setYBodyRot(90);
 				m.setItemSlot(EquipmentSlot.MAINHAND, st.copy());
 				lv.addFreshEntity(m); archer = m;
 				// 옆(오른쪽)에서 / 비스듬히 앞에서 바라봄
-				if (c == 0) p.teleportTo(ax, ay, az - 3.6); else p.teleportTo(ax - 2.6, ay, az - 2.6);
-			} else {
-				if (archer != null) { archer.discard(); archer = null; }
-				p.teleportTo(RX, RY, RZ); p.setItemSlot(EquipmentSlot.MAINHAND, st);
+				if (c == 0) p.teleportTo(ax + 0.3, ay, az + 2.9); else if (c == 1) p.teleportTo(ax + 0.3, ay, az - 2.9); else p.teleportTo(ax - 2.4, ay + 0.4, az - 1.9);
 			}
 		});
 		if (k == 2) { mc.options.setCameraType(CameraType.FIRST_PERSON); if (!mc.gui.hud.isHidden()) mc.gui.hud.toggle(); }
-		if (k > 2 && k < 75) { if (c < 2) lookAt(mc, ax, ay + 1.15, az); else look(mc, 0, 0); }
+		if (k > 2 && k < 75) { lookAt(mc, ax, ay + 1.2, az); }
 		Runnable start = () -> server.execute(() -> { if (archer != null) archer.startUsingItem(net.minecraft.world.InteractionHand.MAIN_HAND); });
 		Runnable stop = () -> server.execute(() -> { if (archer != null) archer.releaseUsingItem(); });
-		int rel = c < 2 ? 36 : 27;    // 플레이어는 만작 기술이 터지지 않게 살짝 덜 당김
+		int rel = 36;
 		if (k == 8) shot(mc, "w" + c + "_" + cn[c] + "_0_idle");
-		if (k == 10) { if (c < 2) start.run(); else mc.options.keyUse.setDown(true); }
+		if (k == 10) start.run();
 		String nm = "w" + c + "_" + cn[c];
 		if (k == 13) shot(mc, nm + "_1_nock");
 		if (k == 20) shot(mc, nm + "_2_half");
 		if (k == rel - 1) shot(mc, nm + "_3_full");
-		if (k == rel) { if (c < 2) stop.run(); else mc.options.keyUse.setDown(false); }
+		if (k == rel) stop.run();
 		if (k == rel + 2) shot(mc, nm + "_4_release");
 		if (k == rel + 4) shot(mc, nm + "_5_follow");
 		if (k == rel + 8) shot(mc, nm + "_6_after");
