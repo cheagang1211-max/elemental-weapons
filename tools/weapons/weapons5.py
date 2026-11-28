@@ -97,7 +97,7 @@ DISP = {
                    "firstperson_righthand": {"rotation": [0, 90, 15], "translation": [1, 2, 0], "scale": [0.45, 0.45, 0.45]}},
     "scythe":     {"thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 2, 1], "scale": [1.3, 1.3, 1.3]},
                    "firstperson_righthand": {"rotation": [0, 90, 15], "translation": [2, 2, 0], "scale": [0.48, 0.48, 0.48]}},
-    "bow":        {"thirdperson_righthand": {"rotation": [-80, 260, -40], "translation": [-1, -2, 2.5], "scale": [0.95, 0.95, 0.95]},
+    "bow":        {"thirdperson_righthand": {"rotation": [-80, 260, -80], "translation": [-1, -2, -3.5], "scale": [0.95, 0.95, 0.95]},
                    "firstperson_righthand": {"rotation": [0, -90, 25], "translation": [1.13, 3.2, 1.13], "scale": [0.68, 0.68, 0.68]}},
 }
 for v in DISP.values():
