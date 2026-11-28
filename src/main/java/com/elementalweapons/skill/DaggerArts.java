@@ -35,7 +35,7 @@ public final class DaggerArts {
 	private static final Map<Integer, Bleed> BLEED = new HashMap<>();
 	private static boolean inner;   // 추가 피해를 넣는 중 (다시 걸리지 않게)
 	public static final int MAX_STACKS = 6;
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
 
 	public static boolean holdsDagger(LivingEntity p) {
 		var it = p.getMainHandItem().getItem();

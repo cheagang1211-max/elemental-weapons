@@ -365,7 +365,7 @@ public final class Skills {
 							double tt = a / 10.0;
 							Vec3 c = from.lerp(to, tt).add(0, Math.sin(tt * Math.PI) * 1.5, 0);
 							ElementFx.orb(l, el, c, 0.35);
-							if (a >= 10) { if (tg != null && tg.isAlive()) Fx.hurt(l, p, tg, 6 * m); ElementFx.impact(l, el, to, 1.4); return true; }
+							if (a >= 10) { Vec3 hitAt = tg != null && tg.isAlive() ? tg.position().add(0, tg.getBbHeight() / 2, 0) : to; for (LivingEntity e2 : Fx.enemies(l, hitAt, 1.8)) Fx.hurt(l, p, e2, 8 * m); ElementFx.impact(l, el, hitAt, 1.4); return true; }
 							return false;
 						});
 					}
