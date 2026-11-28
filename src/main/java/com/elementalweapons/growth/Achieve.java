@@ -105,7 +105,7 @@ public final class Achieve {
 		for (ItemStack st : items) {
 			if (sb.length() > 0) sb.append(", ");
 			sb.append(st.getHoverName().getString()).append(" ×").append(st.getCount());
-			if (!p.getInventory().add(st)) p.drop(st, false);
+			if (!p.getInventory().add(st.copy())) p.spawnAtLocation((net.minecraft.server.level.ServerLevel) p.level(), st.copy());
 		}
 		ModGrowth.addXp(p, xp);
 		net.minecraft.ChatFormatting col = switch (frame) { case CHALLENGE -> net.minecraft.ChatFormatting.LIGHT_PURPLE; case GOAL -> net.minecraft.ChatFormatting.GOLD; default -> net.minecraft.ChatFormatting.GREEN; };
