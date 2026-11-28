@@ -195,6 +195,7 @@ public class BossFight {
 			if (arena != null) announce("✦ 보스방 결계가 풀렸습니다.", ChatFormatting.GREEN);
 			return true;
 		}
+		BossFx.refY = boss.getY();
 		List<ServerPlayer> ps = fighters();
 		if (ps.isEmpty() && age > 200) return false;  // 아무도 없으면 대기 (보스는 그대로)
 		int ph = boss.getPhase();
@@ -212,7 +213,10 @@ public class BossFight {
 				}
 			}
 			// 보스도 방 안에
-			if (boss.position().subtract(c).multiply(1, 0, 1).length() > Arenas.R + 4) boss.teleportTo(c.x, c.y + 3, c.z);
+			if (boss.position().subtract(c).multiply(1, 0, 1).length() > Arenas.R + 4 || Math.abs(boss.getY() - c.y) > 12) {
+				boss.teleportTo(c.x, c.y + 3, c.z);
+				announce("보스가 결계 안으로 끌려 돌아왔습니다!", ChatFormatting.GOLD);
+			}
 		}
 
 		// 수정 탑: 보스로 이어지는 빛줄기 + 보호막

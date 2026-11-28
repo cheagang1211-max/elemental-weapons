@@ -137,8 +137,10 @@ public class ConfiguredBoss extends ElementalBoss implements PosedEntity {
 	// ======================= 매 틱 =======================
 	@Override
 	public void tick() {
+		if (!this.level().isClientSide()) BossFx.refY = getY();
 		super.tick();
 		if (!(this.level() instanceof ServerLevel level)) return;
+		BossFx.refY = getY();
 		tickStrikes(level);
 		tickProjs(level);
 		tickFxVis();

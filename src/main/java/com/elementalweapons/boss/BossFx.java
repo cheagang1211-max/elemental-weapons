@@ -38,9 +38,21 @@ public final class BossFx {
 		Fx.ring(level, color, c.add(0, 0.15, 0), r, pts, phase);
 	}
 
-	/** (x, z) 지점의 지면 높이 */
+	/** 지금 처리 중인 보스의 높이 (지붕 있는 보스방에서 지붕 위가 아니라 바닥을 찾기 위해) */
+	public static double refY = Double.NaN;
+
+	/** (x, z) 지점의 지면 높이: 보스 높이 근처에서 아래로 바닥을 찾고, 없으면 하늘에서 보이는 가장 높은 땅 */
 	public static Vec3 ground(ServerLevel level, double x, double z) {
-		int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (int) Math.floor(x), (int) Math.floor(z));
+		int bx = (int) Math.floor(x), bz = (int) Math.floor(z);
+		if (!Double.isNaN(refY)) {
+			net.minecraft.core.BlockPos.MutableBlockPos bp = new net.minecraft.core.BlockPos.MutableBlockPos(bx, (int) Math.floor(refY) + 6, bz);
+			for (int i = 0; i < 28; i++) {
+				if (level.getBlockState(bp).getCollisionShape(level, bp).isEmpty() && !level.getBlockState(bp.below()).getCollisionShape(level, bp.below()).isEmpty())
+					return new Vec3(x, bp.getY(), z);
+				bp.move(0, -1, 0);
+			}
+		}
+		int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, bx, bz);
 		return new Vec3(x, y, z);
 	}
 }
