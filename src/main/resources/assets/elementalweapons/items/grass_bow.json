@@ -1,34 +1,147 @@
 {
 	"model": {
-		"type": "minecraft:range_dispatch",
-		"property": "minecraft:custom_model_data",
-		"index": 0,
-		"entries": [
-			{
-				"threshold": 2,
-				"model": {
-					"type": "minecraft:model",
-					"model": "elementalweapons:item/3d/grass_bow_t2"
+		"type": "minecraft:condition",
+		"property": "minecraft:using_item",
+		"on_false": {
+			"type": "minecraft:range_dispatch",
+			"property": "minecraft:custom_model_data",
+			"index": 0,
+			"entries": [
+				{
+					"threshold": 2,
+					"model": {
+						"type": "minecraft:model",
+						"model": "elementalweapons:item/3d/grass_bow_t2"
+					}
+				},
+				{
+					"threshold": 3,
+					"model": {
+						"type": "minecraft:model",
+						"model": "elementalweapons:item/3d/grass_bow_t3"
+					}
+				},
+				{
+					"threshold": 4,
+					"model": {
+						"type": "minecraft:model",
+						"model": "elementalweapons:item/3d/grass_bow_t4"
+					}
 				}
-			},
-			{
-				"threshold": 3,
-				"model": {
-					"type": "minecraft:model",
-					"model": "elementalweapons:item/3d/grass_bow_t3"
+			],
+			"fallback": {
+				"type": "minecraft:model",
+				"model": "elementalweapons:item/3d/grass_bow_t1"
+			}
+		},
+		"on_true": {
+			"type": "minecraft:range_dispatch",
+			"property": "minecraft:use_duration",
+			"scale": 0.05,
+			"entries": [
+				{
+					"threshold": 0.4,
+					"model": {
+						"type": "minecraft:range_dispatch",
+						"property": "minecraft:custom_model_data",
+						"index": 0,
+						"entries": [
+							{
+								"threshold": 2,
+								"model": {
+									"type": "minecraft:model",
+									"model": "elementalweapons:item/3d/grass_bow_t2_pull1"
+								}
+							},
+							{
+								"threshold": 3,
+								"model": {
+									"type": "minecraft:model",
+									"model": "elementalweapons:item/3d/grass_bow_t3_pull1"
+								}
+							},
+							{
+								"threshold": 4,
+								"model": {
+									"type": "minecraft:model",
+									"model": "elementalweapons:item/3d/grass_bow_t4_pull1"
+								}
+							}
+						],
+						"fallback": {
+							"type": "minecraft:model",
+							"model": "elementalweapons:item/3d/grass_bow_t1_pull1"
+						}
+					}
+				},
+				{
+					"threshold": 0.85,
+					"model": {
+						"type": "minecraft:range_dispatch",
+						"property": "minecraft:custom_model_data",
+						"index": 0,
+						"entries": [
+							{
+								"threshold": 2,
+								"model": {
+									"type": "minecraft:model",
+									"model": "elementalweapons:item/3d/grass_bow_t2_pull2"
+								}
+							},
+							{
+								"threshold": 3,
+								"model": {
+									"type": "minecraft:model",
+									"model": "elementalweapons:item/3d/grass_bow_t3_pull2"
+								}
+							},
+							{
+								"threshold": 4,
+								"model": {
+									"type": "minecraft:model",
+									"model": "elementalweapons:item/3d/grass_bow_t4_pull2"
+								}
+							}
+						],
+						"fallback": {
+							"type": "minecraft:model",
+							"model": "elementalweapons:item/3d/grass_bow_t1_pull2"
+						}
+					}
 				}
-			},
-			{
-				"threshold": 4,
-				"model": {
+			],
+			"fallback": {
+				"type": "minecraft:range_dispatch",
+				"property": "minecraft:custom_model_data",
+				"index": 0,
+				"entries": [
+					{
+						"threshold": 2,
+						"model": {
+							"type": "minecraft:model",
+							"model": "elementalweapons:item/3d/grass_bow_t2_pull0"
+						}
+					},
+					{
+						"threshold": 3,
+						"model": {
+							"type": "minecraft:model",
+							"model": "elementalweapons:item/3d/grass_bow_t3_pull0"
+						}
+					},
+					{
+						"threshold": 4,
+						"model": {
+							"type": "minecraft:model",
+							"model": "elementalweapons:item/3d/grass_bow_t4_pull0"
+						}
+					}
+				],
+				"fallback": {
 					"type": "minecraft:model",
-					"model": "elementalweapons:item/3d/grass_bow_t4"
+					"model": "elementalweapons:item/3d/grass_bow_t1_pull0"
 				}
 			}
-		],
-		"fallback": {
-			"type": "minecraft:model",
-			"model": "elementalweapons:item/3d/grass_bow_t1"
 		}
 	}
 }

@@ -241,6 +241,7 @@ public final class ShotHarness {
 	private static void focus(Minecraft mc, IntegratedServer server, int f) {
 		if (f < 100) { charTest(mc, server, f); return; }
 		f -= 100;
+		if (BOW_ONLY) { bowDemo(mc, server, f); return; }
 		if (CHAR_ONLY) { if (f == 5) { log("DONE"); mc.stop(); } return; }
 		if (SKILLS_ONLY) f += BOSS_T;
 		if (f < BOSS_T) { bossGallery(mc, server, f); return; }
@@ -301,6 +302,7 @@ public final class ShotHarness {
 	// ---------------- 보스 전시 (하늘 위, 정면 3/4 + 뒤) ----------------
 	private static final boolean SKILLS_ONLY = false;
 	private static final boolean CHAR_ONLY = false;
+	private static final boolean BOW_ONLY = true;
 	private static final String[] BOSS_IDS = {"voltra", "ignis", "marina", "silva", "zephyros", "nox", "lumiel", "crystal_golem",
 			"lava_queen", "frost_giant", "sphinx", "steam_colossus", "storm_wyvern", "twilight_twins", "hydra", "prima"};
 	private static final int BOSS_PER = 70, BOSS_T = 20 + BOSS_IDS.length * BOSS_PER;
@@ -379,6 +381,37 @@ public final class ShotHarness {
 	}
 	private static final int RC_PER = 50, RC_T = 30 + RC.length * RC_PER;
 	private static final double RX = 3000.5, RY = 200, RZ = 300.5;
+
+	// ---------------- 활 쏘기 동작 ----------------
+	private static void bowDemo(Minecraft mc, IntegratedServer server, int f) {
+		int cyc = 80, c = f / cyc, k = f % cyc;
+		if (c >= 3) { if (k == 2) { log("DONE"); mc.stop(); } return; }
+		CameraType[] cams = {CameraType.THIRD_PERSON_FRONT, CameraType.THIRD_PERSON_BACK, CameraType.FIRST_PERSON};
+		String[] cn = {"front", "back", "fp"};
+		if (k == 0) server.execute(() -> { ServerPlayer p = sp(server); ServerLevel lv = (ServerLevel) p.level();
+			if (c == 0) {
+				for (int dx = -8; dx <= 8; dx++) for (int dz = -8; dz <= 8; dz++)
+					lv.setBlock(new BlockPos((int) Math.floor(RX) + dx, (int) RY - 1, (int) Math.floor(RZ) + dz), Blocks.POLISHED_DEEPSLATE.defaultBlockState(), 3);
+				server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "attribute " + p.getScoreboardName() + " minecraft:camera_distance base set 3.2");
+			}
+			p.getAbilities().flying = false; p.onUpdateAbilities();
+			p.teleportTo(RX, RY, RZ); p.setYRot(c == 0 ? 60 : 0); p.setXRot(0);
+			ItemStack st = new ItemStack(ModItems.WEAPONS.get(c == 1 ? Element.FIRE : Element.DARK).get(WeaponType.BOW));
+			com.elementalweapons.growth.Evolution.setTier(st, c == 1 ? 4 : 1);
+			p.setItemSlot(EquipmentSlot.MAINHAND, st); });
+		if (k == 2) mc.options.setCameraType(cams[c]);
+		if (k > 2 && k < 75) look(mc, c == 0 ? 60 : 0, 0);
+		if (k == 10) mc.options.keyUse.setDown(true);
+		String nm = "w" + c + "_" + cn[c];
+		if (k == 13) shot(mc, nm + "_1_nock");
+		if (k == 20) shot(mc, nm + "_2_half");
+		if (k == 33) shot(mc, nm + "_3_full");
+		if (k == 40) mc.options.keyUse.setDown(false);
+		if (k == 41) shot(mc, nm + "_4_release");
+		if (k == 43) shot(mc, nm + "_5_follow");
+		if (k == 47) shot(mc, nm + "_6_after");
+		if (k == 56) shot(mc, nm + "_7_back");
+	}
 
 	private static void rightClickDemo(Minecraft mc, IntegratedServer server, int f) {
 		if (f == 1) server.execute(() -> { ServerPlayer p = sp(server); ServerLevel lv = (ServerLevel) p.level();

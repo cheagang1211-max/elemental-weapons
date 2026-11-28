@@ -274,15 +274,40 @@ def scythe(cv, el):
     cv.poly([(xc + 3, 11), (xc + 11, 5), (xc + 6, 14)], p["metal2"])
     cv.gem(xc + 0.5, 14.5, 2.0, p["gem"])
 
-def bow(cv, el):
-    """활: 왼쪽으로 휜 몸체 + 오른쪽 시위, 끝이 젖혀진 리커브"""
+PULL_DX = (3.5, 8.0, 12.5)   # 당긴 정도 0·1·2 → 시위 가운데가 뒤로 밀리는 거리
+
+def bow_string(cv, a, b, pull, col, glow_col, shaft, head, fletch, head_glow=True):
+    """시위 (a=위 끝, b=아래 끝). pull>=0 이면 가운데를 뒤로 당기고 화살을 걸어 그림"""
+    my = (a[1] + b[1]) / 2
+    if pull < 0:
+        cv.line([a, b], 1.05, col)
+        cv.line([a, b], 0.35, glow_col, glow=True)
+        return
+    nx = max(a[0], b[0]) + PULL_DX[pull]
+    nock = (nx, my)
+    cv.line([a, nock, b], 1.05, col)
+    cv.line([a, nock, b], 0.35, glow_col, glow=True)
+    # 화살: 오늬(시위에 걸린 끝) → 촉 (왼쪽으로 날아감)
+    L = 33
+    tip = nx - L
+    cv.line([(nx - 0.5, my), (tip + 3.5, my)], 1.15, shaft)
+    cv.line([(nx - 0.5, my - 0.35), (tip + 3.5, my - 0.35)], 0.4, tone(shaft, 0.18))
+    for sd in (-1, 1):   # 깃
+        cv.poly([(nx - 1.0, my), (nx - 2.0, my + sd * 2.6), (nx - 7.0, my + sd * 2.4), (nx - 6.0, my)], fletch)
+    cv.rect(nx - 0.9, my - 0.9, nx + 0.4, my + 0.9, tone(shaft, -0.2))   # 오늬
+    cv.poly([(tip, my), (tip + 4.5, my - 2.4), (tip + 3.6, my), (tip + 4.5, my + 2.4)], head, glow=head_glow)
+
+def bow(cv, el, pull=-1):
+    """활: 왼쪽으로 휜 몸체 + 오른쪽 시위, 끝이 젖혀진 리커브. pull: -1=쉬는 중, 0~2=당긴 정도(화살 걸림)"""
     p = P_(el)
     cx, cy, R = 54, 32, 33
-    def pt(a, r=R): return (cx + math.cos(math.radians(a)) * r, cy + math.sin(math.radians(a)) * r)
+    # 당길수록 활대가 휨: 양 끝이 시위 쪽으로 말려 들어감 (손잡이 위치는 그대로)
+    d = (0, 2.5, 5.5, 9.0)[pull + 1]
+    R2 = R * math.sin(math.radians(42)) / math.sin(math.radians(42 + d)); cx2 = cx - R + R2
+    def pt(a, r=R):
+        am = 180 + (a - 180) * (42 + d) / 42
+        return (cx2 + math.cos(math.radians(am)) * (r - R + R2), cy + math.sin(math.radians(am)) * (r - R + R2))
     top, bot = pt(222), pt(138)
-    # 시위
-    cv.line([(top[0] + 3.5, top[1] - 3), (bot[0] + 3.5, bot[1] + 3)], 0.6, tone(p["metal"], 0.25))
-    cv.line([(top[0] + 3.5, top[1] - 3), (bot[0] + 3.5, bot[1] + 3)], 0.3, p["glow"], glow=True)
     # 몸체 (두께가 가운데 두껍고 끝으로 갈수록 얇아짐)
     for a0 in range(138, 222, 2):
         t = abs(a0 - 180) / 42
@@ -291,7 +316,7 @@ def bow(cv, el):
     for a0 in range(140, 220, 2):
         t = abs(a0 - 180) / 42
         cv.line([pt(a0, R - 1.1), pt(a0 + 2, R - 1.1)], max(0.6, 1.6 - 1.0 * t), p["blade"])
-    cv.arc(cx, cy, R + 0.4, 146, 214, 0.6, p["glow"], glow=True, steps=30)
+    cv.line([pt(146 + 68 * i / 30, R + 0.4) for i in range(31)], 0.6, p["glow"], glow=True)
     # 젖혀진 끝 (리커브) + 끝 장식
     for sgn, e in ((-1, top), (1, bot)):
         tipx, tipy = e[0] + 5, e[1] + sgn * 5
@@ -322,8 +347,11 @@ def bow(cv, el):
     else:
         for a in (155, 205):
             x, y = pt(a, R + 1.5); cv.circ(x - 1.5, y, 1.4, p["glow"], glow=True)
+    # 시위 + 화살 (몸체 위에 그려 보이게)
+    bow_string(cv, (top[0] + 3.5, top[1] - 3), (bot[0] + 3.5, bot[1] + 3), pull, tone(p["metal"], 0.3), p["glow"],
+               tone(p["metal2"], -0.1), p["glow"], tone(p["blade"], 0.05))
 
-def base_design(cv, el, wt):
+def base_design(cv, el, wt, pull=-1):
     p = P_(el); xc = 32
     if wt == "sword":
         grip(cv, el, xc, 51, 58, 2.6); blade(cv, el, xc, 48, 3, 4.4); guard(cv, el, xc, 49.5, 22, 1.3)
@@ -354,7 +382,7 @@ def base_design(cv, el, wt):
     elif wt == "scythe":
         scythe(cv, el)
     elif wt == "bow":
-        bow(cv, el)
+        bow(cv, el, pull)
 
 def book(cv, el, tier=1):
     """마법서: 펼쳐진 책 (표지·페이지·책갈피·속성 문장)"""
@@ -418,7 +446,7 @@ def tier_decor(cv, el, wt, tier):
         elif wt in blade_types:
             cv.arc(xc, 49, 9, 180, 360, 0.9, p["glow"], glow=True, steps=30)
 
-def wood_design(wt):
+def wood_design(wt, pull=-1):
     """나무 무기: 손으로 깎은 나무 + 노끈 감개, 보석·빛 없음"""
     cv = Canvas(0.95); el = "wood"; p = P_(el); xc = 32
     rope = (196, 172, 120)
@@ -464,17 +492,17 @@ def wood_design(wt):
     elif wt == "bow":
         pts = [(46 + math.cos(math.radians(a)) * 30, 32 + math.sin(math.radians(a)) * 30) for a in range(140, 222, 4)]
         cv.line(pts, 3.2, p["grip"]); cv.line(pts, 1.0, tone(p["grip"], 0.2))
-        cv.line([pts[0], pts[-1]], 0.6, (232, 226, 210))
         gx, gy = 16, 32
         cv.rect(gx - 2.4, gy - 5, gx + 2.4, gy + 5, p["blade2"]); wrap(gy - 4, gy + 4, 2.4)
+        bow_string(cv, pts[-1], pts[0], pull, (232, 226, 210), (250, 246, 236), (150, 112, 70), (170, 176, 186), (236, 236, 236), head_glow=False)
     return cv.finish()
 
-def design(el, wt, tier=1):
-    if el == "wood": return wood_design(wt)
+def design(el, wt, tier=1, pull=-1):
+    if el == "wood": return wood_design(wt, pull)
     cv = Canvas({1: 0.9, 2: 0.95, 3: 1.0, 4: 1.0}[tier]); p = P_(el)
     if wt == "book": book(cv, el, tier)
     else:
-        base_design(cv, el, wt)
+        base_design(cv, el, wt, pull)
         tier_decor(cv, el, wt, tier)
     img, glow = cv.finish()
     if tier >= 4: img, glow = aura(img, glow, p["glow"], 1)

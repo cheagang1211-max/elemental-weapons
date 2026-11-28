@@ -18,6 +18,8 @@ public abstract class SwingStepStateMixin implements SwingStep {
 	@Unique private int elementalweapons$stepValue = 1;
 	@Unique private final float[] elementalweapons$motionValue = new float[3];
 
+	@Unique private final float[] elementalweapons$bowValue = {-1, -1, 0, 0};
+	@Override public float[] elementalweapons$bow() { return elementalweapons$bowValue; }
 	@Override public float[] elementalweapons$motion() { return elementalweapons$motionValue; }
 
 	@Override public int elementalweapons$step() { return elementalweapons$stepValue; }
@@ -26,6 +28,7 @@ public abstract class SwingStepStateMixin implements SwingStep {
 	@Inject(method = "extractArmedEntityRenderState", at = @At("TAIL"), require = 0)
 	private static void elementalweapons$extract(LivingEntity entity, ArmedEntityRenderState state, ItemModelResolver resolver, float partial, CallbackInfo ci) {
 		((SwingStep) state).elementalweapons$setStep(SwingTracker.step(entity));
+		com.elementalweapons.client.anim.BowPose.update(entity, partial, ((SwingStep) state).elementalweapons$bow());
 		float[] m = ((SwingStep) state).elementalweapons$motion();
 		if (entity instanceof net.minecraft.world.entity.player.Player p) {
 			com.elementalweapons.client.anim.Smooth sm = com.elementalweapons.client.anim.Smooth.of(p);

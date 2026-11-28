@@ -1,6 +1,35 @@
 {
 	"model": {
-		"type": "minecraft:model",
-		"model": "elementalweapons:item/3d/wooden_bow"
+		"type": "minecraft:condition",
+		"property": "minecraft:using_item",
+		"on_false": {
+			"type": "minecraft:model",
+			"model": "elementalweapons:item/3d/wooden_bow"
+		},
+		"on_true": {
+			"type": "minecraft:range_dispatch",
+			"property": "minecraft:use_duration",
+			"scale": 0.05,
+			"entries": [
+				{
+					"threshold": 0.4,
+					"model": {
+						"type": "minecraft:model",
+						"model": "elementalweapons:item/3d/wooden_bow_pull1"
+					}
+				},
+				{
+					"threshold": 0.85,
+					"model": {
+						"type": "minecraft:model",
+						"model": "elementalweapons:item/3d/wooden_bow_pull2"
+					}
+				}
+			],
+			"fallback": {
+				"type": "minecraft:model",
+				"model": "elementalweapons:item/3d/wooden_bow_pull0"
+			}
+		}
 	}
 }

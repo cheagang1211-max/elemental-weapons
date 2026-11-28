@@ -121,8 +121,23 @@ def model_ref(name): return {"type": "minecraft:model", "model": f"{NS}:item/3d/
 if __name__ == "__main__":
     os.makedirs(f"{A}/textures/item/3d", exist_ok=True); os.makedirs(f"{A}/models/item/3d", exist_ok=True)
     total = 0
+    ONLY = os.environ.get("ONLY")
+    def tiers(el, wt, suf): return {"type": "minecraft:range_dispatch", "property": "minecraft:custom_model_data", "index": 0,
+                              "entries": [{"threshold": t, "model": model_ref(f"{el}_{wt}_t{t}{suf}")} for t in (2, 3, 4)],
+                              "fallback": model_ref(f"{el}_{wt}_t1{suf}")}
+    def bow_item(idle, pulled):
+        """활: 쓰는 중이면 당긴 시간(0.05/틱 → 20틱=1.0)에 따라 시위를 당긴 모델 0·1·2"""
+        return {"type": "minecraft:condition", "property": "minecraft:using_item", "on_false": idle,
+                "on_true": {"type": "minecraft:range_dispatch", "property": "minecraft:use_duration", "scale": 0.05,
+                            "entries": [{"threshold": 0.4, "model": pulled(1)}, {"threshold": 0.85, "model": pulled(2)}], "fallback": pulled(0)}}
     for el in W3.EL:
         for wt in DISP:
+            if ONLY and wt != ONLY: continue
+            if wt == "bow":
+                for tier in (1, 2, 3, 4):
+                    for k in (0, 1, 2):
+                        img, glow = design(el, wt, tier, k)
+                        total += build(f"{el}_{wt}_t{tier}_pull{k}", img, glow, wt)
             for tier in (1, 2, 3, 4):
                 img, glow = design(el, wt, tier)
                 total += build(f"{el}_{wt}_t{tier}", img, glow, wt)
@@ -130,9 +145,16 @@ if __name__ == "__main__":
             item = {"model": {"type": "minecraft:range_dispatch", "property": "minecraft:custom_model_data", "index": 0,
                               "entries": [{"threshold": t, "model": model_ref(f"{el}_{wt}_t{t}")} for t in (2, 3, 4)],
                               "fallback": model_ref(f"{el}_{wt}_t1")}}
+            if wt == "bow": item = {"model": bow_item(item["model"], lambda k, el=el, wt=wt: tiers(el, wt, f"_pull{k}"))}
             json.dump(item, open(f"{A}/items/{el}_{wt}.json", "w"), indent="\t")
     for wt in DISP:
+        if ONLY and wt != ONLY: continue
         img, glow = design("wood", wt)
         total += build(f"wooden_{wt}", img, glow, wt)
-        json.dump({"model": model_ref(f"wooden_{wt}")}, open(f"{A}/items/wooden_{wt}.json", "w"), indent="\t")
+        m = model_ref(f"wooden_{wt}")
+        if wt == "bow":
+            for k in (0, 1, 2):
+                img, glow = design("wood", wt, 1, k); total += build(f"wooden_{wt}_pull{k}", img, glow, wt)
+            m = bow_item(m, lambda k: model_ref(f"wooden_bow_pull{k}"))
+        json.dump({"model": m}, open(f"{A}/items/wooden_{wt}.json", "w"), indent="\t")
     print("weapons5 ok, elements total", total)

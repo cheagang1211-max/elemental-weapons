@@ -25,6 +25,12 @@ public abstract class WeaponSwingPoseMixin<T extends HumanoidRenderState> {
 	@Shadow @Final public ModelPart rightLeg;
 	@Shadow @Final public ModelPart leftLeg;
 
+	@Inject(method = "setupAnim", at = @At("TAIL"), require = 0)
+	private void elementalweapons$bowPose(T s, CallbackInfo ci) {
+		if (s instanceof com.elementalweapons.client.anim.SwingStep st)
+			com.elementalweapons.client.anim.BowPose.apply(st.elementalweapons$bow(), s.ageInTicks, head, body, rightArm, leftArm);
+	}
+
 	@Inject(method = "setupAttackAnimation", at = @At("TAIL"), require = 0)
 	private void elementalweapons$weaponSwing(T s, CallbackInfo ci) {
 		float t = s.swingAnimation;
