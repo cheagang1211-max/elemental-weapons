@@ -4,7 +4,7 @@
 			"id": "elementalweapons:marina_core"
 		},
 		"title": "심해의 여왕 마리나 토벌",
-		"description": "심해의 여왕 마리나을(를) 쓰러뜨린다",
+		"description": "심해의 여왕 마리나을(를) 쓰러뜨린다\n§a보상: 원소 가루 8 · 강화석 2 · 경험치",
 		"frame": "task",
 		"show_toast": true,
 		"announce_to_chat": true,

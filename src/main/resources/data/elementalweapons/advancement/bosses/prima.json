@@ -4,7 +4,7 @@
 			"id": "elementalweapons:prima_core"
 		},
 		"title": "근원에 닿다",
-		"description": "최종 보스 원소의 근원 프리마를 쓰러뜨린다",
+		"description": "최종 보스 원소의 근원 프리마를 쓰러뜨린다\n§d보상: 원소 정수 1 · 강화석 12 · 가호석 3 · 경험치 1레벨분",
 		"frame": "challenge",
 		"show_toast": true,
 		"announce_to_chat": true,

@@ -4,7 +4,7 @@
 			"id": "elementalweapons:orichalcum_ingot"
 		},
 		"title": "전설의 금속",
-		"description": "오리하르콘 주괴를 얻는다",
+		"description": "오리하르콘 주괴를 얻는다\n§6보상: 원소 가루 24 · 강화석 6 · 가호석 1 · 경험치",
 		"frame": "goal",
 		"show_toast": true,
 		"announce_to_chat": true,

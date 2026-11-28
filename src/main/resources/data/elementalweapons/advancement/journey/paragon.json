@@ -4,7 +4,7 @@
 			"id": "elementalweapons:element_essence"
 		},
 		"title": "한계 너머",
-		"description": "파라곤 레벨을 처음 올린다",
+		"description": "파라곤 레벨을 처음 올린다\n§d보상: 원소 정수 1 · 강화석 12 · 가호석 3 · 경험치 1레벨분",
 		"frame": "challenge",
 		"show_toast": true,
 		"announce_to_chat": true,

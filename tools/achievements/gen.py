@@ -9,6 +9,9 @@ shutil.rmtree(OUT, ignore_errors=True)
 def I(x): return x if ":" in x else f"{NS}:{x}"
 CODE = {"done": {"trigger": "minecraft:impossible"}}
 def adv(path, parent, icon, title, desc, crit=None, frame="task", bg=None, hidden=False, req=None, toast=True):
+    if parent:   # 보상 안내 (Achieve.reward 와 같게)
+        desc += {"task": "\n§a보상: 원소 가루 8 · 강화석 2 · 경험치", "goal": "\n§6보상: 원소 가루 24 · 강화석 6 · 가호석 1 · 경험치",
+                 "challenge": "\n§d보상: 원소 정수 1 · 강화석 12 · 가호석 3 · 경험치 1레벨분"}[frame]
     d = {"display": {"icon": {"id": I(icon)}, "title": title, "description": desc, "frame": frame,
                      "show_toast": toast, "announce_to_chat": toast, "hidden": hidden}}
     if bg: d["display"]["background"] = bg

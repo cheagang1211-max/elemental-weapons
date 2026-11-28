@@ -4,7 +4,7 @@
 			"id": "minecraft:filled_map"
 		},
 		"title": "천공의 지도",
-		"description": "하늘 세계의 모든 지역을 밟는다",
+		"description": "하늘 세계의 모든 지역을 밟는다\n§d보상: 원소 정수 1 · 강화석 12 · 가호석 3 · 경험치 1레벨분",
 		"frame": "challenge",
 		"show_toast": true,
 		"announce_to_chat": true,

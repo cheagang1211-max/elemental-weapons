@@ -4,7 +4,7 @@
 			"id": "minecraft:bell"
 		},
 		"title": "수도에 오다",
-		"description": "거점 수도의 정원에 들어선다",
+		"description": "거점 수도의 정원에 들어선다\n§a보상: 원소 가루 8 · 강화석 2 · 경험치",
 		"frame": "task",
 		"show_toast": true,
 		"announce_to_chat": true,

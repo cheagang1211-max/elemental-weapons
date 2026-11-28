@@ -4,7 +4,7 @@
 			"id": "minecraft:enchanted_book"
 		},
 		"title": "정점에 선 자",
-		"description": "3차 전직을 마친다",
+		"description": "3차 전직을 마친다\n§d보상: 원소 정수 1 · 강화석 12 · 가호석 3 · 경험치 1레벨분",
 		"frame": "challenge",
 		"show_toast": true,
 		"announce_to_chat": true,

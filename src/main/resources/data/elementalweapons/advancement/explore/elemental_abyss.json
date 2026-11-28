@@ -4,7 +4,7 @@
 			"id": "minecraft:sculk"
 		},
 		"title": "심연을 들여다본 자",
-		"description": "멀리 떨어진 원소의 심연에 들어선다",
+		"description": "멀리 떨어진 원소의 심연에 들어선다\n§6보상: 원소 가루 24 · 강화석 6 · 가호석 1 · 경험치",
 		"frame": "goal",
 		"show_toast": true,
 		"announce_to_chat": true,

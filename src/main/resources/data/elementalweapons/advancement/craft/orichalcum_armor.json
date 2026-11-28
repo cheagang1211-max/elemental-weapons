@@ -4,7 +4,7 @@
 			"id": "elementalweapons:orichalcum_chestplate"
 		},
 		"title": "오리하르콘의 갑주",
-		"description": "오리하르콘 갑옷 한 벌을 모두 갖춘다",
+		"description": "오리하르콘 갑옷 한 벌을 모두 갖춘다\n§d보상: 원소 정수 1 · 강화석 12 · 가호석 3 · 경험치 1레벨분",
 		"frame": "challenge",
 		"show_toast": true,
 		"announce_to_chat": true,

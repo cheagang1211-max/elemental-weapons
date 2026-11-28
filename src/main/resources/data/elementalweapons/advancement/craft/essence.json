@@ -4,7 +4,7 @@
 			"id": "elementalweapons:element_essence"
 		},
 		"title": "원소의 정수",
-		"description": "원소 정수를 얻는다",
+		"description": "원소 정수를 얻는다\n§6보상: 원소 가루 24 · 강화석 6 · 가호석 1 · 경험치",
 		"frame": "goal",
 		"show_toast": true,
 		"announce_to_chat": true,

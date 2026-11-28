@@ -4,7 +4,7 @@
 			"id": "elementalweapons:aether_chestplate"
 		},
 		"title": "에테르의 가호",
-		"description": "에테르 갑옷 한 벌을 모두 갖춘다",
+		"description": "에테르 갑옷 한 벌을 모두 갖춘다\n§a보상: 원소 가루 8 · 강화석 2 · 경험치",
 		"frame": "task",
 		"show_toast": true,
 		"announce_to_chat": true,

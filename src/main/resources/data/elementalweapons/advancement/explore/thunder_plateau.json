@@ -4,7 +4,7 @@
 			"id": "elementalweapons:storm_crystal"
 		},
 		"title": "뇌전 고원에 발을 딛다",
-		"description": "뇌전 고원에 간다",
+		"description": "뇌전 고원에 간다\n§a보상: 원소 가루 8 · 강화석 2 · 경험치",
 		"frame": "task",
 		"show_toast": true,
 		"announce_to_chat": true,

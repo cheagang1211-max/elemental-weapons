@@ -4,7 +4,7 @@
 			"id": "minecraft:iron_sword"
 		},
 		"title": "투기장의 첫 승리",
-		"description": "투기장 결투에서 이긴다",
+		"description": "투기장 결투에서 이긴다\n§a보상: 원소 가루 8 · 강화석 2 · 경험치",
 		"frame": "task",
 		"show_toast": true,
 		"announce_to_chat": true,

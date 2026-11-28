@@ -4,7 +4,7 @@
 			"id": "elementalweapons:steam_colossus_core"
 		},
 		"title": "증기 거신 토벌",
-		"description": "증기 거신을(를) 쓰러뜨린다",
+		"description": "증기 거신을(를) 쓰러뜨린다\n§6보상: 원소 가루 24 · 강화석 6 · 가호석 1 · 경험치",
 		"frame": "goal",
 		"show_toast": true,
 		"announce_to_chat": true,

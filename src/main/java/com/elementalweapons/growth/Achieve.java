@@ -78,6 +78,42 @@ public final class Achieve {
 		for (int i = 0; i < 20; i++) if (CoreForge.level(p, i) > 0) { grant(p, "craft/core"); break; }
 	}
 
+	/**
+	 * 도전과제 첫 달성 보상 — 테두리 모양(일반·목표·도전)에 따라
+	 * 일반: 원소 가루 8 + 강화석 2 + 다음 레벨 경험치 15%
+	 * 목표: 원소 가루 24 + 강화석 6 + 가호석 1 + 40%
+	 * 도전: 원소 정수 1 + 강화석 12 + 가호석 3 + 한 레벨 분량
+	 */
+	public static void reward(ServerPlayer p, AdvancementHolder h) {
+		if (!h.id().getNamespace().equals(ElementalWeaponsMod.MOD_ID)) return;
+		var disp = h.value().display().orElse(null);
+		if (disp == null || h.value().parent().isEmpty()) return;   // 탭 시작(루트)은 보상 없음
+		var frame = disp.type();
+		net.minecraft.world.item.Item dust = com.elementalweapons.world.ModBlocks.item("element_dust");
+		java.util.List<ItemStack> items = new java.util.ArrayList<>();
+		double xpPart;
+		switch (frame) {
+			case CHALLENGE -> { items.add(new ItemStack(com.elementalweapons.item.ModItems.ELEMENT_ESSENCE, 1));
+				items.add(new ItemStack(com.elementalweapons.item.ModItems.ENHANCE_STONE, 12)); items.add(new ItemStack(com.elementalweapons.item.ModItems.BLESS_STONE, 3)); xpPart = 1.0; }
+			case GOAL -> { items.add(new ItemStack(dust, 24)); items.add(new ItemStack(com.elementalweapons.item.ModItems.ENHANCE_STONE, 6));
+				items.add(new ItemStack(com.elementalweapons.item.ModItems.BLESS_STONE, 1)); xpPart = 0.4; }
+			default -> { items.add(new ItemStack(dust, 8)); items.add(new ItemStack(com.elementalweapons.item.ModItems.ENHANCE_STONE, 2)); xpPart = 0.15; }
+		}
+		Growth g = ModGrowth.get(p);
+		long xp = Math.max(20, Math.round(Growth.need(Math.max(1, g.level())) * xpPart));
+		StringBuilder sb = new StringBuilder();
+		for (ItemStack st : items) {
+			if (sb.length() > 0) sb.append(", ");
+			sb.append(st.getHoverName().getString()).append(" ×").append(st.getCount());
+			if (!p.getInventory().add(st)) p.drop(st, false);
+		}
+		ModGrowth.addXp(p, xp);
+		net.minecraft.ChatFormatting col = switch (frame) { case CHALLENGE -> net.minecraft.ChatFormatting.LIGHT_PURPLE; case GOAL -> net.minecraft.ChatFormatting.GOLD; default -> net.minecraft.ChatFormatting.GREEN; };
+		p.sendSystemMessage(net.minecraft.network.chat.Component.literal("🎁 [" + disp.title().getString() + "] 보상: ").withStyle(col)
+				.append(net.minecraft.network.chat.Component.literal(sb + ", 경험치 +" + xp).withStyle(net.minecraft.ChatFormatting.WHITE)));
+		p.level().playSound(null, p.blockPosition(), net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP, net.minecraft.sounds.SoundSource.PLAYERS, 0.6F, frame == net.minecraft.advancements.AdvancementType.TASK ? 1.6F : 1.1F);
+	}
+
 	/** 투기장 승리 (통산 n승) */
 	public static void duelWin(ServerPlayer p, int wins) {
 		grant(p, "journey/duel");

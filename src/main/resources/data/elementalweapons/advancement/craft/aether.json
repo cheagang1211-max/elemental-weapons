@@ -4,7 +4,7 @@
 			"id": "elementalweapons:aether_ingot"
 		},
 		"title": "하늘의 금속",
-		"description": "에테르 주괴를 얻는다",
+		"description": "에테르 주괴를 얻는다\n§a보상: 원소 가루 8 · 강화석 2 · 경험치",
 		"frame": "task",
 		"show_toast": true,
 		"announce_to_chat": true,

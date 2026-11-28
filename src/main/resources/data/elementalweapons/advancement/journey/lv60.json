@@ -4,7 +4,7 @@
 			"id": "minecraft:experience_bottle"
 		},
 		"title": "베테랑",
-		"description": "60레벨에 이른다",
+		"description": "60레벨에 이른다\n§a보상: 원소 가루 8 · 강화석 2 · 경험치",
 		"frame": "task",
 		"show_toast": true,
 		"announce_to_chat": true,

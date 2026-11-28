@@ -4,7 +4,7 @@
 			"id": "minecraft:experience_bottle"
 		},
 		"title": "숙련자",
-		"description": "30레벨에 이른다",
+		"description": "30레벨에 이른다\n§a보상: 원소 가루 8 · 강화석 2 · 경험치",
 		"frame": "task",
 		"show_toast": true,
 		"announce_to_chat": true,

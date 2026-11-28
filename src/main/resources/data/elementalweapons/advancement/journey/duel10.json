@@ -4,7 +4,7 @@
 			"id": "minecraft:golden_sword"
 		},
 		"title": "투기장의 패자",
-		"description": "투기장 결투에서 10번 이긴다",
+		"description": "투기장 결투에서 10번 이긴다\n§d보상: 원소 정수 1 · 강화석 12 · 가호석 3 · 경험치 1레벨분",
 		"frame": "challenge",
 		"show_toast": true,
 		"announce_to_chat": true,

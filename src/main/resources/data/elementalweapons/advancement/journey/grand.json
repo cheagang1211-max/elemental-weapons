@@ -4,7 +4,7 @@
 			"id": "elementalweapons:light_book"
 		},
 		"title": "천지를 가르는 일격",
-		"description": "Shift+우클릭 대형 기술을 쓴다",
+		"description": "Shift+우클릭 대형 기술을 쓴다\n§6보상: 원소 가루 24 · 강화석 6 · 가호석 1 · 경험치",
 		"frame": "goal",
 		"show_toast": true,
 		"announce_to_chat": true,

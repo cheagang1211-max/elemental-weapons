@@ -4,7 +4,7 @@
 			"id": "elementalweapons:storm_wyvern_core"
 		},
 		"title": "뇌운 와이번 토벌",
-		"description": "뇌운 와이번을(를) 쓰러뜨린다",
+		"description": "뇌운 와이번을(를) 쓰러뜨린다\n§6보상: 원소 가루 24 · 강화석 6 · 가호석 1 · 경험치",
 		"frame": "goal",
 		"show_toast": true,
 		"announce_to_chat": true,

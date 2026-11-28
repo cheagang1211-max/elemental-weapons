@@ -4,7 +4,7 @@
 			"id": "elementalweapons:bless_stone"
 		},
 		"title": "신의 무기",
-		"description": "무기를 최대치 +15까지 강화한다",
+		"description": "무기를 최대치 +15까지 강화한다\n§d보상: 원소 정수 1 · 강화석 12 · 가호석 3 · 경험치 1레벨분",
 		"frame": "challenge",
 		"show_toast": true,
 		"announce_to_chat": true,

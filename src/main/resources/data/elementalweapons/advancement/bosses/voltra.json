@@ -4,7 +4,7 @@
 			"id": "elementalweapons:voltra_core"
 		},
 		"title": "뇌신 볼트라 토벌",
-		"description": "뇌신 볼트라을(를) 쓰러뜨린다",
+		"description": "뇌신 볼트라을(를) 쓰러뜨린다\n§a보상: 원소 가루 8 · 강화석 2 · 경험치",
 		"frame": "task",
 		"show_toast": true,
 		"announce_to_chat": true,

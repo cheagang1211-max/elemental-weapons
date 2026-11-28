@@ -4,7 +4,7 @@
 			"id": "minecraft:writable_book"
 		},
 		"title": "두 갈래 길",
-		"description": "전직 교관의 시험을 통과해 2차 전직을 한다",
+		"description": "전직 교관의 시험을 통과해 2차 전직을 한다\n§6보상: 원소 가루 24 · 강화석 6 · 가호석 1 · 경험치",
 		"frame": "goal",
 		"show_toast": true,
 		"announce_to_chat": true,

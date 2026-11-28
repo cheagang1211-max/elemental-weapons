@@ -4,7 +4,7 @@
 			"id": "elementalweapons:bless_stone"
 		},
 		"title": "명검",
-		"description": "무기를 +10까지 강화한다",
+		"description": "무기를 +10까지 강화한다\n§6보상: 원소 가루 24 · 강화석 6 · 가호석 1 · 경험치",
 		"frame": "goal",
 		"show_toast": true,
 		"announce_to_chat": true,
